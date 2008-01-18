@@ -1,0 +1,10 @@
+==== merb-gen
+
+merb-gen is a part of the Merb More package. It provides application and plugin generators for Merb.
+
+==== Usage
+
+To generate a new merb app, run merb-gen &lt;path&gt;. For instance, <tt>merb-gen foo</tt> would create
+a new merb app inside of the foo directory.
+
+To generate a new merb plugin, run merb-gen plugin &lt;path&gt;.

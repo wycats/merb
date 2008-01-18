@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+
+at_exit { exit }
+
+command = ARGV.shift if %w( generate destroy update ).include?(ARGV[0])
+
+%w( rubygems rubigen rubigen/scripts/generate rubigen/scripts/destroy 
+    rubigen/scripts/update fileutils find merb-gen ).each do |file|
+  require file
+end
+
+Merb::ApplicationGenerator.run ARGV.first, ARGV[1..-1], ARGV[0] == "plugin" && ARGV[1] ? "merb_plugin" : "merb", command || "generate"
