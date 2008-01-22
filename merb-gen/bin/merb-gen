@@ -5,8 +5,21 @@ at_exit { exit }
 command = ARGV.shift if %w( generate destroy update ).include?(ARGV[0])
 
 %w( rubygems rubigen rubigen/scripts/generate rubigen/scripts/destroy 
-    rubigen/scripts/update fileutils find merb-gen ).each do |file|
+    rubigen/scripts/update fileutils find merb-core merb-gen ).each do |file|
   require file
 end
 
-Merb::ApplicationGenerator.run ARGV.first, ARGV[1..-1], ARGV[0] == "plugin" && ARGV[1] ? "merb_plugin" : "merb", command || "generate"
+# merb-gen plugin foo
+if ARGV[0] && ARGV[0] == "plugin"
+  Merb::ApplicationGenerator.run ARGV[1], ARGV[2..-1], "merb_plugin", command || "generate"
+
+# merb-gen controller foo
+# merb-gen resource foo --test
+elsif ARGV[1] && ARGV[1] !~ /^-/
+  Merb::ComponentGenerator.run ARGV.first, ARGV[2..-1], ARGV[1], command || "generate"
+  
+# merb-gen foo
+# merb-gen foo --test
+else
+  Merb::ApplicationGenerator.run ARGV.first, ARGV[1..-1], "merb", command || "generate"  
+end

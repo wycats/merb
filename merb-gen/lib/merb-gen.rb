@@ -16,22 +16,21 @@ module Merb
       RubiGen::Scripts.const_get(command.capitalize).new.run([File.expand_path(path), *argv], :generator => generator, :backtrace => true)
     end
   end
-end
-
-require 'active_support'
-require 'rubigen/base'
-require 'rubigen/commands'
-module RubiGen
-  module Commands
-    class RewindBase < Base
   
-      def file_copy_each(files, path=nil, options = {})
-        path = path ? "#{path}/" : ""
-        files.each do |file_name|
-          file "#{path}#{file_name}", "#{path}#{file_name}", options
-        end
-      end
+  class ComponentGenerator
+    def self.run(name, argv, generator, command)
+      app_root = Dir.pwd
       
+      Merb::BootLoader.run
+      undef dependency if defined?(Kernel.dependency)
+      
+      Gem.clear_paths
+      Gem.path.unshift(app_root / "gems")
+      
+      require "rubigen/scripts/#{command}"
+      
+      RubiGen::Base.use_component_sources! Merb.generator_scope
+      RubiGen::Scripts.const_get(command.capitalize).new.run(argv, :generator => generator)
     end
   end
 end

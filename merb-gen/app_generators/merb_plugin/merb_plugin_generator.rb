@@ -1,7 +1,7 @@
 require "merb-gen/helpers"
 require "merb-gen/base"
 
-class MerbGenerator < Merb::GeneratorBase
+class MerbPluginGenerator < Merb::GeneratorBase
   
   def initialize(args, runtime_options = {})
     @base = File.dirname(__FILE__)
@@ -11,9 +11,9 @@ class MerbGenerator < Merb::GeneratorBase
   protected
   def banner
     <<-EOS.split("\n").map{|x| x.strip}.join("\n")
-      Creates a Merb application stub.
+      Creates a Merb plugin stub.
 
-      USAGE: #{spec.name} -g path"
+      USAGE: #{spec.name} --generate-plugin path"
     EOS
   end
 
