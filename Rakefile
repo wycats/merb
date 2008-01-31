@@ -1,7 +1,7 @@
 require "rake/gempackagetask"
 require "merb-core"
 NAME = "merb-more"
-
+require "merb"
 spec = Gem::Specification.new do |s|
   s.name         = NAME
   s.version      = Merb::VERSION
