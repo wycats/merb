@@ -1,6 +1,4 @@
 #!/usr/bin/env ruby
 
-ARGV=["-F"]
-require 'merb/server'
-
-Merb::Server.run
+argv = ARGV + %w[-a fcgi]
+Merb.start(argv)
