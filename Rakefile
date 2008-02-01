@@ -1,5 +1,5 @@
 require "rake/gempackagetask"
-
+require "merb-core"
 NAME = "merb-more"
 
 spec = Gem::Specification.new do |s|
@@ -21,6 +21,10 @@ spec = Gem::Specification.new do |s|
   # Dependencies
   s.add_dependency "merb-core"
 end
+
+windows = (PLATFORM =~ /win32|cygwin/) rescue nil
+
+SUDO = windows ? "" : "sudo"
 
 Rake::GemPackageTask.new(spec) do |package|
   package.gem_spec = spec

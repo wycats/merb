@@ -27,7 +27,7 @@ spec = Gem::Specification.new do |s|
   
   s.require_path = 'lib'
   s.autorequire = GEM
-  s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,spec,app_generators}/**/*")
+  s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,bin,spec,app_generators}/**/*")
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|
