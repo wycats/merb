@@ -1,3 +1,4 @@
+require File.join(File.dirname(__FILE__), "helpers")
 class Merb::GeneratorBase < RubiGen::Base
   include Merb::GeneratorHelpers
   attr_reader :name, :base, :choices, :assigns, :m
@@ -12,6 +13,7 @@ class Merb::GeneratorBase < RubiGen::Base
     usage if args.empty?
     @name = args.shift
     @destination_root = @name
+    @choices ||= []
   end
 
   def manifest

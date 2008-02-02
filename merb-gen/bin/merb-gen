@@ -16,7 +16,9 @@ if ARGV[0] && ARGV[0] == "plugin"
 # merb-gen controller foo
 # merb-gen resource foo --test
 elsif ARGV[1] && ARGV[1] !~ /^-/
-  Merb::ComponentGenerator.run ARGV.first, ARGV[2..-1], ARGV[1], command || "generate"
+  # puts "ARGV.first = #{ARGV.first}, ARGV[2..-1] = #{ARGV[2..-1].inspect}, ARGV[1] = #{ARGV[1]}"
+  # Merb::ComponentGenerator.run ARGV.first, ARGV[2..-1], ARGV[1], command || "generate"
+  Merb::ComponentGenerator.run ARGV[1], ARGV[1..-1], ARGV.first, command || "generate"
   
 # merb-gen foo
 # merb-gen foo --test
