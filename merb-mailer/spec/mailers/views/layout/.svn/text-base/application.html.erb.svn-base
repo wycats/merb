@@ -1,0 +1,3 @@
+BASIC
+<%= catch_content :layout %>
+LAYOUT

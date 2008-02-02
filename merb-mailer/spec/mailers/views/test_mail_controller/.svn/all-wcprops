@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/merb/!svn/ver/795/trunk/spec/fixtures/mailers/views/test_mail_controller
+END
+first.html.erb
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/merb/!svn/ver/795/trunk/spec/fixtures/mailers/views/test_mail_controller/first.html.erb
+END
+first.text.erb
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/merb/!svn/ver/683/trunk/spec/fixtures/mailers/views/test_mail_controller/first.text.erb
+END
+eighth.html.erb
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/merb/!svn/ver/795/trunk/spec/fixtures/mailers/views/test_mail_controller/eighth.html.erb
+END
+eighth.text.erb
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/merb/!svn/ver/795/trunk/spec/fixtures/mailers/views/test_mail_controller/eighth.text.erb
+END
+third.html.erb
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/merb/!svn/ver/683/trunk/spec/fixtures/mailers/views/test_mail_controller/third.html.erb
+END
+second.text.erb
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/merb/!svn/ver/795/trunk/spec/fixtures/mailers/views/test_mail_controller/second.text.erb
+END
+ninth.html.erb
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/merb/!svn/ver/795/trunk/spec/fixtures/mailers/views/test_mail_controller/ninth.html.erb
+END
+ninth.text.erb
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/merb/!svn/ver/795/trunk/spec/fixtures/mailers/views/test_mail_controller/ninth.text.erb
+END
