@@ -21,7 +21,8 @@ module Merb
     def self.run(name, argv, generator, command)
       app_root = Dir.pwd
       
-      Merb::BootLoader.run
+      Merb.start %w( -e development -a runner )
+      
       undef dependency if defined?(Kernel.dependency)
       
       Gem.clear_paths
