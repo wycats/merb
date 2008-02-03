@@ -24,11 +24,12 @@ spec = Gem::Specification.new do |s|
     
   # Uncomment this to add a dependency
   s.add_dependency "merb-core", ">= 0.9"
+  s.add_dependency "rubigen"
   
   s.require_path = 'lib'
   s.autorequire = GEM
   s.files = %w(LICENSE README Rakefile TODO) + 
-          Dir.glob("{lib,bin,spec,app_generators,merb_default_generators,rspec_generators,test_unit_generators}/**/*")
+          Dir.glob("{lib,bin,spec,app_generators,merb_default_generators,merb_generators,rspec_generators,test_unit_generators}/**/*")
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|

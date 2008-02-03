@@ -1,4 +1,4 @@
-MAIN_BINDING = binding
+MAIN_BINDING = binding unless defined?(MAIN_BINDING)
 
 module Merb::GeneratorHelpers
   def relative(path, dir = nil)

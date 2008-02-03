@@ -25,8 +25,6 @@ module Merb
       
       Merb.start %w( -e development -a runner )
       
-      undef dependency if defined?(Kernel.dependency)
-      
       Gem.clear_paths
       Gem.path.unshift(app_root / "gems")
       

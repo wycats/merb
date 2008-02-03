@@ -4,20 +4,32 @@ at_exit { exit }
 
 command = ARGV.shift if %w( generate destroy update ).include?(ARGV[0])
 
-%w( rubygems rubigen rubigen/scripts/generate rubigen/scripts/destroy 
-    rubigen/scripts/update fileutils find merb-core merb-gen ).each do |file|
+%w(rubygems merb-core).each do |file|
   require file
 end
 
+# remove dependency
+module Kernel
+  undef dependency if defined?(Kernel.dependency)
+end
+
+%w(rubigen rubigen/scripts/generate rubigen/scripts/destroy 
+    rubigen/scripts/update fileutils find  merb-gen).each do |file|
+  require file
+end
+
+if ARGV.empty?
+  # List all the Available Generators
+  RubiGen::Base.use_component_sources! Merb.generator_scope
+  RubiGen::Scripts::Generate.new.run(ARGV)
+
 # merb-gen plugin foo
-if ARGV[0] && ARGV[0] == "plugin"
+elsif ARGV[0] && ARGV[0] == "plugin"
   Merb::ApplicationGenerator.run ARGV[1], ARGV[2..-1], "merb_plugin", command || "generate"
 
 # merb-gen controller foo
 # merb-gen resource foo --test
 elsif ARGV[1] && ARGV[1] !~ /^-/
-  # puts "ARGV.first = #{ARGV.first}, ARGV[2..-1] = #{ARGV[2..-1].inspect}, ARGV[1] = #{ARGV[1]}"
-  # Merb::ComponentGenerator.run ARGV.first, ARGV[2..-1], ARGV[1], command || "generate"
   Merb::ComponentGenerator.run ARGV[1], ARGV[1..-1], ARGV.first, command || "generate"
   
 # merb-gen foo

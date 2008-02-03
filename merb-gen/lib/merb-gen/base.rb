@@ -1,18 +1,19 @@
 require File.join(File.dirname(__FILE__), "helpers")
+
 class Merb::GeneratorBase < RubiGen::Base
   include Merb::GeneratorHelpers
   attr_reader :name, :base, :choices, :assigns, :m
   
   DEFAULT_SHEBANG = File.join(Config::CONFIG['bindir'],
-                              Config::CONFIG['ruby_install_name'])
+                              Config::CONFIG['ruby_install_name']) unless defined?(DEFAULT_SHEBANG)
   
   default_options   :shebang => DEFAULT_SHEBANG
   
   def initialize(args, runtime_options = {})
     super
     usage if args.empty?
-    @name = args.shift
-    @destination_root = @name
+    self.class.use_component_sources! Merb.generator_scope
+    @destination_root = Dir.pwd
     @choices ||= []
   end
 

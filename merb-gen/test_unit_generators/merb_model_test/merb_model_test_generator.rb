@@ -2,13 +2,12 @@ class MerbModelTestGenerator < Merb::GeneratorBase
   attr_reader :model_attributes, :model_class_name, :model_file_name
   
   def initialize(args, runtime_args = {})
-    @base =                 File.dirname(__FILE__)
+    @base =             File.dirname(__FILE__)
+    super    
     @model_file_name  = runtime_args[:model_file_name]
     @model_attributes = runtime_args[:model_attributes]
     @model_class_name = runtime_args[:model_class_name]
-    args.unshift(".")  # Need to add this or the files are copied over to 
-                       # Merb.root/model_name/app/models/model_name.rb
-    super
+
   end
   
   def manifest
@@ -27,10 +26,9 @@ class MerbModelTestGenerator < Merb::GeneratorBase
   protected
   def banner
     <<-EOS.split("\n").map{|x| x.strip}.join("\n")
-      Creates a Datamapper Model stub..
+      Creates a basic Test::Unit unit test stub.
 
       USAGE: #{spec.name}"
     EOS
-  end
-      
+  end   
 end
