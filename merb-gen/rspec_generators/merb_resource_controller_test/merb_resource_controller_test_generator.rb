@@ -1,4 +1,4 @@
-class MerbControllerTestGenerator < Merb::GeneratorBase
+class MerbResourceControllerTestGenerator < Merb::GeneratorBase
   attr_reader :controller_modules, 
               :controller_class_name, 
               :controller_file_name,
@@ -29,7 +29,8 @@ class MerbControllerTestGenerator < Merb::GeneratorBase
                   }
       
       # make sure the directory is availalbe
-      m.directory File.join("test", "functional", "#{controller_base_path}")
+      m.directory File.join("spec", "controllers", "#{controller_base_path}")
+      m.directory File.join("spec", "helpers", "#{controller_base_path}")
                   
       copy_dirs
       copy_files
@@ -39,9 +40,10 @@ class MerbControllerTestGenerator < Merb::GeneratorBase
   protected
   def banner
     <<-EOS.split("\n").map{|x| x.strip}.join("\n")
-      Creates a basic Test::Unit Functional test stub.
+      Creates a basic rSpec controller spec stub.
 
       USAGE: #{spec.name}"
     EOS
   end
+      
 end

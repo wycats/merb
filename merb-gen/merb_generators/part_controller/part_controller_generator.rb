@@ -1,4 +1,4 @@
-class ControllerGenerator < Merb::GeneratorBase
+class PartControllerGenerator < Merb::GeneratorBase
   
   attr_reader :controller_class_name, 
               :controller_file_name, 
@@ -28,7 +28,7 @@ class ControllerGenerator < Merb::GeneratorBase
       @m = m
       
       # Create the controller directory
-      m.directory File.join("app/controllers", controller_base_path) if controller_base_path
+      m.directory File.join("app/parts", controller_base_path) if controller_base_path
       
       # Create the helpers directory
       m.directory File.join("app/helpers", controller_base_path) if controller_base_path
@@ -44,16 +44,15 @@ class ControllerGenerator < Merb::GeneratorBase
       copy_dirs
       copy_files
       
-      m.dependency "merb_controller_test", [@controller_class_name], @assigns
     end
   end
   
   protected
   def banner
     <<-EOS.split("\n").map{|x| x.strip}.join("\n")
-      Creates a basic Merb controller.
+      Creates a basic Merb Part controller.
 
-      USAGE: #{spec.name} my_controller
+      USAGE: #{spec.name} my_part_controller
     EOS
   end
 end

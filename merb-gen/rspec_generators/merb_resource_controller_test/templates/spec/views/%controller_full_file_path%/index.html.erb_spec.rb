@@ -1,0 +1,1 @@
+require File.join(File.dirname(__FILE__), "<%= Array.new((controller_modules.size + 2),'..').join("/") %>", 'spec_helper.rb')
