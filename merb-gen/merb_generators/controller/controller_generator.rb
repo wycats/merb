@@ -3,7 +3,8 @@ class ControllerGenerator < Merb::GeneratorBase
   attr_reader :controller_class_name, 
               :controller_file_name, 
               :controller_base_path,
-              :controller_modules
+              :controller_modules,
+              :full_controller_const
   
   def initialize(args, runtime_args = {})
     @base =             File.dirname(__FILE__)
@@ -18,6 +19,8 @@ class ControllerGenerator < Merb::GeneratorBase
     
     @controller_modules     = @controller_file_name.to_const_string.split("::")[0..-2]
     @controller_class_name  = @controller_file_name.to_const_string.split("::").last
+    
+    @full_controller_const = ((@controller_modules.dup || []) << @controller_class_name).join("::")
   end
   
   def manifest
@@ -34,7 +37,8 @@ class ControllerGenerator < Merb::GeneratorBase
                     :controller_modules    => controller_modules,
                     :controller_class_name => controller_class_name,
                     :controller_file_name  => controller_file_name,
-                    :controller_base_path  => controller_base_path 
+                    :controller_base_path  => controller_base_path,
+                    :full_controller_const => full_controller_const
                   }
       
       copy_dirs
@@ -42,5 +46,14 @@ class ControllerGenerator < Merb::GeneratorBase
       
       m.dependency "merb_controller_test", [@controller_class_name], @assigns
     end
+  end
+  
+  protected
+  def banner
+    <<-EOS.split("\n").map{|x| x.strip}.join("\n")
+      Creates a basic Merb controller.
+
+      USAGE: #{spec.name} my_controller
+    EOS
   end
 end

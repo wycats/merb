@@ -4,8 +4,8 @@ class ResourceControllerGenerator < Merb::GeneratorBase
               :controller_file_name, 
               :controller_base_path,
               :controller_modules,
-              :model_args,
-              :model_class_name
+              :model_class_name,
+              :full_controller_const
   
   def initialize(args, runtime_args = {})
     @base =             File.dirname(__FILE__)
@@ -24,9 +24,9 @@ class ResourceControllerGenerator < Merb::GeneratorBase
     
     @controller_modules     = @controller_file_name.to_const_string.split("::")[0..-2]
     @controller_class_name  = @controller_file_name.to_const_string.split("::").last
-    @model_class_name       = @controller_class_name.singularize
+    @model_class_name       = runtime_args[:model_class_name] || @controller_class_name.singularize
     
-    @model_args = [@model_class_name, *args].flatten
+    @full_controller_const = ((@controller_modules.dup || []) << @controller_class_name).join("::")
   end
   
   def manifest
@@ -44,14 +44,22 @@ class ResourceControllerGenerator < Merb::GeneratorBase
                     :controller_class_name      => controller_class_name,
                     :controller_file_name       => controller_file_name,
                     :controller_base_path       => controller_base_path,
-                    :full_controller_identifier => (controller_modules.dup << controller_class_name).join("::")
-                  }
-      
+                    :full_controller_const      => full_controller_const,
+                    :model_class_name           => model_class_name
+                  }      
       copy_dirs
       copy_files
       
-      m.dependency "model", model_args
-      # m.dependency "merb_resource_controller_test", [@controller_class_name], @assigns
+      m.dependency "merb_resource_controller_test", [@controller_class_name], @assigns
     end
+  end
+  
+  protected
+  def banner
+    <<-EOS.split("\n").map{|x| x.strip}.join("\n")
+      Creates a basic Merb resource controller.
+
+      USAGE: #{spec.name} my_resource
+    EOS
   end
 end

@@ -33,7 +33,7 @@ class ModelGenerator < Merb::GeneratorBase
     <<-EOS.split("\n").map{|x| x.strip}.join("\n")
       Creates a basic Merb model stub.
 
-      USAGE: #{spec.name}"
+      USAGE: #{spec.name} my_model property1:type property1:type
     EOS
   end
       

@@ -37,8 +37,8 @@ module Merb::GeneratorHelpers
       next if files.empty?
       
       # We want to templatize any files that contain <% %> characters
-      templates, to_copy = files.partition {|file| (file =~ /\.erb$/ && File.read(file) =~ /<%%.*%>/) || 
-                                                  !(file =~ /\.erb$/) && File.read(file) =~ /<%.*%>/}
+      # templates, to_copy = files.partition {|file| !(file =~ /\.erb$/) && File.read(file) =~ /<%.*%>/}
+      templates, to_copy = files.partition {|file| File.read(file) =~ /<%.*%>/}
       
       # Make the paths relative to the directory we're inspecting
       to_copy.map! {|f| relative(f, dir) }
@@ -52,7 +52,6 @@ module Merb::GeneratorHelpers
 
       # Copy the templates over
       templates.each do |file_name|
-        puts "GOT A TEMPLATE #{file_name}"
         m.template "#{dir}#{"/" unless dir.empty?}#{file_name}", 
           "#{interpolate_path(dir)}#{"/" unless dir.empty?}#{interpolate_path(file_name)}", assigns
       end

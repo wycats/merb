@@ -12,11 +12,7 @@ class MerbControllerTestGenerator < Merb::GeneratorBase
     @controller_class_name  = runtime_args[:controller_class_name]
     @controller_file_name   = runtime_args[:controller_file_name]
     @controller_base_path   = runtime_args[:controller_base_path]
-    if @controller_base_path.nil?
-      @full_controller_const = @controller_class_name
-    else
-      @full_controller_const = (@controller_modules.dup << @controller_class_name).join("::")
-    end
+    @full_controller_const  = runtime_args[:full_controller_const]
   end
   
   def manifest
