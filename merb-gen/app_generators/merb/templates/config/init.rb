@@ -5,6 +5,12 @@ Gem.path.unshift(Merb.root / "gems")
 # Make the app's "lib" directory a place where ruby files get "require"d from
 $LOAD_PATH.unshift(Merb.root / "lib")
 
+<% require 'sha1' %>
+Merb::Config.use do |c|
+  c[:session_secret_key]  = '<%= SHA1.new(rand(100000000000).to_s).to_s %>'
+  c[:session_store] = 'cookie'
+end  
+
 ### Merb doesn't come with database support by default.  You need
 ### an ORM plugin.  Install one, and uncomment one of the following lines,
 ### if you need a database.
