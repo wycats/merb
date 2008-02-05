@@ -16,7 +16,10 @@ class ResourceGenerator < Merb::GeneratorBase
       model_args = provided_args.dup
       controller_args = provided_args.dup
       
-      model_args[0] = model_args.first.singularize
+      # normalize the model_args
+      model_args[0] = model_args.first.snake_case.gsub("::", "/").split("/").last.singularize
+      
+      
       controller_args[0] = controller_args.first.pluralize
       
       m.dependency "model", model_args, options.dup

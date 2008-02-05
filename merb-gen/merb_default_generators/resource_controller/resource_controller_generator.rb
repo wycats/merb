@@ -5,7 +5,9 @@ class ResourceControllerGenerator < Merb::GeneratorBase
               :controller_base_path,
               :controller_modules,
               :model_class_name,
-              :full_controller_const
+              :full_controller_const,
+              :singular_model,
+              :plural_model
   
   def initialize(args, runtime_args = {})
     @base =             File.dirname(__FILE__)
@@ -24,7 +26,9 @@ class ResourceControllerGenerator < Merb::GeneratorBase
     
     @controller_modules     = @controller_file_name.to_const_string.split("::")[0..-2]
     @controller_class_name  = @controller_file_name.to_const_string.split("::").last
-    @model_class_name       = runtime_args[:model_class_name] || @controller_class_name.singularize
+    @model_class_name       = runtime_args[:model_class_name] || @controller_class_name.split("::").last.singularize
+    @singular_model         = @model_class_name.snake_case.singularize
+    @plural_model           = @singular_model.pluralize
     
     @full_controller_const = ((@controller_modules.dup || []) << @controller_class_name).join("::")
   end
@@ -45,7 +49,9 @@ class ResourceControllerGenerator < Merb::GeneratorBase
                     :controller_file_name       => controller_file_name,
                     :controller_base_path       => controller_base_path,
                     :full_controller_const      => full_controller_const,
-                    :model_class_name           => model_class_name
+                    :model_class_name           => model_class_name,
+                    :singular_model             => singular_model,
+                    :plural_model               => plural_model
                   }      
       copy_dirs
       copy_files

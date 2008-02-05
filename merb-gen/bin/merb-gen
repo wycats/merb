@@ -8,6 +8,9 @@ command = ARGV.shift if %w( generate destroy update ).include?(ARGV[0])
   require file
 end
 
+#start merb
+Merb.start %w( -e development -a runner )
+
 # remove dependency
 module Kernel
   undef dependency if defined?(Kernel.dependency)
