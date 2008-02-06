@@ -25,8 +25,8 @@ Merb::Plugins.rakefiles.each {|r| require r }
 
 desc "load merb_init.rb"
 task :merb_init do
-  require 'merb'
-  require File.dirname(__FILE__)+'/config/merb_init.rb'
+  require 'merb-core'
+  require File.dirname(__FILE__)+'/config/init.rb'
 end  
 
 task :uninstall => [:clean] do
