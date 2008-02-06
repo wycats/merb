@@ -11,6 +11,12 @@ class PartialHaml < HamlController
   end
 end
 
+class HamlConfig < HamlController
+  def index
+    render
+  end
+end
+
 class PartialIvars < HamlController
   def index
     @var1 = "Partial"
