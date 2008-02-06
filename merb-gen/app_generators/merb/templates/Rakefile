@@ -17,7 +17,6 @@ Merb.start :environment => (ENV['MERB_ENV'] || 'development'),
            
 include FileUtils
 # # # Get Merb plugins and dependencies
-require File.dirname(__FILE__)+'/config/init.rb'
 Merb::Plugins.rakefiles.each {|r| require r } 
 
 # 
