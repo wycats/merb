@@ -16,7 +16,13 @@ class ResourceControllerGenerator < Merb::GeneratorBase
     name = args.shift
     nfp = name.snake_case.gsub("::", "/")
     nfp = nfp.split("/")
-    nfp << (nfp.pop.pluralize)
+    @model_class_name = nfp.pop.singularize.to_const_string
+    @model_class_name = runtime_args[:model_class_name] if runtime_args[:model_class_name]
+    @singular_model         = @model_class_name.snake_case
+    @plural_model           = @singular_model.pluralize
+    
+    nfp << @plural_model
+    
     @controller_file_name = nfp.join("/")
     
     # Need to setup the directories
@@ -26,10 +32,7 @@ class ResourceControllerGenerator < Merb::GeneratorBase
     
     @controller_modules     = @controller_file_name.to_const_string.split("::")[0..-2]
     @controller_class_name  = @controller_file_name.to_const_string.split("::").last
-    @model_class_name       = runtime_args[:model_class_name] || @controller_class_name.split("::").last.singularize
-    @singular_model         = @model_class_name.snake_case.singularize
-    @plural_model           = @singular_model.pluralize
-    
+
     @full_controller_const = ((@controller_modules.dup || []) << @controller_class_name).join("::")
   end
   

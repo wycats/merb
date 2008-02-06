@@ -1,4 +1,5 @@
-<% counter = 0 -%>
+<% counter = 1 -%>
+module Merb
 <% controller_modules.each_with_index do |mod, i| -%>
 <%= "  " * i %>module <%= mod %>
 <% counter = i -%>
@@ -12,3 +13,4 @@
 <%= "  " * counter %>end # <%= mod %>
 <% counter = counter - 1 -%>
 <% end -%>
+end

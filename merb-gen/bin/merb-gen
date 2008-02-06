@@ -34,9 +34,17 @@ elsif ARGV[0] && ARGV[0] == "plugin"
 # merb-gen resource foo --test
 elsif ARGV[1] && ARGV[1] !~ /^-/
   Merb::ComponentGenerator.run ARGV[1], ARGV[1..-1], ARGV.first, command || "generate"
-  
-# merb-gen foo
-# merb-gen foo --test
+
 else
-  Merb::ApplicationGenerator.run ARGV.first, ARGV[1..-1], "merb", command || "generate"  
+  begin
+    # May be a generator that takes no arguments.
+    RubiGen::Base.use_component_sources! Merb.generator_scope
+    RubiGen::Base.lookup(ARGV[0])
+    Merb::ComponentGenerator.run ARGV[0], ARGV[1..-1], ARGV.first, command || "generate"
+  rescue => e
+    puts e.message
+    # merb-gen foo
+    # merb-gen foo --test
+    Merb::ApplicationGenerator.run ARGV.first, ARGV[1..-1], "merb", command || "generate"
+  end  
 end
