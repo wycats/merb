@@ -13,10 +13,10 @@ class Merb::AbstractController
   end
   
   def _call_action(action)
-    args = self.class.action_argument_list[action].map do |arg_default|
-      arg = arg_default[0]
-      raise BadRequest unless params.key?(arg.to_sym) || (arg_default.size == 2)
-      params.key?(arg.to_sym) ? params[arg.to_sym] : arg_default[1]
+    args = self.class.action_argument_list[action].map do |arg, default|
+      arg = arg
+      raise BadRequest unless params.key?(arg.to_sym) || default
+      params.key?(arg.to_sym) ? params[arg.to_sym] : default
     end
     send(action, *args)
   end
