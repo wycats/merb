@@ -8,7 +8,7 @@ command = ARGV.shift if %w( generate destroy update ).include?(ARGV[0])
   require file
 end
 
-#start merb
+# start merb
 Merb.start %w( -e development -a runner )
 
 # remove dependency
