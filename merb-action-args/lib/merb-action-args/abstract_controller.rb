@@ -1,13 +1,14 @@
 class Merb::AbstractController
-  cattr_accessor :action_argument_list
   
   class << self
     alias_method :old_inherited, :inherited
     
     def inherited(klass)
+      class << klass; attr_accessor :action_argument_list; end
+      
       klass.action_argument_list = Hash.new do |h,k| 
         h[k] = ParseTreeArray.translate(klass, k.to_sym).get_args
-      end
+      end      
       old_inherited(klass)
     end
   end
