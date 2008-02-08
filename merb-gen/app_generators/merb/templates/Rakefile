@@ -76,7 +76,7 @@ desc "Run a specific spec with TASK=xxxx"
 Spec::Rake::SpecTask.new('spec') do |t|
   t.spec_opts = ["--format", "specdoc", "--colour"]
   t.libs = ['lib', 'server/lib' ]
-  t.spec_files = ["spec/merb/#{ENV['TASK']}_spec.rb"]
+  t.spec_files = ["spec/#{ENV['TASK']}_spec.rb"]
 end
 
 desc "Run all specs output html"
