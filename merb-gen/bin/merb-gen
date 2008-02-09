@@ -17,7 +17,7 @@ module Kernel
 end
 
 %w(rubigen rubigen/scripts/generate rubigen/scripts/destroy 
-    rubigen/scripts/update fileutils find  merb-gen).each do |file|
+    rubigen/scripts/update fileutils find merb-gen).each do |file|
   require file
 end
 

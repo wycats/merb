@@ -58,6 +58,12 @@ Rake::GemPackageTask.new(merb_spec) do |package|
   package.gem_spec = merb_spec
 end
 
+desc "Install it all"
+task :install => [:install_gems, :package] do
+  sh %{#{SUDO} gem install pkg/merb-more-#{Merb::MORE_VERSION}.gem}
+  sh %{#{SUDO} gem install pkg/merb-#{Merb::MORE_VERSION}.gem}
+end
+
 desc "Build the merb-more gems"
 task :build_gems do
   gems.each do |dir|
