@@ -1,8 +1,15 @@
-require "rake/gempackagetask"
+## THESE ARE CRUCIAL
 module Merb
+  # Set this to the version of merb-core that you are building against/for
   VERSION = "0.9.0"
+
+  # Set this to the version of merb-more you plan to release
   MORE_VERSION = "0.9.0"
 end
+
+require "rake/gempackagetask"
+require 'fileutils'
+include FileUtils
 
 gems = %w[merb-action-args merb-assets merb-gen merb-haml merb-mailer]
 
@@ -18,7 +25,7 @@ merb_more_spec = Gem::Specification.new do |s|
   s.files        = %w( LICENSE README Rakefile TODO )
   s.add_dependency "merb-core", ">= #{Merb::VERSION}"
   gems.each do |gem|
-    s.add_dependency gem, ">= #{Merb::VERSION}, <= 1.0"
+    s.add_dependency gem, [">= #{Merb::VERSION}", "<= 1.0"]
   end
 end
 
@@ -52,7 +59,7 @@ Rake::GemPackageTask.new(merb_spec) do |package|
 end
 
 desc "Build the merb-more gems"
-task :build_gems => :package do
+task :build_gems do
   gems.each do |dir|
     sh %{cd #{dir}; rake package}
   end
@@ -69,5 +76,18 @@ desc "Uninstall the merb-more sub-gems"
 task :uninstall_gems do
   gems.each do |sub_gem|
     sh %{#{SUDO} gem uninstall #{sub_gem}}
+  end
+end
+
+desc "Bundle up all the merb-more gems"
+task :bundle => [:package, :build_gems] do
+  mkdir "bundle"
+  cp "pkg/merb-#{Merb::MORE_VERSION}.gem", "bundle"
+  cp "pkg/merb-more-#{Merb::MORE_VERSION}.gem", "bundle"
+  gems.each do |gem|
+    File.open("#{gem}/Rakefile") do |rakefile|
+      rakefile.read.detect {|l| l =~ /^VERSION\s*=\s*"(.*)"$/ }
+      sh %{cp #{gem}/pkg/#{gem}-#{$1}.gem bundle/}
+    end
   end
 end
