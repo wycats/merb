@@ -9,7 +9,7 @@ command = ARGV.shift if %w( generate destroy update ).include?(ARGV[0])
 end
 
 # start merb
-Merb.start %w( -e development -a runner -L /dev/null -P /dev/null )
+Merb.start %w( -e development -a runner )
 
 # remove dependency
 module Kernel
