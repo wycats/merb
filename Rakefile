@@ -1,63 +1,73 @@
 require "rake/gempackagetask"
-require "merb-core"
-NAME = "merb-more"
+module Merb
+  VERSION = "0.9.0"
+  MORE_VERSION = "0.9.0"
+end
 
-spec = Gem::Specification.new do |s|
-  s.name         = NAME
-  s.version      = Merb::VERSION
+gems = %w[merb-action-args merb-assets merb-gen merb-haml merb-mailer]
+
+merb_more_spec = Gem::Specification.new do |s|
+  s.name         = "merb-more"
+  s.version      = Merb::MORE_VERSION
   s.platform     = Gem::Platform::RUBY
   s.author       = "Ezra Zygmuntowicz"
   s.email        = "ez@engineyard.com"
   s.homepage     = "http://www.merbivore.com"
-  s.summary      = "Adds a 'new merb project' generator and mailer plugin to merb-core."
+  s.summary      = "(merb - merb-core) == merb-more.  The Full Stack. Take what you need; leave what you don't."
   s.description  = s.summary
-  #s.require_path = "lib"
-  #s.files        = %w( LICENSE README Rakefile TODO ) + Dir["{spec,lib}/**/*"]
+  s.files        = %w( LICENSE README Rakefile TODO )
+  s.add_dependency "merb-core", ">= #{Merb::VERSION}"
+  gems.each do |gem|
+    s.add_dependency gem, ">= #{Merb::VERSION}, <= 1.0"
+  end
+end
 
-  # rdoc
-  #s.has_rdoc         = true
-  #s.extra_rdoc_files = %w( README LICENSE TODO )
-
-  # Dependencies
-  s.add_dependency "merb-core"
+merb_spec = Gem::Specification.new do |s|
+  s.name         = "merb"
+  s.version      = Merb::MORE_VERSION
+  s.platform     = Gem::Platform::RUBY
+  s.author       = "Ezra Zygmuntowicz"
+  s.email        = "ez@engineyard.com"
+  s.homepage     = "http://www.merbivore.com"
+  s.summary      = "(merb-core + merb-more) == all of Merb"
+  s.description  = s.summary
+  s.files        = %w( LICENSE README Rakefile TODO )
+  s.add_dependency "merb-core", "= #{Merb::VERSION}"
+  s.add_dependency "merb-more", "= #{Merb::MORE_VERSION}"
 end
 
 windows = (PLATFORM =~ /win32|cygwin/) rescue nil
 
 SUDO = windows ? "" : "sudo"
-sub_gems = %w(merb-gen merb-mailer)
 
-desc "Installs Merb More."
-task :default => :install
+# desc "Installs Merb More."
+# task :default => :install
 
-Rake::GemPackageTask.new(spec) do |package|
-  package.gem_spec = spec
+Rake::GemPackageTask.new(merb_more_spec) do |package|
+  package.gem_spec = merb_more_spec
+end
+
+Rake::GemPackageTask.new(merb_spec) do |package|
+  package.gem_spec = merb_spec
+end
+
+desc "Build the merb-more gems"
+task :build_gems => :package do
+  gems.each do |dir|
+    sh %{cd #{dir}; rake package}
+  end
 end
 
 desc "Install the merb-more sub-gems"
-task :install do
-  sub_gems.each do |dir|
+task :install_gems do
+  gems.each do |dir|
     sh %{cd #{dir}; #{SUDO} rake install}
   end
 end
 
 desc "Uninstall the merb-more sub-gems"
-task :uninstall do
-  sub_gems.each do |sub_gem|
+task :uninstall_gems do
+  gems.each do |sub_gem|
     sh %{#{SUDO} gem uninstall #{sub_gem}}
   end
-end
-
-# SPECS
-desc "Run all specs"
-task :specs do
-  examples, failures, pending = 0, 0, 0
-  Dir["spec/**/*_spec.rb"].each do |spec|
-    response = `spec #{File.expand_path(spec)} -f s -c`
-    e, f, p = response.match(/(\d+) examples?, (\d+) failures?(?:, (\d+) pending?)?/)[1..-1]
-    examples += e.to_i; failures += f.to_i; pending += p.to_i
-    puts response
-  end
-  puts "\n*** TOTALS ***"
-  puts "#{examples} examples, #{failures} failures#{ ", #{pending} pending" if pending}"
 end
