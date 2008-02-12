@@ -9,6 +9,9 @@
 # Email: contact @nospam@ lukeredpath.co.uk
 # Web: www.lukeredpath.co.uk / opensource.agileevolved.com
 
+require 'rubygems'
+require 'hpricot'
+
 class Hpricot::Elem
   def contain?(value)
     self.inner_text.include?(value)
