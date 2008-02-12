@@ -43,6 +43,22 @@ elsif ARGV[1] && ARGV[1] == "--flat"
 elsif ARGV[1] && ARGV[1] == "--very-flat"
   Merb::ApplicationGenerator.run ARGV.first, ARGV[2..-1], "merb_very_flat", command || "generate"
 
+
+# catch all merb-gen -??? and display help instead of creating application in -???
+elsif ARGV[0] && ARGV[0] =~ /^-/
+  puts <<-EOF
+  Application Generators:
+  To generate an application use one of the following
+  merb-gen app_name             (for a standard application)
+  merb-gen app_name --flat      (for a flattened application)
+  merb-gen app_name --very-flat (for a single file application)
+  
+  Other Generators:
+  RubiGen::Scripts::Generate.new.run(ARGV)
+  EOF
+
+
+
 else
   begin
     # May be a generator that takes no arguments.
