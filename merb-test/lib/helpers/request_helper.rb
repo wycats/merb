@@ -82,8 +82,6 @@ module Merb
       def multipart_put(controller_klass, action, params, env = {}, &blk)
         dispatch_multipart_to(controller_klass, action, params, env.merge(:request_method => 'PUT'))
       end
-      
-      #TODO: Add multipart request stuff here
     end
   end
 end
