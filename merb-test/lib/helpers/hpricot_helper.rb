@@ -50,11 +50,12 @@ module Merb
         end.flatten]
       end
   
-      def get_elements css_query, text
-        els = elements(css_query)
+      def get_elements(css_query, text, output = nil)
+        els = elements(css_query, output)
         case text
           when String then els.reject {|t| !t.contains?(text) }
           when Regexp then els.reject {|t| !t.matches?(text) }
+          else []
         end
       end
   
