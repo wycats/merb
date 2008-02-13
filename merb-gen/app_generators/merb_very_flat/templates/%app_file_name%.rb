@@ -2,7 +2,7 @@ Merb::Router.prepare do |r|
   r.match('/').to(:controller => 'foo', :action =>'index')
 end
 
-class Foo < Merb::Controller
+class <%= app_file_name.camel_case %> < Merb::Controller
   def index
     "hi"
   end
