@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-__DIR__ = File.dirname(__FILE__)
+__DIR__ = File.join(File.dirname(__FILE__),"..")
 
 framework = File.join(__DIR__,"framework")
 
@@ -22,13 +22,13 @@ if File.directory?(framework)
       $:.push File.join(plugins,d,'lib')
     end
   end
-  p "merb-core/core_ext/kernel"
-  p "merb-core/core_ext/rubygems"
+  require "merb-core/core_ext/kernel"
+  require "merb-core/core_ext/rubygems"
 else
   gem = Dir.glob(__DIR__ + "/gems/gems/merb-core-*").last
   raise "Can't run frozen without framework/ or loca gem" unless gem
-  p gem + "/lib/core_ext/kernel"
-  p gem + "/lib/core_ext/rubygems"
+  require gem + "/lib/core_ext/kernel"
+  require gem + "/lib/core_ext/rubygems"
 end
 
 
