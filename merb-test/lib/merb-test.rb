@@ -1,5 +1,4 @@
-require 'rubygems'
-require 'merb-core'
+require 'hpricot'
 
 require 'merb-core/test/fake_request'
 require 'merb-core/test/request_helper'

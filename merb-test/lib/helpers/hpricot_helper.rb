@@ -51,7 +51,7 @@ module Merb
       end
   
       def get_elements(css_query, text, output = nil)
-        els = elements(css_query, output)
+        els = elements(*[css_query, output].compact)
         case text
           when String then els.reject {|t| !t.contains?(text) }
           when Regexp then els.reject {|t| !t.matches?(text) }
