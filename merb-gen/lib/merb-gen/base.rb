@@ -28,7 +28,8 @@ class Merb::GeneratorBase < RubiGen::Base
       
       # Set the assigns that should be used for path-interpolation and building templates
       @assigns = {:base_name => File.basename(@name)}
-
+      
+      FileUtils.mkdir_p @name 
       copy_dirs
       copy_files
 
