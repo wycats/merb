@@ -1,0 +1,37 @@
+#!/usr/bin/env ruby
+
+__DIR__ = File.dirname(__FILE__)
+
+framework = File.join(__DIR__,"framework")
+
+if File.directory?(framework)
+  puts "Running from frozen framework"
+  core = File.join(framework,"merb-core")
+  if File.directory?(core)
+    $:.push File.join(core,"lib")
+  end
+  more = File.join(framework,"merb-more")
+  if File.directory?(more)
+    Dir.new(more).select {|d| d =~ /merb-/}.each do |d|
+      $:.push File.join(more,d,'lib')
+    end
+  end
+  plugins = File.join(framework,"merb-plugins")
+  if File.directory?(plugins)
+    Dir.new(plugins).select {|d| d =~ /merb_/}.each do |d|
+      $:.push File.join(plugins,d,'lib')
+    end
+  end
+  p "merb-core/core_ext/kernel"
+  p "merb-core/core_ext/rubygems"
+else
+  gem = Dir.glob(__DIR__ + "/gems/gems/merb-core-*").last
+  raise "Can't run frozen without framework/ or loca gem" unless gem
+  p gem + "/lib/core_ext/kernel"
+  p gem + "/lib/core_ext/rubygems"
+end
+
+
+require 'merb-core'
+Merb.frozen!
+Merb.start
