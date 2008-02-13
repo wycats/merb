@@ -23,7 +23,7 @@ class Hpricot::Elem
     self.inner_text.match(regex)
   end
   
-  alais_method :matches?, :match?
+  alias_method :matches?, :match?
   
   # courtesy of 'thomas' from the comments
   # of _whys blog - get in touch if you want a better credit!
