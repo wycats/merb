@@ -35,6 +35,14 @@ elsif ARGV[0] && ARGV[0] == "plugin"
 elsif ARGV[1] && ARGV[1] !~ /^-/
   Merb::ComponentGenerator.run ARGV[1], ARGV[1..-1], ARGV.first, command || "generate"
 
+# merb-gen foo --flat
+elsif ARGV[1] && ARGV[1] == "--flat"
+  Merb::ApplicationGenerator.run ARGV.first, ARGV[2..-1], "merb_flat", command || "generate"
+
+# merb-gen foo --very-flat
+elsif ARGV[1] && ARGV[1] == "--very-flat"
+  Merb::ApplicationGenerator.run ARGV.first, ARGV[2..-1], "merb_very_flat", command || "generate"
+
 else
   begin
     # May be a generator that takes no arguments.
