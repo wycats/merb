@@ -36,11 +36,11 @@ class ResourceGenerator < Merb::GeneratorBase
       Migration: if required
       Model Test or Spec stub
       Resource Controller and views
-      Controller Test of Spec stubs
+      Controller Test or Spec stubs
 
       Example
 
-      ruby script/generate resource post title:string content:text created_at:datetime
+      merb-gen resource post title:string content:text created_at:datetime
 
   USAGE: #{$0} #{spec.name} name"
   EOS

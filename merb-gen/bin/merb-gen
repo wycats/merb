@@ -57,6 +57,7 @@ elsif ARGV[0] && ARGV[0] =~ /^-/
   merb-gen app_name --flat      (for a flattened application)
   merb-gen app_name --very-flat (for a single file application)
   merb-gen frozen-merb          (script to run from frozen gems/framework)
+  merb-gen plugin plugin_name   (creates a plugin gem skeleton)
   
   Other Generators:
   merb-gen

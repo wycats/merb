@@ -1,14 +1,13 @@
 require 'rubygems'
 require 'rake/gempackagetask'
-require "spec/rake/spectask"
 
-PLUGIN = "merb-parts"
-NAME = "merb-parts"
+PLUGIN = "merb-test"
+NAME = "merb-test"
 VERSION = "0.9.0"
-AUTHOR = "Hassox"
-EMAIL = ""
-HOMEPAGE = "http://merb-plugins.rubyforge.org/merb-parts/"
-SUMMARY = "Merb More: Merb plugin that provides Part Controllers."
+AUTHOR = "Yehuda Katz"
+EMAIL = "ykatz@engineyard.com"
+HOMEPAGE = "http://merb-plugins.rubyforge.org/merb-test/"
+SUMMARY = "Merb plugin that provides common test support"
 
 spec = Gem::Specification.new do |s|
   s.name = NAME
@@ -22,6 +21,7 @@ spec = Gem::Specification.new do |s|
   s.email = EMAIL
   s.homepage = HOMEPAGE
   s.add_dependency('merb-core', '>= 0.9.0')
+  s.add_dependency('hpricot', '>= 0.6')
   s.require_path = 'lib'
   s.autorequire = PLUGIN
   s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,specs}/**/*")
@@ -42,10 +42,4 @@ namespace :jruby do
     sh %{#{SUDO} jruby -S gem install pkg/#{NAME}-#{Merb::VERSION}.gem --no-rdoc --no-ri}
   end
   
-end
-
-desc "Run all specs"
-Spec::Rake::SpecTask.new("specs") do |t|
-  t.spec_opts = ["--format", "specdoc", "--colour"]
-  t.spec_files = Dir["spec/**/*_spec.rb"].sort
 end
