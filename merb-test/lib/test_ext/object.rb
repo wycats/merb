@@ -3,7 +3,7 @@ class Object
   # :name
   # 
   # ===Example in a spec
-  #  @my_obj.assings(:my_value).should == @my_value
+  #  @my_obj.assigns(:my_value).should == @my_value
   def assigns(attr)
     self.instance_variable_get("@#{attr}")
   end
