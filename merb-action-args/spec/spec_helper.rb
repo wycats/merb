@@ -5,7 +5,7 @@ require "merb-core"
 require "merb-action-args"
 require File.dirname(__FILE__) / "controllers" / "action-args"
 
-Merb.start :environment => "test", :adapter => "runner"
+Merb.start :environment => 'test', :adapter => 'runner'
 
 require "merb-core/test/fake_request"
 require "merb-core/test/request_helper"
