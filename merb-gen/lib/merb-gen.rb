@@ -24,7 +24,7 @@ module Merb
     def self.run(name, argv, generator, command)
       app_root = Dir.pwd
       
-      # Merb.start %w( -e development -a runner )
+      # Merb.start :environment => 'development', :adapter => 'runner'
       
       Gem.clear_paths
       Gem.path.unshift(app_root / "gems")
