@@ -2,7 +2,6 @@ begin
   require 'mailfactory'
   require 'net/smtp'
 rescue LoadError
-  puts "You need to install the mailfactory gem to use Merb::Mailer"
   Merb.logger.warn "You need to install the mailfactory gem to use Merb::Mailer"
 end  
 
