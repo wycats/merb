@@ -1,3 +1,4 @@
+require 'rubigen'
 module Merb
   require File.join(File.dirname(__FILE__), "merb-gen", "base")
   
