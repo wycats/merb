@@ -61,3 +61,74 @@ desc "Add new files to subversion"
 task :svn_add do
    system "svn status | grep '^\?' | sed -e 's/? *//' | sed -e 's/ /\ /g' | xargs svn add"
 end
+
+
+class Freezer
+  @@components = {
+    'core' => 'git://github.com/wycats/merb-core.git',
+    'more' => 'git://github.com/wycats/merb-more.git',
+    'plugins' => 'git://github.com/wycats/merb-plugins.git'
+  }
+  @@framework = File.join(File.dirname(__FILE__), 'framework')
+  @@gitmodules = File.join(File.dirname(__FILE__), '.gitmodules')
+
+  def self.freeze(component, update=false)
+    freezer = new(component, update)
+    freezer.freeze
+  end
+
+  def self.components; @@components end
+
+  def initialize(component, update)
+    @component = 'merb-' + component
+    @update = update
+  end
+
+  def freeze
+    %w(git-pull git-submodule).each do |bin|
+      unless in_path?(bin)
+        $stderr.puts "ERROR: #{bin} must be avaible in PATH"
+        exit 1
+      end
+    end
+
+    puts 'Creating framework directory ...' and mkdir(@@framework) unless File.directory?(@@framework)
+
+    if managed?
+      puts "#{@component} seems to be already managed by git-submodule."
+      if @update
+        puts "Trying to update #{@component} ..."
+        sh "cd framework/#{@component} && git-pull"
+      end
+    else
+      puts "Creating submodule for #{@component} ..."
+      sh "git-submodule --quiet add #{@@components[@component.gsub('merb-', '')]} #{File.basename(@@framework)}/#{@component}" 
+      $?.success? ? sh('git-submodule init') : $stderr.puts("ERROR: unable to create submodule for #{@component}")
+    end
+  end
+
+  protected
+    def managed?
+      in_submodule = if File.exists?(@@gitmodules)
+                       File.read(@@gitmodules) =~ %r![submodule "framework/#{@component}"]!
+                      else
+                        false
+                      end
+      File.directory?(File.join(@@framework, @component)) || in_submodule
+    end
+
+    def in_path?(bin)
+      `which #{bin}`
+      !$?.nil? && $?.success?
+    end
+end
+
+task :freeze => Freezer.components.keys.map { |c| "freeze:#{c}" }
+namespace :freeze do
+  Freezer.components.each do |component, git_repository|
+    desc "Freeze #{component} from #{git_repository}"
+    task component do
+      Freezer.freeze(component, ENV['UPDATE'])
+    end
+  end
+end
