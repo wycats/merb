@@ -1,6 +1,7 @@
 $TESTING=true
 require 'rubygems'
 require 'merb-core'
+require 'merb-core/test/helpers'
 require 'merb-core/test/fake_request'
 require 'merb-core/test/request_helper'
 
@@ -10,5 +11,6 @@ Merb.start :environment => (ENV['MERB_ENV'] || 'test'),
            :merb_root  => File.join(File.dirname(__FILE__), ".." )
 
 Spec::Runner.configure do |config|
+  config.include(Merb::Test::Helpers)
   config.include(Merb::Test::RequestHelper)
 end
