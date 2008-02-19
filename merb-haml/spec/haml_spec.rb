@@ -20,4 +20,9 @@ describe "HAML" do
     c = dispatch_to(PartialIvars, :index)
     c.body.should == ::Haml::Engine.new("#foo\n  %p Partial HAML").render    
   end
+  
+  it "should support capture" do
+    c = dispatch_to(CaptureHaml, :index)
+    c.body.should == "<p>Hello</p>\n"
+  end
 end

@@ -12,15 +12,31 @@ module Merb::Template
       name    
     end
   
-    module Mixin
-      def self.included(mod)
-        mod.alias_method :capture, :capture_haml      
-      end
-    
-      def _buffer( binding )
+    module Mixin    
+      def _haml_buffer( binding )
         @_buffer = eval( "buffer.buffer", binding )
       end
+      
+      def _concat_haml(string, binding)
+        _haml_buffer << string
+      end
+      
     end
     Merb::Template.register_extensions(self, %w[haml])  
+  end
+end
+
+module Haml
+  class Engine
+
+    def def_method(object, name, *local_names)
+      method = object.is_a?(Module) ? :module_eval : :instance_eval
+
+      setup = "@_engine = 'haml'"
+
+      object.send(method, "def #{name}(_haml_locals = {}); #{setup}; #{precompiled_with_ambles(local_names)}; end",
+                  @options[:filename], 0)
+    end
+ 
   end
 end
