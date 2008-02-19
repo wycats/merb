@@ -6,15 +6,9 @@ class HamlController < Merb::Controller
 end
 
 class PartialHaml < HamlController
-  def index
-    render
-  end
 end
 
 class HamlConfig < HamlController
-  def index
-    render
-  end
 end
 
 class PartialIvars < HamlController
@@ -22,4 +16,7 @@ class PartialIvars < HamlController
     @var1 = "Partial"
     render
   end
+end
+
+class CaptureHaml < HamlController
 end
