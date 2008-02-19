@@ -32,7 +32,7 @@ module Merb
       require "rubigen/scripts/#{command}"
       
       RubiGen::Base.use_component_sources! Merb.generator_scope
-      RubiGen::Scripts.const_get(command.capitalize).new.run(argv, :generator => generator)
+      RubiGen::Scripts.const_get(command.capitalize).new.run(argv, :generator => generator, :destination => app_root)
     end
   end
 end

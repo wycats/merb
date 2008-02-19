@@ -72,10 +72,11 @@ else
     RubiGen::Base.use_component_sources! Merb.generator_scope
     RubiGen::Base.lookup(ARGV[0])
     Merb::ComponentGenerator.run ARGV[0], ARGV[1..-1], ARGV.first, command || "generate"
-  rescue => e
-    puts e.message
+  rescue RubiGen::GeneratorError    
     # merb-gen foo
     # merb-gen foo --test
-    Merb::ApplicationGenerator.run ARGV.first, ARGV[1..-1], "merb", command || "generate"
+    Merb::ApplicationGenerator.run ARGV[0], ARGV[1..-1], "merb", command || "generate"
+  rescue => e
+    puts e.message
   end  
 end
