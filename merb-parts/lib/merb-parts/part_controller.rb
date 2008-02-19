@@ -41,5 +41,10 @@ module Merb
       super(action)
       @body
     end    
+    
+    # Send any methods that are missing back up to the web controller
+    def method_missing(sym, *args, &blk)
+      @web_controller.send(sym, *args, &blk)
+    end    
   end
 end
