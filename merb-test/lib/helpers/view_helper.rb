@@ -1,6 +1,6 @@
 module Merb
   module Test
-    module HpricotHelper
+    module ViewHelper
       
       # small utility class for working with
       # the Hpricot parser class
@@ -73,4 +73,9 @@ module Merb
         end
     end
   end
+end
+
+#TODO delete this when all the references to Merb::Test::HpricotHelper have been removed
+module Merb::Test::HpricotHelper
+  include Merb::Test::ViewHelper
 end

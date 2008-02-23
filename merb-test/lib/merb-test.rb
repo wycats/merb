@@ -8,9 +8,5 @@ require 'merb-core/test/multipart_helper'
 require File.join(File.dirname(__FILE__), "test_ext", "hpricot")
 require File.join(File.dirname(__FILE__), "test_ext", "object")
                   
-require File.join(File.dirname(__FILE__), "helpers", "hpricot_helper")
+require File.join(File.dirname(__FILE__), "helpers", "view_helper")
 require File.join(File.dirname(__FILE__), "helpers", "controller_helper")
-
-# Include these helpers in the Merb::Test::Helpers module
-Merb::Test::Helpers.send(:include, Merb::Test::ControllerHelper)
-Merb::Test::Helpers.send(:include, Merb::Test::HpricotHelper)
