@@ -9,7 +9,7 @@ module Merb::Template
       end.merge :filename => path
       template = ::Haml::Engine.new(File.read(path), config)
       template.def_method(mod, name)
-      name    
+      name
     end
   
     module Mixin
