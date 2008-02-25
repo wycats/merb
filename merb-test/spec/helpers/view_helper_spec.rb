@@ -1,8 +1,8 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-describe Merb::Test::HpricotHelper do
+describe Merb::Test::ViewHelper do
   before(:each) do
-    @output = Merb::Test::HpricotHelper::DocumentOutput.new(test_response)
+    @output = Merb::Test::ViewHelper::DocumentOutput.new(test_response)
   end
   
   describe "#tag" do
