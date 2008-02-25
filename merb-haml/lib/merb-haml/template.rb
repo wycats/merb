@@ -12,13 +12,11 @@ module Merb::Template
       name    
     end
   
-    module Mixin    
-      def _haml_buffer( binding )
-        @_buffer = eval( "buffer.buffer", binding )
-      end
-      
-      def _concat_haml(string, binding)
-        _haml_buffer << string
+    module Mixin
+      # Note that the binding here is not used, but is necessary to conform to
+      # the concat_* interface.
+      def concat_haml(string, binding)
+        buffer.buffer << string
       end
       
     end
