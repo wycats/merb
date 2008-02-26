@@ -65,7 +65,7 @@ module Merb
   
   class MailController < AbstractController
    
-    self._template_root = File.expand_path(self._template_root / "../mailers/views")
+    self._template_root = Merb.dir_for(:mailer) / "views"
     class_inheritable_accessor :_mailer_klass
     self._mailer_klass  = Merb::Mailer
     
