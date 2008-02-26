@@ -5,7 +5,6 @@ require 'merb-core'
 
 # TODO: Boot Merb, via the Test Rack adapter
 Merb.start :environment => (ENV['MERB_ENV'] || 'test'),
-           :adapter     => 'runner',
            :merb_root  => File.join(File.dirname(__FILE__), ".." )
 
 

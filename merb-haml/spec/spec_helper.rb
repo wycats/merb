@@ -8,7 +8,7 @@ Merb::Plugins.config[:haml] = {"autoclose" => ["foo"]}
 require "merb-haml"
 require File.dirname(__FILE__) / "controllers" / "haml"
 
-Merb.start :environment => 'test', :adapter => 'runner'
+Merb.start :environment => 'test'
 
 require "merb-core/test/fake_request"
 require "merb-core/test/request_helper"

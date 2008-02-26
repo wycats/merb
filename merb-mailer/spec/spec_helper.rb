@@ -8,4 +8,4 @@ module Merb
     self._template_root = File.expand_path(File.join(File.dirname(__FILE__), "mailers/views"))
   end
 end
-Merb.start :environment => 'test', :adapter => 'runner'
+Merb.start :environment => 'test'
