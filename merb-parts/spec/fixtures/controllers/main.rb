@@ -1,4 +1,5 @@
 class Main < Merb::Controller
+  self._template_root = File.dirname(__FILE__) / ".." / "views"
   
   def index
     part TodoPart => :list
