@@ -7,6 +7,11 @@ $LOAD_PATH.unshift(Merb.root / "lib")
 
 <% require 'sha1' %>
 Merb::Config.use do |c|
+  
+  ### Sets up a custom session id key, if you want to piggyback sessions of other applications
+  ### with the cookie session store. If not specified, defaults to '_session_id'.
+  # c[:session_id_key] = '_session_id'
+  
   c[:session_secret_key]  = '<%= SHA1.new(rand(100000000000).to_s).to_s %>'
   c[:session_store] = 'cookie'
 end  
