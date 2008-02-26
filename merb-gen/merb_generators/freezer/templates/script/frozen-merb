@@ -26,7 +26,7 @@ if File.directory?(framework)
   require "merb-core/core_ext/rubygems"
 else
   gem = Dir.glob(__DIR__ + "/gems/gems/merb-core-*").last
-  raise "Can't run frozen without framework/ or loca gem" unless gem
+  raise "Can't run frozen without framework/ or local gem" unless gem
   require gem + "/lib/merb-corecore_ext/kernel"
   require gem + "/lib/merb-corecore_ext/rubygems"
 end

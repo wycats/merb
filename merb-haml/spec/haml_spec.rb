@@ -25,4 +25,9 @@ describe "HAML" do
     c = dispatch_to(CaptureHaml, :index)
     c.body.should == "<p>Hello</p>\n"
   end
+  
+  it "should support concat" do
+    c = dispatch_to(ConcatHaml, :index)
+    c.body.should == "<p>Concat</p>"
+  end
 end

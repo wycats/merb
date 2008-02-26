@@ -20,3 +20,12 @@ end
 
 class CaptureHaml < HamlController
 end
+
+module ConcatHamlHelper
+  def concatter(&blk)
+    concat("<p>Concat</p>", blk.binding)
+  end
+end
+
+class ConcatHaml < HamlController
+end

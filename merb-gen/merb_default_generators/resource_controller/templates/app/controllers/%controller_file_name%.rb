@@ -22,6 +22,10 @@
 <%= "  " * counter %>    render
 <%= "  " * counter %>  end
 
+<%= "  " * counter %>  def delete
+<%= "  " * counter %>    render
+<%= "  " * counter %>  end
+
 <%= "  " * counter %>  def create
 <%= "  " * counter %>    render
 <%= "  " * counter %>  end

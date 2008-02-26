@@ -38,14 +38,16 @@ end
 
 # Used in mapping controller arguments to the params hash.
 # NOTE: You must have the 'ruby2ruby' gem installed for this to work.
-# Example:
-#   (In PostsController)
+#
+# ==== Examples
+#   # In PostsController
 #   def show(id)  #=> id is the same as params[:id]
-
 module GetArgs
   
-  # Returns an array of method arguments and their default values
-  # Example:
+  # ==== Returns
+  # Array:: Method arguments and their default values.
+  #
+  # ==== Examples
   #   class Example
   #     def hello(one,two="two",three)
   #     end
@@ -54,7 +56,8 @@ module GetArgs
   #     end
   #   end
   #
-  #   Example.instance_method(:hello).get_args    #=> [[:one], [:two, "two"], [:three, "three"]]
+  #   Example.instance_method(:hello).get_args
+  #     #=> [[:one], [:two, "two"], [:three, "three"]]
   #   Example.instance_method(:goodbye).get_args  #=> nil
   def get_args
     klass, meth = self.to_s.split(/ /).to_a[1][0..-2].split("#")

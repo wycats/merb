@@ -48,18 +48,28 @@ module Merb
     #
     #   image_tag('http://test.com/foo.gif')
     #   # => <img src="http://test.com/foo.gif">
+    #
+    #   image_tag('charts', :path => '/dynamic/')
+    #   or 
+    #   image_tag('/dynamic/charts')
+    #   # => <img src="/dynamic/charts">
+    #
     def image_tag(img, opts={})
-      opts[:path] ||= 
-        if img =~ %r{^https?://}
-          ''
-        else
-          if Merb::Config[:path_prefix]
-            Merb::Config[:path_prefix] + '/images/'
+      if img[0].chr == '/'
+        opts[:src] = img
+      else
+        opts[:path] ||= 
+          if img =~ %r{^https?://}
+            ''
           else
-            '/images/'
+            if Merb::Config[:path_prefix]
+              Merb::Config[:path_prefix] + '/images/'
+            else
+              '/images/'
+            end
           end
-        end
-      opts[:src] ||= opts.delete(:path) + img
+        opts[:src] ||= opts.delete(:path) + img
+      end
       %{<img #{ opts.to_xml_attributes } />}    
     end
 

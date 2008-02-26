@@ -1,4 +1,5 @@
 class Main < Merb::Controller
+  self._template_root = File.dirname(__FILE__) / ".." / "views"
   
   def index
     part TodoPart => :list
@@ -19,6 +20,10 @@ class Main < Merb::Controller
   
   def part_with_params
     part(TodoPart => :part_with_params, :my_param => "my_value")
+  end
+  
+  def part_within_view
+    render
   end
   
 end

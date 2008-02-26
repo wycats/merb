@@ -220,7 +220,7 @@ module Merb
     # "text/html" and "text/css" respectively.
     def attach( file_or_files, filename = file_or_files.is_a?(File) ? File.basename(file_or_files.path) : nil, 
       type = nil, headers = nil)
-      @mail.attach(file_or_files, filename, type, headers)
+      @mailer.attach(file_or_files, filename, type, headers)
     end
     
     # take a method name to dispatch to and mail parameters for the MailFactory object.
