@@ -1,5 +1,6 @@
-require File.join(File.dirname(__FILE__), 'merb-parts','part_controller')
-
+Merb::BootLoader.before_app_loads do
+  require File.join(File.dirname(__FILE__), 'merb-parts','part_controller')
+end
 
 module Merb
   class Controller
