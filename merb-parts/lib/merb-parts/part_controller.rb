@@ -17,7 +17,7 @@ module Merb
     self._subclasses = Set.new
     def self.subclasses_list() _subclasses end
     
-    self._template_root = File.expand_path(self._template_root / "../parts/views")
+    self._template_root = Merb.dir_for(:part) / "views"
     
     def _template_location(action, type = nil, controller = controller_name)
       "#{controller}/#{action}.#{type}"
