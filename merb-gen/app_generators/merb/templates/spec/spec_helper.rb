@@ -10,6 +10,7 @@ Merb.start :environment => (ENV['MERB_ENV'] || 'test'),
 
 
 Spec::Runner.configure do |config|
-  config.include(Merb::Test::Helpers)
-  config.include(Merb::Test::RequestHelper)
+  config.include(Merb::Test::ViewHelper)
+  config.include(Merb::Test::RouteHelper)
+  config.include(Merb::Test::ControllerHelper)
 end
