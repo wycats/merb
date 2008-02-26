@@ -47,6 +47,11 @@ describe "A Merb PartController" do
     controller.body.should match( /my_param = my_value/)
   end
   
+  it "should render from inside a view" do
+    controller = dispatch_to(Main, :part_within_view)
+    controller.body.should match( /Do this/)
+  end
+  
   
 end  
 

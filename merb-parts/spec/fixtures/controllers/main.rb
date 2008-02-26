@@ -21,4 +21,8 @@ class Main < Merb::Controller
     part(TodoPart => :part_with_params, :my_param => "my_value")
   end
   
+  def part_within_view
+    render
+  end
+  
 end
