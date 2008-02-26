@@ -70,3 +70,26 @@ Sat, 02 Feb 2008 13:36:04 GMT ~ seventh sent to foo@bar.com about
 Sat, 02 Feb 2008 13:36:04 GMT ~ eighth sent to foo@bar.com about 
 Sat, 02 Feb 2008 13:36:04 GMT ~ ninth sent to foo@bar.com about 
 Sat, 02 Feb 2008 13:36:04 GMT ~ {:before_filters_time=>5.0e-06, :after_filters_time=>5.0e-06, :action_time=>0.00041}
+ ~ Not Using Sessions
+ ~ Not Using Sessions
+ ~ first sent to foo@bar.com about 
+ ~ second sent to foo@bar.com about 
+ ~ third sent to foo@bar.com about 
+ ~ fourth sent to foo@bar.com about 
+ ~ fifth sent to foo@bar.com about 
+ ~ sixth sent to foo@bar.com about 
+ ~ seventh sent to foo@bar.com about 
+ ~ eighth sent to foo@bar.com about 
+ ~ ninth sent to foo@bar.com about 
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000464, :before_filters_time=>6.0e-06}
+ ~ Not Using Sessions
+ ~ first sent to foo@bar.com about 
+ ~ second sent to foo@bar.com about 
+ ~ third sent to foo@bar.com about 
+ ~ fourth sent to foo@bar.com about 
+ ~ fifth sent to foo@bar.com about 
+ ~ sixth sent to foo@bar.com about 
+ ~ seventh sent to foo@bar.com about 
+ ~ eighth sent to foo@bar.com about 
+ ~ ninth sent to foo@bar.com about 
+ ~ {:after_filters_time=>5.0e-06, :action_time=>0.000432, :before_filters_time=>5.0e-06}

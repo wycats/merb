@@ -1,6 +1,5 @@
 require File.join(File.dirname(__FILE__), 'merb-parts','part_controller')
 
-
 module Merb
   class Controller
     # Dispatches a PartController.
