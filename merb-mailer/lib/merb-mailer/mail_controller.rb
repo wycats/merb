@@ -65,7 +65,6 @@ module Merb
   
   class MailController < AbstractController
    
-    self._template_root = Merb.dir_for(:mailer) / "views"
     class_inheritable_accessor :_mailer_klass
     self._mailer_klass  = Merb::Mailer
     
@@ -84,6 +83,11 @@ module Merb
       @params = params
       @base_controller = controller
       @session = (controller && controller.session) || {}
+      super
+    end
+    
+    def self.inherited(klass)
+      klass.class_eval %{self._template_root = Merb.dir_for(:mailer) / "views"}
       super
     end
     
