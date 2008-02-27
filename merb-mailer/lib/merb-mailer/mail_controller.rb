@@ -87,8 +87,8 @@ module Merb
     end
     
     def self.inherited(klass)
-      klass.class_eval %{self._template_root = Merb.dir_for(:mailer) / "views"}
       super
+      klass.class_eval %{self._template_root = Merb.dir_for(:mailer) / "views"}
     end
     
     def filters_halted
