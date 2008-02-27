@@ -16,7 +16,7 @@ module Merb::Template
       # Note that the binding here is not used, but is necessary to conform to
       # the concat_* interface.
       def concat_haml(string, binding)
-        buffer.buffer << string
+        eval("buffer.buffer", binding) << string
       end
       
     end
