@@ -27,12 +27,19 @@ class Merb::GeneratorBase < RubiGen::Base
       @choices = %w( test spec )
       
       # Set the assigns that should be used for path-interpolation and building templates
-      @assigns = {:base_name => File.basename(@name)}
+      @assigns = {:base_name => File.basename(@name), :test_type => options["spec"] ? "rspec" : "test_unit"}
       
       FileUtils.mkdir_p @name 
       copy_dirs
       copy_files
 
+      puts
+      puts "Your app will use the #{@assigns[:test_type]} test framework."
+      if Gem.cache.search("merb_#{@assigns[:test_type]}").size == 0
+        puts "You need to install the merb_#{@assigns[:test_type]} gem."
+      end
+      puts
+      
     end
   end
   
