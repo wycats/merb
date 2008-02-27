@@ -10,6 +10,8 @@ class Merb::Mailer
   self.delivery_method = :test_send
 end
 
+Merb.push_path(:mailer, File.join(File.dirname(__FILE__), "mailers"))
+
 class TestMailController < Merb::MailController
   
   def first
