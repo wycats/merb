@@ -13,7 +13,6 @@ module Merb::Template
         def #{name}(_builder_locals = {})
           @_engine = 'builder'
           xml = ::Builder::XmlMarkup.new :indent => 2
-          xml.instruct! :xml, :version => "1.0", :encoding => "UTF-8"
           self.instance_eval %{#{File.read(path)}}
           xml.target!
         end
