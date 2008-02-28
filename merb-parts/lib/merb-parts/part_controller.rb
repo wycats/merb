@@ -23,8 +23,8 @@ module Merb
   
     def self.inherited(klass)
       _subclasses << klass.to_s
-      klass.class_eval %{self._template_root = Merb.dir_for(:part) / "views"}
       super
+      klass.class_eval %{self._template_root = Merb.dir_for(:part) / "views"}
     end
 
     def initialize(web_controller, opts = {})
