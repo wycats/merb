@@ -24,7 +24,7 @@ spec = Gem::Specification.new do |s|
     
   # Uncomment this to add a dependency
   s.add_dependency "merb-core", ">= 0.9"
-  s.add_dependency "rubigen"
+  s.add_dependency "rubigen", ">= 1.2.4"
   
   s.require_path = 'lib'
   s.autorequire = GEM
