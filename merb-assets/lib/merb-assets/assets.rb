@@ -7,7 +7,6 @@ module Merb
     # Boolean::
     #   True if the assets should be bundled (e.g., production mode or
     #   :bundle_assets is explicitly enabled).
-    #
     def self.bundle?
       (Merb.environment == 'production') ||
       (!!Merb::Config[:bundle_assets])
@@ -28,7 +27,6 @@ module Merb
       # ==== Parameters
       # asset_type<Symbol>:: Type of the asset (e.g. :javascript).
       # filename<~to_s>:: The path to the file.
-      #
       # local_path<Boolean>::
       #   If true, the returned path will be relative to the Merb.root,
       #   otherwise it will be the public URI path. Defaults to false.
@@ -42,7 +40,6 @@ module Merb
       #
       #   asset_path(:javascript, :dingo, true)
       #   # => "public/javascripts/dingo.js"
-      #
       def asset_path(asset_type, filename, local_path = false)
         filename = filename.to_s
         if filename !~ /#{'\\' + ASSET_FILE_EXTENSIONS[asset_type]}\Z/
@@ -61,11 +58,11 @@ module Merb
     class AbstractAssetBundler
       class << self
         
-        # Add a post-bundle callback.
+        # ==== Parameters
+        # &block:: A block to add as a post-bundle callback.
         #
         # ==== Examples
         #   add_callback { |filename| `yuicompressor #{filename}` }
-        #
         def add_callback(&block)
           callbacks << block
         end
@@ -74,8 +71,7 @@ module Merb
         # Retrieve existing callbacks.
         #
         # ==== Returns
-        # Array:: An array of existing callbacks.
-        #
+        # Array[Proc]:: An array of existing callbacks.
         def callbacks
           @callbacks ||= []
           return @callbacks
@@ -85,21 +81,19 @@ module Merb
         # this method in your bundler code.
         #
         # ==== Raises
-        # NotImplementedError::
-        #   If this method has not been implemented by the bundler.
+        # NotImplementedError:: This method is implemented by the bundler.
         #
         # ==== Returns
         # Symbol:: The type of the asset
-        #
         def asset_type
           raise NotImplementedError, "should return a symbol for the first argument to be passed to asset_path"
         end
       end
-      
-      # Create a new asset bundler, which will produce a bundled file containing
-      # the contents of +files+. If +name+ is +true+ (as in, is an instance of
-      # +TrueClass+), the filename is written out as "all", otherwise +name+
-      # is coerced into a string.
+
+      # ==== Parameters
+      # name<~to_s>::
+      #   Name of the bundle. If name is true, it will be converted to :all.
+      # *files<String>:: Names of the files to bundle.
       def initialize(name, *files)
         @bundle_name = name == true ? :all : name
         @bundle_filename = asset_path(self.class.asset_type, @bundle_name, true)
@@ -110,7 +104,6 @@ module Merb
       #
       # ==== Returns
       # Symbol:: Name of the bundle.
-      #
       def bundle!
         # TODO: Move this file check out into an in-memory cache. Also, push it out to the helper level so we don't have to create the helper object.
         unless File.exist?(@bundle_filename)
@@ -128,8 +121,7 @@ module Merb
       #
       # ==== Parameters
       # filename<String>:: Name of the bundle file.
-      # files<Array>:: An array of filenames to be bundled.
-      #
+      # *files<String>:: Filenames to be bundled.
       def bundle_files(filename, *files)
         File.open(filename, "w") do |f|
           files.each { |file| f.puts(File.read(file)) }
@@ -142,6 +134,9 @@ module Merb
     # 
     #   javascripts/#{name}.js
     class JavascriptAssetBundler < AbstractAssetBundler
+
+      # ==== Returns
+      # Symbol:: The asset type, i.e. :javascript.
       def self.asset_type
         :javascript
       end
@@ -151,6 +146,9 @@ module Merb
     # 
     #   stylesheets/#{name}.css
     class StylesheetAssetBundler < AbstractAssetBundler
+
+      # ==== Returns
+      # Symbol:: The asset type, i.e. :stylesheet.
       def self.asset_type
         :stylesheet
       end
