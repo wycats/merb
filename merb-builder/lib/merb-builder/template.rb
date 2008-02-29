@@ -7,7 +7,11 @@ module Merb::Template
       mod.send(method, %{
         def #{name}
           @_engine = 'builder'
-          xml = ::Builder::XmlMarkup.new :indent => 2
+          config = (Merb.config[:builder] || {}).inject({}) do |c, (k, v)|
+            c[k.to_sym] = v
+            c
+          end
+          xml = ::Builder::XmlMarkup.new(config)
           self.instance_eval %{#{File.read(path)}}
           xml.target!
         end
