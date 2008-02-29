@@ -7,7 +7,7 @@ module Merb::Template
       mod.send(method, %{
         def #{name}
           @_engine = 'builder'
-          config = (Merb.config.builder || {}).inject({}) do |c, (k, v)|
+          config = (Merb.config[:builder] || {}).inject({}) do |c, (k, v)|
             c[k.to_sym] = v
             c
           end
