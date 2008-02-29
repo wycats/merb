@@ -23,4 +23,14 @@ describe "Builder" do
     @xml.p "Partial Builder"
     c.body.should == @xml.target!
   end
+  
+  it "should use the builder configuration in Merb::Config" do
+    c = dispatch_to(BuilderConfig, :index, :format => "xml")
+    xml = ::Builder::XmlMarkup.new :indent => 4
+    xml.instruct!
+    xml.foo do
+      xml.bar "baz"
+    end
+    c.body.should == xml.target!
+  end
 end
