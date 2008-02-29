@@ -15,7 +15,10 @@ class MerbGenerator < Merb::GeneratorBase
     <<-EOS.split("\n").map{|x| x.strip}.join("\n")
       Creates a Merb application stub.
 
-      USAGE: #{spec.name} -g path"
+      USAGE: #{spec.name} -g path
+      
+      Set environment variable MERB_ORM=[activerecord|datamapper|sequel]
+      to pre-enabled an ORM.
     EOS
   end
 
