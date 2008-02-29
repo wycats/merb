@@ -38,8 +38,8 @@ end
 ### merb_rspec is installed by default if you did gem install
 ### merb.
 ###
-# use_test :test_unit
-use_test :<%= assigns[:test_type] %>
+<%= "# " unless default_test_suite?(:test) %>use_test :test_unit
+<%= "# " unless default_test_suite?(:spec) %>use_test :rspec
 
 ### Add your other dependencies here
 
