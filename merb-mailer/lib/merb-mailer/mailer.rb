@@ -38,33 +38,48 @@ module Merb
   #   m.deliver!                     
 
   class Mailer
-    
+
     class_inheritable_accessor :config, :delivery_method, :deliveries
     attr_accessor :mail
     self.deliveries = []
-    
+
+    # Sends the mail using sendmail.
     def sendmail
       sendmail = IO.popen("#{config[:sendmail_path]} #{@mail.to}", 'w+') 
       sendmail.puts @mail.to_s
       sendmail.close
     end
-  
-    # :plain, :login, or :cram_md5
+
+    # Sends the mail using SMTP.
     def net_smtp
       Net::SMTP.start(config[:host], config[:port].to_i, config[:domain], 
                       config[:user], config[:pass], config[:auth]) { |smtp|
         smtp.send_message(@mail.to_s, @mail.from.first, @mail.to.to_s.split(/[,;]/))
       }
     end
-    
+
+    # Tests mail sending by adding the mail to deliveries.
     def test_send
       deliveries << @mail
     end
-    
+
+    # Delivers the mail with the specified delivery method, defaulting to
+    # net_smtp.
     def deliver!
       send(delivery_method || :net_smtp)
     end
-      
+
+    # ==== Parameters
+    # file_or_files<File, Array[File]>:: File(s) to attach.
+    # filename<String>::
+    # type<~to_s>::
+    #   The attachment MIME type. If left out, it will be determined from
+    #   file_or_files.
+    # headers<String, Array>:: Additional attachment headers.
+    #
+    # ==== Raises
+    # ArgumentError::
+    #   file_or_files was not a File or an Array of File instances.
     def attach(file_or_files, filename = file_or_files.is_a?(File) ? File.basename(file_or_files.path) : nil, 
       type = nil, headers = nil)
       if file_or_files.is_a?(Array)
@@ -75,6 +90,8 @@ module Merb
       end
     end
       
+    # ==== Parameters
+    # o<Hash{~to_s => Object}>:: Configuration commands to send to MailFactory.
     def initialize(o={})
       self.config = {:sendmail_path => '/usr/sbin/sendmail'} if config.nil? 
       o[:rawhtml] = o.delete(:html)

@@ -34,6 +34,8 @@ module Merb
       "#{controller}/#{action}.#{type}"
     end
 
+    # Sets the template root to the default parts view directory.
+    #
     # ==== Parameters
     # klass<Class>::
     #   The Merb::PartController inheriting from the base class.  

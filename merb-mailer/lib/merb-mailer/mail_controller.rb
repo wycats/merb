@@ -1,5 +1,5 @@
 module Merb
-  
+
   # Sending mail from a controller involves three steps:
   #
   # * Set mail settings in merb_init.rb (Not shown here...see the Mailer docs).
@@ -62,43 +62,64 @@ module Merb
   # * Attach files.
   # * Render layouts and other templates.
   # * Use any template engine supported by Merb.
-  
+
   class MailController < AbstractController
-   
+
     class_inheritable_accessor :_mailer_klass
     self._mailer_klass  = Merb::Mailer
-    
+
     attr_accessor :params, :mailer, :mail
     attr_reader   :session, :base_controller
-    
+
+    # ==== Parameters
+    # action<~to_s>:: The name of the action that will be rendered.
+    # type<~to_s>::
+    #    The mime-type of the template that will be rendered. Defaults to nil.
+    # controller<~to_s>::
+    #   The name of the controller that will be rendered. Defaults to
+    #   controller_name.
+    #
+    # ==== Returns
+    # String:: The template location, i.e. ":controller/:action.:type".
     def _template_location(action, type = nil, controller = controller_name)
       "#{controller}/#{action}.#{type}"
     end
-    
-    # You can initialize a MailController with a series of parameters that can
-    # be used by methods in the class. You can also pass in a controller
-    # object, which will be available to the MailController methods as
-    # base_controller.
+
+    # ==== Parameters
+    # params<Hash>:: Configuration parameters for the MailController.
+    # controller<Merb::Controller>:: The base controller.
     def initialize(params = {}, controller = nil)
       @params = params
       @base_controller = controller
       @session = (controller && controller.session) || {}
       super
     end
-    
+
+    # Sets the template root to the default mailer view directory.
+    #
+    # ==== Parameters
+    # klass<Class>::
+    #   The Merb::MailController inheriting from the base class.  
     def self.inherited(klass)
       super
       klass.class_eval %{self._template_root = Merb.dir_for(:mailer) / "views"}
     end
-    
+
+    # Override filters halted to return nothing.
     def filters_halted
     end
-    
+
     # Allows you to render various types of things into the text and HTML parts
     # of an email If you include just text, the email will be sent as
     # plain-text. If you include HTML, the email will be sent as a multi-part
     # email.
     #
+    # ==== Parameters
+    # options<~to_s, Hash>::
+    #   Options for rendering the email or an action name. See examples below
+    #   for usage.
+    #
+    # ==== Examples
     # There are a lot of ways to use render_mail, but it works similarly to the
     # default Merb render method.
     #
@@ -165,13 +186,13 @@ module Merb
       @_missing_templates = false # used to make sure that at least one template was found
       # # If the options are not a hash, normalize to an action hash
       options = {:action => {:html => options, :text => options}} if !options.is_a?(Hash)
-      
+  
       # Take care of the options
       opts_hash = {}
       opts = options.dup
       actions = opts.delete(:action) if opts[:action].is_a?(Hash)
       templates = opts.delete(:template) if opts[:template].is_a?(Hash)
-      
+  
       # Prepare the options hash for each format
       # We need to delete anything relating to the other format here
       # before we try to render the template.
@@ -183,13 +204,13 @@ module Merb
 
       # require 'ruby-debug'
       # debugger if $DEBUGGER
-            
+        
       # Send the result to the mailer
       { :html => "rawhtml=", :text => "text="}.each do |fmt,meth|
         begin
           local_opts = opts.merge(:format => fmt)
           local_opts.merge!(:layout => false) if opts_hash[fmt].is_a?(String)
-          
+      
           value = render opts_hash[fmt], local_opts
           @mail.send(meth,value) unless value.nil? || value.empty?
         rescue => e
@@ -203,21 +224,27 @@ module Merb
       end
       @mail
     end
-    
+
     # Attaches a file or multiple files to an email. You call this from a
     # method in your MailController (including a before filter).
     # 
+    # ==== Parameters
+    # file_or_files<File, Array[File]>:: File(s) to attach.
+    # filename<String>::
+    # type<~to_s>::
+    #   The attachment MIME type. If left out, it will be determined from
+    #   file_or_files.
+    # headers<String, Array>:: Additional attachment headers.
+    #
+    # ==== Examples
     #   attach File.open("foo")
     #   attach [File.open("foo"), File.open("bar")]
-    # 
-    # You can also include the filename, mime-type, or headers in the
-    # subsequent parameters.
     # 
     # If you are passing an array of files, you should use an array of the
     # allowed parameters:
     # 
     #   attach [[File.open("foo"), "bar", "text/html"], [File.open("baz"),
-    # "bat", "text/css"]
+    #     "bat", "text/css"]
     # 
     #  which would attach two files ("foo" and "baz" in the filesystem) as
     # "bar" and "bat" respectively. It would also set the mime-type as
@@ -226,24 +253,27 @@ module Merb
       type = nil, headers = nil)
       @mailer.attach(file_or_files, filename, type, headers)
     end
-    
-    # take a method name to dispatch to and mail parameters for the MailFactory object.
+
+    # ==== Parameters
+    # method<~to_s>:: The method name to dispatch to.
+    # mail_params<Hash>:: Parameters to send to MailFactory (see below).
     #
-    # Available mail parameters include:
-    #   to
-    #   from
-    #   replyto
-    #   subject
-    #   body
-    #   cc
+    # ==== Options (mail_params)
+    # MailFactory recognizes the following parameters:
+    # * :to
+    # * :from
+    # * :replyto
+    # * :subject
+    # * :body
+    # * :cc
     #
-    # Other parameters passed in will be interpreted as email headers, with _'s converted
-    # to -'s.
+    # Other parameters passed in will be interpreted as email headers, with
+    # underscores converted to dashes.
     def dispatch_and_deliver(method, mail_params)
       @mailer         = self.class._mailer_klass.new(mail_params)
       @mail           = @mailer.mail
       @method         = method
-      
+  
       # dispatch and render use params[:action], so set it
       self.action_name = method
 
@@ -256,26 +286,46 @@ module Merb
       end
     end
 
-    # A convenience method that creates a blank copy of the MailController and runs
-    # dispatch_and_deliver on it.
+    # A convenience method that creates a blank copy of the MailController and
+    # runs dispatch_and_deliver on it.
+    #
+    # ==== Parameters
+    # method<~to_s>:: The method name to dispatch to.
+    # mail_params<Hash>:: Parameters to send to MailFactory.
+    # send_params<Hash>:: Configuration parameters for the MailController.
     def self.dispatch_and_deliver(method, mail_params, send_params = {})
       new(send_params).dispatch_and_deliver method, mail_params
     end
-    
+
     protected
+
+    # ==== Returns
+    # Hash:: The route from base controller.
     def route
       @base_controller.route if @base_controller
     end
 
     private
     # This method is here to overwrite the one in the general_controller mixin
-    # The method ensures that when a url is generated with a hash, it contains a controller
+    # The method ensures that when a url is generated with a hash, it contains
+    # a controller.
+    #
+    # ==== Parameters
+    # opts<Hash>:: The options to get the controller from (see below).
+    #
+    # ==== Options (opts)
+    # :controller<Merb::Controller>:: The controller.
+    #
+    # ==== Returns
+    # Merb::Controller::
+    #   The controller. If no controller was specified in opts, attempt to find
+    #   it in the base controller params.
     def get_controller_for_url_generation(opts)
       controller = opts[:controller] || ( @base_controller.params[:controller] if @base_controller)
-       raise "No Controller Specified for url()" unless controller
-       controller
+      raise "No Controller Specified for url()" unless controller
+      controller
     end
-    
-    
+
+
   end
 end
