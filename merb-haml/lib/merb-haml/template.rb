@@ -3,7 +3,7 @@ module Merb::Template
   class Haml
     def self.compile_template(path, name, mod)
       path = File.expand_path(path)
-      config = (Merb::Plugins.config[:haml] || {}).inject({}) do |c, (k, v)|
+      config = (Merb.config[:haml] || {}).inject({}) do |c, (k, v)|
         c[k.to_sym] = v
         c
       end.merge :filename => path
@@ -16,7 +16,7 @@ module Merb::Template
       # Note that the binding here is not used, but is necessary to conform to
       # the concat_* interface.
       def concat_haml(string, binding)
-        buffer.buffer << string
+        haml_buffer.buffer << string
       end
       
     end

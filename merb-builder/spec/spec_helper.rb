@@ -4,10 +4,10 @@ require "rubygems"
 require "merb-core"
 require "spec"
 
-require "merb-haml"
-require File.dirname(__FILE__) / "controllers" / "haml"
+require "merb-builder"
+require File.dirname(__FILE__) / "controllers" / "builder"
 
-Merb.start :environment => 'test', :haml => { "autoclose" => ["foo"] }
+Merb.start :environment => 'test', :builder => { "indent" => 4 }
 
 require "merb-core/test/fake_request"
 require "merb-core/test/request_helper"

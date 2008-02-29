@@ -32,8 +32,14 @@ end
 
 ### This defines which test framework the generators will use
 ### rspec is turned on by default
+###
+### Note that you need to install the merb_rspec if you want to ue
+### rspec and merb_test_unit if you want to use test_unit. 
+### merb_rspec is installed by default if you did gem install
+### merb.
+###
 # use_test :test_unit
-use_test :rspec
+use_test :<%= assigns[:test_type] %>
 
 ### Add your other dependencies here
 

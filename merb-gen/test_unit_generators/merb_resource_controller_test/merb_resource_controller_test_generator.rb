@@ -1,4 +1,4 @@
-class MerbControllerTestGenerator < Merb::GeneratorBase
+class MerbResourceControllerTestGenerator < Merb::GeneratorBase
   attr_reader :controller_modules, 
               :controller_class_name, 
               :controller_file_name,

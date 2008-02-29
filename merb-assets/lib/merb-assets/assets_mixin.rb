@@ -4,37 +4,40 @@ module Merb
   module AssetsMixin
     include Merb::Assets::AssetHelpers
     # :section: Accessing Assets
-    # Merb provides views with convenience methods for links images and other assets.
-    
-    # Creates a link for the URL given in +url+ with the text in +name+; HTML options are given in the +opts+
-    # hash.
-    #
-    # ==== Options
-    # The +opts+ hash is used to set HTML attributes on the tag.
+    # Merb provides views with convenience methods for links images and other
+    # assets.
+
+    # ==== Parameters
+    # name<~to_s>:: The text of the link.
+    # url<~to_s>:: The URL to link to. Defaults to an empty string.
+    # opts<Hash>:: Additional HTML options for the link.
     #    
     # ==== Examples
     #   link_to("The Merb home page", "http://www.merbivore.com/")
-    #   # => <a href="http://www.merbivore.com/">The Merb home page</a>
+    #     # => <a href="http://www.merbivore.com/">The Merb home page</a>
     #
     #   link_to("The Ruby home page", "http://www.ruby-lang.org", {'class' => 'special', 'target' => 'blank'})
-    #   # => <a href="http://www.ruby-lang.org" class="special" target="blank">The Ruby home page</a>
+    #     # => <a href="http://www.ruby-lang.org" class="special" target="blank">The Ruby home page</a>
     #
     #   link_to p.title, "/blog/show/#{p.id}"
-    #   # => <a href="blog/show/13">The Entry Title</a>
+    #     # => <a href="blog/show/13">The Entry Title</a>
     #
     def link_to(name, url='', opts={})
       opts[:href] ||= url
       %{<a #{ opts.to_xml_attributes }>#{name}</a>}
     end
   
-    # Creates an image tag with the +src+ attribute set to the +img+ argument.  The path
-    # prefix defaults to <tt>/images/</tt>.  The path prefix can be overriden by setting a +:path+
-    # parameter in the +opts+ hash.  The rest of the +opts+ hash sets HTML attributes.
+    # ==== Parameters
+    # img<~to_s>:: The image path.
+    # opts<Hash>:: Additional options for the image tag (see below).
     #
-    # ==== Options
-    # path:: Sets the path prefix for the image (defaults to +/images/+)
+    # ==== Options (opts)
+    # :path<String>::
+    #   Sets the path prefix for the image. Defaults to "/images/" or whatever
+    #   is specified in Merb::Config. This is ignored if img is an absolute
+    #   path or full URL.
     # 
-    # All other options in +opts+ set HTML attributes on the tag.
+    # All other options set HTML attributes on the tag.
     #
     # ==== Examples
     #   image_tag('foo.gif') 
@@ -53,7 +56,6 @@ module Merb
     #   or 
     #   image_tag('/dynamic/charts')
     #   # => <img src="/dynamic/charts">
-    #
     def image_tag(img, opts={})
       if img[0].chr == '/'
         opts[:src] = img
@@ -76,45 +78,44 @@ module Merb
     # :section: JavaScript related functions
     #
     
-    # Escapes text for use in JavaScript, replacing unsafe strings with their
-    # escaped equivalent.
+    # ==== Parameters
+    # javascript<String>:: Text to escape for use in JavaScript.
     #
     # ==== Examples
     #   escape_js("'Lorem ipsum!' -- Some guy")
-    #   # => "\\'Lorem ipsum!\\' -- Some guy"
+    #     # => "\\'Lorem ipsum!\\' -- Some guy"
     #
     #   escape_js("Please keep text\nlines as skinny\nas possible.")
-    #   # => "Please keep text\\nlines as skinny\\nas possible."
+    #     # => "Please keep text\\nlines as skinny\\nas possible."
     def escape_js(javascript)
       (javascript || '').gsub('\\','\0\0').gsub(/\r\n|\n|\r/, "\\n").gsub(/["']/) { |m| "\\#{m}" }
     end
     
-    # Creates a link tag with the text in +name+ and the <tt>onClick</tt> handler set to a JavaScript 
-    # string in +function+.
+    # ==== Parameters
+    # name<~to_s>:: The text in the link.
+    # function<~to_s>:: The onClick event in JavaScript.
     #
     # ==== Examples
     #   link_to_function('Click me', "alert('hi!')")
-    #   # => <a href="#" onclick="alert('hi!'); return false;">Click me</a>
+    #     # => <a href="#" onclick="alert('hi!'); return false;">Click me</a>
     #
     #   link_to_function('Add to cart', "item_total += 1; alert('Item added!');")
-    #   # => <a href="#" onclick="item_total += 1; alert('Item added!'); return false;">Add to cart</a>
-    #   
+    #     # => <a href="#" onclick="item_total += 1; alert('Item added!'); return false;">Add to cart</a>
     def link_to_function(name, function)
       %{<a href="#" onclick="#{function}; return false;">#{name}</a>}
     end
     
-    # The js method simply calls +to_json+ on an object in +data+; if the object
-    # does not implement a +to_json+ method, then it calls +to_json+ on 
-    # +data.inspect+.
+    # ==== Parameters
+    # data<Object>::
+    #   Object to translate into JSON. If the object does not respond to
+    #   :to_json, then data.inspect.to_json is returned instead.
     #
     # ==== Examples
     #   js({'user' => 'Lewis', 'page' => 'home'})
-    #   # => "{\"user\":\"Lewis\",\"page\":\"home\"}"
+    #    # => "{\"user\":\"Lewis\",\"page\":\"home\"}"
     #
-    #   my_array = [1, 2, {"a"=>3.141}, false, true, nil, 4..10]
-    #   js(my_array)
-    #   # => "[1,2,{\"a\":3.141},false,true,null,\"4..10\"]"
-    #
+    #   js([ 1, 2, {"a"=>3.141}, false, true, nil, 4..10 ])
+    #     # => "[1,2,{\"a\":3.141},false,true,null,\"4..10\"]"
     def js(data)
       if data.respond_to? :to_json
         data.to_json
@@ -127,8 +128,9 @@ module Merb
     #
     # You can use require_js(:prototype) or require_css(:shinystyles)
     # from any view or layout, and the scripts will only be included once
-    # in the head of the final page. To get this effect, the head of your layout you will
-    # need to include a call to include_required_js and include_required_css.
+    # in the head of the final page. To get this effect, the head of your
+    # layout you will need to include a call to include_required_js and
+    # include_required_css.
     #
     # ==== Examples
     #   # File: app/views/layouts/application.html.erb
@@ -244,10 +246,12 @@ module Merb
     # 
     #   require_js :bundle => :posts
     
-    # The require_js method can be used to require any JavaScript
-    # file anywhere in your templates. Regardless of how many times
-    # a single script is included with require_js, Merb will only include
-    # it once in the header.
+    # The require_js method can be used to require any JavaScript file anywhere
+    # in your templates. Regardless of how many times a single script is
+    # included with require_js, Merb will only include it once in the header.
+    #
+    # ==== Parameters
+    # *js<~to_s>:: JavaScript files to include.
     #
     # ==== Examples
     #   <% require_js 'jquery' %>
@@ -264,10 +268,12 @@ module Merb
       @required_js |= js
     end
     
-    # The require_css method can be used to require any CSS
-    # file anywhere in your templates. Regardless of how many times
-    # a single stylesheet is included with require_css, Merb will only include
-    # it once in the header.
+    # The require_css method can be used to require any CSS file anywhere in
+    # your templates. Regardless of how many times a single stylesheet is
+    # included with require_css, Merb will only include it once in the header.
+    #
+    # ==== Parameters
+    # *css<~to_s>:: CSS files to include.
     #
     # ==== Examples
     #   <% require_css('style') %>
@@ -284,15 +290,16 @@ module Merb
       @required_css |= css
     end
     
-    # A method used in the layout of an application to create +<script>+ tags to include JavaScripts required in 
-    # in templates and subtemplates using require_js.
+    # A method used in the layout of an application to create +<script>+ tags
+    # to include JavaScripts required in in templates and subtemplates using
+    # require_js.
     # 
-    # ==== Options
-    # bundle::  The name of the bundle the scripts should be combined into.
-    #           If +nil+ or +false+, the bundle is not created. If +true+, a
-    #           bundle named <tt>all.js</tt> is created. Otherwise,
-    #           <tt>:bundle</tt> is treated as an asset name.
+    # ==== Parameters
+    # options<Hash>:: Options to pass to js_include_tag.
     # 
+    # ==== Returns
+    # String:: The JavaScript tag.
+    #
     # ==== Examples
     #   # my_action.herb has a call to require_js 'jquery'
     #   # File: layout/application.html.erb
@@ -311,14 +318,15 @@ module Merb
       js_include_tag(*(@required_js + [options]))
     end
     
-    # A method used in the layout of an application to create +<link>+ tags for CSS stylesheets required in 
-    # in templates and subtemplates using require_css.
+    # A method used in the layout of an application to create +<link>+ tags for
+    # CSS stylesheets required in in templates and subtemplates using
+    # require_css.
     # 
-    # ==== Options
-    # bundle::  The name of the bundle the stylesheets should be combined into.
-    #           If +nil+ or +false+, the bundle is not created. If +true+, a
-    #           bundle named <tt>all.css</tt> is created. Otherwise,
-    #           <tt>:bundle</tt> is treated as an asset name.
+    # ==== Parameters
+    # options<Hash>:: Options to pass to css_include_tag.
+    # 
+    # ==== Returns
+    # String:: The CSS tag.
     # 
     # ==== Examples
     #   # my_action.herb has a call to require_css 'style'
@@ -337,16 +345,19 @@ module Merb
       css_include_tag(*(@required_css + [options]))
     end
     
-    # The js_include_tag method will create a JavaScript 
-    # +<include>+ tag for each script named in the arguments, appending
-    # '.js' if it is left out of the call.
-    # 
+    # ==== Parameters
+    # *scripts::
+    #   The scripts to include. If the last element is a Hash, it will be used
+    #   as options (see below). If ".js" is left out from the script names, it
+    #   will be added to them.
+    #
     # ==== Options
-    # bundle::  The name of the bundle the scripts should be combined into.
-    #           If +nil+ or +false+, the bundle is not created. If +true+, a
-    #           bundle named <tt>all.js</tt> is created. Otherwise,
-    #           <tt>:bundle</tt> is treated as an asset name.
-    # 
+    # :bundle<~to_s>::
+    #   The name of the bundle the scripts should be combined into.
+    #
+    # ==== Returns
+    # String:: The JavaScript include tag(s).
+    #
     # ==== Examples
     #   js_include_tag 'jquery'
     #   # => <script src="/javascripts/jquery.js" type="text/javascript"></script>
@@ -385,17 +396,20 @@ module Merb
       return tags
     end
     
-    # The css_include_tag method will create a CSS stylesheet 
-    # +<link>+ tag for each stylesheet named in the arguments, appending
-    # '.css' if it is left out of the call.
-    # 
+    # ==== Parameters
+    # *stylesheets::
+    #   The stylesheets to include. If the last element is a Hash, it will be
+    #   used as options (see below). If ".css" is left out from the stylesheet
+    #   names, it will be added to them.
+    #
     # ==== Options
-    # bundle::  The name of the bundle the stylesheets should be combined into.
-    #           If +nil+ or +false+, the bundle is not created. If +true+, a
-    #           bundle named <tt>all.css</tt> is created. Otherwise,
-    #           <tt>:bundle</tt> is treated as an asset name.
-    # media::   The media attribute for the generated link element. Defaults
-    #           to <tt>:all</tt>.
+    # :bundle<~to_s>::
+    #   The name of the bundle the stylesheets should be combined into.
+    # :media<~to_s>::
+    #   The media attribute for the generated link element. Defaults to :all.
+    #
+    # ==== Returns
+    # String:: The CSS include tag(s).
     #
     # ==== Examples
     #   css_include_tag 'style'
