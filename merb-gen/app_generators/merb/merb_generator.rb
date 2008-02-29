@@ -19,4 +19,7 @@ class MerbGenerator < Merb::GeneratorBase
     EOS
   end
 
+  def default_orm?(orm)
+    ENV['MERB_ORM'] == orm.to_s
+  end
 end

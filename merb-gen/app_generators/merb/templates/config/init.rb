@@ -21,13 +21,13 @@ end
 ### if you need a database.
 
 ### Uncomment for DataMapper ORM
-# use_orm :datamapper
+<%= "# " unless default_orm?(:datamapper) %>use_orm :datamapper
 
 ### Uncomment for ActiveRecord ORM
-# use_orm :activerecord
+<%= "# " unless default_orm?(:activerecord) %>use_orm :activerecord
 
 ### Uncomment for Sequel ORM
-# use_orm :sequel
+<%= "# " unless default_orm?(:sequel) %>use_orm :sequel
 
 
 ### This defines which test framework the generators will use
