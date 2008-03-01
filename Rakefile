@@ -11,7 +11,7 @@ require "rake/gempackagetask"
 require 'fileutils'
 include FileUtils
 
-gems = %w[merb-action-args merb-assets merb-gen merb-haml merb-builder merb-mailer merb-parts merb-test]
+gems = %w[merb-action-args merb-assets merb-gen merb-haml merb-builder merb-mailer merb-parts]
 
 merb_more_spec = Gem::Specification.new do |s|
   s.name         = "merb-more"
