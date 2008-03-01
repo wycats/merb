@@ -4,7 +4,7 @@ require "spec/rake/spectask"
 
 PLUGIN = "merb-parts"
 NAME = "merb-parts"
-VERSION = "0.9.0"
+VERSION = "0.9.1"
 AUTHOR = "Hassox"
 EMAIL = ""
 HOMEPAGE = "http://merb-plugins.rubyforge.org/merb-parts/"
@@ -21,7 +21,7 @@ spec = Gem::Specification.new do |s|
   s.author = AUTHOR
   s.email = EMAIL
   s.homepage = HOMEPAGE
-  s.add_dependency('merb-core', '>= 0.9.0')
+  s.add_dependency('merb-core', '>= 0.9.1')
   s.require_path = 'lib'
   s.autorequire = PLUGIN
   s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,specs}/**/*")

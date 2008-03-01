@@ -1,0 +1,48 @@
+== 0.9.1 "Some are half-wild, and some are just outlaws." 2008-02-29
+* merb-action-args: Normalize calls to Merb.start
+* merb-assets: Adds a before_app_loads to merb-assets and fixes XHTML
+* merb-assets: Absolute path in image_tag now works like in RoR
+* merb-builder: Added merb-builder template engine
+* merb-gen: rename class to correctly be MerbResourceControllerTestGenerator
+* merb-gen: merb-gen upgraded rubigen dependency to 1.2.4 for bug fix
+* merb-gen: Makes merb-gen use the test framework specified by the command-line
+  argument (defaults to merb_rspec)
+* merb-gen: Adds a before_app_loads to merb-assets and fixes XHTML
+* merb-gen: updated spec_helper.rb test helpers
+* merb-gen: Updated merb-gen's default Rakefile, test/spec helper files, and
+  plugin file
+* merb-gen: Adjusted the app generator to use the Merb::Test::Helpers
+* merb-gen: Generating an app is not an error
+* merb-gen: Fixed problem in "merb-gen migration" that failed because the
+  destination directory was nil.
+* merb-gen: drop 35K off of merb.jpg
+* merb-gen: fix frozen merb w/ gems
+* merb-gen: Have merb-gen ignore non-error log messages
+* merb-gen: Replace calls to puts with Merb.logger
+* merb-gen: Normalize calls to Merb.start
+* merb-gen: fix missing require
+* merb-gen: merb-gen adding template spec for delete action
+* merb-gen: added restful delete actions to merb-gen
+* merb-haml: Removing references to merb-test and fake_request helper
+* merb-haml: use hash syntax for Merb.config
+* merb-haml: Updated merb-haml to pull from Merb.config rather than
+  Merb::Plugins.config
+* merb-haml: Kills haml buffer bug fast.
+* merb-haml: Haml supports concat
+* merb-haml: Haml supports capture... f'real
+* merb-haml: Normalize calls to Merb.start
+* merb-haml: sass_fix
+* merb-mailer: Removing references to merb-test and fake_request helper
+* merb-mailer: Fixes a bug in the _template_root setting of mailers.
+* merb-mailer: Use dir_for(:mailer) for the mailer path
+* merb-mailer: Replace calls to puts with Merb.logger
+* merb-mailer: Normalize calls to Merb.start
+* merb-parts: Removing references to merb-test and fake_request helper
+* merb-parts: Wait to load parts
+* merb-parts: Use a better path for template root.
+* merb-parts: Test part inside a view.
+* merb-parts: added spec for rendering part inside a view
+* merb-parts: [merb-parts] Adds method missing so that controller methods
+  are available in parts
+* merb-parts: Normalize calls to Merb.start
+* merb-test: rm -rf merb-test
