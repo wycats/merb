@@ -1,7 +1,5 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
-require "merb-core/test/fake_request"
-require "merb-core/test/request_helper"
 Spec::Runner.configure do |config|
   config.include Merb::Test::RequestHelper  
 end

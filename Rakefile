@@ -1,17 +1,17 @@
 ## THESE ARE CRUCIAL
 module Merb
   # Set this to the version of merb-core that you are building against/for
-  VERSION = "0.9.0"
+  VERSION = "0.9.1"
 
   # Set this to the version of merb-more you plan to release
-  MORE_VERSION = "0.9.0"
+  MORE_VERSION = "0.9.1"
 end
 
 require "rake/gempackagetask"
 require 'fileutils'
 include FileUtils
 
-gems = %w[merb-action-args merb-assets merb-gen merb-haml merb-builder merb-mailer merb-parts merb-test]
+gems = %w[merb-action-args merb-assets merb-gen merb-haml merb-builder merb-mailer merb-parts]
 
 merb_more_spec = Gem::Specification.new do |s|
   s.name         = "merb-more"
