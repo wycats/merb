@@ -2,7 +2,6 @@ require File.join(File.dirname(__FILE__), "<%= Array.new((controller_modules.siz
 
 describe <%= full_controller_const %>, "index action" do
   before(:each) do
-    @controller = <%= full_controller_const %>.build(fake_request)
-    @controller.dispatch('index')
+    dispatch_to(<%= full_controller_const %>, :index)
   end
 end
