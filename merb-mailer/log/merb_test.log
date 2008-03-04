@@ -1,0 +1,22 @@
+ ~ Not Using Sessions
+ ~ first sent to foo@bar.com about 
+ ~ second sent to foo@bar.com about 
+ ~ third sent to foo@bar.com about 
+ ~ fourth sent to foo@bar.com about 
+ ~ fifth sent to foo@bar.com about 
+ ~ sixth sent to foo@bar.com about 
+ ~ seventh sent to foo@bar.com about 
+ ~ eighth sent to foo@bar.com about 
+ ~ ninth sent to foo@bar.com about 
+ ~ {:action_time=>0.003697, :before_filters_time=>9.0e-06, :after_filters_time=>8.0e-06}
+ ~ Not Using Sessions
+ ~ first sent to foo@bar.com about 
+ ~ second sent to foo@bar.com about 
+ ~ third sent to foo@bar.com about 
+ ~ fourth sent to foo@bar.com about 
+ ~ fifth sent to foo@bar.com about 
+ ~ sixth sent to foo@bar.com about 
+ ~ seventh sent to foo@bar.com about 
+ ~ eighth sent to foo@bar.com about 
+ ~ ninth sent to foo@bar.com about 
+ ~ {:action_time=>0.001046, :before_filters_time=>6.0e-06, :after_filters_time=>7.0e-06}

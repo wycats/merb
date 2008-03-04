@@ -184,7 +184,7 @@ module Merb
     #   render_mail :html => :foo, :text => "BAR"
     def render_mail(options = @method)
       @_missing_templates = false # used to make sure that at least one template was found
-      # # If the options are not a hash, normalize to an action hash
+      # If the options are not a hash, normalize to an action hash
       options = {:action => {:html => options, :text => options}} if !options.is_a?(Hash)
   
       # Take care of the options
@@ -201,9 +201,6 @@ module Merb
         opts_hash[fmt] ||= actions[fmt] if actions && actions[fmt]
         opts_hash[:template] = templates[fmt] if templates && templates[fmt]
       end
-
-      # require 'ruby-debug'
-      # debugger if $DEBUGGER
         
       # Send the result to the mailer
       { :html => "rawhtml=", :text => "text="}.each do |fmt,meth|
@@ -213,7 +210,7 @@ module Merb
       
           value = render opts_hash[fmt], local_opts
           @mail.send(meth,value) unless value.nil? || value.empty?
-        rescue => e
+        rescue Merb::ControllerExceptions::TemplateNotFound => e
           # An error should be logged if no template is found instead of an error raised
           if @_missing_templates
             Merb.logger.error(e)
