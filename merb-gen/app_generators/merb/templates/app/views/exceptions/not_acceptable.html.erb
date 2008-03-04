@@ -16,26 +16,26 @@
     <p>Merb couldn't find an appropriate content_type to return,
       based on what you said was available via provides() and
       what the client requested.</p>
-      
+
     <h3>How to add a mime-type</h3>
     <pre><code>
       Merb.add_mime_type :pdf, :to_pdf, %w[application/pdf], &quot;Content-Encoding&quot; =&gt; &quot;gzip&quot;
     </code></pre>
-    <p>What this means is:</p>
+    <h3>What this means is:</h3>
     <ul>
       <li>Add a mime-type for :pdf</li>
       <li>Register the method for converting objects to PDF as <code>#to_pdf</code>.</li>
       <li>Register the incoming mime-type "Accept" header as <code>application/pdf</code>.</li>
       <li>Specify a new header for PDF types so it will set <code>Content-Encoding</code> to gzip.</li>
     </ul>
-    
-    <p>You can then do:</p>
+
+    <h3>You can then do:</h3>
     <pre><code>
       class Foo &lt; Application
         provides :pdf
       end
     </code></pre>
-    
+
     <h3>Where can I find help?</h3>
     <p>If you have any questions or if you can't figure something out, please take a
       look at our <a href="http://merb.devjavu.com/"> project development page</a> or,
@@ -43,7 +43,7 @@
 
     <h3>How do I edit this page?</h3>
     <p>You can change what people see when this happens byy editing <tt>app/views/exceptions/not_found.html.erb</tt>.</p> 
-  
+
   </div>
 
   <div id="footer-container">
