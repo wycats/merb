@@ -60,8 +60,8 @@ end
 
 desc "Install it all"
 task :install => [:install_gems, :package] do
-  sh %{#{SUDO} gem install pkg/merb-more-#{Merb::MORE_VERSION}.gem}
-  sh %{#{SUDO} gem install pkg/merb-#{Merb::MORE_VERSION}.gem}
+  sh %{#{SUDO} gem install --local pkg/merb-more-#{Merb::MORE_VERSION}.gem}
+  sh %{#{SUDO} gem install --local pkg/merb-#{Merb::MORE_VERSION}.gem}
 end
 
 desc "Build the merb-more gems"
