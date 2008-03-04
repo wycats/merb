@@ -37,7 +37,7 @@ end
 desc 'Run all tests, specs and finish with rcov'
 task :aok do
   sh %{rake rcov}
-  sh %{rake spec}
+  sh %{rake specs}
 end
 
 unless Gem.cache.search("haml").empty?
