@@ -39,7 +39,7 @@ end
 ### merb.
 ###
 # use_test :test_unit
-use_test :<%= assigns[:test_type] %>
+use_test :<%= assigns[:test_type] %><%= ", 'merb_test_unit'" if assigns[:test_type] == "test_unit" %>
 
 ### Add your other dependencies here
 
