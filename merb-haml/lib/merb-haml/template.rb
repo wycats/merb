@@ -1,6 +1,14 @@
 module Merb::Template
 
   class Haml
+
+    # Defines a method for calling a specific HAML template.
+    #
+    # ==== Parameters
+    # path<String>:: Path to the template file.
+    # name<~to_s>:: The name of the template method.
+    # mod<Class, Module>::
+    #   The class or module wherein this method should be defined.
     def self.compile_template(path, name, mod)
       path = File.expand_path(path)
       config = (Merb.config[:haml] || {}).inject({}) do |c, (k, v)|
@@ -13,8 +21,11 @@ module Merb::Template
     end
   
     module Mixin
-      # Note that the binding here is not used, but is necessary to conform to
-      # the concat_* interface.
+      # ==== Parameters
+      # string<String>:: The string to add to the HAML buffer.
+      # binding<Binding>::
+      #   Not used by HAML, but is necessary to conform to the concat_*
+      #   interface.
       def concat_haml(string, binding)
         haml_buffer.buffer << string
       end
@@ -27,6 +38,11 @@ end
 module Haml
   class Engine
 
+    # ==== Parameters
+    # object<Class, Module>::
+    #   The class or module wherein this method should be defined.
+    # name<~to_s>:: The name of the template method.
+    # *local_names:: Local names to define in the HAML template.
     def def_method(object, name, *local_names)
       method = object.is_a?(Module) ? :module_eval : :instance_eval
 
