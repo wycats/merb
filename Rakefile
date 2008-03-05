@@ -11,7 +11,10 @@ require "rake/gempackagetask"
 require 'fileutils'
 include FileUtils
 
-gems = %w[merb-action-args merb-assets merb-gen merb-haml merb-builder merb-mailer merb-parts]
+gems = %w[
+  merb-action-args merb-assets merb-gen merb-haml
+  merb-builder merb-mailer merb-parts
+]
 
 merb_more_spec = Gem::Specification.new do |s|
   s.name         = "merb-more"
@@ -22,7 +25,7 @@ merb_more_spec = Gem::Specification.new do |s|
   s.homepage     = "http://www.merbivore.com"
   s.summary      = "(merb - merb-core) == merb-more.  The Full Stack. Take what you need; leave what you don't."
   s.description  = s.summary
-  s.files        = %w( LICENSE README Rakefile TODO )
+  s.files        = %w( LICENSE README Rakefile TODO lib/merb-more.rb )
   s.add_dependency "merb-core", ">= #{Merb::VERSION}"
   gems.each do |gem|
     s.add_dependency gem, [">= #{Merb::VERSION}", "<= 1.0"]
@@ -85,9 +88,22 @@ task :uninstall_gems do
   end
 end
 
+task :package => :merb_more_rb
+desc "Create merb-more.rb"
+task :merb_more_rb do
+  mkdir_p "lib"
+  File.open("lib/merb-more.rb","w+") do |file|
+    file.puts "### AUTOMATICALLY GENERATED.  DO NOT EDIT."
+    gems.each do |gem|
+      next if gem == "merb-gen"
+      file.puts "require '#{gem}'"
+    end
+  end
+end
+
 desc "Bundle up all the merb-more gems"
 task :bundle => [:package, :build_gems] do
-  mkdir "bundle"
+  mkdir_p "bundle"
   cp "pkg/merb-#{Merb::MORE_VERSION}.gem", "bundle"
   cp "pkg/merb-more-#{Merb::MORE_VERSION}.gem", "bundle"
   gems.each do |gem|
