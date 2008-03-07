@@ -4,10 +4,30 @@ class Merb::Cache
 end
 
 module Merb::Cache::ControllerClassMethods
+  # Mixed in Merb::Controller. Provides class methods related to page caching
+  # Page caching is mostly action caching with file backend using its own output directory of .html files
+
+  # Register the action for page caching
+  #
+  # ==== Parameters
+  # action<Symbol>:: The name of the action to register
+  # from_now<~minutes>::
+  #   The number of minutes (from now) the cache should persist
+  #
+  # ==== Examples
+  #   cache_page :mostly_static
+  #   cache_page :barely_dynamic, 10
   def cache_page(action, from_now = nil)
     cache_pages([action, from_now])
   end
 
+  # Register actions for page caching (before and after filters)
+  #
+  # ==== Parameter
+  # pages<Symbol,Array[Symbol,~minutes]>:: See #cache_page
+  #
+  # ==== Example
+  #   cache_pages :mostly_static, [:barely_dynamic, 10]
   def cache_pages(*pages)
     if pages.any? && Merb::Cache.cached_pages.empty?
       before(:cache_page_before)
@@ -22,14 +42,34 @@ module Merb::Cache::ControllerClassMethods
 end
 
 module Merb::Cache::ControllerInstanceMethods
-  def cached_page?(o)
-    key = Merb::Controller._cache.key_for(o, controller_name, true)
+  # Mixed in Merb::Controller. Provides methods related to page caching
+
+  # Checks whether a cache entry exists
+  #
+  # ==== Parameter
+  # options<String,Hash>:: The options that will be passed to #key_for
+  #
+  # ==== Returns
+  # true if the cache entry exists, false otherwise
+  #
+  # ==== Example
+  #   cached_page?(:action => 'show', :params => [params[:page]])
+  def cached_page?(options)
+    key = Merb::Controller._cache.key_for(options, controller_name, true)
     File.file?(Merb::Controller._cache.config[:cache_html_directory] / "#{key}.html")
   end
 
-  def expire_page(o)
+  # Expires the page identified by the key computed after the parameters
+  #
+  # ==== Parameter
+  # options<String,Hash>:: The options that will be passed to #expire_key_for
+  #
+  # ==== Examples
+  #   expire_page(:action => 'show', :controller => 'news')
+  #   expire_page(:action => 'show', :match => true)
+  def expire_page(options)
     config_dir = Merb::Controller._cache.config[:cache_html_directory]
-    Merb::Controller._cache.expire_key_for(o, controller_name, true) do |key, match|
+    Merb::Controller._cache.expire_key_for(options, controller_name, true) do |key, match|
       if match
         files = Dir.glob(config_dir / "#{key}*")
       else
@@ -40,12 +80,26 @@ module Merb::Cache::ControllerInstanceMethods
     true
   end
 
+  # Expires all the pages stored in config[:cache_html_directory]
   def expire_all_pages
     FileUtils.rm_rf(Dir.glob(Merb::Controller._cache.config[:cache_html_directory] / "*"))
   end
 
   private
 
+  # Called by the before and after filters. Stores or recalls a cache entry.
+  # The name used for the cache file is based on request.path
+  # If the name ends with "/" then it is removed
+  # If the name is "/" then it will be replaced by "index"
+  #
+  # ==== Parameters
+  # data<String>:: the data to put in cache
+  #
+  # ==== Examples
+  #   All the file are written to config[:cache_html_directory]
+  #   If request.path is "/", the name will be "/index.html"
+  #   If request.path is "/news/show/1", the name will be "/news/show/1.html"
+  #   If request.path is "/news/show/", the name will be "/news/show.html"
   def _cache_page(data = nil)
     controller = controller_name
     action = action_name.to_sym
@@ -74,6 +128,13 @@ module Merb::Cache::ControllerInstanceMethods
     true
   end
 
+  # Read data from a file using exclusive lock
+  #
+  # ==== Parameters
+  # cache_file<String>:: the full path to the file
+  #
+  # ==== Returns
+  # data<String>:: the data that has been read from the file
   def cache_read_page(cache_file)
     _data = nil
     File.open(cache_file, "r") do |cache_data|
@@ -84,6 +145,11 @@ module Merb::Cache::ControllerInstanceMethods
     _data
   end
 
+  # Write data to a file using exclusive lock
+  #
+  # ==== Parameters
+  # cache_file<String>:: the full path to the file
+  # data<String>:: the data that will be written to the file
   def cache_write_page(cache_file, data)
     File.open(cache_file, "w+") do |cache_data|
       cache_data.flock(File::LOCK_EX)
@@ -93,10 +159,17 @@ module Merb::Cache::ControllerInstanceMethods
     true
   end
 
+  # before filter
   def cache_page_before
+    # recalls a cached entry or set @capture_page to true in order
+    # to grab the response in the after filter
     _cache_page
   end
+
+  # after filter
   def cache_page_after
+    # takes the body of the response
+    # put it in cache only if the cache entry expired or doesn't exist
     _cache_page(body) if @capture_page
   end
 end

@@ -1,138 +1,141 @@
-merb-cache
-==========
+= merb-cache
 
 A plugin for the Merb framework that provides caching
 
-currently supported method:
+Currently supported methods:
 
 - page caching:
 - action caching
 - fragment caching
 - object caching
 
-implemented cache store:
+Implemented cache stores:
 
 - memory
 - memcache
 - file
 - database (sequel, datamapper, activerecord)
 
+== Quick API
 
-Quick API
-=========
-
-  Merb::Controller class methods
-  ==============================
+=== Merb::Controller class methods
   cache_action(action, expiration)
   cache_actions(action, [action, expiration], ...)
   cache_page(action, expiration)
   cache_pages(action, [action, expiration], ...)
 
-  Merb::Controller instance methods
-  =================================
-  expire_action(key)
-  cached_action?(key)
-
+=== Merb::Controller instance methods
   expire_page(key)
   cached_page?(key)
   expire_all_pages()
 
+  expire_action(key)
+  cached_action?(key)
+
   cached?(key)
-  cache(key, expiration)
   cache_get(key)
   cache_set(key, data, expiration)
   expire(key)
   expire_all()
 
+=== Inside your template
+  cache(key, expiration) do ... end
+
+  # expiration is given in minutes
+
   # key can be a string or a hash
   # possible keys when it's a hash:
-  # :key, :params, :action, :controller, :match
-  #
-  # expiration is given in minutes
-  #
+  # :key (full key)
+  # :params (array of params to be added to the key)
+  # :action, :controller
+  # :match (true or partial key)
+
   # Don't forget to look at the specs !!
 
-Sample configuration
-====================
+== Specs
+  $ cd spec
+  $ STORE=<cache_store> spec merb-cache_spec.rb
+  # cache_store can be: memory, memcache, file, sequel, datamapper, activerecord
 
-Merb::Plugins.config[:merb_cache] = {
-  :cache_html_directory => Merb.dir_for(:public) / "cache",
+== Sample configuration
 
-  #:store => "database",
-  #:table_name => "merb_cache",
+  Merb::Plugins.config[:merb_cache] = {
+    :cache_html_directory => Merb.dir_for(:public) / "cache",
 
-  :store => "file",
-  :cache_directory => Merb.root_path("tmp/cache"),
+    #:store => "database",
+    #:table_name => "merb_cache",
 
-  #:store => "memcache",
-  #:host => "127.0.0.1:11211",
-  #:namespace => "merb_cache",
+    :store => "file",
+    :cache_directory => Merb.root_path("tmp/cache"),
 
-  #:store => "memory",
-  # store could be: file, memcache, memory, database, ...
-}
+    #:store => "memcache",
+    #:host => "127.0.0.1:11211",
+    #:namespace => "merb_cache",
+
+    #:store => "memory",
+    # store could be: file, memcache, memory, database, ...
+  }
 
 
-Quick Example
-=============
+== Quick Example
 
-# controller part:
-class Users < Merb::Controller
-  cache_page :action_name
-  # this will cache the action in public/cache/something.html
-  # this cache entry will never expire (no expiration provided)
-  # for permanent caching you could set your lighty/nginx so as to handle
-  # the .html file directly
-  # for multiple page caching:
-  # cache_pages :action_name, [:another_action, 5], :some_action
+==== controller part
+  class Users < Merb::Controller
+    cache_page :action_name
+    # this will cache the action in public/cache/something.html
+    # this cache entry will never expire (no expiration provided)
+    # for permanent caching you could set your lighty/nginx so as to handle
+    # the .html file directly
+    # for multiple page caching:
+    # cache_pages :action_name, [:another_action, 5], :some_action
 
-  cache_action :another_action, 10
-  # this will cache the action using the cache store
-  # this cache entry will expire in 10 minutes
-  # for multiple action caching:
-  # cache_actions :action_name, [:another_action, 5], :some_action
+    cache_action :another_action, 10
+    # this will cache the action using the cache store
+    # this cache entry will expire in 10 minutes
+    # for multiple action caching:
+    # cache_actions :action_name, [:another_action, 5], :some_action
 
-  def list
-    unless @users = cache_get("active_users")
-      @users = User.all(:active => true)
-      cache_set("active_users", @users)
-      # object caching can be used to avoid pulling huge amounts of data
-      # from the database.
-      # you could have calle cache_set with an expiration time as well:
-      # cache_set("active_users", @users, 10)
+    def list
+      unless @users = cache_get("active_users")
+        @users = User.all(:active => true)
+        cache_set("active_users", @users)
+        # object caching can be used to avoid pulling huge amounts of data
+        # from the database.
+        # you could have calle cache_set with an expiration time as well:
+        # cache_set("active_users", @users, 10)
+      end
+      render
     end
-    render
+
+    def some_action_that_invalidates_cache
+      expire_page(:action_name)
+      expire_action(:another_action)
+      render
+    end
+
+    def delete
+      expire("active_users")
+      render
+    end
+
+    def archives
+      @archives = User.archives unless cached?("users_archives")
+      render
+    end
+
+    def index
+      render
+    end
   end
 
-  def some_action_that_invalidates_cache
-    expire_page(:action_name)
-    expire_action(:another_action)
-    render
-  end
 
-  def delete
-    expire("active_users")
-    render
-  end
+====views/users/index.html.erb
+  # this entry will expire in 10 minutes
+  <%- cache "users_index", 10 do %>
+   <div>some big template</div>
+  <% end -%>
 
-  def archives
-    @archives = User.archives unless cached?("users_archives")
-    render
-  end
-
-  def index
-    render
-  end
-end
-
-
-# views/users/index.html.erb
-# expires in 10 minutes
-<%- cache "users_index", 10 do %>
- <div>some big template</div>
-<% end -%>
-
-# views/users/archive.html.erb
-<%- cache "users_archives" do %>
- <div>some big template</div>
-<% end -%>
+====views/users/archive.html.erb
+  <%- cache "users_archives" do %>
+   <div>some big template</div>
+  <% end -%>

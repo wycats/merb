@@ -29,17 +29,16 @@ end
 def use_cache_store(store, orm = nil)
   Merb::Plugins.config[:merb_cache] = {
     :store => store,
-    :cache_directory => File.dirname(__FILE__) / "cache_data",
-    #:cache_html_directory => File.dirname(__FILE__) / "cache_data",
+    :cache_directory => File.dirname(__FILE__) / "tmp/cache",
+    :cache_html_directory => File.dirname(__FILE__) / "tmp/html",
   }
+  FileUtils.rm_rf(Dir.glob(File.dirname(__FILE__) / "/tmp"))
   case store
   when "file"
-    FileUtils.rm_f(Dir.glob(File.dirname(__FILE__) / "cache_data/*"))
   when "memory"
   when "memcache"
     require "memcache"
   when "database"
-    FileUtils.rm_f(Dir.glob(File.dirname(__FILE__) / "*.sqlite3"))
     case orm
     when "datamapper"
       Merb.environment = "test"
@@ -79,6 +78,10 @@ else
   puts "Invalid cache store: #{ENV["store"]}"
   exit
 end
+
+require "fileutils"
+FileUtils.mkdir_p(Merb::Plugins.config[:merb_cache][:cache_html_directory])
+FileUtils.mkdir_p(Merb::Plugins.config[:merb_cache][:cache_directory])
 
 Merb.start :environment => "test", :adapter => "runner"
 

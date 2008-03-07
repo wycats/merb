@@ -1,7 +1,3 @@
-TODO:
-- documentation
-- capture_#{engine} concat_#{engine} are required for cache()
-- add your Merb rake tasks to lib/merb-cache/merbtasks.rb
-- implement other cache store (socket, drb, ...)
-- workaround expire_match whith memcache (not supported)
-=> some kind of key tracking ?
+capture_#{engine} concat_#{engine} are required for cache()
+implement other cache store ?
+workaround for expire_match with memcache (not supported)

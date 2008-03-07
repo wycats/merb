@@ -17,8 +17,13 @@ describe "merb-cache-fragment" do
 
   it "should cache the fragment (haml capture/concat)" do
     c = dispatch_to(CacheController, :action2)
-    NOW = c.body.strip
-    c.cache_get("key1").strip.should == NOW
+    now = c.body.strip
+    c.cache_get("key11").strip.should == now
+    sleep 1
+    c = dispatch_to(CacheController, :action2)
+    c.cache_get("key11").strip.should == now
+    c.expire("key11")
+    c.cache_get("key11").should be_nil
   end
 
   it "should use the fragment" do
