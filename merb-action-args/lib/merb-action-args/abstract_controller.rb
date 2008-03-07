@@ -27,8 +27,9 @@ class Merb::AbstractController
   def _call_action(action)
     args = self.class.action_argument_list[action].map do |arg, default|
       arg = arg
-      raise BadRequest unless params.key?(arg.to_sym) || default
-      params.key?(arg.to_sym) ? params[arg.to_sym] : default
+      p = params.key?(arg.to_sym)
+      raise BadRequest unless p || default
+      p ? params[arg.to_sym] : default
     end
     send(action, *args)
   end
