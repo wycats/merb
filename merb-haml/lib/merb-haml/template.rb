@@ -13,10 +13,9 @@ module Merb::Template
     end
   
     module Mixin
-      # Note that the binding here is not used, but is necessary to conform to
-      # the concat_* interface.
+      
       def concat_haml(string, binding)
-        haml_buffer.buffer << string
+        haml_buffer(binding).buffer << string
       end
       
     end
@@ -38,3 +37,12 @@ module Haml
  
   end
 end
+
+module Haml::Helpers
+  # Gets the buffer object for the haml instance 
+  # identified in binding
+  def haml_buffer(binding)
+    eval("buffer", binding)
+  end
+end
+    
