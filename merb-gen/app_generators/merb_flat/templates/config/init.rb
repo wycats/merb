@@ -1,10 +1,8 @@
-Merb.push_path(:view, Merb.root / "views")
+# Move this to application.rb if you want it to be reloadable in dev mode.
 Merb::Router.prepare do |r|
   r.match('/').to(:controller => 'foo', :action =>'index')
   r.default_routes
 end
-
-require 'application'
 
 <% require 'sha1' %>
 Merb::Config.use { |c|
