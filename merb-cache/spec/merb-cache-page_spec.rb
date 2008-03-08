@@ -52,7 +52,7 @@ describe "merb-cache-page" do
     c.body.strip.should == Time.now.to_s
   end
 
-  it "should expire page using different ways" do
+  it "should expire page in many ways" do
     c = get("/cache_controller/action6")
     CACHE.expire_page("action6")
     CACHE.cached_page?("action6").should be_false

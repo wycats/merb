@@ -5,15 +5,15 @@ require "spec/rake/spectask"
 
 PLUGIN = "merb-cache"
 NAME = "merb-cache"
-XVERSION = "0.0.2"
+VERSION = "0.9.1"
 AUTHOR = "Alex Boussinet"
 EMAIL = "alex.boussinet@gmail.com"
-HOMEPAGE = "http://github.com/wycats/merb-more/tree/master/merb-cache"
+HOMEPAGE = "http://www.merbivore.com"
 SUMMARY = "Merb plugin that provides caching (page, action, fragment, object)"
 
 spec = Gem::Specification.new do |s|
   s.name = NAME
-  s.version = XVERSION
+  s.version = VERSION
   s.platform = Gem::Platform::RUBY
   s.has_rdoc = true
   s.extra_rdoc_files = ["README", "LICENSE", 'TODO']
@@ -22,7 +22,7 @@ spec = Gem::Specification.new do |s|
   s.author = AUTHOR
   s.email = EMAIL
   s.homepage = HOMEPAGE
-  s.add_dependency('merb', '>= 0.4.0')
+  s.add_dependency('merb-core', '>= 0.9.1')
   s.require_path = 'lib'
   s.autorequire = PLUGIN
   s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,specs}/**/*")
@@ -47,7 +47,7 @@ end
 
 namespace :doc do
   Rake::RDocTask.new do |rdoc|
-    files = ["README", "LICENSE", "CHANGELOG", "lib/**/*.rb"]
+    files = ["README", "LICENSE", "lib/**/*.rb"]
     rdoc.rdoc_files.add(files)
     rdoc.main = "README"
     rdoc.title = "merb-cache docs"

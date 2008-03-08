@@ -2,19 +2,12 @@ $TESTING=true
 $:.unshift File.join(File.dirname(__FILE__), '..', 'lib')
 require "rubygems"
 require "merb-core"
-require "assistance"
 
 require "merb-cache"
 require File.dirname(__FILE__) / "controller"
 
 class Merb::AbstractController
-def capture(*args, &block)
-    send("capture_#{@_engine}", *args, &block)
-  end
-
-  def concat(str, binding)
-    send("concat_#{@_engine}", str, binding)
-  end
+  public :capture, :concat
 end
 
 require "merb-haml"
@@ -85,8 +78,7 @@ FileUtils.mkdir_p(Merb::Plugins.config[:merb_cache][:cache_directory])
 
 Merb.start :environment => "test", :adapter => "runner"
 
-require "merb-core/test/fake_request"
-require "merb-core/test/request_helper"
+require "merb-core/test"
 Spec::Runner.configure do |config|
   config.include Merb::Test::RequestHelper  
 end

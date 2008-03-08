@@ -46,7 +46,7 @@ describe "merb-cache-action" do
     c.cached_action?(:action => "action4", :params => %w(path to nowhere)).should be_false
   end
 
-  it "should expire action using different ways" do
+  it "should expire action in many ways" do
     c = get("/cache_controller/action4")
     CACHE.expire_action("action4")
     CACHE.cached_action?("action4").should be_false

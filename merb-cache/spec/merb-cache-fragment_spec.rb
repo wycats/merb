@@ -66,7 +66,7 @@ describe "merb-cache-fragment" do
     CACHE.cache_get("timed_key").should be_nil
   end
 
-  it "should expire using different ways" do
+  it "should expire in many ways" do
     CACHE.cache_set("test1", "test1")
     CACHE.expire("test1")
     CACHE.cache_get("test1").should be_nil

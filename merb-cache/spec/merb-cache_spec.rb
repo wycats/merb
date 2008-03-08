@@ -5,7 +5,7 @@ Merb::Router.prepare do |r|
   r.match("/").to(:controller => "cache_controller", :action =>"index")
 end
 
-CACHE = CacheController.new(Merb::Test::FakeRequest.new)
+CACHE = CacheController.new(Merb::Test::RequestHelper::FakeRequest.new)
 CACHE.expire_all
 
 puts "Using #{CACHE._cache.store.cache_store_type.inspect} cache store"
