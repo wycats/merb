@@ -64,10 +64,10 @@ class Merb::Cache::Store
     _data = @memcache.get(key)
     if _data.nil?
       _expire = from_now ? from_now.minutes.from_now.to_i : 0
-      _data = _controller.capture(&block)
+      _data = _controller.send(:capture, &block)
       @memcache.set(key, _data, _expire)
     end
-    _controller.concat(_data, block.binding)
+    _controller.send(:concat, _data, block.binding)
     true
   end
 

@@ -56,10 +56,10 @@ class Merb::Cache::Store
     end
     unless _cache_hit
       _expire = from_now ? from_now.minutes.from_now : nil
-      _data = _controller.capture(&block)
+      _data = _controller.send(:capture, &block)
       cache_write(key, [_data, _expire])
     end
-    _controller.concat(_data, block.binding)
+    _controller.send(:concat, _data, block.binding)
     true
   end
 

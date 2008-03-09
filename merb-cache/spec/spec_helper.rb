@@ -6,10 +6,6 @@ require "merb-core"
 require "merb-cache"
 require File.dirname(__FILE__) / "controller"
 
-class Merb::AbstractController
-  public :capture, :concat
-end
-
 require "merb-haml"
 
 def set_database_adapter(adapter)
