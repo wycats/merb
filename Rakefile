@@ -7,6 +7,7 @@ module Merb
   MORE_VERSION = "0.9.1"
 end
 
+require "rake/clean"
 require "rake/gempackagetask"
 require 'fileutils'
 include FileUtils
@@ -45,6 +46,8 @@ merb_spec = Gem::Specification.new do |s|
   s.add_dependency "merb-core", "= #{Merb::VERSION}"
   s.add_dependency "merb-more", "= #{Merb::MORE_VERSION}"
 end
+
+CLEAN.include ["**/.*.sw?", "pkg", "lib/*.bundle", "*.gem", "doc/rdoc", ".config", "coverage", "cache", "lib/merb-more.rb"]
 
 windows = (PLATFORM =~ /win32|cygwin/) rescue nil
 
@@ -88,9 +91,9 @@ task :uninstall_gems do
   end
 end
 
-task :package => [:merb_more_rb]
+task :package => ["lib/merb-more.rb"]
 desc "Create merb-more.rb"
-task :merb_more_rb do
+task "lib/merb-more.rb" do
   mkdir_p "lib"
   File.open("lib/merb-more.rb","w+") do |file|
     file.puts "### AUTOMATICALLY GENERATED.  DO NOT EDIT."
