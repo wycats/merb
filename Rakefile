@@ -88,7 +88,7 @@ task :uninstall_gems do
   end
 end
 
-task :package => :merb_more_rb
+task :package => [:merb_more_rb]
 desc "Create merb-more.rb"
 task :merb_more_rb do
   mkdir_p "lib"
