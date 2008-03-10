@@ -9,26 +9,23 @@ require 'spec/rake/spectask'
 require 'fileutils'
 require 'merb-core'
 require 'rubigen'
+include FileUtils
 
-$RAKE_ENV = true
+# Set environment from ENV if given.
+Merb.environment = ENV['MERB_ENV'] if ENV['MERB_ENV']
 
-init_file = File.join(File.dirname(__FILE__) / "config" / "init")
-
+# Load the basic runtime dependencies; this will include 
+# any plugins and therefore plugin rake tasks as well.
+init_file = Merb.root / "config" / "init"
 Merb.load_dependencies(init_file)
            
-include FileUtils
-# # # Get Merb plugins and dependencies
-Merb::Plugins.rakefiles.each {|r| require r } 
+# Get Merb plugins and dependencies
+Merb::Plugins.rakefiles.each { |r| require r } 
 
-# 
-#desc "Packages up Merb."
-#task :default => [:package]
-
-desc "load merb_init.rb"
-task :merb_init do
-  require 'merb-core'
-  require File.dirname(__FILE__)+'/config/init.rb'
-end  
+desc "start runner environment"
+task :merb_env do
+  Merb.start :adapter => 'runner', :environment => ENV['MERB_ENV'] || 'development'
+end
 
 task :uninstall => [:clean] do
   sh %{sudo gem uninstall #{NAME}}
