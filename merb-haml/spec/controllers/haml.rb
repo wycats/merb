@@ -21,7 +21,7 @@ end
 class CaptureHaml < HamlController
 end
 
-module ConcatHamlHelper
+module Merb::ConcatHamlHelper
   def concatter(&blk)
     concat("<p>Concat</p>", blk.binding)
   end

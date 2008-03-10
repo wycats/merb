@@ -1,6 +1,14 @@
 module Merb::Template
 
   class Builder
+
+    # Defines a method for calling a specific Builder template.
+    #
+    # ==== Parameters
+    # path<String>:: Path to the template file.
+    # name<~to_s>:: The name of the template method.
+    # mod<Class, Module>::
+    #   The class or module wherein this method should be defined.
     def self.compile_template(path, name, mod)
       path = File.expand_path(path)
       method = mod.is_a?(Module) ? :module_eval : :instance_eval
