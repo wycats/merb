@@ -7,6 +7,7 @@ module Merb
   MORE_VERSION = "0.9.1"
 end
 
+require "rake/clean"
 require "rake/gempackagetask"
 require 'fileutils'
 include FileUtils
@@ -45,6 +46,8 @@ merb_spec = Gem::Specification.new do |s|
   s.add_dependency "merb-core", "= #{Merb::VERSION}"
   s.add_dependency "merb-more", "= #{Merb::MORE_VERSION}"
 end
+
+CLEAN.include ["**/.*.sw?", "pkg", "lib/*.bundle", "*.gem", "doc/rdoc", ".config", "coverage", "cache", "lib/merb-more.rb"]
 
 windows = (PLATFORM =~ /win32|cygwin/) rescue nil
 
