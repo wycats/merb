@@ -88,9 +88,9 @@ task :uninstall_gems do
   end
 end
 
-task :package => [:merb_more_rb]
+task :package => ["lib/merb-more.rb"]
 desc "Create merb-more.rb"
-task :merb_more_rb do
+task "lib/merb-more.rb" do
   mkdir_p "lib"
   File.open("lib/merb-more.rb","w+") do |file|
     file.puts "### AUTOMATICALLY GENERATED.  DO NOT EDIT."
