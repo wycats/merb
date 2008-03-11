@@ -1,3 +1,12 @@
+Merb::Plugins.use {|c|
+  c[:asset_helpers] = {
+    :max_hosts => 4,
+    :asset_domain => "assets%s",
+    :domain => "my-awesome-domain.com",
+    :use_ssl => false
+  }
+} if Merb::Plugins.config[:asset_helpers].nil?
+
 module Merb
   module Assets
     
@@ -50,6 +59,46 @@ module Merb
           return "public#{filename}"
         else
           return "#{Merb::Config[:path_prefix]}#{filename}"
+        end
+      end
+    end
+    
+    # Helper for creating unique paths to a file name
+    # Can increase speend for browsers that are limited to a certain number of connections per host 
+    # for downloading static files (css, js, images...)
+    class UniqueAssetPath
+      class << self
+        @@config = Merb::Plugins.config[:asset_helpers]
+        
+        # Builds the path to the file based on the name
+        # 
+        # ==== Parameters
+        # filename<String>:: Name of file to generate path for
+        #
+        # ==== Returns
+        # String:: The path to the asset.
+        #
+        # ==== Examples
+        #   build("/javascripts/my_fancy_script.js")
+        #   # => "https://assets5.my-awesome-domain.com/javascripts/my_fancy_script.js"
+        #
+        def build(filename)
+          #%{#{(USE_SSL ? 'https' : 'http')}://#{sprintf(@@config[:asset_domain],self.calculate_host_id(file))}.#{@@config[:domain]}/#{filename}}
+          path = @@config[:use_ssl] ? 'https://' : 'http://'
+          path << sprintf(@@config[:asset_domain],self.calculate_host_id(filename)) << ".#{@@config[:domain]}"
+          path << "/" if filename.index('/') != 0
+          path << filename
+        end
+      
+        protected
+        
+        # Calculates the id for the host
+        def calculate_host_id(filename)
+          ascii_total = 0
+          filename.each_byte {|byte|
+            ascii_total += byte
+          }
+          (ascii_total % @@config[:max_hosts] + 1)
         end
       end
     end
