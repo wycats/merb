@@ -11,5 +11,4 @@ Merb::Plugins.config[:asset_helpers] = {
     :asset_domain => "assets%s",
     :domain => "my-awesome-domain.com",
     :use_ssl => false
-  }
-} if Merb::Plugins.config[:asset_helpers].nil?
+  } if Merb::Plugins.config[:asset_helpers].nil?
