@@ -10,3 +10,5 @@ log/*
 */log/*
 coverage
 */coverage
+bundle
+lib/merb-more.rb
