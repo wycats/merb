@@ -1,8 +1,7 @@
-$TESTING=true
 require 'rubygems'
 require 'merb-core'
 
-Merb.start_environment(:adapter => 'runner', :environment => ENV['MERB_ENV'] || 'test')
+Merb.start_environment(:testing => true, :adapter => 'runner', :environment => ENV['MERB_ENV'] || 'test')
 
 Spec::Runner.configure do |config|
   config.include(Merb::Test::ViewHelper)
