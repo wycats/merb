@@ -452,5 +452,107 @@ module Merb
 
       return tags
     end
+    
+    # ==== Parameters
+    # *assets::
+    #   The assets to include. These should be the full paths to any static served file
+    #
+    # ==== Returns
+    # Array:: Full unique paths to assets OR
+    # String:: if only a single path is requested
+    # ==== Examples
+    #  uniq_path("/javascripts/my.js","/javascripts/my.css")
+    #  #=> ["http://assets2.my-awesome-domain.com/javascripts/my.js", "http://assets2.my-awesome-domain.com/javascripts/my.css"]
+    #
+    #  uniq_path(["/javascripts/my.js","/stylesheets/my.css"])
+    #  #=> ["http://assets2.my-awesome-domain.com/javascripts/my.js", "http://assets1.my-awesome-domain.com/stylesheets/my.css"]
+    #
+    #  uniq_path(%w(/javascripts/my.js /stylesheets/my.css))
+    #  #=> ["http://assets2.my-awesome-domain.com/javascripts/my.js", "http://assets1.my-awesome-domain.com/stylesheets/my.css"]
+    #
+    #  uniq_path('/stylesheets/somearbitrary.css')
+    #  #=> "http://assets3.my-awesome-domain.com/stylesheets/somearbitrary.css"
+    #
+    #  uniq_path('/images/hostsexypicture.jpg')
+    #  #=>"http://assets1.my-awesome-domain.com/images/hostsexypicture.jpg"
+    def uniq_path(*assets)      
+      paths = []
+      assets.collect.flatten.each do |filename|
+        paths.push(UniqueAssetPath.build(filename))
+      end
+      paths.length > 1 ? paths : paths.first
+    end
+    
+    # ==== Parameters
+    # *assets::
+    #   Creates unique paths for javascript files (prepends "/javascripts" and appends ".js")
+    #
+    # ==== Returns
+    # Array:: Full unique paths to assets OR
+    # String:: if only a single path is requested
+    # ==== Examples
+    #  uniq_js_path("my")
+    #  #=> "http://assets2.my-awesome-domain.com/javascripts/my.js"
+    #
+    #  uniq_js_path(["admin/secrets","home/signup"])
+    #  #=> ["http://assets2.my-awesome-domain.com/javascripts/admin/secrets.js", 
+    #         "http://assets1.my-awesome-domain.com/javascripts/home/signup.js"]
+    def uniq_js_path(*assets)
+      paths = []
+      assets.collect.flatten.each do |filename|
+        paths.push(UniqueAssetPath.build(asset_path(:javascript,filename,true)))
+      end
+      paths.length > 1 ? paths : paths.first
+    end
+    
+    # ==== Parameters
+    # *assets::
+    #   Creates unique paths for stylesheet files (prepends "/stylesheets" and appends ".css")
+    #
+    # ==== Returns
+    # Array:: Full unique paths to assets OR
+    # String:: if only a single path is requested
+    # ==== Examples
+    #  uniq_css_path("my")
+    #  #=> "http://assets2.my-awesome-domain.com/stylesheets/my.css"
+    #
+    #  uniq_css_path(["admin/secrets","home/signup"])
+    #  #=> ["http://assets2.my-awesome-domain.com/stylesheets/admin/secrets.css", 
+    #         "http://assets1.my-awesome-domain.com/stylesheets/home/signup.css"]
+    def uniq_css_path(*assets)
+      paths = []
+      assets.collect.flatten.each do |filename|
+        paths.push(UniqueAssetPath.build(asset_path(:stylesheet,filename,true)))
+      end
+      paths.length > 1 ? paths : paths.first
+    end
+    
+    # ==== Parameters
+    # *assets::
+    #   As js_include_tag but has unique path
+    #
+    # ==== Returns
+    # Array:: Full unique paths to assets OR
+    # String:: if only a single path is requested
+    # ==== Examples
+    #  uniq_js_tag("my")
+    #  #=> <script type="text/javascript" src="http://assets2.my-awesome-domain.com/javascripts/my.js"></script>
+    def uniq_js_tag(*assets)
+      js_include_tag(uniq_js_path(assets))
+    end
+    
+    # ==== Parameters
+    # *assets::
+    #   As uniq_css_tag but has unique path
+    #
+    # ==== Returns
+    # Array:: Full unique paths to assets OR
+    # String:: if only a single path is requested
+    # ==== Examples
+    #  uniq_css_tag("my")
+    #  #=> <link href="http://assets2.my-awesome-domain.com/stylesheets/my.css" type="text/css" />
+    def uniq_css_tag(*assets)
+      css_include_tag(uniq_css_path(assets))
+    end
   end
 end

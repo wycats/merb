@@ -81,6 +81,7 @@ class Merb::Cache::Store
   def cache_set(key, data, from_now = nil)
     _expire = from_now ? from_now.minutes.from_now.to_i : 0
     @memcache.set(key, data, _expire)
+    Merb.logger.info("cache: set (#{key})")
     true
   end
 
@@ -94,7 +95,9 @@ class Merb::Cache::Store
   # data<String, NilClass>::
   #   nil is returned whether the entry expired or was not found
   def cache_get(key)
-    @memcache.get(key)
+    data = @memcache.get(key)
+    Merb.logger.info("cache: #{data.nil? ? "miss" : "hit"} (#{key})")
+    data
   end
 
   # Expire the cache entry identified by the given key
@@ -103,6 +106,7 @@ class Merb::Cache::Store
   # key<Sting>:: The key identifying the cache entry
   def expire(key)
     @memcache.delete(key)
+    Merb.logger.info("cache: expired (#{key})")
     true
   end
 
@@ -121,6 +125,7 @@ class Merb::Cache::Store
   # Expire all the cache entries
   def expire_all
     @memcache.flush_all
+    Merb.logger.info("cache: expired all")
     true
   end
 

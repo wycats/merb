@@ -73,6 +73,7 @@ class Merb::Cache::Store
   def cache_set(key, data, from_now = nil)
     _expire = from_now ? from_now.minutes.from_now : nil
     cache_write(key, [data, _expire])
+    Merb.logger.info("cache: set (#{key})")
     true
   end
 
@@ -88,8 +89,13 @@ class Merb::Cache::Store
   def cache_get(key)
     if @cache.key?(key)
       _data, _expire = *cache_read(key)
-      return _data if _expire.nil? || Time.now < _expire
+      if _expire.nil? || Time.now < _expire
+        Merb.logger.info("cache: hit (#{key})")
+        return _data
+      end
+      @mutex.synchronize do @cache.delete(key) end
     end
+    Merb.logger.info("cache: miss (#{key})")
     nil
   end
 
@@ -101,6 +107,7 @@ class Merb::Cache::Store
     @mutex.synchronize do
       @cache.delete(key)
     end
+    Merb.logger.info("cache: expired (#{key})")
     true
   end
 
@@ -112,6 +119,7 @@ class Merb::Cache::Store
     @mutex.synchronize do
       @cache.delete_if do |k,v| k.match(/#{key}/) end
     end
+    Merb.logger.info("cache: expired matching (#{key})")
     true
   end
 
@@ -120,6 +128,7 @@ class Merb::Cache::Store
     @mutex.synchronize do
       @cache.clear
     end
+    Merb.logger.info("cache: expired all")
     true
   end
 
