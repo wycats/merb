@@ -19,8 +19,8 @@ class Merb::Cache
     #:store => "database",
     #:table_name => "merb_cache",
 
-    #:disable_cache => "development", # disable merb-cache in development
-    #:disable_cache => "all", # disable merb-cache in all environments
+    #:disable => "development", # disable merb-cache in development
+    #:disable => true, # disable merb-cache in all environments
 
     :store => "file",
     :cache_directory => Merb.root_path("tmp/cache"),
@@ -40,7 +40,7 @@ class Merb::Cache
   #   If the cache_store mentionned in the config is unknown
   def start
     @config = DEFAULT_CONFIG.merge Merb::Plugins.config[:merb_cache]
-    if @config[:disable_cache] == "all" || Merb.environment == @config[:disable_cache]
+    if @config[:disable] == true || Merb.environment == @config[:disable]
       config[:store] = "dummy"
     end
     @config[:cache_html_directory] ||= Merb.dir_for(:public) / "cache"
