@@ -1,12 +1,3 @@
-Merb::Plugins.use {|c|
-  c[:asset_helpers] = {
-    :max_hosts => 4,
-    :asset_domain => "assets%s",
-    :domain => "my-awesome-domain.com",
-    :use_ssl => false
-  }
-} if Merb::Plugins.config[:asset_helpers].nil?
-
 module Merb
   module Assets
     
