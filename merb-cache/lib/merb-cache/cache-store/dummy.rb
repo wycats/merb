@@ -1,37 +1,14 @@
 class Merb::Cache::Store
-  # Provides the database cache store for merb-cache
+  # Provides dummy cache store for merb-cache
 
   def initialize
     @config = Merb::Controller._cache.config
     prepare
   end
 
-  class OrmNotFound < Exception #:nodoc:
-    def initialize
-      super("No valid ORM found (did you specify use_orm in init.rb?)")
-    end
-  end
-
-  # Requires the ORM at startup, raising an OrmNotFound exception if
-  # the backend is not found
-  Merb::Controller._cache.config[:table_name] ||= "merb_cache"
-  if defined?(Merb::Orms::ActiveRecord)
-    require "merb-cache/cache-store/database-activerecord.rb"
-    include Merb::Cache::Store::ActiveRecord
-  elsif defined?(Merb::Orms::DataMapper)
-    require "merb-cache/cache-store/database-datamapper.rb"
-    include Merb::Cache::Store::DataMapper
-  elsif defined?(Merb::Orms::Sequel)
-    require "merb-cache/cache-store/database-sequel.rb"
-    include Merb::Cache::Store::Sequel
-  else
-    raise OrmNotFound
-  end
-
   # This method is there to ensure minimal requirements are met
-  # (file permissions, table exists, connected to server, ...)
+  # (directories are accessible, table exists, connected to server, ...)
   def prepare
-    CacheModel.check_table
     true
   end
 
@@ -43,7 +20,7 @@ class Merb::Cache::Store
   # ==== Returns
   # true if the cache entry exists, false otherwise
   def cached?(key)
-    not CacheModel.cache_get(key).nil?
+    false
   end
 
   # Capture or restore the data in cache.
@@ -66,19 +43,12 @@ class Merb::Cache::Store
   # It uses the capture_#{engine} and concat_#{engine} methods to do so.
   # The captured data are then marshalled and stored.
   def cache(_controller, key, from_now = nil, &block)
-    _data = CacheModel.cache_get(key)
-    if _data.nil?
-      _expire = from_now ? from_now.minutes.from_now : nil
-      _data = _controller.send(:capture, &block)
-      CacheModel.cache_set(key, Marshal.dump(_data), _expire, false)
-    else
-      _data = Marshal.load(_data)
-    end
+    _data = _controller.send(:capture, &block)
     _controller.send(:concat, _data, block.binding)
     true
   end
 
-  # Store data to the database using the specified key
+  # Store data to memcache using the specified key
   #
   # ==== Parameters
   # key<Sting>:: The key identifying the cache entry
@@ -86,13 +56,10 @@ class Merb::Cache::Store
   # from_now<~minutes>::
   #   The number of minutes (from now) the cache should persist
   def cache_set(key, data, from_now = nil)
-    _expire = from_now ? from_now.minutes.from_now : nil
-    CacheModel.cache_set(key, Marshal.dump(data), _expire)
-    Merb.logger.info("cache: set (#{key})")
     true
   end
 
-  # Fetch data from the database using the specified key
+  # Fetch data from memcache using the specified key
   # The entry is deleted if it has expired
   #
   # ==== Parameter
@@ -102,9 +69,7 @@ class Merb::Cache::Store
   # data<String, NilClass>::
   #   nil is returned whether the entry expired or was not found
   def cache_get(key)
-    data = CacheModel.cache_get(key)
-    Merb.logger.info("cache: #{data.nil? ? "miss" : "hit"} (#{key})")
-    data.nil? ? nil : Marshal.load(data)
+    nil
   end
 
   # Expire the cache entry identified by the given key
@@ -112,8 +77,6 @@ class Merb::Cache::Store
   # ==== Parameter
   # key<Sting>:: The key identifying the cache entry
   def expire(key)
-    CacheModel.expire(key)
-    Merb.logger.info("cache: expired (#{key})")
     true
   end
 
@@ -121,16 +84,15 @@ class Merb::Cache::Store
   #
   # ==== Parameter
   # key<Sting>:: The key matching the cache entries
+  #
+  # ==== Warning !
+  #   This does not work in memcache.
   def expire_match(key)
-    CacheModel.expire_match(key)
-    Merb.logger.info("cache: expired matching (#{key})")
     true
   end
 
   # Expire all the cache entries
   def expire_all
-    CacheModel.expire_all
-    Merb.logger.info("cache: expired all")
     true
   end
 
@@ -139,6 +101,6 @@ class Merb::Cache::Store
   # ==== Returns
   #   The type of the current cache store
   def cache_store_type
-    "database"
+    "dummy"
   end
 end

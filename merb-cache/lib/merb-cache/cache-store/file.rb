@@ -93,6 +93,7 @@ class Merb::Cache::Store
     FileUtils.mkdir_p(cache_directory)
     _expire = from_now ? from_now.minutes.from_now : nil
     cache_write(cache_file, Marshal.dump([data, _expire]))
+    Merb.logger.info("cache: set (#{key})")
     true
   end
 
@@ -109,9 +110,13 @@ class Merb::Cache::Store
     cache_file = @config[:cache_directory] / "#{key}.cache"
     if File.file?(cache_file)
       _data, _expire = Marshal.load(cache_read(cache_file))
-      return _data if _expire.nil? || Time.now < _expire
+      if _expire.nil? || Time.now < _expire
+        Merb.logger.info("cache: hit (#{key})")
+        return _data
+      end
       FileUtils.rm_f(cache_file)
     end
+    Merb.logger.info("cache: miss (#{key})")
     nil
   end
 
@@ -121,6 +126,7 @@ class Merb::Cache::Store
   # key<Sting>:: The key identifying the cache entry
   def expire(key)
     FileUtils.rm_f(@config[:cache_directory] / "#{key}.cache")
+    Merb.logger.info("cache: expired (#{key})")
     true
   end
 
@@ -132,12 +138,14 @@ class Merb::Cache::Store
     #files = Dir.glob(@config[:cache_directory] / "#{key}*.cache")
     files = Dir.glob(@config[:cache_directory] / "#{key}*")
     FileUtils.rm_rf(files)
+    Merb.logger.info("cache: expired matching (#{key})")
     true
   end
 
   # Expire all the cache entries
   def expire_all
     FileUtils.rm_rf(Dir.glob("#{@config[:cache_directory]}/*"))
+    Merb.logger.info("cache: expired all")
     true
   end
 

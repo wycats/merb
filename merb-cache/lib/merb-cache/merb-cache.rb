@@ -13,13 +13,36 @@ class Merb::Cache
     end
   end
 
+  DEFAULT_CONFIG = {
+    :cache_html_directory => Merb.dir_for(:public) / "cache",
+
+    #:store => "database",
+    #:table_name => "merb_cache",
+
+    #:disable_cache => "development", # disable merb-cache in development
+    #:disable_cache => "all", # disable merb-cache in all environments
+
+    :store => "file",
+    :cache_directory => Merb.root_path("tmp/cache"),
+
+    #:store => "memcache",
+    #:host => "127.0.0.1:11211",
+    #:namespace => "merb_cache",
+
+    #:store => "memory",
+    # store could be: file, memcache, memory, database, dummy, ...
+  }
+
   # Called in the after_app_loads loop and instantiate the right backend
   #
   # ==== Raises
   # Store#NotFound::
   #   If the cache_store mentionned in the config is unknown
   def start
-    @config = Merb::Plugins.config[:merb_cache]
+    @config = DEFAULT_CONFIG.merge Merb::Plugins.config[:merb_cache]
+    if @config[:disable_cache] == "all" || Merb.environment == @config[:disable_cache]
+      config[:store] = "dummy"
+    end
     @config[:cache_html_directory] ||= Merb.dir_for(:public) / "cache"
     require "merb-cache/cache-store/#{@config[:store]}"
     @store = Merb::Cache::Store.new
@@ -140,21 +163,3 @@ Merb::BootLoader.after_app_loads do
   # the cache starts after the application is loaded
   Merb::Controller._cache.start
 end
-
-# Default configuration:
-Merb::Plugins.config[:merb_cache] = {
-  :cache_html_directory => Merb.dir_for(:public) / "cache",
-
-  #:store => "database",
-  #:table_name => "merb_cache",
-
-  :store => "file",
-  :cache_directory => Merb.root_path("tmp/cache"),
-
-  #:store => "memcache",
-  #:host => "127.0.0.1:11211",
-  #:namespace => "merb_cache",
-
-  #:store => "memory",
-  # store could be: file, memcache, memory, database, ...
-}

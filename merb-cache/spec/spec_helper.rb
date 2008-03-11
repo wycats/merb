@@ -23,6 +23,7 @@ def use_cache_store(store, orm = nil)
   }
   FileUtils.rm_rf(Dir.glob(File.dirname(__FILE__) / "/tmp"))
   case store
+  when "dummy"
   when "file"
   when "memory"
   when "memcache"
@@ -63,6 +64,8 @@ when "sequel"
   use_cache_store "database", "sequel"
 when "activerecord"
   use_cache_store "database", "activerecord"
+when "dummy"
+  use_cache_store "dummy"
 else
   puts "Invalid cache store: #{ENV["store"]}"
   exit

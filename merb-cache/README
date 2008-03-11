@@ -16,6 +16,16 @@ Implemented cache stores:
 - file
 - database (sequel, datamapper, activerecord)
 
+== Quick intro
+  cache_fragment is helpful to put chunks of data in cache without interferring with dynamic content.
+
+  cache_action puts the whole action in cache but if you use before filters to restrict access,
+  you can still protect your content.
+
+  cache_page is cache_action with file store (using .html extension in a separate directory).
+  With page caching you output .html files (in public/cache/ by default) so you can then tell your proxy/webserver
+  to serve these files directly thus bypassing the framework completely.
+
 == Quick API
 
 === Merb::Controller class methods
@@ -53,6 +63,11 @@ Implemented cache stores:
   # Don't forget to look at the specs !!
 
 == Specs
+  $ rake specs:<cache_store>
+  example:
+  $ rake specs:memory
+  $ rake specs:file
+  or just:
   $ cd spec
   $ STORE=<cache_store> spec merb-cache_spec.rb
   # cache_store can be: memory, memcache, file, sequel, datamapper, activerecord
@@ -65,6 +80,9 @@ Implemented cache stores:
     #:store => "database",
     #:table_name => "merb_cache",
 
+    #:disable_cache => "development", # disable merb-cache in development
+    #:disable_cache => "all", # disable merb-cache in all environments
+
     :store => "file",
     :cache_directory => Merb.root_path("tmp/cache"),
 
@@ -73,7 +91,7 @@ Implemented cache stores:
     #:namespace => "merb_cache",
 
     #:store => "memory",
-    # store could be: file, memcache, memory, database, ...
+    # store could be: file, memcache, memory, database, dummy, ...
   }
 
 
