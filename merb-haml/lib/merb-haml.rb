@@ -7,4 +7,11 @@ if defined?(Merb::Plugins)
   Merb::BootLoader.after_app_loads do
     require "sass/plugin" if File.directory?(Merb.dir_for(:stylesheet) / "sass")  
   end
+  
+  # Hack because Haml uses symbolize_keys
+  class Hash
+    def symbolize_keys!
+      self
+    end
+  end
 end
