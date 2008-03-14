@@ -17,14 +17,13 @@ Implemented cache stores:
 - database (sequel, datamapper, activerecord)
 
 == Quick intro
-  cache_fragment is helpful to put chunks of data in cache without interferring with dynamic content.
+  With fragment caching, you can mix dynamic and static content.
 
-  cache_action puts the whole action in cache but if you use before filters to restrict access,
-  you can still protect your content.
+  With action caching, the whole template is cached
+  but the before filters are still processed.
 
-  cache_page is cache_action with file store (using .html extension in a separate directory).
-  With page caching you output .html files (in public/cache/ by default) so you can then tell your proxy/webserver
-  to serve these files directly thus bypassing the framework completely.
+  With page caching, the whole template is put in html files in a special
+  directory in order to be handled directly without triggering Merb.
 
 == Quick API
 
@@ -70,7 +69,8 @@ Implemented cache stores:
   or just:
   $ cd spec
   $ STORE=<cache_store> spec merb-cache_spec.rb
-  # cache_store can be: memory, memcache, file, sequel, datamapper, activerecord
+  # cache_store can be:
+  #   memory, memcache, file, sequel, datamapper, activerecord
 
 == Sample configuration
 

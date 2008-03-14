@@ -1,4 +1,4 @@
-class Merb::Cache::Store
+class Merb::Cache::FileStore
   # Provides the file cache store for merb-cache
 
   def initialize
