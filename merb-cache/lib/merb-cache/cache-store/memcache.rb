@@ -24,6 +24,7 @@ class Merb::Cache::Store
     namespace = @config[:namespace] || 'merb-cache'
     host = @config[:host] || '127.0.0.1:11211'
     @memcache = MemCache.new(host, {:namespace => namespace})
+    @tracking_key = "_#{namespace}_keys" unless @config[:no_tracking]
     raise NotReady unless @memcache.active?
     true
   rescue NameError
@@ -81,6 +82,7 @@ class Merb::Cache::Store
   def cache_set(key, data, from_now = nil)
     _expire = from_now ? from_now.minutes.from_now.to_i : 0
     @memcache.set(key, data, _expire)
+    cache_start_tracking(key)
     Merb.logger.info("cache: set (#{key})")
     true
   end
@@ -106,6 +108,7 @@ class Merb::Cache::Store
   # key<Sting>:: The key identifying the cache entry
   def expire(key)
     @memcache.delete(key)
+    cache_stop_tracking(key)
     Merb.logger.info("cache: expired (#{key})")
     true
   end
@@ -115,16 +118,24 @@ class Merb::Cache::Store
   # ==== Parameter
   # key<Sting>:: The key matching the cache entries
   #
-  # ==== Warning !
-  #   This does not work in memcache.
+  # ==== Additional info
+  #   In memcache this requires to keep track of all keys (on by default).
+  #   If you don't need this, set :no_tracking => true in the config.
   def expire_match(key)
-    Merb.logger.info("MERB-CACHE (cache_store: 'memcache'): expire_match not supported")
+    if @tracking_key
+      for _key in get_tracked_keys
+        expire(_key) if /#{key}/ =~ _key
+      end
+    else
+      Merb.logger.info("cache: expire_match is not supported with memcache (set :no_tracking => false in your config")
+    end
     true
   end
 
   # Expire all the cache entries
   def expire_all
     @memcache.flush_all
+    stop_tracking_keys
     Merb.logger.info("cache: expired all")
     true
   end
@@ -135,5 +146,50 @@ class Merb::Cache::Store
   #   The type of the current cache store
   def cache_store_type
     "memcache"
+  end
+
+  private
+
+  # Store the tracked keys in memcache (used by expire_match)
+  #
+  # ==== Parameter
+  # keys<Array[String]>:: The keys to keep track of
+  def set_tracked_keys(keys)
+    @memcache.set(@tracking_key, keys)
+  end
+
+  # Retrieve tracked keys from memcache
+  #
+  # ==== Returns
+  # keys<Array[String]>:: The tracked keys
+  def get_tracked_keys
+    @memcache.get(@tracking_key) || []
+  end
+
+  # Remove all tracked keys
+  def stop_tracking_keys
+    @memcache.delete(@tracking_key) if @tracking_key
+  end
+
+  # Add a key in the array of tracked keys (used by expire_match)
+  #
+  # ==== Parameter
+  # key<String>:: the key to add
+  def cache_start_tracking(key)
+    return unless @tracking_key
+    keys = get_tracked_keys
+    keys.push(key)
+    set_tracked_keys(keys)
+  end
+
+  # Remove a key from the array of tracked keys (used by expire_match)
+  #
+  # ==== Parameter
+  # key<String>:: the key to remove
+  def cache_stop_tracking(key)
+    return unless @tracking_key
+    keys = get_tracked_keys
+    keys.delete(key)
+    set_tracked_keys(keys)
   end
 end

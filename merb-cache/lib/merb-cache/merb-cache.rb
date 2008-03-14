@@ -28,6 +28,7 @@ class Merb::Cache
     #:store => "memcache",
     #:host => "127.0.0.1:11211",
     #:namespace => "merb_cache",
+    #:track_keys => true,
 
     #:store => "memory",
     # store could be: file, memcache, memory, database, dummy, ...

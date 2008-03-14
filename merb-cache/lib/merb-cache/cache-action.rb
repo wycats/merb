@@ -96,8 +96,7 @@ module Merb::Cache::ControllerInstanceMethods
     action = action_name.to_sym
     actions = Merb::Controller._cache.cached_actions[controller]
     return unless actions && actions.key?(action)
-    path = request.path
-    path.chop! if path[-1] == "/"
+    path = request.path.chomp("/")
     path = "index" if path.empty?
     if data
       from_now = Merb::Controller._cache.cached_actions[controller][action]
