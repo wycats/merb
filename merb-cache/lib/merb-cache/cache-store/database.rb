@@ -1,4 +1,4 @@
-class Merb::Cache::Store
+class Merb::Cache::DatabaseStore
   # Provides the database cache store for merb-cache
 
   def initialize
@@ -17,13 +17,13 @@ class Merb::Cache::Store
   Merb::Controller._cache.config[:table_name] ||= "merb_cache"
   if defined?(Merb::Orms::ActiveRecord)
     require "merb-cache/cache-store/database-activerecord.rb"
-    include Merb::Cache::Store::ActiveRecord
+    include Merb::Cache::DatabaseStore::ActiveRecord
   elsif defined?(Merb::Orms::DataMapper)
     require "merb-cache/cache-store/database-datamapper.rb"
-    include Merb::Cache::Store::DataMapper
+    include Merb::Cache::DatabaseStore::DataMapper
   elsif defined?(Merb::Orms::Sequel)
     require "merb-cache/cache-store/database-sequel.rb"
-    include Merb::Cache::Store::Sequel
+    include Merb::Cache::DatabaseStore::Sequel
   else
     raise OrmNotFound
   end

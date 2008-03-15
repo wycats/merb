@@ -1,3 +1,2 @@
-capture_#{engine} concat_#{engine} are required for cache()
+capture_#{engine} and concat_#{engine} are required for cache()
 implement other cache store ?
-workaround for expire_match with memcache (not supported)

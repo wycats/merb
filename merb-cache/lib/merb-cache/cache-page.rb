@@ -105,8 +105,7 @@ module Merb::Cache::ControllerInstanceMethods
     action = action_name.to_sym
     pages = Merb::Controller._cache.cached_pages[controller]
     return unless pages && pages.key?(action)
-    path = request.path
-    path.chop! if path[-1] == "/"
+    path = request.path.chomp("/")
     path = "index" if path.empty?
     cache_file = Merb::Controller._cache.config[:cache_html_directory] / "#{path}.html"
     if data

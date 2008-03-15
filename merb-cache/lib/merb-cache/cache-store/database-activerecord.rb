@@ -1,4 +1,4 @@
-module Merb::Cache::Store::ActiveRecord
+module Merb::Cache::DatabaseStore::ActiveRecord
   # Module that provides ActiveRecord support for the database backend
 
   # The cache model migration
