@@ -2,7 +2,7 @@
 
 at_exit { exit }
 
-command = ARGV.shift if %w( generate destroy update ).include?(ARGV[0])
+command = ARGV.shift if %w(generate destroy update).include?(ARGV[0])
 
 %w(rubygems merb-core).each do |file|
   require file
@@ -47,7 +47,6 @@ elsif ARGV[1] && ARGV[1] == "--flat"
 elsif ARGV[1] && ARGV[1] == "--very-flat"
   Merb::ApplicationGenerator.run ARGV.first, ARGV[2..-1], "merb_very_flat", command || "generate"
 
-
 # catch all merb-gen -??? and display help instead of creating application in -???
 elsif ARGV[0] && ARGV[0] =~ /^-/
   puts <<-EOF
@@ -63,8 +62,6 @@ elsif ARGV[0] && ARGV[0] =~ /^-/
   merb-gen
   with no args will display all availble generators for the current configuration.
   EOF
-
-
 
 else
   begin
