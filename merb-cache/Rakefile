@@ -5,7 +5,7 @@ require "spec/rake/spectask"
 
 PLUGIN = "merb-cache"
 NAME = "merb-cache"
-VERSION = "0.9.1"
+MERB_CACHE_VERSION = Merb::MORE_VERSION rescue "0.9.1"
 AUTHOR = "Alex Boussinet"
 EMAIL = "alex.boussinet@gmail.com"
 HOMEPAGE = "http://www.merbivore.com"
@@ -13,7 +13,7 @@ SUMMARY = "Merb plugin that provides caching (page, action, fragment, object)"
 
 spec = Gem::Specification.new do |s|
   s.name = NAME
-  s.version = VERSION
+  s.version = MERB_CACHE_VERSION
   s.platform = Gem::Platform::RUBY
   s.has_rdoc = true
   s.extra_rdoc_files = ["README", "LICENSE", 'TODO']
@@ -64,7 +64,7 @@ Rake::GemPackageTask.new(spec) do |pkg|
 end
 
 task :install => [:package] do
-  sh %{sudo gem install pkg/#{NAME}-#{VERSION}}
+  sh %{sudo gem install pkg/#{NAME}-#{MERB_CACHE_VERSION}}
 end
 
 namespace :jruby do

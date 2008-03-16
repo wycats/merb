@@ -14,7 +14,7 @@ include FileUtils
 
 gems = %w[
   merb-action-args merb-assets merb-gen merb-haml
-  merb-builder merb-mailer merb-parts
+  merb-builder merb-mailer merb-parts merb-cache
 ]
 
 merb_more_spec = Gem::Specification.new do |s|
