@@ -114,12 +114,16 @@ module Merb::Cache::ControllerInstanceMethods
       _expire_in = pages[action][0]
       pages[action][1] = _expire_in.minutes.from_now unless _expire_in.nil?
       cache_write_page(cache_file, data)
+      Merb.logger.info("cache: set (#{path})")
     else
       @capture_page = false
       if File.file?(cache_file)
         _data = cache_read_page(cache_file)
         _expire_in, _expire_at = pages[action]
-        throw(:halt, _data) if _expire_in.nil? || Time.now < _expire_at
+        if _expire_in.nil? || Time.now < _expire_at
+          Merb.logger.info("cache: hit (#{path})")
+          throw(:halt, _data)
+        end
         FileUtils.rm_f(cache_file)
       end
       @capture_page = true
