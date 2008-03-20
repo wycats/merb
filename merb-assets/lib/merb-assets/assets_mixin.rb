@@ -390,7 +390,7 @@ module Merb
           :src => asset_path(:javascript, script),
           :type => "text/javascript"
         }
-        tags << %Q{<script #{attrs.to_xml_attributes}>//</script>}
+        tags << %Q{<script #{attrs.to_xml_attributes}></script>}
       end
 
       return tags
