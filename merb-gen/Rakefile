@@ -38,10 +38,10 @@ end
 
 namespace :jruby do
   task :install do
-    sh %{sudo jruby -S gem install pkg/#{GEM}-#{VERSION}}
+    sh %{sudo jruby -S gem install pkg/#{GEM}-#{VERSION} --no-update-sources}
   end
 end
 
 task :install => [:package] do
-  sh %{sudo gem install pkg/#{GEM}-#{VERSION}}
+  sh %{sudo gem install pkg/#{GEM}-#{VERSION} --no-update-sources}
 end

@@ -64,7 +64,7 @@ Rake::GemPackageTask.new(spec) do |pkg|
 end
 
 task :install => [:package] do
-  sh %{sudo gem install pkg/#{NAME}-#{MERB_CACHE_VERSION}}
+  sh %{sudo gem install pkg/#{NAME}-#{MERB_CACHE_VERSION} --no-update-sources}
 end
 
 namespace :jruby do
