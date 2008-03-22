@@ -80,7 +80,7 @@ end
 desc "Install the merb-more sub-gems"
 task :install_gems do
   gems.each do |dir|
-    sh %{cd #{dir}; #{SUDO} rake install}
+    sh %{cd #{dir}; rake install}
   end
 end
 
