@@ -29,6 +29,9 @@ else
   raise "Can't run frozen without framework/ or local gem" unless gem
   require gem + "/lib/merb-core/core_ext/kernel"
   require gem + "/lib/merb-core/core_ext/rubygems"
+  
+  Gem.clear_paths
+  Gem.path.unshift(__DIR__+"/gems")
 end
 
 require 'merb-core'
