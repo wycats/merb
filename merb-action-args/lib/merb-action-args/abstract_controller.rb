@@ -31,6 +31,6 @@ class Merb::AbstractController
       raise BadRequest unless p || default
       p ? params[arg.to_sym] : default
     end
-    send(action, *args)
+    __send__(action, *args)
   end
 end
