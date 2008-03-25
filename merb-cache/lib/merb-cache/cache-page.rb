@@ -85,6 +85,12 @@ module Merb::Cache::ControllerInstanceMethods
     FileUtils.rm_rf(Dir.glob(Merb::Controller._cache.config[:cache_html_directory] / "*"))
   end
 
+  # You can call this method if you need to prevent caching the page
+  # after it has been rendered.
+  def abort_cache_page
+    @capture_page = false
+  end
+
   private
 
   # Called by the before and after filters. Stores or recalls a cache entry.
@@ -172,7 +178,7 @@ module Merb::Cache::ControllerInstanceMethods
   # after filter
   def cache_page_after
     # takes the body of the response
-    # put it in cache only if the cache entry expired or doesn't exist
-    _cache_page(body) if @capture_page
+    # if the cache entry expired, if it doesn't exist or status is 200
+    _cache_page(body) if @capture_page && status == 200
   end
 end
