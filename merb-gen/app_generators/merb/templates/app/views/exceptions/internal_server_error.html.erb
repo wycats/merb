@@ -1,7 +1,7 @@
 <html>
 <head>
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-	<title><%%= @exception_name %%></title>
+	<title><%%= @exception_name %></title>
 	<style type="text/css" media="screen">
 		body {
 			font-family:arial;
@@ -129,67 +129,67 @@
 	<div class="internalError">
 		
 		<div class="header">
-			<h1><%%= @exception_name %%> <sup class="error_<%%= @exception.class::STATUS %%>"><%%= @exception.class::STATUS %%></sup></h1>
-			<%% if show_details = ::Merb::Config[:exception_details] -%%>
-				<h2><%%= @exception.message %%></h2>
-			<%% else -%%>
+			<h1><%%= @exception_name %> <sup class="error_<%%= @exception.class::STATUS %>"><%%= @exception.class::STATUS %></sup></h1>
+			<%% if show_details = ::Merb::Config[:exception_details] -%>
+				<h2><%%= @exception.message %></h2>
+			<%% else -%>
 				<h2>Sorry about that...</h2>
-			<%% end -%%>
+			<%% end -%>
 			<h3>Parameters</h3>
 			<ul>
-			<%% params[:original_params].each do |param, value| %%>
-				<li><strong><%%= param %%>:</strong> <%%= value.inspect %%></li>
-			<%% end %%>
-			<%%= "<li>None</li>" if params[:original_params].empty? %%>
+			<%% params[:original_params].each do |param, value| %>
+				<li><strong><%%= param %>:</strong> <%%= value.inspect %></li>
+			<%% end %>
+			<%%= "<li>None</li>" if params[:original_params].empty? %>
 			</ul>
 			
 			<h3>Session</h3>
 			<ul>
-			<%% params[:original_session].each do |param, value| %%>
-				<li><strong><%%= param %%>:</strong> <%%= value.inspect %%></li>
-			<%% end %%>
-			<%%= "<li>None</li>" if params[:original_session].empty? %%>			
+			<%% params[:original_session].each do |param, value| %>
+				<li><strong><%%= param %>:</strong> <%%= value.inspect %></li>
+			<%% end %>
+			<%%= "<li>None</li>" if params[:original_session].empty? %>			
 			</ul>
 			
 			<h3>Cookies</h3>
 			<ul>
-			<%% params[:original_cookies].each do |param, value| %%>
-				<li><strong><%%= param %%>:</strong> <%%= value.inspect %%></li>
-			<%% end %%>
-			<%%= "<li>None</li>" if params[:original_cookies].empty? %%>			
+			<%% params[:original_cookies].each do |param, value| %>
+				<li><strong><%%= param %>:</strong> <%%= value.inspect %></li>
+			<%% end %>
+			<%%= "<li>None</li>" if params[:original_cookies].empty? %>			
 			</ul>			
 		</div>
 		
-	<%% if show_details %%>
+	<%% if show_details %>
 		<table class="trace">
-			<%% @exception.backtrace.each_with_index do |line, index| %%>
+			<%% @exception.backtrace.each_with_index do |line, index| %>
 				<tbody class="close">
 					<tr class="file">
 						<td class="expand">
 						</td>
 						<td class="path">
-							<%%= (line.match(/^([^:]+)/)[1] rescue 'unknown').sub(/\/((opt|usr)\/local\/lib\/(ruby\/)?(gems\/)?(1.8\/)?(gems\/)?|.+\/app\/)/, '') %%>
-							<%% unless line.match(/\.erb:/) %%>
-                in "<strong><%%= line.match(/:in `(.+)'$/)[1] rescue '?' %%></strong>"
-              <%% else %%>
+							<%%= (line.match(/^([^:]+)/)[1] rescue 'unknown').sub(/\/((opt|usr)\/local\/lib\/(ruby\/)?(gems\/)?(1.8\/)?(gems\/)?|.+\/app\/)/, '') %>
+							<%% unless line.match(/\.erb:/) %>
+                in "<strong><%%= line.match(/:in `(.+)'$/)[1] rescue '?' %></strong>"
+              <%% else %>
                 (<strong>ERB Template</strong>)
-              <%% end %%>
+              <%% end %>
 						</td>
 						<td class="line">
-							<a href="txmt://open?url=file://<%%=file = (line.match(/^([^:]+)/)[1] rescue 'unknown')%%>&amp;line=<%%= lineno = line.match(/:([0-9]+):/)[1] rescue '?' %%>"><%%=lineno%%></a>&nbsp;
+							<a href="txmt://open?url=file://<%%=file = (line.match(/^([^:]+)/)[1] rescue 'unknown')%>&amp;line=<%%= lineno = line.match(/:([0-9]+):/)[1] rescue '?' %>"><%%=lineno%></a>&nbsp;
 						</td> 
 					</tr>
 					<tr class="source">
 						<td class="collapse">
 						</td>
-						<td class="code" colspan="2"><%% (__caller_lines__(file, lineno, 5) rescue []).each do |llineno, lcode, lcurrent| %%>
-<a href="txmt://open?url=file://<%%=file%%>&amp;line=<%%=llineno%%>"><%%= llineno %%></a><%%='<em>' if llineno==lineno.to_i %%><%%= lcode.size > 90 ? CGI.escapeHTML(lcode[0..90])+'<span class="more">......</span>' : CGI.escapeHTML(lcode) %%><%%='</em>' if llineno==lineno.to_i %%>
-<%% end %%>
+						<td class="code" colspan="2"><%% (__caller_lines__(file, lineno, 5) rescue []).each do |llineno, lcode, lcurrent| %>
+<a href="txmt://open?url=file://<%%=file%>&amp;line=<%%=llineno%>"><%%= llineno %></a><%%='<em>' if llineno==lineno.to_i %><%%= lcode.size > 90 ? CGI.escapeHTML(lcode[0..90])+'<span class="more">......</span>' : CGI.escapeHTML(lcode) %><%%='</em>' if llineno==lineno.to_i %>
+<%% end %>
 
 </td>
 					</tr>
 				</tbody>
-			<%% end %%>
+			<%% end %>
 		</table>
 		<script type="text/javascript" charset="utf-8">
 			// swop the open & closed classes
@@ -207,7 +207,7 @@
 				}
 			}
 		</script>
-	<%% end %%>
+	<%% end %>
 	<div class="footer">
 		lots of love, from <a href="#">merb</a>
 	</div>
