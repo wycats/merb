@@ -5,7 +5,10 @@ if defined?(Merb::Plugins)
   Merb::Plugins.add_rakefiles(File.join(File.dirname(__FILE__) / "merb-haml" / "merbtasks"))
 
   Merb::BootLoader.after_app_loads do
-    require "sass/plugin" if File.directory?(Merb.dir_for(:stylesheet) / "sass")  
+    if File.directory?(Merb.dir_for(:stylesheet) / "sass")
+      require "sass/plugin" 
+      Sass::Plugin.options = Merb::Config[:sass] if Merb::Config[:sass]
+    end
   end
   
   # Hack because Haml uses symbolize_keys
