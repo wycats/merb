@@ -45,6 +45,7 @@ merb_spec = Gem::Specification.new do |s|
   s.files        = %w( LICENSE README Rakefile TODO )
   s.add_dependency "merb-core", "= #{Merb::VERSION}"
   s.add_dependency "merb-more", "= #{Merb::MORE_VERSION}"
+  s.add_dependency "mongrel", ">= 1.0.1"
 end
 
 CLEAN.include ["**/.*.sw?", "pkg", "lib/*.bundle", "*.gem", "doc/rdoc", ".config", "coverage", "cache", "lib/merb-more.rb"]
