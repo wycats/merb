@@ -73,14 +73,14 @@ end
 desc "Build the merb-more gems"
 task :build_gems do
   gems.each do |dir|
-    sh %{cd #{dir}; rake package}
+    Dir.chdir(dir){ sh "rake package" }
   end
 end
 
 desc "Install the merb-more sub-gems"
 task :install_gems do
   gems.each do |dir|
-    sh %{cd #{dir}; rake install}
+    Dir.chdir(dir){ sh "#{SUDO} rake install" }
   end
 end
 
