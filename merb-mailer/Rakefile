@@ -4,7 +4,7 @@ require "spec/rake/spectask"
 
 PLUGIN = "merb-mailer"
 NAME = "merb-mailer"
-VERSION = "0.9.1"
+VERSION = "0.9.2"
 AUTHOR = "Yehuda Katz"
 EMAIL = "wycats@gmail.com"
 HOMEPAGE = "http://merb-plugins.rubyforge.org/merb-mailer/"
@@ -21,7 +21,7 @@ spec = Gem::Specification.new do |s|
   s.author = AUTHOR
   s.email = EMAIL
   s.homepage = HOMEPAGE
-  s.add_dependency('merb-core', '>= 0.9.1')
+  s.add_dependency('merb-core', '>= 0.9.2')
   s.add_dependency("mailfactory", ">= 1.2.3")
   s.require_path = 'lib'
   s.autorequire = PLUGIN
