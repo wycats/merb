@@ -60,7 +60,7 @@ module Merb::GeneratorHelpers
       templates.each do |filename|
         m.template(
           file_name(dir, filename), 
-          file_name(interpolate_path(dir), filename)
+          file_name(interpolate_path(dir), interpolate_path(filename))
         )
       end
     end
