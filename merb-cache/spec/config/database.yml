@@ -1,6 +1,6 @@
 ---
 :development: &defaults
-  :adapter: sqlite
+  :adapter: sqlite3
   :database: tmp/merb-cache.sqlite3
   :log_stream: log/sql.log
   :log_level: 0

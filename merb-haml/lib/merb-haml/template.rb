@@ -11,7 +11,7 @@ module Merb::Template
     #   The class or module wherein this method should be defined.
     def self.compile_template(path, name, mod)
       path = File.expand_path(path)
-      config = (Merb.config[:haml] || {}).inject({}) do |c, (k, v)|
+      config = (Merb::Config[:haml] || {}).inject({}) do |c, (k, v)|
         c[k.to_sym] = v
         c
       end.merge :filename => path

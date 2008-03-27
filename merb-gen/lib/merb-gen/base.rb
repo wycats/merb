@@ -24,7 +24,7 @@ class Merb::GeneratorBase < RubiGen::Base
       options["spec"] = true unless options["test"]
 
       # Set directories that should be optional based on command-line args
-      @choices = %w( test spec )
+      @choices = %w(test spec)
       
       # Set the assigns that should be used for path-interpolation and building templates
       @assigns = {:base_name => File.basename(@name), :test_type => options["spec"] ? "rspec" : "test_unit"}
@@ -33,13 +33,7 @@ class Merb::GeneratorBase < RubiGen::Base
       copy_dirs
       copy_files
 
-      puts
-      puts "Your app will use the #{@assigns[:test_type]} test framework."
-      if Gem.cache.search("merb_#{@assigns[:test_type]}").size == 0
-        puts "You need to install the merb_#{@assigns[:test_type]} gem."
-      end
-      puts
-      
+      display_framework_selections
     end
   end
   
@@ -57,4 +51,12 @@ class Merb::GeneratorBase < RubiGen::Base
     opts.on("-T", "--[no-]test", "Generate with Test::Unit") {|t| @options["test"] = true}
   end
     
+  def display_framework_selections
+    puts
+    puts "Your app will use the #{@assigns[:test_type]} test framework."
+    if Gem.cache.search("merb_#{@assigns[:test_type]}").size == 0
+      puts "You need to install the merb_#{@assigns[:test_type]} gem."
+    end
+    puts
+  end
 end

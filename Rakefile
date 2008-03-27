@@ -1,10 +1,10 @@
 ## THESE ARE CRUCIAL
 module Merb
   # Set this to the version of merb-core that you are building against/for
-  VERSION = "0.9.1"
+  VERSION = "0.9.2"
 
   # Set this to the version of merb-more you plan to release
-  MORE_VERSION = "0.9.1"
+  MORE_VERSION = "0.9.2"
 end
 
 require "rake/clean"
@@ -14,7 +14,7 @@ include FileUtils
 
 gems = %w[
   merb-action-args merb-assets merb-gen merb-haml
-  merb-builder merb-mailer merb-parts
+  merb-builder merb-mailer merb-parts merb-cache
 ]
 
 merb_more_spec = Gem::Specification.new do |s|
@@ -45,6 +45,7 @@ merb_spec = Gem::Specification.new do |s|
   s.files        = %w( LICENSE README Rakefile TODO )
   s.add_dependency "merb-core", "= #{Merb::VERSION}"
   s.add_dependency "merb-more", "= #{Merb::MORE_VERSION}"
+  s.add_dependency "mongrel", ">= 1.0.1"
 end
 
 CLEAN.include ["**/.*.sw?", "pkg", "lib/*.bundle", "*.gem", "doc/rdoc", ".config", "coverage", "cache", "lib/merb-more.rb"]
@@ -66,21 +67,21 @@ end
 
 desc "Install it all"
 task :install => [:install_gems, :package] do
-  sh %{#{SUDO} gem install --local pkg/merb-more-#{Merb::MORE_VERSION}.gem}
-  sh %{#{SUDO} gem install --local pkg/merb-#{Merb::MORE_VERSION}.gem}
+  sh %{#{SUDO} gem install --local pkg/merb-more-#{Merb::MORE_VERSION}.gem  --no-update-sources}
+  sh %{#{SUDO} gem install --local pkg/merb-#{Merb::MORE_VERSION}.gem --no-update-sources}
 end
 
 desc "Build the merb-more gems"
 task :build_gems do
   gems.each do |dir|
-    sh %{cd #{dir}; rake package}
+    Dir.chdir(dir){ sh "rake package" }
   end
 end
 
 desc "Install the merb-more sub-gems"
 task :install_gems do
   gems.each do |dir|
-    sh %{cd #{dir}; #{SUDO} rake install}
+    Dir.chdir(dir){ sh "#{SUDO} rake install" }
   end
 end
 

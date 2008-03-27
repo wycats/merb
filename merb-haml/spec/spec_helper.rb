@@ -7,7 +7,8 @@ require "spec"
 require "merb-haml"
 require File.dirname(__FILE__) / "controllers" / "haml"
 
-Merb.start :environment => 'test', :haml => { "autoclose" => ["foo"] }
+Merb::Plugins.config[:haml] = { "autoclose" => ["foo"] }
+Merb.start :environment => 'test'
 
 Spec::Runner.configure do |config|
   config.include Merb::Test::RequestHelper  

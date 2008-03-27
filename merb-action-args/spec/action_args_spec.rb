@@ -22,4 +22,8 @@ describe Merb::AbstractController do
     lambda { dispatch_to(ActionArgs, :index) }.should raise_error(Merb::ControllerExceptions::BadRequest)
   end
   
+  it "should treat define_method actions as equal" do
+    dispatch_to(ActionArgs, :dynamic_define_method).body.should == "mos def"
+  end
+  
 end

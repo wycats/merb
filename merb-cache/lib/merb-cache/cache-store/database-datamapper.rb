@@ -1,4 +1,4 @@
-module Merb::Cache::Store::DataMapper
+module Merb::Cache::DatabaseStore::DataMapper
   # Module that provides DataMapper support for the database backend
 
   # The cache model

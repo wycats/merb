@@ -390,7 +390,7 @@ module Merb
           :src => asset_path(:javascript, script),
           :type => "text/javascript"
         }
-        tags << %Q{<script #{attrs.to_xml_attributes}>//</script>}
+        tags << %Q{<script #{attrs.to_xml_attributes}></script>}
       end
 
       return tags
@@ -413,21 +413,24 @@ module Merb
     #
     # ==== Examples
     #   css_include_tag 'style'
-    #   # => <link href="/stylesheets/style.css" media="all" rel="Stylesheet" type="text/css" />
+    #   # => <link href="/stylesheets/style.css" media="all" rel="Stylesheet" type="text/css" charset="utf-8" />
     #
     #   css_include_tag 'style.css', 'layout'
-    #   # => <link href="/stylesheets/style.css" media="all" rel="Stylesheet" type="text/css" />
-    #   #    <link href="/stylesheets/layout.css" media="all" rel="Stylesheet" type="text/css" />
+    #   # => <link href="/stylesheets/style.css" media="all" rel="Stylesheet" type="text/css" charset="utf-8" />
+    #   #    <link href="/stylesheets/layout.css" media="all" rel="Stylesheet" type="text/css" charset="utf-8" />
     #
     #   css_include_tag :menu
-    #   # => <link href="/stylesheets/menu.css" media="all" rel="Stylesheet" type="text/css" />
+    #   # => <link href="/stylesheets/menu.css" media="all" rel="Stylesheet" type="text/css" charset="utf-8" />
     #
     #   css_include_tag :style, :screen
-    #   # => <link href="/stylesheets/style.css" media="all" rel="Stylesheet" type="text/css" />
-    #   #    <link href="/stylesheets/screen.css" media="all" rel="Stylesheet" type="text/css" />
+    #   # => <link href="/stylesheets/style.css" media="all" rel="Stylesheet" type="text/css" charset="utf-8" />
+    #   #    <link href="/stylesheets/screen.css" media="all" rel="Stylesheet" type="text/css" charset="utf-8" />
     # 
     #  css_include_tag :style, :media => :print
-    #  # => <link href="/stylesheets/style.css" media="print" rel="Stylesheet" type="text/css" />
+    #  # => <link href="/stylesheets/style.css" media="print" rel="Stylesheet" type="text/css" charset="utf-8" />
+    #
+    #  css_include_tag :style, :charset => 'iso-8859-1'
+    #  # => <link href="/stylesheets/style.css" media="print" rel="Stylesheet" type="text/css" charset="iso-8859-1" />
     def css_include_tag(*stylesheets)
       options = stylesheets.last.is_a?(Hash) ? stylesheets.pop : {}
       return nil if stylesheets.empty?
@@ -445,6 +448,7 @@ module Merb
           :href => asset_path(:stylesheet, stylesheet),
           :type => "text/css",
           :rel => "Stylesheet",
+          :charset => options[:charset] || 'utf-8',
           :media => options[:media] || :all
         }
         tags << %Q{<link #{attrs.to_xml_attributes} />}

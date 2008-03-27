@@ -1,4 +1,4 @@
-module Merb::Cache::Store::Sequel
+module Merb::Cache::DatabaseStore::Sequel
   # Module that provides Sequel support for the database backend
 
   # The cache model

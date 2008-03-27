@@ -2,7 +2,7 @@ require 'rubygems'
 require 'rake/gempackagetask'
 
 GEM = "merb-gen"
-VERSION = "0.9.1"
+VERSION = "0.9.2"
 AUTHOR = "Yehuda Katz"
 EMAIL = "wycats@gmail.com"
 HOMEPAGE = "http://www.merbivore.com"
@@ -23,7 +23,7 @@ spec = Gem::Specification.new do |s|
   s.executables = %w( merb-gen )
     
   # Uncomment this to add a dependency
-  s.add_dependency "merb-core", ">= 0.9.1"
+  s.add_dependency "merb-core", ">= 0.9.2"
   s.add_dependency "rubigen", ">= 1.2.4"
   
   s.require_path = 'lib'
@@ -38,10 +38,10 @@ end
 
 namespace :jruby do
   task :install do
-    sh %{sudo jruby -S gem install pkg/#{GEM}-#{VERSION}}
+    sh %{sudo jruby -S gem install pkg/#{GEM}-#{VERSION} --no-update-sources}
   end
 end
 
 task :install => [:package] do
-  sh %{sudo gem install pkg/#{GEM}-#{VERSION}}
+  sh %{sudo gem install pkg/#{GEM}-#{VERSION} --no-update-sources}
 end

@@ -29,10 +29,13 @@ else
   raise "Can't run frozen without framework/ or local gem" unless gem
   require gem + "/lib/merb-core/core_ext/kernel"
   require gem + "/lib/merb-core/core_ext/rubygems"
+  
+  Gem.clear_paths
+  Gem.path.unshift(__DIR__+"/gems")
 end
 
 require 'merb-core'
-unless ARGV.index('-a') || ARGV.index('-i')
+unless %w[-a --adapter -i --irb-console -r --script-runner].any? { |o| ARGV.index(o) }
   ARGV.push *%w[-a mongrel]
 end
   

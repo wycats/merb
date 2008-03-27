@@ -1,3 +1,63 @@
+== 0.9.2 "appropriate response to reality" 2008-03-24
+* Fix merb-flat and merb-very-flat generators
+* merb-gen no longer generates apps by default
+* fix templates so merb-gen will work.
+* cache_action and cache_page should only set cache for 200 responses (closing #207)
+* use Dir.chdir(dir){ sh "#{SUDO} rake install" } for windows compat in rakefile
+* merge drnics MERB_ROM stuff for merb-gen
+* add freeze task to the app rakefiles to freeze as git submoduels.
+* ok since merb-haml is in -more we will use Merb::Config not Merb::Plugin.config
+* Set mongrel as default adapter unless other alternative options are specified
+* Clean up Merb-Gen
+* Added Autotest mappings for full Merb applications for both the RSpec and Test/Unit libraries.
+* Removing un-needed js comment sequence from bundled asset tag.
+* merb-more rake install task escalates user privileges too early
+* don't reload classes in test mode
+* fix up merb-fcgi binary to work out of the box
+* adds implementation for #220 * modifies merb.fcgi to enable really working with fcgi setups * adds default .htaccess that manages the redirection to the CGI script
+* use __send__ not send, use require in merb-haml
+* Fix merb-haml spec to pull proper config
+* Fix action-args to honor controller actions defined using :define_method
+* fix merb-more rakefiles, fix haml config options
+* Added support for charset in css_include_tag
+* added merb-cache to the array of gems in Rakefile. closing #79
+* updated page caching to use logger
+* rearranged module/class structure
+* added expire_match support for memcache backend
+* config/environments/rake.rb now defaults to log/merb_rake.log
+* Now generates config/environments/rake.rb, so Rakefile uses a real environment for Rake (which you can override with MERB_ENV)
+* Make symbolize_keys! a noop temporarily.
+* move plugin config to main file in merb-assets
+* Auto-generated spec_helper.rb now uses :testing option instead of $TESTING global var
+* merb-cache can be disabled with config key :disable
+* implemented dummy cache store in order to be able to disable caching
+* Auto-generated spec_helper.rb now uses :testing option instead of $TESTING global var
+* framework.rb needs to be here.
+* Added ability to create unique, consistant paths to a static asset (js, css, image, video, etc) based on file name to assist in browsers slowed by HTTP Pipelining.
+* Added Gem path manipulation to frozen-merb template
+* The :merb_env task now logs to log/rake.log by default
+* Added merbtasks.rb
+* Cleanup of merb-gen generated Rakefile
+* By default classes should not be reloaded (reload_classes = false) in the TEST environment.
+* add clean task
+* Update task name to have dependencies handled correctly.
+* Corrects a spec that uses a helper.  The helper needs to be in the Merb namespace
+* Fixed typo in freezer generator template
+* Template extension documentation
+* Revert "Adds a haml_buffer method to Haml::Helpers.  This was reporting being missing when using haml in a form."
+* ignore bundle, and merb-more.rb
+* create merb-more.rb
+* capture and concat from AbstractController are private
+* Adds a haml_buffer method to Haml::Helpers.  This was reporting being missing when using haml in a form.
+* Clean up flat app so it makes better use of the way custom frameworks work.
+* adding merb-cache  to merb-more, thanks booss
+* Adds merb_test_unit to init.rb when generating an app with --test
+* MERB_TEST_SUITE=test|spec for a pre-selected test suite for merb-gen app generator
+* added MERB_ORM info to merb-gen usage
+* Uses MERB_ORM env variable to preselect an ORM for config/init.rb
+* Freezer refactor.
+* Introduce the `freeze' rake task
+
 == 0.9.1 "Some are half-wild, and some are just outlaws." 2008-02-29
 * merb-action-args: Normalize calls to Merb.start
 * merb-assets: Adds a before_app_loads to merb-assets and fixes XHTML

@@ -5,11 +5,9 @@ require "merb-cache/cache-fragment"
 class Merb::Cache
   attr_reader  :config, :store
 
-  class Store
-    class NotFound < Exception #:nodoc:
-      def initialize(cache_store)
-        super("cache_store (#{cache_store}) not found (not implemented?)")
-      end
+  class StoreNotFound < Exception #:nodoc:
+    def initialize(cache_store)
+      super("cache_store (#{cache_store}) not found (not implemented?)")
     end
   end
 
@@ -28,6 +26,7 @@ class Merb::Cache
     #:store => "memcache",
     #:host => "127.0.0.1:11211",
     #:namespace => "merb_cache",
+    #:track_keys => true,
 
     #:store => "memory",
     # store could be: file, memcache, memory, database, dummy, ...
@@ -39,16 +38,16 @@ class Merb::Cache
   # Store#NotFound::
   #   If the cache_store mentionned in the config is unknown
   def start
-    @config = DEFAULT_CONFIG.merge Merb::Plugins.config[:merb_cache]
+    @config = DEFAULT_CONFIG.merge(Merb::Plugins.config[:merb_cache] || {})
     if @config[:disable] == true || Merb.environment == @config[:disable]
       config[:store] = "dummy"
     end
     @config[:cache_html_directory] ||= Merb.dir_for(:public) / "cache"
     require "merb-cache/cache-store/#{@config[:store]}"
-    @store = Merb::Cache::Store.new
+    @store = Merb::Cache.const_get("#{@config[:store].capitalize}Store").new
     Merb.logger.info("Using #{@config[:store]} cache")
   rescue LoadError
-    raise Merb::Cache::Store::NotFound, @config[:store].inspect
+    raise Merb::Cache::StoreNotFound, @config[:store].inspect
   end
 
   # Compute a cache key and yield it to the given block

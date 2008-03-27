@@ -31,7 +31,7 @@ describe "merb-cache-action" do
     c.body.strip.should == "test action4"
     c.cached?("/cache_controller/action4").should be_true
     c.cache_get("/cache_controller/action4").should == "test action4"
-    sleep 3
+    sleep 4
     c.cache_get("/cache_controller/action4").should be_nil
     c.cached_action?(:action => "action4").should be_false
   end
@@ -41,7 +41,7 @@ describe "merb-cache-action" do
     CACHE.cached_action?(:action => "action4", :params => %w(path to nowhere)).should be_false
     c = get("/cache_controller/action4/path/to/nowhere/")
     c.cached_action?(:action => "action4", :params => %w(path to nowhere)).should be_true
-    sleep 3
+    sleep 3.5
     c.cache_get("/cache_controller/action4/path/to/nowhere").should be_nil
     c.cached_action?(:action => "action4", :params => %w(path to nowhere)).should be_false
   end
