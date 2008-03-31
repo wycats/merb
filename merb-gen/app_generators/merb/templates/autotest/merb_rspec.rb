@@ -1,5 +1,7 @@
-# Adapted from Autotest::Rails
+# Adapted from Autotest::Rails, RSpec's autotest class, as well as merb-core's.
 require 'autotest'
+
+class RspecCommandError < StandardError; end
 
 class Autotest::MerbRspec < Autotest
   
@@ -23,7 +25,7 @@ class Autotest::MerbRspec < Autotest
     # Any changes to a file in the root of the 'lib' directory will run any 
     # model test with a corresponding name.
     add_mapping %r%^lib\/.*\.rb% do |filename, _|
-      files_matching Regexp.new("^#{model_test_for(filename)}$")
+      files_matching %r%#{model_test_for(filename)}$%
     end
     
     add_mapping %r%^spec/(spec_helper|shared/.*)\.rb$% do
@@ -102,29 +104,51 @@ class Autotest::MerbRspec < Autotest
     end
   end
   
-  ##
-  # Methods below this point are adapted from Auotest::Rspec
+  def failed_results(results)
+    results.scan(/^\d+\)\n(?:\e\[\d*m)?(?:.*?Error in )?'([^\n]*)'(?: FAILED)?(?:\e\[\d*m)?\n(.*?)\n\n/m)
+  end
+
+  def handle_results(results)
+    @failures = failed_results(results)
+    @files_to_test = consolidate_failures @failures
+    unless $TESTING
+      if @files_to_test.empty?
+        hook :green
+      else
+        hook :red
+      end
+    end
+    @tainted = true unless @files_to_test.empty?
+  end
   
   def consolidate_failures(failed)
     filters = Hash.new { |h,k| h[k] = [] }
     failed.each do |spec, failed_trace|
-      if f = test_files_for(failed).find { |f| failed_trace =~ Regexp.new(f) } then
-        filters[f] << spec
-        break
+      find_files.keys.select { |f| f =~ /spec\// }.each do |f|
+        if failed_trace =~ Regexp.new(f)
+          filters[f] << spec
+          break
+        end
       end
     end
-    return filters
+    filters
   end
 
   def make_test_cmd(files_to_test)
-    return "#{ruby} -S #{spec_command} #{add_options_if_present} #{files_to_test.keys.flatten.join(' ')}"
+    [
+      ruby, 
+      "-S", 
+      spec_command, 
+      add_options_if_present, 
+      files_to_test.keys.flatten.join(' ')
+    ].join(" ")
   end
   
   def add_options_if_present
     File.exist?("spec/spec.opts") ? "-O spec/spec.opts " : ""
   end
 
-  # Finds the proper spec command to use.  Precendence is set in the
+  # Finds the proper spec command to use. Precendence is set in the
   # lazily-evaluated method spec_commands.  Alias + Override that in
   # ~/.autotest to provide a different spec command then the default
   # paths provided.
@@ -134,7 +158,7 @@ class Autotest::MerbRspec < Autotest
 
       raise RspecCommandError, "No spec command could be found!" unless @spec_command
 
-      @spec_command.gsub! File::SEPARATOR, separator if separator
+      @spec_command.gsub!(File::SEPARATOR, separator) if separator
     end
     @spec_command
   end
@@ -182,7 +206,7 @@ private
   #   => "form_view_spec.rb" # If you're running a RSpec-like suite
   def test_for(filename, kind_of_test) # :nodoc:
     name  = [filename]
-    name << kind_of_test.to_s unless if == :view
+    name << kind_of_test.to_s if kind_of_test == :view
     name << "spec"
     return name.join("_") + ".rb"
   end
