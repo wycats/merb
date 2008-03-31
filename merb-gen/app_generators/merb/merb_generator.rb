@@ -33,4 +33,8 @@ class MerbGenerator < Merb::GeneratorBase
 
   def display_framework_selections
   end
+  
+  def create_dirs
+    m.directory 'log'
+  end
 end
