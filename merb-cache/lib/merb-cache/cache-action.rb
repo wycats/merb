@@ -28,7 +28,7 @@ module Merb::Cache::ControllerClassMethods
   # ==== Example
   #   cache_actions :mostly_static, [:barely_dynamic, 10]
   def cache_actions(*actions)
-    if actions.any? && Merb::Cache.cached_actions.empty?
+    if actions.any? && !Merb::Cache.cached_actions.key?(controller_name)
       before(:cache_action_before)
       after(:cache_action_after)
     end

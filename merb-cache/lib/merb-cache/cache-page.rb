@@ -29,7 +29,7 @@ module Merb::Cache::ControllerClassMethods
   # ==== Example
   #   cache_pages :mostly_static, [:barely_dynamic, 10]
   def cache_pages(*pages)
-    if pages.any? && Merb::Cache.cached_pages.empty?
+    if pages.any? && !Merb::Cache.cached_pages.key?(controller_name)
       before(:cache_page_before)
       after(:cache_page_after)
     end
