@@ -81,7 +81,7 @@ end
 desc "Install the merb-more sub-gems"
 task :install_gems do
   gems.each do |dir|
-    Dir.chdir(dir){ sh "#{SUDO} rake install" }
+    Dir.chdir(dir){ sh "rake install" }
   end
 end
 
