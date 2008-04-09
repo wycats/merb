@@ -28,7 +28,7 @@ module Merb::Cache::ControllerClassMethods
   # ==== Example
   #   cache_actions :mostly_static, [:barely_dynamic, 10]
   def cache_actions(*actions)
-    if actions.any? && Merb::Cache.cached_actions.empty?
+    if actions.any? && !Merb::Cache.cached_actions.key?(controller_name)
       before(:cache_action_before)
       after(:cache_action_after)
     end
@@ -77,6 +77,12 @@ module Merb::Cache::ControllerInstanceMethods
     true
   end
 
+  # You can call this method if you need to prevent caching the action
+  # after it has been rendered.
+  def abort_cache_action
+    @capture_action = false
+  end
+
   private
 
   # Called by the before and after filters. Stores or recalls a cache entry.
@@ -96,8 +102,7 @@ module Merb::Cache::ControllerInstanceMethods
     action = action_name.to_sym
     actions = Merb::Controller._cache.cached_actions[controller]
     return unless actions && actions.key?(action)
-    path = request.path
-    path.chop! if path[-1] == "/"
+    path = request.path.chomp("/")
     path = "index" if path.empty?
     if data
       from_now = Merb::Controller._cache.cached_actions[controller][action]
@@ -120,8 +125,8 @@ module Merb::Cache::ControllerInstanceMethods
 
   # after filter
   def cache_action_after
-    # takes the body of the response
-    # put it in cache only if the cache entry expired or doesn't exist
-    _cache_action(body) if @capture_action
+    # takes the body of the response and put it in cache
+    # if the cache entry expired, if it doesn't exist or status is 200
+    _cache_action(body) if @capture_action && status == 200
   end
 end

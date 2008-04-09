@@ -16,4 +16,8 @@ class ActionArgs < Merb::Controller
     "#{foo} #{bar} #{baz}"
   end
   
+  define_method :dynamic_define_method do
+    "mos def"
+  end
+  
 end

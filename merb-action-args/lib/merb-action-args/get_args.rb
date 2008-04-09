@@ -22,11 +22,19 @@ class ParseTreeArray < Array #:nodoc:
   end
   
   def get_args
-    arg_node = deep_array_node(:args)
-    return nil unless arg_node
-    args = arg_node.arg_nodes
-    default_node = arg_node.deep_array_node(:block)
-    return args unless default_node
+    if arg_node = deep_array_node(:args)
+      # method defined with def keyword
+      args = arg_node.arg_nodes
+      default_node = arg_node.deep_array_node(:block)
+      return args unless default_node
+    else
+      # assuming method defined with Module#define_method
+      return []
+    end
+    
+    # if it was defined with def, and we found the default_node,
+    # that should bring us back to regularly scheduled programming..
+    
     lasgns = default_node[1..-1]
     lasgns.each do |asgn|
       args.assoc(asgn[1]) << eval(RubyToRuby.new.process(asgn[2]))

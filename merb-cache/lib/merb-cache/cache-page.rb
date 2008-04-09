@@ -29,7 +29,7 @@ module Merb::Cache::ControllerClassMethods
   # ==== Example
   #   cache_pages :mostly_static, [:barely_dynamic, 10]
   def cache_pages(*pages)
-    if pages.any? && Merb::Cache.cached_pages.empty?
+    if pages.any? && !Merb::Cache.cached_pages.key?(controller_name)
       before(:cache_page_before)
       after(:cache_page_after)
     end
@@ -85,6 +85,12 @@ module Merb::Cache::ControllerInstanceMethods
     FileUtils.rm_rf(Dir.glob(Merb::Controller._cache.config[:cache_html_directory] / "*"))
   end
 
+  # You can call this method if you need to prevent caching the page
+  # after it has been rendered.
+  def abort_cache_page
+    @capture_page = false
+  end
+
   private
 
   # Called by the before and after filters. Stores or recalls a cache entry.
@@ -105,8 +111,7 @@ module Merb::Cache::ControllerInstanceMethods
     action = action_name.to_sym
     pages = Merb::Controller._cache.cached_pages[controller]
     return unless pages && pages.key?(action)
-    path = request.path
-    path.chop! if path[-1] == "/"
+    path = request.path.chomp("/")
     path = "index" if path.empty?
     cache_file = Merb::Controller._cache.config[:cache_html_directory] / "#{path}.html"
     if data
@@ -115,12 +120,16 @@ module Merb::Cache::ControllerInstanceMethods
       _expire_in = pages[action][0]
       pages[action][1] = _expire_in.minutes.from_now unless _expire_in.nil?
       cache_write_page(cache_file, data)
+      Merb.logger.info("cache: set (#{path})")
     else
       @capture_page = false
       if File.file?(cache_file)
         _data = cache_read_page(cache_file)
         _expire_in, _expire_at = pages[action]
-        throw(:halt, _data) if _expire_in.nil? || Time.now < _expire_at
+        if _expire_in.nil? || Time.now < _expire_at
+          Merb.logger.info("cache: hit (#{path})")
+          throw(:halt, _data)
+        end
         FileUtils.rm_f(cache_file)
       end
       @capture_page = true
@@ -169,7 +178,7 @@ module Merb::Cache::ControllerInstanceMethods
   # after filter
   def cache_page_after
     # takes the body of the response
-    # put it in cache only if the cache entry expired or doesn't exist
-    _cache_page(body) if @capture_page
+    # if the cache entry expired, if it doesn't exist or status is 200
+    _cache_page(body) if @capture_page && status == 200
   end
 end

@@ -21,13 +21,13 @@ end
 ### if you need a database.
 
 ### Uncomment for DataMapper ORM
-# use_orm :datamapper
+<%= "# " unless default_orm?(:datamapper) %>use_orm :datamapper
 
 ### Uncomment for ActiveRecord ORM
-# use_orm :activerecord
+<%= "# " unless default_orm?(:activerecord) %>use_orm :activerecord
 
 ### Uncomment for Sequel ORM
-# use_orm :sequel
+<%= "# " unless default_orm?(:sequel) %>use_orm :sequel
 
 
 ### This defines which test framework the generators will use
@@ -38,8 +38,8 @@ end
 ### merb_rspec is installed by default if you did gem install
 ### merb.
 ###
-# use_test :test_unit
-use_test :<%= assigns[:test_type] %><%= ", 'merb_test_unit'" if assigns[:test_type] == "test_unit" %>
+<%= "# " unless default_test_suite?(:test) %>use_test :test_unit
+<%= "# " unless default_test_suite?(:spec) %>use_test :rspec
 
 ### Add your other dependencies here
 

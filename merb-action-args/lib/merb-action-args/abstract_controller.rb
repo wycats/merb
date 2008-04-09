@@ -12,7 +12,7 @@ class Merb::AbstractController
     def inherited(klass)
       klass.action_argument_list = Hash.new do |h,k| 
         h[k] = ParseTreeArray.translate(klass, k.to_sym).get_args
-      end      
+      end
       old_inherited(klass)
     end
   end
@@ -31,6 +31,6 @@ class Merb::AbstractController
       raise BadRequest unless p || default
       p ? params[arg.to_sym] : default
     end
-    send(action, *args)
+    __send__(action, *args)
   end
 end

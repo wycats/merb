@@ -62,7 +62,7 @@ describe "merb-cache-fragment" do
   it "should expire entry after 3 seconds" do
     CACHE.cache_set("timed_key", "vanish in 3 seconds", 0.05)
     CACHE.cache_get("timed_key").should == "vanish in 3 seconds"
-    sleep 3
+    sleep 3.5
     CACHE.cache_get("timed_key").should be_nil
   end
 

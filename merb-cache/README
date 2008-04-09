@@ -16,6 +16,15 @@ Implemented cache stores:
 - file
 - database (sequel, datamapper, activerecord)
 
+== Quick intro
+  With fragment caching, you can mix dynamic and static content.
+
+  With action caching, the whole template is cached
+  but the before filters are still processed.
+
+  With page caching, the whole template is put in html files in a special
+  directory in order to be handled directly without triggering Merb.
+
 == Quick API
 
 === Merb::Controller class methods
@@ -53,9 +62,15 @@ Implemented cache stores:
   # Don't forget to look at the specs !!
 
 == Specs
+  $ rake specs:<cache_store>
+  example:
+  $ rake specs:memory
+  $ rake specs:file
+  or just:
   $ cd spec
   $ STORE=<cache_store> spec merb-cache_spec.rb
-  # cache_store can be: memory, memcache, file, sequel, datamapper, activerecord
+  # cache_store can be:
+  #   memory, memcache, file, sequel, datamapper, activerecord
 
 == Sample configuration
 
@@ -65,15 +80,19 @@ Implemented cache stores:
     #:store => "database",
     #:table_name => "merb_cache",
 
+    #:disable => "development", # disable merb-cache in development
+    #:disable => true, # disable merb-cache in all environments
+
     :store => "file",
     :cache_directory => Merb.root_path("tmp/cache"),
 
     #:store => "memcache",
     #:host => "127.0.0.1:11211",
     #:namespace => "merb_cache",
+    #:no_tracking => "false",
 
     #:store => "memory",
-    # store could be: file, memcache, memory, database, ...
+    # store could be: file, memcache, memory, database, dummy, ...
   }
 
 
