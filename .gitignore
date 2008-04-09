@@ -12,3 +12,4 @@ coverage
 */coverage
 bundle
 lib/merb-more.rb
+*.DS_Store
