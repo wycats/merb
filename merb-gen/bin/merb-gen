@@ -30,10 +30,6 @@ if ARGV.empty?
 elsif ARGV[0] && ARGV[0] == "plugin"
   Merb::ApplicationGenerator.run ARGV[1], ARGV[2..-1], "merb_plugin", command || "generate"
 
-# merb-gen frozen-merb
-elsif ARGV[0] && ARGV[0] == "frozen-merb"
-  Merb::ComponentGenerator.run "frozen-merb", ["frozen-merb"], "freezer", command || "generate"
-
 # merb-gen controller foo
 # merb-gen resource foo --test
 elsif ARGV[1] && ARGV[1] !~ /^-/
