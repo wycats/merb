@@ -1,0 +1,46 @@
+merb-freezer
+============
+
+This plugin lets you freeze Merb and run it using the frozen gems. 
+
+Why would you want to freeze Merb?
+------------------------------------
+
+* You might have multiple applications on the same server/slice/cluster. Different applications might require different versions of Merb. 
+
+* You might work with a team of developers and want everyone to be using the same Merb version.
+
+* You are using Merb Edge, you want to make sure the production server and your co workers are developing/testing against the same revision.
+
+
+What are your options?
+-----------------------
+
+* You just want to lock your app to a specific version. For instance version merb-core 0.9.2
+
+* You only want to use frozen gems located in /framework or /gems
+
+
+How to lock your app?
+---------------------
+
+_TODO_
+
+How to use frozen gems
+----------------------
+
+Instead of starting merb by typing "merb" in your console, type "frozen-merb" and that's it :)
+If frozen-merb can't find frozen gems in /framework or /gems then Merb will start normally using the system's gems.
+
+How to freeze your gems?
+------------------------
+
+In your init.rb file, require this plugin.
+
+    require 'merb-freezer'
+
+You now get a new set of rake tasks:
+
+    rake freeze:core            # Freeze core from git://github.com/wycats/merb...
+    rake freeze:more            # Freeze more from git://github.com/wycats/merb...
+    rake freeze:plugins         # Freeze plugins from git://github.com/wycats/m...
