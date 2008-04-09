@@ -38,9 +38,9 @@ class Freezer
       exit 1
     end
 
-    unless File.directory?(framework_dir)
+    unless File.directory?(Freezer.framework_dir)
       puts "Creating framework directory ..."
-      FileUtils.mkdir_p(framework_dir)
+      FileUtils.mkdir_p(Freezer.framework_dir)
     end
 
     if managed?
@@ -51,7 +51,7 @@ class Freezer
       end
     else
       puts "Creating submodule for #{@component} ..."
-      sh "git-submodule --quiet add #{components[@component.gsub("merb-", '')]} #{File.basename(framework_dir)}/#{@component}" 
+      sh "git-submodule --quiet add #{Freezer.components[@component.gsub("merb-", '')]} #{File.basename(Freezer.framework_dir)}/#{@component}" 
       if $?.success?
         sh("git-submodule init")
       else
@@ -64,12 +64,12 @@ class Freezer
   protected
 
   def in_submodule?
-    return false unless File.exists?(gitmodules)
-    File.read(gitmodules) =~ %r![submodule "#{framework_dir}/#{@component}"]!
+    return false unless File.exists?(Freezer.gitmodules)
+    File.read(Freezer.gitmodules) =~ %r![submodule "#{framework_dir}/#{@component}"]!
   end
 
   def managed?
-    File.directory?(File.join(framework_dir, @component)) || in_submodule?
+    File.directory?(File.join(Freezer.framework_dir, @component)) || in_submodule?
   end
 
   def in_path?(bin)
