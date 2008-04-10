@@ -1,4 +1,16 @@
+module ExtraActions
+  def self.included(base)
+    base.show_action(:funky_inherited_method)
+  end
+  
+  def funky_inherited_method(foo, bar)
+    "#{foo} #{bar}"
+  end
+end
+
+
 class ActionArgs < Merb::Controller
+  include ExtraActions
   
   def index(foo)
     foo

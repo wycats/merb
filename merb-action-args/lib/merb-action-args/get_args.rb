@@ -2,9 +2,18 @@ require 'ruby2ruby'
 
 class ParseTreeArray < Array #:nodoc:
   def self.translate(*args)
-    self.new(ParseTree.translate(*args))
+    sexp = ParseTree.translate(*args)
+    # ParseTree.translate returns nil if called on an inherited method, so walk
+    # up the inheritance chain to find the class that the was defined in
+    unless sexp.first
+      klass = args.first.ancestors.detect do |klass| 
+        klass.public_instance_methods(false).include?(args.last.to_s)
+      end
+      sexp = ParseTree.translate(klass, args.last) if klass
+    end
+    self.new(sexp)
   end
-
+  
   def deep_array_node(type = nil)
     each do |node|
       return ParseTreeArray.new(node) if node.is_a?(Array) && (!type || node[0] == type)
