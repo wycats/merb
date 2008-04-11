@@ -20,7 +20,7 @@ module Merb
     #     # => <a href="http://www.ruby-lang.org" class="special" target="blank">The Ruby home page</a>
     #
     #   link_to p.title, "/blog/show/#{p.id}"
-    #     # => <a href="blog/show/13">The Entry Title</a>
+    #     # => <a href="/blog/show/13">The Entry Title</a>
     #
     def link_to(name, url='', opts={})
       opts[:href] ||= url
@@ -102,7 +102,7 @@ module Merb
     #   link_to_function('Add to cart', "item_total += 1; alert('Item added!');")
     #     # => <a href="#" onclick="item_total += 1; alert('Item added!'); return false;">Add to cart</a>
     def link_to_function(name, function)
-      %{<a href="#" onclick="#{function}; return false;">#{name}</a>}
+      %{<a href="#" onclick="#{function.chomp(";")}; return false;">#{name}</a>}
     end
     
     # ==== Parameters
@@ -334,7 +334,7 @@ module Merb
     #   include_required_css
     #   # => <link href="/stylesheets/style.css" media="all" rel="Stylesheet" type="text/css"/>
     #
-    #   # my_action.herb has a call to require_js 'style', 'ie-specific'
+    #   # my_action.herb has a call to require_css 'style', 'ie-specific'
     #   # File: layout/application.html.erb
     #   include_required_css
     #   # => <link href="/stylesheets/style.css" media="all" rel="Stylesheet" type="text/css"/>
@@ -466,7 +466,7 @@ module Merb
     # String:: if only a single path is requested
     # ==== Examples
     #  uniq_path("/javascripts/my.js","/javascripts/my.css")
-    #  #=> ["http://assets2.my-awesome-domain.com/javascripts/my.js", "http://assets2.my-awesome-domain.com/javascripts/my.css"]
+    #  #=> ["http://assets2.my-awesome-domain.com/javascripts/my.js", "http://assets1.my-awesome-domain.com/javascripts/my.css"]
     #
     #  uniq_path(["/javascripts/my.js","/stylesheets/my.css"])
     #  #=> ["http://assets2.my-awesome-domain.com/javascripts/my.js", "http://assets1.my-awesome-domain.com/stylesheets/my.css"]
@@ -482,7 +482,7 @@ module Merb
     def uniq_path(*assets)      
       paths = []
       assets.collect.flatten.each do |filename|
-        paths.push(UniqueAssetPath.build(filename))
+        paths.push(Merb::Assets::UniqueAssetPath.build(filename))
       end
       paths.length > 1 ? paths : paths.first
     end
@@ -504,7 +504,7 @@ module Merb
     def uniq_js_path(*assets)
       paths = []
       assets.collect.flatten.each do |filename|
-        paths.push(UniqueAssetPath.build(asset_path(:javascript,filename,true)))
+        paths.push(Merb::Assets::UniqueAssetPath.build(asset_path(:javascript,filename)))
       end
       paths.length > 1 ? paths : paths.first
     end
@@ -526,7 +526,7 @@ module Merb
     def uniq_css_path(*assets)
       paths = []
       assets.collect.flatten.each do |filename|
-        paths.push(UniqueAssetPath.build(asset_path(:stylesheet,filename,true)))
+        paths.push(Merb::Assets::UniqueAssetPath.build(asset_path(:stylesheet,filename)))
       end
       paths.length > 1 ? paths : paths.first
     end
@@ -542,7 +542,7 @@ module Merb
     #  uniq_js_tag("my")
     #  #=> <script type="text/javascript" src="http://assets2.my-awesome-domain.com/javascripts/my.js"></script>
     def uniq_js_tag(*assets)
-      js_include_tag(uniq_js_path(assets))
+      js_include_tag(*uniq_js_path(assets))
     end
     
     # ==== Parameters
@@ -556,7 +556,7 @@ module Merb
     #  uniq_css_tag("my")
     #  #=> <link href="http://assets2.my-awesome-domain.com/stylesheets/my.css" type="text/css" />
     def uniq_css_tag(*assets)
-      css_include_tag(uniq_css_path(assets))
+      css_include_tag(*uniq_css_path(assets))
     end
   end
 end
