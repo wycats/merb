@@ -1,3 +1,6 @@
+require 'merb-freezer/freezer'
+require 'fileutils'
+
 # make sure we're running inside Merb
 if defined?(Merb::Plugins)
 
