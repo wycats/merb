@@ -45,7 +45,9 @@ module Merb
         if filename !~ /#{'\\' + ASSET_FILE_EXTENSIONS[asset_type]}\Z/
           filename << ASSET_FILE_EXTENSIONS[asset_type]
         end
-        filename = "/#{asset_type}s/#{filename}"
+        if filename !~ %r{^https?://}
+          filename = "/#{asset_type}s/#{filename}"
+        end
         if local_path
           return "public#{filename}"
         else
@@ -59,8 +61,6 @@ module Merb
     # for downloading static files (css, js, images...)
     class UniqueAssetPath
       class << self
-        @@config = Merb::Plugins.config[:asset_helpers]
-        
         # Builds the path to the file based on the name
         # 
         # ==== Parameters
@@ -74,9 +74,10 @@ module Merb
         #   # => "https://assets5.my-awesome-domain.com/javascripts/my_fancy_script.js"
         #
         def build(filename)
-          #%{#{(USE_SSL ? 'https' : 'http')}://#{sprintf(@@config[:asset_domain],self.calculate_host_id(file))}.#{@@config[:domain]}/#{filename}}
-          path = @@config[:use_ssl] ? 'https://' : 'http://'
-          path << sprintf(@@config[:asset_domain],self.calculate_host_id(filename)) << ".#{@@config[:domain]}"
+          config = Merb::Plugins.config[:asset_helpers]
+          #%{#{(USE_SSL ? 'https' : 'http')}://#{sprintf(config[:asset_domain],self.calculate_host_id(file))}.#{config[:domain]}/#{filename}}
+          path = config[:use_ssl] ? 'https://' : 'http://'
+          path << sprintf(config[:asset_domain],self.calculate_host_id(filename)) << ".#{config[:domain]}"
           path << "/" if filename.index('/') != 0
           path << filename
         end
@@ -89,7 +90,7 @@ module Merb
           filename.each_byte {|byte|
             ascii_total += byte
           }
-          (ascii_total % @@config[:max_hosts] + 1)
+          (ascii_total % Merb::Plugins.config[:asset_helpers][:max_hosts] + 1)
         end
       end
     end
