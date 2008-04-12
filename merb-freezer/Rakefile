@@ -25,7 +25,7 @@ spec = Gem::Specification.new do |s|
   s.bindir = "bin"
   s.executables = %w( frozen-merb )
   s.autorequire = PLUGIN
-  s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,specs}/**/*")
+  s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,spec}/**/*")
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|
@@ -34,7 +34,7 @@ end
 
 desc "install merb-freezer"
 task :install => [:package] do
-  sh %{sudo gem install pkg/#{NAME}-#{VERSION}}
+  sh %{sudo gem install pkg/#{NAME}-#{VERSION} --no-update-sources}
 end
 
 namespace :jruby do
