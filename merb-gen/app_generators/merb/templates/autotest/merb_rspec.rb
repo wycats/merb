@@ -168,10 +168,12 @@ class Autotest::MerbRspec < Autotest
   #
   #   * bin/spec
   #   * default spec bin/loader installed in Rubygems
+  #   * default command executed when you type `spec`
   def spec_commands
     [
       File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'bin', 'spec')),
-      File.join(Config::CONFIG['bindir'], 'spec')
+      File.join(Config::CONFIG['bindir'], 'spec'),
+      `which spec`.chomp
     ]
   end
   
