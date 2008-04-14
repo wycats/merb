@@ -30,13 +30,13 @@ module FreezerMode
       puts "#{component} seems to be already managed by git-submodule."
       if @update
         puts "Trying to update #{component} ..."
-        `cd #{framework_dir}/#{component} && git-pull`
+        `cd #{Freezer.framework_dir}/#{component} && git-pull`
       else
         puts "you might want to call this rake task using UPDATE=true if you wish to update the frozen gems using this task"
       end
     else
       puts "Creating submodule for #{component} ..."
-      `"git-submodule --quiet add #{Freezer.components[component.gsub("merb-", '')]} #{File.basename(Freezer.framework_dir)}/#{component}"` 
+      `git-submodule add #{Freezer.components[component.gsub("merb-", '')]} #{Dir.pwd}/#{File.basename(Freezer.framework_dir)}/#{component}` 
       if $?.success?
         `("git-submodule init")`
       else
