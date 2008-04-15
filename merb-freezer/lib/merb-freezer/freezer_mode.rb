@@ -26,7 +26,7 @@ module FreezerMode
 
     create_framework_dir
 
-    if managed?
+    if managed?(component)
       puts "#{component} seems to be already managed by git-submodule."
       if @update
         puts "Trying to update #{component} ..."
@@ -36,9 +36,9 @@ module FreezerMode
       end
     else
       puts "Creating submodule for #{component} ..."
-      `git-submodule add #{Freezer.components[component.gsub("merb-", '')]} #{Dir.pwd}/#{File.basename(Freezer.framework_dir)}/#{component}` 
+      `cd #{Dir.pwd} & git-submodule --quiet add #{Freezer.components[component.gsub("merb-", '')]} #{File.basename(Freezer.framework_dir)}/#{component}` 
       if $?.success?
-        `("git-submodule init")`
+        `git-submodule init`
       else
         # Should this instead be a raise?
         $stderr.puts("ERROR: unable to create submodule for #{component} - you might want to freeze using MODE=rubygems")
@@ -69,14 +69,14 @@ module FreezerMode
   protected
 
   # returns true if submodules are used
-  def in_submodule?
+  def in_submodule?(component)
     return false unless File.exists?(gitmodules)
-    File.read(gitmodules) =~ %r![submodule "#{framework_dir}/#{@component}"]!
+    File.read(gitmodules) =~ %r![submodule "#{Freezer.framework_dir}/#{component}"]!
   end
 
   # returns true if the component is in a submodule
-  def managed?
-    File.directory?(File.join(Freezer.framework_dir, @component)) || in_submodule?
+  def managed?(component)
+    File.directory?(File.join(Freezer.framework_dir, component)) || in_submodule?(component)
   end
   
   def in_path?(bin)
