@@ -9,3 +9,13 @@ namespace :freeze do
     end
   end
 end
+
+namespace :freeze do
+  
+  desc "freeze a gem locally. Usage: rake freeze:gem GEM=git://github.com/mislav/will_paginate.git"
+  task :gem do
+    raise "Please specify the gem you want to freeze using GEM=git://github.com/mislav/will_paginate.git or GEM=merbium" unless ENV["GEM"]
+    Freezer.freeze(ENV["GEM"], ENV["UPDATE"], ENV["MODE"])
+  end
+  
+end
