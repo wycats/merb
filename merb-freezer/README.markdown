@@ -32,6 +32,7 @@ How to use frozen gems
 Instead of starting merb by typing "merb" in your console, type "frozen-merb" and that's it :)
 If frozen-merb can't find frozen gems in /framework or /gems then Merb will start normally using the system's gems.
 
+
 How to freeze your gems?
 ------------------------
 
@@ -44,3 +45,22 @@ You now get a new set of rake tasks:
     rake freeze:core            # Freeze core from git://github.com/wycats/merb...
     rake freeze:more            # Freeze more from git://github.com/wycats/merb...
     rake freeze:plugins         # Freeze plugins from git://github.com/wycats/m...
+
+You can freeze components using 2 modes, Git Submodules or rubygems:
+
+    rake freeze:core MODE=rubygems
+or
+    rake freeze:core MODE=submodules  (default mode)
+    
+Wait, that's not it, you can also update your frozen gems using UPDATE=true:
+
+
+    rake freeze:core UPDATE=true
+    
+What about your other gems? Same thing, you can do:
+
+    rake freeze:gem GEM=merbful_authentication
+    
+or 
+
+   rake freeze:gem GEM=git://github.com/ivey/merb-for-rails.git 
