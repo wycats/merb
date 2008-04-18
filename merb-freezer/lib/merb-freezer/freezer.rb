@@ -58,7 +58,7 @@ class Freezer
       else
         @mode = 'rubygems'
       end
-      @freezer_dir = framework_component? ? @@framework_dir : @@gems_dir
+      @freezer_dir = framework_component? ? Freezer.framework_dir : Freezer.gems_dir
     end
     
     # Calls the freezer mode on the component

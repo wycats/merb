@@ -3,6 +3,7 @@
 __DIR__ = Dir.getwd
 framework = File.join(__DIR__,"framework")
 
+# load merb from the framework folder
 if File.directory?(framework)
   puts "Running from frozen framework"
   core = File.join(framework,"merb-core")
@@ -25,6 +26,7 @@ if File.directory?(framework)
   require "merb-core/core_ext/kernel"
   require "merb-core/core_ext/rubygems"
 else
+  # load from the gems folder
   gem = Dir["./gems/gems/merb-core-*"].last
   if gem
     require gem + "/lib/merb-core/core_ext/kernel"
@@ -35,6 +37,14 @@ else
   else
     puts "Can't run frozen Merb from framework/ and/or gems/ please freeze Merb"
     puts "Merb will try to start using the system gems"
+  end
+end
+
+# load submodule gems
+gem_submodules_dir = File.join(__DIR__,"gems/submodules")
+if File.directory?(gem_submodules_dir)
+  Dir["#{gem_submodules_dir}/*"].each do |dir|
+    $:.push File.join(dir,"lib")
   end
 end
 

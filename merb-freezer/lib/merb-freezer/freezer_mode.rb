@@ -36,7 +36,7 @@ module FreezerMode
       if framework_component?
         `cd #{Dir.pwd} & git-submodule --quiet add #{Freezer.components[@component.gsub("merb-", '')]} #{File.basename(freezer_dir)}/#{@component}` 
       else
-        `cd #{Dir.pwd} & git-submodule --quiet add #{@component} gems/gems/#{@component.match(/.*\/(.*)\..{3}$/)[1]}` 
+        `cd #{Dir.pwd} & git-submodule --quiet add #{@component} gems/submodules/#{@component.match(/.*\/(.*)\..{3}$/)[1]}` 
       end
       if $?.success?
         `git-submodule init`
