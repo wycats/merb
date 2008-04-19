@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 
-__DIR__ = Dir.getwd
+root = nil
+%w[-m --merb-root].detect { |o| root = ARGV.index(o) }
+__DIR__ = root ? ARGV[root+1] : Dir.getwd
 framework = File.join(__DIR__,"framework")
 
 # load merb from the framework folder
