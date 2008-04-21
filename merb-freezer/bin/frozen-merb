@@ -11,18 +11,18 @@ if File.directory?(framework)
   core = File.join(framework,"merb-core")
   if File.directory?(core)
     puts "using merb-core from #{core}"
-    $:.push File.join(core,"lib")
+    $:.unshift File.join(core,"lib")
   end
   more = File.join(framework,"merb-more")
   if File.directory?(more)
     Dir.new(more).select {|d| d =~ /merb-/}.each do |d|
-      $:.push File.join(more,d,'lib')
+      $:.unshift File.join(more,d,'lib')
     end
   end
   plugins = File.join(framework,"merb-plugins")
   if File.directory?(plugins)
     Dir.new(plugins).select {|d| d =~ /merb_/}.each do |d|
-      $:.push File.join(plugins,d,'lib')
+      $:.unshift File.join(plugins,d,'lib')
     end
   end
   require "merb-core/core_ext/kernel"
@@ -46,7 +46,7 @@ end
 gem_submodules_dir = File.join(__DIR__,"gems/submodules")
 if File.directory?(gem_submodules_dir)
   Dir["#{gem_submodules_dir}/*"].each do |dir|
-    $:.push File.join(dir,"lib")
+    $:.unshift File.join(dir,"lib")
   end
 end
 
