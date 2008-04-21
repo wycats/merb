@@ -56,7 +56,7 @@ class Merb::GeneratorBase < RubiGen::Base
     puts
     puts "Your app will use the #{@assigns[:test_type]} test framework."
     if Gem.cache.search("merb_#{@assigns[:test_type]}").size == 0
-      puts "You need to install the merb_#{@assigns[:test_type]} gem."
+      puts "You need to install the merb_#{@assigns[:test_type]} gem." unless @assigns[:test_type] == 'rspec'
     end
     puts
   end
