@@ -32,6 +32,8 @@ How to use frozen gems
 Instead of starting merb by typing "merb" in your console, type "frozen-merb" and that's it :)
 If frozen-merb can't find frozen gems in /framework or /gems then Merb will start normally using the system's gems.
 
+You can also specify the path to use to start your frozen app by passing --merb-root or -m argument and the path to your app. (for god/monit scripts for instance)
+
 
 How to freeze your gems?
 ------------------------
