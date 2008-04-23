@@ -181,9 +181,17 @@ module Merb
       def bundle!
         # TODO: push it out to the helper level so we don't have to create the helper object.
         unless self.class.cached_bundle?(@bundle_name)
+          # skip regeneration of new bundled files - preventing multiple merb apps stepping on eachother
+          # file needs to be older than 60 seconds to be regenerated
+          if File.exist?(@bundle_filename) && File.mtime(@bundle_filename) >= Time.now - 60
+            return @bundle_name # serve the old file for now - to be regenerated later
+          end
           bundle_files(@bundle_filename, *@files)
           self.class.callbacks.each { |c| c.call(@bundle_filename) }
-          self.class.cache_bundle(@bundle_name) if File.exist?(@bundle_filename)
+          if File.exist?(@bundle_filename)
+            Merb.logger.info("Assets: bundled :#{@bundle_name} into #{File.basename(@bundle_filename)}")
+            self.class.cache_bundle(@bundle_name)
+          end
         end
         return @bundle_name
       end
@@ -199,7 +207,9 @@ module Merb
       # *files<String>:: Filenames to be bundled.
       def bundle_files(filename, *files)
         File.open(filename, "w") do |f|
+          f.flock(File::LOCK_EX)
           files.each { |file| f.puts(File.read(file)) }
+          f.flock(File::LOCK_UN)
         end
       end
       

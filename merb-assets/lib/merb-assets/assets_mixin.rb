@@ -319,8 +319,13 @@ module Merb
     #
     def include_required_js(options = {})
       return '' if @required_js.nil?
-      options = options.merge(@required_js.last) if @required_js.last.is_a?(Hash)
-      js_include_tag(*(@required_js[0..-2] + [options]))
+      if @required_js.last.is_a?(Hash)
+        req = @required_js[0..-2]
+        options = options.merge(@required_js.last)
+      else
+        req = @required_js
+      end
+      js_include_tag(*(req + [options]))
     end
     
     # A method used in the layout of an application to create +<link>+ tags for
@@ -353,8 +358,13 @@ module Merb
     #
     def include_required_css(options = {})
       return '' if @required_css.nil?
-      options = options.merge(@required_css.last) if @required_css.last.is_a?(Hash)
-      css_include_tag(*(@required_css[0..-2] + [options]))
+      if @required_css.last.is_a?(Hash)
+        req = @required_css[0..-2]
+        options = options.merge(@required_css.last)
+      else
+        req = @required_css
+      end
+      css_include_tag(*(req + [options]))
     end
     
     # ==== Parameters
