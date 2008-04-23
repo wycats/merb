@@ -296,6 +296,10 @@ module Merb
     # 
     # ==== Parameters
     # options<Hash>:: Options to pass to js_include_tag.
+    #
+    # ==== Options
+    # :bundle<~to_s>::
+    #   The name of the bundle the scripts should be combined into.
     # 
     # ==== Returns
     # String:: The JavaScript tag.
@@ -315,7 +319,8 @@ module Merb
     #
     def include_required_js(options = {})
       return '' if @required_js.nil?
-      js_include_tag(*(@required_js + [options]))
+      options = options.merge(@required_js.last) if @required_js.last.is_a?(Hash)
+      js_include_tag(*(@required_js[0..-2] + [options]))
     end
     
     # A method used in the layout of an application to create +<link>+ tags for
@@ -327,6 +332,12 @@ module Merb
     # 
     # ==== Returns
     # String:: The CSS tag.
+    #
+    # ==== Options
+    # :bundle<~to_s>::
+    #   The name of the bundle the stylesheets should be combined into.
+    # :media<~to_s>::
+    #   The media attribute for the generated link element. Defaults to :all.
     # 
     # ==== Examples
     #   # my_action.herb has a call to require_css 'style'
@@ -342,7 +353,8 @@ module Merb
     #
     def include_required_css(options = {})
       return '' if @required_css.nil?
-      css_include_tag(*(@required_css + [options]))
+      options = options.merge(@required_css.last) if @required_css.last.is_a?(Hash)
+      css_include_tag(*(@required_css[0..-2] + [options]))
     end
     
     # ==== Parameters

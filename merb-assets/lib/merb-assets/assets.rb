@@ -97,7 +97,40 @@ module Merb
     
     # An abstract class for bundling text assets into single files.
     class AbstractAssetBundler
+      
+      class_inheritable_array :cached_bundles
+      self.cached_bundles ||= []
+      
       class << self
+        
+        # Mark a bundle as cached.
+        #
+        # ==== Parameters
+        # name<~to_s>:: Name of the bundle
+        #
+        def cache_bundle(name)
+          cached_bundles.push(name.to_s)
+        end
+        
+        # Purge a bundle from the cache.
+        #
+        # ==== Parameters
+        # name<~to_s>:: Name of the bundle
+        #
+        def purge_bundle(name)
+          cached_bundles.delete(name.to_s)
+        end
+        
+        # Test if a bundle has been cached.
+        #
+        # ==== Parameters
+        # name<~to_s>:: Name of the bundle
+        #
+        # ==== Returns
+        # Boolean:: Whether the bundle has been cached or not.
+        def cached_bundle?(name)
+          cached_bundles.include?(name.to_s)
+        end
         
         # ==== Parameters
         # &block:: A block to add as a post-bundle callback.
@@ -146,10 +179,11 @@ module Merb
       # ==== Returns
       # Symbol:: Name of the bundle.
       def bundle!
-        # TODO: Move this file check out into an in-memory cache. Also, push it out to the helper level so we don't have to create the helper object.
-        unless File.exist?(@bundle_filename)
+        # TODO: push it out to the helper level so we don't have to create the helper object.
+        unless self.class.cached_bundle?(@bundle_name)
           bundle_files(@bundle_filename, *@files)
           self.class.callbacks.each { |c| c.call(@bundle_filename) }
+          self.class.cache_bundle(@bundle_name) if File.exist?(@bundle_filename)
         end
         return @bundle_name
       end
