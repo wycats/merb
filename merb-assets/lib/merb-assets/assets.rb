@@ -187,8 +187,8 @@ module Merb
             return @bundle_name # serve the old file for now - to be regenerated later
           end
           bundle_files(@bundle_filename, *@files)
-          self.class.callbacks.each { |c| c.call(@bundle_filename) }
           if File.exist?(@bundle_filename)
+            self.class.callbacks.each { |c| c.call(@bundle_filename) }
             Merb.logger.info("Assets: bundled :#{@bundle_name} into #{File.basename(@bundle_filename)}")
             self.class.cache_bundle(@bundle_name)
           end
