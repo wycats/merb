@@ -107,6 +107,8 @@ module Merb::Cache::ControllerInstanceMethods
   #   If request.path is "/news/show/1", the name will be "/news/show/1.html"
   #   If request.path is "/news/show/", the name will be "/news/show.html"
   def _cache_page(data = nil)
+    cache_disable = Merb::Controller._cache.config[:disable]
+    return if cache_disable == true || cache_disable == Merb.environment
     controller = controller_name
     action = action_name.to_sym
     pages = Merb::Controller._cache.cached_pages[controller]
