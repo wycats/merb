@@ -42,7 +42,7 @@ module Merb
       #   # => "public/javascripts/dingo.js"
       def asset_path(asset_type, filename, local_path = false)
         filename = filename.to_s
-        if filename !~ /#{'\\' + ASSET_FILE_EXTENSIONS[asset_type]}\Z/
+        if filename !~ /#{'\\' + ASSET_FILE_EXTENSIONS[asset_type]}\Z/ && filename.index('?').nil?
           filename << ASSET_FILE_EXTENSIONS[asset_type]
         end
         if filename !~ %r{^https?://}
