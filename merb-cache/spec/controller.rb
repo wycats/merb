@@ -8,6 +8,7 @@ class CacheController < Merb::Controller
   cache_page :action5
   cache_page :action6, 0.05
   # or cache_pages :action5, [:action6, 0.05]
+  cache_page :action7
 
   def action1
     render
@@ -31,6 +32,24 @@ class CacheController < Merb::Controller
 
   def action6
     Time.now.to_s
+  end
+
+  def action7
+    provides :js, :css, :html, :xml, :jpg
+    case params[:format]
+    when "css"
+      "CSS"
+    when "js"
+      "JS"
+    when "html"
+      "HTML"
+    when "xml"
+      "XML"
+    when "jpg"
+      "JPG"
+    else
+      raise "BAD FORMAT: #{params[:format].inspect}"
+    end
   end
 
   def index

@@ -109,6 +109,38 @@ describe "merb-cache-page" do
     CACHE.cached_page?(:key => "/cache_controller/action6/id1/id2").should be_false
   end
 
+  it "should respect original content-type" do
+    c = get("/cache_controller/action7.css")
+    c.body.should == "CSS"
+    c = get("/cache_controller/action7.css")
+    c.params[:format].should == "css"
+    c.cached_page?(:action => "action7", :extension => 'css').should be_true
+
+    c = get("/cache_controller/action7.js")
+    c.body.should == "JS"
+    c = get("/cache_controller/action7.js")
+    c.params[:format].should == "js"
+    c.cached_page?(:action => "action7", :extension => 'js').should be_true
+
+    c = get("/cache_controller/action7.xml")
+    c.body.should == "XML"
+    c = get("/cache_controller/action7.xml")
+    c.params[:format].should == "xml"
+    c.cached_page?(:action => "action7", :extension => 'xml').should be_true
+
+    c = get("/cache_controller/action7.jpg")
+    c.body.should == "JPG"
+    c = get("/cache_controller/action7.jpg")
+    c.params[:format].should == "jpg"
+    c.cached_page?(:action => "action7", :extension => 'jpg').should be_true
+
+    c = get("/cache_controller/action7.html")
+    c.body.should == "HTML"
+    c = get("/cache_controller/action7.html")
+    c.params[:format].should == "html"
+    c.cached_page?(:action => "action7").should be_true
+  end
+
   it "should expire all pages" do
     CACHE.expire_all_pages
     CACHE.cached_page?("action6").should be_false
