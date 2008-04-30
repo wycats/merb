@@ -10,6 +10,18 @@
 # when installing gems. This will set up the structure under /gems
 # automagically.
 #
+# An example:
+#
+# You want to bundle ActiveRecord and ActiveSupport with your Merb
+# application to be deployment environment independent. To do so,
+# install gems into merb_app_root/gems directory like this:
+#
+# gem install -i ~/dev/merbapp/gems activesupport-post-2.0.2gem activerecord-post-2.0.2.gem
+#
+# Since RubyGems will search merb_app_root/gems for dependencies, order
+# in statement above is important: we need to install ActiveSupport which
+# ActiveRecord depends on first.
+#
 # Remember that bundling of dependencies as gems with your application
 # makes it independent of the environment it runs in and is a very
 # good, encouraged practice to follow.
