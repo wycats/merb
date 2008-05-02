@@ -1,4 +1,11 @@
 #
+# ==== Structure of Merb initializer
+#
+# 1. Load paths.
+# 2. Libraries (ORM, testing tool, etc) you use.
+# 3. Application-specific configuration.
+
+#
 # ==== Set up load paths
 #
 
@@ -32,19 +39,6 @@ Gem.path.unshift(Merb.root / "gems")
 $LOAD_PATH.unshift(Merb.root / "lib")
 
 <% require 'sha1' %>
-
-#
-# ==== Set up your basic configuration
-#
-Merb::Config.use do |c|
-
-  # Sets up a custom session id key, if you want to piggyback sessions of other applications
-  # with the cookie session store. If not specified, defaults to '_session_id'.
-  # c[:session_id_key] = '_session_id'
-
-  c[:session_secret_key]  = '<%= SHA1.new(rand(100000000000).to_s).to_s %>'
-  c[:session_store] = 'cookie'
-end
 
 #
 # ==== Set up your ORM of choice
@@ -97,6 +91,20 @@ Merb::BootLoader.after_app_loads do
 
   # dependency "magic_admin" # this gem uses the app's model classes
 end
+
+#
+# ==== Set up your basic configuration
+#
+Merb::Config.use do |c|
+
+  # Sets up a custom session id key, if you want to piggyback sessions of other applications
+  # with the cookie session store. If not specified, defaults to '_session_id'.
+  # c[:session_id_key] = '_session_id'
+
+  c[:session_secret_key]  = '<%= SHA1.new(rand(100000000000).to_s).to_s %>'
+  c[:session_store] = 'cookie'
+end
+
 
 # ==== Tune your inflector
 
