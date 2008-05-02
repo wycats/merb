@@ -2,8 +2,9 @@
 # ==== Structure of Merb initializer
 #
 # 1. Load paths.
-# 2. Libraries (ORM, testing tool, etc) you use.
-# 3. Application-specific configuration.
+# 2. Dependencies configuration.
+# 3. Libraries (ORM, testing tool, etc) you use.
+# 4. Application-specific configuration.
 
 #
 # ==== Set up load paths
@@ -40,6 +41,26 @@ $LOAD_PATH.unshift(Merb.root / "lib")
 
 <% require 'sha1' %>
 
+
+# ==== Dependencies
+
+# These are some examples of how you might specify dependencies.
+# Dependencies load is delayed to one of later Merb app
+# boot stages. It may be important when
+# later part of your configuration relies on libraries specified
+# here.
+#
+# dependencies "RedCloth", "merb_helpers"
+# OR
+# dependency "RedCloth", "> 3.0"
+# OR
+# dependencies "RedCloth" => "> 3.0", "ruby-aes-cext" => "= 1.0"
+Merb::BootLoader.after_app_loads do
+  # Add dependencies here that must load after the application loads:
+
+  # dependency "magic_admin" # this gem uses the app's model classes
+end
+
 #
 # ==== Set up your ORM of choice
 #
@@ -73,24 +94,6 @@ $LOAD_PATH.unshift(Merb.root / "lib")
 <%= "# " unless default_test_suite?(:test) %>use_test :test_unit
 <%= "# " unless default_test_suite?(:spec) %>use_test :rspec
 
-# ==== Dependencies
-
-# These are some examples of how you might specify dependencies.
-# Dependencies load is delayed to one of later Merb app
-# boot stages. It may be important when
-# later part of your configuration relies on libraries specified
-# here.
-#
-# dependencies "RedCloth", "merb_helpers"
-# OR
-# dependency "RedCloth", "> 3.0"
-# OR
-# dependencies "RedCloth" => "> 3.0", "ruby-aes-cext" => "= 1.0"
-Merb::BootLoader.after_app_loads do
-  # Add dependencies here that must load after the application loads:
-
-  # dependency "magic_admin" # this gem uses the app's model classes
-end
 
 #
 # ==== Set up your basic configuration
