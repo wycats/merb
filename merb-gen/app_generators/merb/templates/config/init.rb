@@ -36,8 +36,10 @@
 Gem.clear_paths
 Gem.path.unshift(Merb.root / "gems")
 
-# Make the app's "lib" directory a place where ruby files get "require"d from
-$LOAD_PATH.unshift(Merb.root / "lib")
+# If you want modules and classes from libraries organized like
+# merbapp/lib/magicwand/lib/magicwand.rb to autoload,
+# uncomment this.
+# Merb.push_path(:lib, Merb.root / "lib") # uses **/*.rb as path glob.
 
 <% require 'sha1' %>
 
