@@ -36,8 +36,12 @@
 Gem.clear_paths
 Gem.path.unshift(Merb.root / "gems")
 
-# Make the app's "lib" directory a place where ruby files get "require"d from
+# Make the app's "lib" directory a place where ruby files get autoloaded from
+Merb.push_path(:lib, Merb.root / "lib")
+
+# Add the app's "lib" directory to Ruby path
 $LOAD_PATH.unshift(Merb.root / "lib")
+
 
 <% require 'sha1' %>
 
