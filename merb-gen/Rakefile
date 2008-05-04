@@ -36,12 +36,14 @@ Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
 
+install_home = ENV['GEM_HOME'] ? "-i #{ENV['GEM_HOME']}" : ""
+
 namespace :jruby do
   task :install do
-    sh %{sudo jruby -S gem install pkg/#{GEM}-#{VERSION} --no-update-sources}
+    sh %{sudo jruby -S gem install #{install_home} pkg/#{GEM}-#{VERSION} --no-update-sources}
   end
 end
 
 task :install => [:package] do
-  sh %{sudo gem install pkg/#{GEM}-#{VERSION} --no-update-sources}
+  sh %{sudo gem install #{install_home} pkg/#{GEM}-#{VERSION} --no-update-sources}
 end
