@@ -3,7 +3,7 @@ require 'rake/gempackagetask'
 
 PLUGIN = "merb-freezer"
 NAME = "merb-freezer"
-VERSION = "0.9.2"
+VERSION = "0.9.3"
 AUTHOR = "Matt Aimonetti"
 EMAIL = "mattaimonetti@gmail.com"
 HOMEPAGE = "http://www.merbivore.com"

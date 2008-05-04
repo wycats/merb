@@ -1,10 +1,10 @@
 ## THESE ARE CRUCIAL
 module Merb
   # Set this to the version of merb-core that you are building against/for
-  VERSION = "0.9.2"
+  VERSION = "0.9.3"
 
   # Set this to the version of merb-more you plan to release
-  MORE_VERSION = "0.9.2"
+  MORE_VERSION = "0.9.3"
 end
 
 require "rake/clean"
