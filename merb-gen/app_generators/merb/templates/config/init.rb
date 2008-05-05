@@ -85,13 +85,12 @@ end
 # ==== Pick what you test with
 #
 
-# This defines which test framework the generators will use
-# rspec is turned on by default
+# This defines which test framework the generators will use.
+# RSpec is turned on by default.
 #
-# Note that you need to install the merb_rspec if you want to ue
-# rspec and merb_test_unit if you want to use test_unit.
-# merb_rspec is installed by default if you did gem install
-# merb.
+# To use Test::Unit, you need to install the merb_test_unit gem.
+# To use RSpec, you don't have to install any additional gems, since
+# merb-core provides support for RSpec.
 #
 <%= "# " unless default_test_suite?(:test) %>use_test :test_unit
 <%= "# " unless default_test_suite?(:spec) %>use_test :rspec
