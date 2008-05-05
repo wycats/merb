@@ -16,7 +16,7 @@ Why would you want to freeze Merb?
 What are your options?
 -----------------------
 
-* You just want to lock your app to a specific version. For instance version merb-core 0.9.2
+* You just want to lock your app to a specific version. For instance version merb-core 0.9.3
 
 * You only want to use frozen gems located in /framework or /gems
 

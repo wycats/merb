@@ -1,10 +1,10 @@
 ## THESE ARE CRUCIAL
 module Merb
   # Set this to the version of merb-core that you are building against/for
-  VERSION = "0.9.2"
+  VERSION = "0.9.3"
 
   # Set this to the version of merb-more you plan to release
-  MORE_VERSION = "0.9.2"
+  MORE_VERSION = "0.9.3"
 end
 
 require "rake/clean"
@@ -65,10 +65,13 @@ Rake::GemPackageTask.new(merb_spec) do |package|
   package.gem_spec = merb_spec
 end
 
+gem_home = ENV['GEM_HOME'] ? "GEM_HOME=#{ENV['GEM_HOME']}" : ""
+install_home = ENV['GEM_HOME'] ? "-i #{ENV['GEM_HOME']}" : ""
+
 desc "Install it all"
 task :install => [:install_gems, :package] do
-  sh %{#{SUDO} gem install --local pkg/merb-more-#{Merb::MORE_VERSION}.gem  --no-update-sources}
-  sh %{#{SUDO} gem install --local pkg/merb-#{Merb::MORE_VERSION}.gem --no-update-sources}
+  sh %{#{SUDO} gem install #{install_home} --local pkg/merb-more-#{Merb::MORE_VERSION}.gem  --no-update-sources}
+  sh %{#{SUDO} gem install #{install_home} --local pkg/merb-#{Merb::MORE_VERSION}.gem --no-update-sources}
 end
 
 desc "Build the merb-more gems"

@@ -7,6 +7,47 @@ module Merb
     # Merb provides views with convenience methods for links images and other
     # assets.
 
+
+    # ==== Parameters
+    # none
+    #
+    # ==== Returns
+    # html<String>
+    #    
+    # ==== Examples
+    #  We want all possible matches in the FileSys up to the action name
+    #     Given:  controller_name = "namespace/controller"
+    #             action_name     = "action"
+    #  If all files are present should generate link/script tags for:
+    #     namespace.(css|js)
+    #     namespace/controller.(css|js)
+    #     namespace/controller/action.(css|js)
+    #
+    def auto_link
+      html    = "" 
+      prefix  = ""
+      (controller_name / action_name).split("/").each do |path|
+        path = prefix + path
+
+        css_path  = path + ".css"
+        if File.exists? Merb.root / "public" / "stylesheets" / css_path
+          html << %{<link rel="stylesheet" type="text/css" href="/stylesheets/#{css_path}" /> }
+        end
+
+        js_path   = path + ".js"
+        if File.exists? Merb.root / "public" / "javascripts" / js_path
+          html << %{<script type="text/javascript" language="javascript" src="/javascripts/#{js_path}"></script>}
+        end
+
+        #Update the prefix for the next iteration
+        prefix += path / ""
+      end
+
+      #Return the generated HTML
+      html
+    end
+
+
     # ==== Parameters
     # name<~to_s>:: The text of the link.
     # url<~to_s>:: The URL to link to. Defaults to an empty string.
