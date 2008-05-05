@@ -121,7 +121,8 @@ module Merb::Cache::ControllerInstanceMethods
     return unless pages && pages.key?(action)
     path = request.path.chomp("/")
     path = "index" if path.empty?
-    ext = "." + (params[:format].empty? ? DEFAULT_PAGE_EXTENSION : params[:format])
+    no_format = params[:format].nil? || params[:format].empty?
+    ext = "." + (no_format ? DEFAULT_PAGE_EXTENSION : params[:format])
     ext = nil if File.extname(path) == ext
     cache_file = Merb::Controller._cache.config[:cache_html_directory] / "#{path}#{ext}"
     if data
