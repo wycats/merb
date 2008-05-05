@@ -1,3 +1,39 @@
+== 0.9.3 "We Sold Our Soul for Rock 'n' Roll" 2008-05-03
+* Add mongrel as dependency of merb meta gem
+* make merb.fcgi executable
+* Added /log dir back to default app generator; logger auto-flush set to true (dev/test/rake env.)
+* Fixed a bug where cache_{action,page} wouldn't work with multiple controllers (closing #90)
+* moved the generated frozen merb script to merb-freezer
+* action-args: Add support for iherited/mixed-in controller actions
+* refactored the rake tasks and added support for rubygems freeze using MODE=rubygems
+* Fixes Merb::AssetsMixin errors from #103, also added specs
+* finally fixed the submodules freezer
+* added simple message to let the user know what merb-core gem is being used
+* removed merb-core dependency so frozen-merb can work properly
+* Makes frozen_merb bin work outside of the working directory by looking for the -m CLI option
+* quieted missleading merb-gen warning when using rspec.  Thanks ec!
+* added default file logging in production mode
+* merb-mailer absolute_url convenience method
+* Added bundling for require_js and require_css; track cached bundles in-memory
+* Made bundles stale for 60 seconds after modification/generation
+* Fixed "Page caching doesn't deactivate" closing #106
+* Properly handle assets urls with query strings in them
+* Arguments to require_js and require_css methods are now kept seperate
+* Cached page requests now respect the original content-type, fixing #116
+* Update generated init file: add inflection examples, notes on gems bundling and lazy loading
+* Add example and dependencies / installation order tricks to generated init.rb
+* Updated templates for merb app generation
+* Added a small fix to autotest/merb_rspec.rb template
+* Make Merb::Config.use section come after dependencies.
+* Make loadp paths and dependencies come first in generated config.
+* Fix merb-builder, thanks atmpos
+* Leave a notice on libraries under lib/ autoloading in init.rb (see details).
+* A css/js auto linker based on controller/action names.
+* make partials with args work in parts.
+* Add missing dependency for merb-builder
+* allow usage of a custom GEM_HOME when building gems in rakefile
+* Make generated Autotest files Windows-friendly again.
+
 == 0.9.2 "appropriate response to reality" 2008-03-24
 * Fix merb-flat and merb-very-flat generators
 * merb-gen no longer generates apps by default
