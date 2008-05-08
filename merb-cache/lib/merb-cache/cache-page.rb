@@ -33,7 +33,7 @@ module Merb::Cache::ControllerClassMethods
       before(:cache_page_before)
       after(:cache_page_after)
     end
-    pages.each do |action, from_now| 
+    pages.each do |action, from_now|
       _pages = Merb::Cache.cached_pages[controller_name] ||= {}
       _pages[action] = [from_now, 0]
     end
@@ -68,10 +68,14 @@ module Merb::Cache::ControllerInstanceMethods
   # ==== Parameter
   # options<String,Hash>:: The options that will be passed to #expire_key_for
   #
-  # ==== Examples
+  # ==== Examples (See Merb::Cache#expire_key_for for more options)
+  #   # will expire path/to/page/cache/news/show/1.html
+  #   expire_page(:key => url(:news,News.find(1)))
+  #
+  #   # will expire path/to/page/cache/news/show.html
   #   expire_page(:action => 'show', :controller => 'news')
-  #   expire_page(:action => 'show', :match => true)
-  #   expire_page(:action => 'show', :extension => 'js')
+  #
+  #   # will expire path/to/page/cache/news/show*
   def expire_page(options)
     config_dir = Merb::Controller._cache.config[:cache_html_directory]
     Merb::Controller._cache.expire_key_for(options, controller_name, true) do |key, match|
