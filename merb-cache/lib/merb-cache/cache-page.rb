@@ -76,6 +76,10 @@ module Merb::Cache::ControllerInstanceMethods
   #   expire_page(:action => 'show', :controller => 'news')
   #
   #   # will expire path/to/page/cache/news/show*
+  #   expire_page(:action => 'show', :match => true)
+  #
+  #   # will expire path/to/page/cache/news/show.js
+  #   expire_page(:action => 'show', :extension => 'js')
   def expire_page(options)
     config_dir = Merb::Controller._cache.config[:cache_html_directory]
     Merb::Controller._cache.expire_key_for(options, controller_name, true) do |key, match|
