@@ -4,7 +4,7 @@ require "spec/rake/spectask"
 
 PLUGIN = "merb-mailer"
 NAME = "merb-mailer"
-VERSION = "0.9.3"
+VERSION = "0.9.4"
 AUTHOR = "Yehuda Katz"
 EMAIL = "wycats@gmail.com"
 HOMEPAGE = "http://merb-plugins.rubyforge.org/merb-mailer/"
@@ -21,7 +21,7 @@ spec = Gem::Specification.new do |s|
   s.author = AUTHOR
   s.email = EMAIL
   s.homepage = HOMEPAGE
-  s.add_dependency('merb-core', '>= 0.9.3')
+  s.add_dependency('merb-core', '>= 0.9.4')
   s.add_dependency("mailfactory", ">= 1.2.3")
   s.require_path = 'lib'
   s.autorequire = PLUGIN
@@ -44,7 +44,7 @@ namespace :jruby do
   task :install => :package do
     sh %{#{SUDO} jruby -S gem install #{install_home} pkg/#{NAME}-#{Merb::VERSION}.gem --no-rdoc --no-ri}
   end
-  
+
 end
 
 desc "Run all specs"
