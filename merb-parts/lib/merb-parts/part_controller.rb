@@ -50,7 +50,7 @@ module Merb
     # opts<Hash>:: Additional options for this part.
     def initialize(web_controller, opts = {})
       @web_controller = web_controller
-      @params = @web_controller.params
+      @params = @web_controller.params.dup
       @params.merge!(opts) unless opts.empty?
       super
       @content_type = @web_controller.content_type
