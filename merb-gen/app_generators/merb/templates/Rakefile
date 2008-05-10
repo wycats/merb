@@ -22,6 +22,11 @@ Merb.load_dependencies(:environment => init_env)
 # Get Merb plugins and dependencies
 Merb::Plugins.rakefiles.each { |r| require r } 
 
+# Get Merb custom rake tasks from lib/tasks
+tasks_path = File.join(File.dirname(__FILE__), "lib", "tasks")
+rake_files = Dir["#{tasks_path}/*.rb"]
+rake_files.each{|rake_file| require rake_file }
+
 desc "start runner environment"
 task :merb_env do
   Merb.start_environment(:environment => init_env, :adapter => 'runner')
@@ -29,10 +34,6 @@ end
 
 ##############################################################################
 # ADD YOUR CUSTOM TASKS BELOW
+# OR IN /lib/tasks
+# CALL YOUR RAKE FILES file_name.rb
 ##############################################################################
-
-desc "Add new files to subversion"
-task :svn_add do
-   system "svn status | grep '^\?' | sed -e 's/? *//' | sed -e 's/ /\ /g' | xargs svn add"
-end
-

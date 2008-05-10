@@ -33,7 +33,7 @@ module Merb::Cache::ControllerClassMethods
       before(:cache_page_before)
       after(:cache_page_after)
     end
-    pages.each do |action, from_now| 
+    pages.each do |action, from_now|
       _pages = Merb::Cache.cached_pages[controller_name] ||= {}
       _pages[action] = [from_now, 0]
     end
@@ -68,9 +68,17 @@ module Merb::Cache::ControllerInstanceMethods
   # ==== Parameter
   # options<String,Hash>:: The options that will be passed to #expire_key_for
   #
-  # ==== Examples
+  # ==== Examples (See Merb::Cache#expire_key_for for more options)
+  #   # will expire path/to/page/cache/news/show/1.html
+  #   expire_page(:key => url(:news,News.find(1)))
+  #
+  #   # will expire path/to/page/cache/news/show.html
   #   expire_page(:action => 'show', :controller => 'news')
+  #
+  #   # will expire path/to/page/cache/news/show*
   #   expire_page(:action => 'show', :match => true)
+  #
+  #   # will expire path/to/page/cache/news/show.js
   #   expire_page(:action => 'show', :extension => 'js')
   def expire_page(options)
     config_dir = Merb::Controller._cache.config[:cache_html_directory]
@@ -121,7 +129,8 @@ module Merb::Cache::ControllerInstanceMethods
     return unless pages && pages.key?(action)
     path = request.path.chomp("/")
     path = "index" if path.empty?
-    ext = "." + (params[:format].empty? ? DEFAULT_PAGE_EXTENSION : params[:format])
+    no_format = params[:format].nil? || params[:format].empty?
+    ext = "." + (no_format ? DEFAULT_PAGE_EXTENSION : params[:format])
     ext = nil if File.extname(path) == ext
     cache_file = Merb::Controller._cache.config[:cache_html_directory] / "#{path}#{ext}"
     if data

@@ -1,10 +1,10 @@
 ## THESE ARE CRUCIAL
 module Merb
   # Set this to the version of merb-core that you are building against/for
-  VERSION = "0.9.3"
+  VERSION = "0.9.4"
 
   # Set this to the version of merb-more you plan to release
-  MORE_VERSION = "0.9.3"
+  MORE_VERSION = "0.9.4"
 end
 
 require "rake/clean"
@@ -53,9 +53,6 @@ CLEAN.include ["**/.*.sw?", "pkg", "lib/*.bundle", "*.gem", "doc/rdoc", ".config
 windows = (PLATFORM =~ /win32|cygwin/) rescue nil
 
 SUDO = windows ? "" : "sudo"
-
-# desc "Installs Merb More."
-# task :default => :install
 
 Rake::GemPackageTask.new(merb_more_spec) do |package|
   package.gem_spec = merb_more_spec
