@@ -7,6 +7,47 @@ module Merb
     # Merb provides views with convenience methods for links images and other
     # assets.
 
+
+    # ==== Parameters
+    # none
+    #
+    # ==== Returns
+    # html<String>
+    #    
+    # ==== Examples
+    #  We want all possible matches in the FileSys up to the action name
+    #     Given:  controller_name = "namespace/controller"
+    #             action_name     = "action"
+    #  If all files are present should generate link/script tags for:
+    #     namespace.(css|js)
+    #     namespace/controller.(css|js)
+    #     namespace/controller/action.(css|js)
+    #
+    def auto_link
+      html    = "" 
+      prefix  = ""
+      (controller_name / action_name).split("/").each do |path|
+        path = prefix + path
+
+        css_path  = path + ".css"
+        if File.exists? Merb.root / "public" / "stylesheets" / css_path
+          html << %{<link rel="stylesheet" type="text/css" href="/stylesheets/#{css_path}" /> }
+        end
+
+        js_path   = path + ".js"
+        if File.exists? Merb.root / "public" / "javascripts" / js_path
+          html << %{<script type="text/javascript" language="javascript" src="/javascripts/#{js_path}"></script>}
+        end
+
+        #Update the prefix for the next iteration
+        prefix += path / ""
+      end
+
+      #Return the generated HTML
+      html
+    end
+
+
     # ==== Parameters
     # name<~to_s>:: The text of the link.
     # url<~to_s>:: The URL to link to. Defaults to an empty string.
@@ -265,7 +306,7 @@ module Merb
     #
     def require_js(*js)
       @required_js ||= []
-      @required_js |= js
+      @required_js << js
     end
     
     # The require_css method can be used to require any CSS file anywhere in
@@ -287,7 +328,7 @@ module Merb
     #
     def require_css(*css)
       @required_css ||= []
-      @required_css |= css
+      @required_css << css
     end
     
     # A method used in the layout of an application to create +<script>+ tags
@@ -296,6 +337,10 @@ module Merb
     # 
     # ==== Parameters
     # options<Hash>:: Options to pass to js_include_tag.
+    #
+    # ==== Options
+    # :bundle<~to_s>::
+    #   The name of the bundle the scripts should be combined into.
     # 
     # ==== Returns
     # String:: The JavaScript tag.
@@ -314,8 +359,14 @@ module Merb
     #   #    <script src="/javascripts/validation.js" type="text/javascript"></script>
     #
     def include_required_js(options = {})
-      return '' if @required_js.nil?
-      js_include_tag(*(@required_js + [options]))
+      return '' if @required_js.nil? || @required_js.empty?
+      @required_js.map do |req_js|
+        if req_js.last.is_a?(Hash)
+          js_include_tag(*(req_js[0..-2] + [options.merge(req_js.last)]))
+        else
+          js_include_tag(*(req_js + [options]))
+        end
+      end.join
     end
     
     # A method used in the layout of an application to create +<link>+ tags for
@@ -327,6 +378,12 @@ module Merb
     # 
     # ==== Returns
     # String:: The CSS tag.
+    #
+    # ==== Options
+    # :bundle<~to_s>::
+    #   The name of the bundle the stylesheets should be combined into.
+    # :media<~to_s>::
+    #   The media attribute for the generated link element. Defaults to :all.
     # 
     # ==== Examples
     #   # my_action.herb has a call to require_css 'style'
@@ -341,8 +398,14 @@ module Merb
     #   #    <link href="/stylesheets/ie-specific.css" media="all" rel="Stylesheet" type="text/css"/>
     #
     def include_required_css(options = {})
-      return '' if @required_css.nil?
-      css_include_tag(*(@required_css + [options]))
+      return '' if @required_css.nil? || @required_css.empty?
+      @required_css.map do |req_css|
+        if req_css.last.is_a?(Hash)
+          css_include_tag(*(req_css[0..-2] + [options.merge(req_css.last)]))
+        else
+          css_include_tag(*(req_css + [options]))
+        end
+      end.join
     end
     
     # ==== Parameters

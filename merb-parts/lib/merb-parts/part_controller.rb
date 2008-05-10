@@ -50,7 +50,7 @@ module Merb
     # opts<Hash>:: Additional options for this part.
     def initialize(web_controller, opts = {})
       @web_controller = web_controller
-      @params = @web_controller.params
+      @params = @web_controller.params.dup
       @params.merge!(opts) unless opts.empty?
       super
       @content_type = @web_controller.content_type
@@ -68,8 +68,10 @@ module Merb
     end    
     
     # Send any methods that are missing back up to the web controller
+    # Patched to set partial locals on the web controller
     def method_missing(sym, *args, &blk)
+      @web_controller.instance_variable_set(:@_merb_partial_locals, @_merb_partial_locals)
       @web_controller.send(sym, *args, &blk)
-    end    
+    end
   end
 end

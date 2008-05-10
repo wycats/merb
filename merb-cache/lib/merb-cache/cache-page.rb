@@ -33,7 +33,7 @@ module Merb::Cache::ControllerClassMethods
       before(:cache_page_before)
       after(:cache_page_after)
     end
-    pages.each do |action, from_now| 
+    pages.each do |action, from_now|
       _pages = Merb::Cache.cached_pages[controller_name] ||= {}
       _pages[action] = [from_now, 0]
     end
@@ -43,6 +43,8 @@ end
 
 module Merb::Cache::ControllerInstanceMethods
   # Mixed in Merb::Controller. Provides methods related to page caching
+
+  DEFAULT_PAGE_EXTENSION = 'html'
 
   # Checks whether a cache entry exists
   #
@@ -54,9 +56,11 @@ module Merb::Cache::ControllerInstanceMethods
   #
   # ==== Example
   #   cached_page?(:action => 'show', :params => [params[:page]])
+  #   cached_page?(:action => 'show', :extension => 'js')
   def cached_page?(options)
     key = Merb::Controller._cache.key_for(options, controller_name, true)
-    File.file?(Merb::Controller._cache.config[:cache_html_directory] / "#{key}.html")
+    extension = options[:extension] || DEFAULT_PAGE_EXTENSION
+    File.file?(Merb::Controller._cache.config[:cache_html_directory] / "#{key}.#{extension}")
   end
 
   # Expires the page identified by the key computed after the parameters
@@ -64,16 +68,26 @@ module Merb::Cache::ControllerInstanceMethods
   # ==== Parameter
   # options<String,Hash>:: The options that will be passed to #expire_key_for
   #
-  # ==== Examples
+  # ==== Examples (See Merb::Cache#expire_key_for for more options)
+  #   # will expire path/to/page/cache/news/show/1.html
+  #   expire_page(:key => url(:news,News.find(1)))
+  #
+  #   # will expire path/to/page/cache/news/show.html
   #   expire_page(:action => 'show', :controller => 'news')
+  #
+  #   # will expire path/to/page/cache/news/show*
   #   expire_page(:action => 'show', :match => true)
+  #
+  #   # will expire path/to/page/cache/news/show.js
+  #   expire_page(:action => 'show', :extension => 'js')
   def expire_page(options)
     config_dir = Merb::Controller._cache.config[:cache_html_directory]
     Merb::Controller._cache.expire_key_for(options, controller_name, true) do |key, match|
       if match
         files = Dir.glob(config_dir / "#{key}*")
       else
-        files = config_dir / "#{key}.html"
+        extension = options[:extension] || DEFAULT_PAGE_EXTENSION
+        files = config_dir / "#{key}.#{extension}"
       end
       FileUtils.rm_rf(files)
     end
@@ -106,14 +120,19 @@ module Merb::Cache::ControllerInstanceMethods
   #   If request.path is "/", the name will be "/index.html"
   #   If request.path is "/news/show/1", the name will be "/news/show/1.html"
   #   If request.path is "/news/show/", the name will be "/news/show.html"
+  #   If request.path is "/news/styles.css", the name will be "/news/styles.css"
   def _cache_page(data = nil)
+    return if Merb::Controller._cache.config[:disable_page_caching]
     controller = controller_name
     action = action_name.to_sym
     pages = Merb::Controller._cache.cached_pages[controller]
     return unless pages && pages.key?(action)
     path = request.path.chomp("/")
     path = "index" if path.empty?
-    cache_file = Merb::Controller._cache.config[:cache_html_directory] / "#{path}.html"
+    no_format = params[:format].nil? || params[:format].empty?
+    ext = "." + (no_format ? DEFAULT_PAGE_EXTENSION : params[:format])
+    ext = nil if File.extname(path) == ext
+    cache_file = Merb::Controller._cache.config[:cache_html_directory] / "#{path}#{ext}"
     if data
       cache_directory = File.dirname(cache_file)
       FileUtils.mkdir_p(cache_directory)

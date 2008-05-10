@@ -222,6 +222,13 @@ module Merb
       @mail
     end
 
+    # Mimic the behavior of absolute_url in AbstractController
+    # but use @base_controller.request
+    def absolute_url(name, rparams={})
+      req = @base_controller.request
+      uri =  req.protocol + req.host + url(name, rparams)
+    end
+
     # Attaches a file or multiple files to an email. You call this from a
     # method in your MailController (including a before filter).
     # 
