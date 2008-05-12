@@ -77,14 +77,14 @@ class Autotest::MerbRspec < Autotest
       end
     end
 
-    # If a change is made to the router, run all controller and view tests
-    add_mapping %r%^config/router.rb$% do # FIX
-      files_matching %r%^spec/(controllers|views|functional)/.*_spec\.rb$%
+    # If a change is made to the router, run controller, view and helper specs
+    add_mapping %r%^config/router.rb$% do
+      files_matching %r%^spec/(controllers|views|helpers)/.*_spec\.rb$%
     end
 
     # If any of the major files governing the environment are altered, run
     # everything
-    add_mapping %r%^spec/spec_helper.rb|config/(init|rack|environments/test.rb|database.yml)% do # FIX
+    add_mapping %r%^config/(init|rack|environments/test).*\.rb|database\.yml)% do 
       all_specs
     end
   end
