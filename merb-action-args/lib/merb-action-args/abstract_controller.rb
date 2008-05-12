@@ -1,7 +1,7 @@
 class Merb::AbstractController
   
   class << self
-    attr_accessor :action_argument_list    
+    attr_accessor :action_argument_list
     alias_method :old_inherited, :inherited
 
     # Stores the argument lists for all methods for this class.
@@ -25,10 +25,11 @@ class Merb::AbstractController
   # ==== Raises
   # BadRequest:: The params hash doesn't have a required parameter.
   def _call_action(action)
-    args = self.class.action_argument_list[action].map do |arg, default|
+    arguments, defaults = self.class.action_argument_list[action]
+    args = arguments.map do |arg, default|
       arg = arg
       p = params.key?(arg.to_sym)
-      raise BadRequest unless p || default
+      raise BadRequest unless p || (defaults && defaults.include?(arg))
       p ? params[arg.to_sym] : default
     end
     __send__(action, *args)
