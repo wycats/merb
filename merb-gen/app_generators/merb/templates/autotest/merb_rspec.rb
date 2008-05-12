@@ -3,13 +3,18 @@ require 'autotest'
 
 class RspecCommandError < StandardError; end
 
+# This class maps your application's structure so Autotest can understand what 
+# specs to run when files change.
+#
+# Fixtures are _not_ covered by this class. If you change a fixture file, you 
+# will have to run your spec suite manually, or, better yet, provide your own 
+# Autotest map explaining how your fixtures are set up.
 class Autotest::MerbRspec < Autotest
 
   # +model_tests_dir+::      the directory to find model-centric tests
   # +controller_tests_dir+:: the directory to find controller-centric tests
   # +view_tests_dir+::       the directory to find view-centric tests
-  # +fixtures_dir+::         the directory to find fixtures in
-  attr_accessor :model_tests_dir, :controller_tests_dir, :view_tests_dir, :fixtures_dir
+  attr_accessor :model_tests_dir, :controller_tests_dir, :view_tests_dir
 
   def initialize # :nodoc:
     super
@@ -33,16 +38,6 @@ class Autotest::MerbRspec < Autotest
 
     add_mapping %r%^spec/(spec_helper|shared/.*)\.rb$% do
       all_specs
-    end
-
-    # Any changes to a fixture will run corresponding view, controller and
-    # model tests
-    add_mapping %r%^#{fixtures_dir}/(.*)s.yml% do |_, m|
-      [
-        model_test_for(m[1]),
-        controller_test_for(m[1]),
-        view_test_for(m[1])
-      ]
     end
 
     # Any change to a test or spec will cause it to be run
@@ -174,13 +169,11 @@ private
     files_matching %r%^spec/.*_spec\.rb$%
   end
 
-  # Determines the paths we can expect tests or specs to reside, as well as
-  # corresponding fixtures.
+  # Determines the paths we can expect tests or specs to reside
   def initialize_test_layout
     self.model_tests_dir      = "spec/models"
     self.controller_tests_dir = "spec/controllers"
     self.view_tests_dir       = "spec/views"
-    self.fixtures_dir         = "spec/fixtures"
   end
 
   # Given a filename and the test type, this method will return the
