@@ -10,16 +10,8 @@ class RspecCommandError < StandardError; end
 # will have to run your spec suite manually, or, better yet, provide your own 
 # Autotest map explaining how your fixtures are set up.
 class Autotest::MerbRspec < Autotest
-
-  # +model_tests_dir+::      the directory to find model-centric tests
-  # +controller_tests_dir+:: the directory to find controller-centric tests
-  # +view_tests_dir+::       the directory to find view-centric tests
-  attr_accessor :model_tests_dir, :controller_tests_dir, :view_tests_dir
-
   def initialize # :nodoc:
     super
-
-    initialize_test_layout
 
     # Ignore any happenings in these directories
     add_exception %r%^\./(?:doc|log|public|tmp)%
@@ -47,7 +39,7 @@ class Autotest::MerbRspec < Autotest
 
     # Any change to a model will cause it's corresponding test to be run
     add_mapping %r%^app/models/(.*)\.rb$% do |_, m|
-      model_test_for(m[1])
+      spec_for(m[1], 'model')
     end
 
     # Any change to global_helpers will result in all view and controller
@@ -156,38 +148,6 @@ private
     files_matching %r%^spec/.*_spec\.rb$%
   end
 
-  # Determines the paths we can expect tests or specs to reside
-  def initialize_test_layout
-    self.model_tests_dir      = "spec/models"
-    self.controller_tests_dir = "spec/controllers"
-    self.view_tests_dir       = "spec/views"
-  end
-
-  # Given a filename and the test type, this method will return the
-  # corresponding test's or spec's name.
-  #
-  # ==== Arguments
-  # +filename+<String>:: the file name of the model, view, or controller
-  # +kind_of_test+<Symbol>:: the type of test we that we should run
-  #
-  # ==== Returns
-  # String:: the name of the corresponding test or spec
-  #
-  # ==== Example
-  #
-  #   > test_for("user", :model)
-  #   => "user_test.rb"
-  #   > test_for("login", :controller)
-  #   => "login_controller_test.rb"
-  #   > test_for("form", :view)
-  #   => "form_view_spec.rb" # If you're running a RSpec-like suite
-  def test_for(filename, kind_of_test) # :nodoc:
-    name  = [filename]
-    name << kind_of_test.to_s if kind_of_test == :view
-    name << "spec"
-    return name.join("_") + ".rb"
-  end
-
   # Generates a path to some spec given its kind and the match from a mapping
   #
   # ==== Arguments
@@ -203,17 +163,4 @@ private
   def spec_for(match, kind)
     File.join("spec", kind + 's', "#{match}_spec.rb")
   end
-
-  def model_test_for(filename)
-    [model_tests_dir, test_for(filename, :model)].join("/")
-  end
-
-  def controller_test_for(filename)
-    [controller_tests_dir, test_for(filename, :controller)].join("/")
-  end
-
-  def view_test_for(filename)
-    [view_tests_dir, test_for(filename, :view)].join("/")
-  end
-
 end
