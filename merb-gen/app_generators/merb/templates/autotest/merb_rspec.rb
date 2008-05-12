@@ -61,13 +61,9 @@ class Autotest::MerbRspec < Autotest
       spec_for(m[1], 'helper')
     end
 
-    # Changes to views result in their corresponding view and controller test
-    # being run
+    # Changes to a view cause its spec to be run
     add_mapping %r%^app/views/(.*)/% do |_, m|
-      [
-        view_test_for(m[1]),
-        controller_test_for(m[1])
-      ]
+      spec_for(m[1], 'view')
     end
 
     # Changes to a controller result in its corresponding test being run. If
