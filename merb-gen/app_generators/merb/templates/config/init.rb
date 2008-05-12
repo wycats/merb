@@ -95,10 +95,20 @@ end
 <%= "# " unless default_test_suite?(:test) %>use_test :test_unit
 <%= "# " unless default_test_suite?(:spec) %>use_test :rspec
 
-
 #
 # ==== Set up your basic configuration
 #
+
+# IMPORTANT:
+#
+# early on Merb boot init file is not yet loaded.
+# Thus setting PORT, PID FILE and ADAPTER using init file does not
+# make sense and only can lead to confusion because default settings
+# will be used instead.
+#
+# Please use command line options for them.
+# See http://wiki.merbivore.com/pages/merb-core-boot-process
+# if you want to know more.
 Merb::Config.use do |c|
 
   # Sets up a custom session id key, if you want to piggyback sessions of other applications
