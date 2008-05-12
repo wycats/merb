@@ -1,3 +1,4 @@
+require 'fileutils'
 class Merb::Cache::FileStore
   # Provides the file cache store for merb-cache
 
@@ -17,6 +18,7 @@ class Merb::Cache::FileStore
   # This method is there to ensure minimal requirements are met
   # (directories are accessible, table exists, connected to server, ...)
   def prepare
+    FileUtils.mkdir_p @config[:cache_directory]
     unless File.readable?(@config[:cache_directory]) &&
       File.writable?(@config[:cache_directory])
       raise NotAccessible, @config[:cache_directory]

@@ -15,6 +15,9 @@ include FileUtils
 # any plugins and therefore plugin rake tasks.
 init_env = ENV['MERB_ENV'] || 'rake'
 Merb.load_dependencies(:environment => init_env)
+
+# Uncomment the line below if you'd like to load in tasks defined in lib/merb-core/tasks
+# require 'merb-core/tasks/merb'
      
 # Get Merb plugins and dependencies
 Merb::Plugins.rakefiles.each { |r| require r } 
@@ -34,4 +37,3 @@ end
 # OR IN /lib/tasks
 # CALL YOUR RAKE FILES file_name.rb
 ##############################################################################
-
