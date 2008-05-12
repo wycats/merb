@@ -40,8 +40,8 @@ class Autotest::MerbRspec < Autotest
       all_specs
     end
 
-    # Any change to a test or spec will cause it to be run
-    add_mapping %r%^spec/(unit|models|integration|controllers|views|functional)/.*rb$% do |filename, _|
+    # Changing a spec will cause it to run itself
+    add_mapping %r%^spec/.*\.rb$% do |filename, _|
       filename
     end
 
