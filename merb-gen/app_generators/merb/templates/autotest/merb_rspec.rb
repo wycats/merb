@@ -44,12 +44,12 @@ class Autotest::MerbRspec < Autotest
 
     # Any change to global_helpers will result in all view and controller
     # tests being run
-    add_mapping %r%^app/helpers/global_helpers.rb% do
+    add_mapping %r%^app/helpers/global_helpers\.rb% do
       files_matching %r%^spec/(views|controllers)/.*_spec\.rb$%
     end
 
     # Any change to a helper will cause its spec to be run
-    add_mapping %r%^app/helpers/(.*)_helper(s)?.rb% do |_, m|
+    add_mapping %r%^app/helpers/(.*)_helper(s)?\.rb% do |_, m|
       spec_for(m[1], 'helper')
     end
 
@@ -76,7 +76,7 @@ class Autotest::MerbRspec < Autotest
 
     # If any of the major files governing the environment are altered, run
     # everything
-    add_mapping %r%^config/(init|rack|environments/test).*\.rb|database\.yml)% do 
+    add_mapping %r%^config/(init|rack|environments/test).*\.rb|database\.yml% do 
       all_specs
     end
   end
@@ -109,7 +109,7 @@ class Autotest::MerbRspec < Autotest
       "-S",
       spec_command,
       add_options_if_present,
-      specs_to_run.keys.flatten.join(' ')
+      files_to_test.keys.flatten.join(' ')
     ].join(' ')
   end
 
