@@ -25,10 +25,10 @@ class Autotest::MerbRspec < Autotest
     # Ignore any mappings that Autotest may have already set up
     clear_mappings
 
-    # Any changes to a file in the root of the 'lib' directory will run any
-    # model test with a corresponding name.
-    add_mapping %r%^lib\/.*\.rb% do |filename, _|
-      files_matching %r%#{model_test_for(filename)}$%
+    # Anything in /lib could have a spec anywhere, if at all. So, look for
+    # files with roughly the same name as the file in /lib
+    add_mapping %r%^lib\/(.*)\.rb% do |_, m|
+      files_matching %r%^spec\/#{m[1]}%
     end
 
     add_mapping %r%^spec/(spec_helper|shared/.*)\.rb$% do
