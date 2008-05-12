@@ -18,7 +18,7 @@ class MerbGenerator < Merb::GeneratorBase
       USAGE: #{spec.name} -g path
 
       Set environment variable MERB_ORM=[activerecord|datamapper|sequel]
-      to pre-enabled an ORM.
+      to pre-enable an ORM.
     EOS
   end
 
