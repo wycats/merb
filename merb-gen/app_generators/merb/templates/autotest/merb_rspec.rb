@@ -66,14 +66,14 @@ class Autotest::MerbRspec < Autotest
       spec_for(m[1], 'view')
     end
 
-    # Changes to a controller result in its corresponding test being run. If
+    # Changes to a controller result in its corresponding spec being run. If
     # the controller is the exception or application controller, all
-    # controller tests are run.
+    # controller specs are run.
     add_mapping %r%^app/controllers/(.*)\.rb$% do |_, m|
       if ["application", "exception"].include?(m[1])
-        files_matching %r%^spec/(controllers|views|functional)/.*_spec\.rb$%
+        files_matching %r%^spec/controllers/.*_spec\.rb$%
       else
-        controller_test_for(m[1])
+        spec_for(m[1], 'controller')
       end
     end
 
