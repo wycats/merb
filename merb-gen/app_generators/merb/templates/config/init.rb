@@ -10,11 +10,11 @@
 # ==== Set up load paths
 #
 
-# Make the app's "gems" directory a place where gems are loaded from.
-# Note that gems directory must have a structure RubyGems uses for
+# Add the app's "gems" directory to the gem load path.
+# Note that the gems directory must mirror the structure RubyGems uses for
 # directories under which gems are kept.
 #
-# To conveniently set it up use gem install -i <merb_app_root/gems>
+# To conveniently set it up, use gem install -i <merb_app_root/gems>
 # when installing gems. This will set up the structure under /gems
 # automagically.
 #
@@ -24,10 +24,10 @@
 # application to be deployment environment independent. To do so,
 # install gems into merb_app_root/gems directory like this:
 #
-# gem install -i ~/dev/merbapp/gems activesupport-post-2.0.2gem activerecord-post-2.0.2.gem
+# gem install -i merb_app_root/gems activesupport-post-2.0.2.gem activerecord-post-2.0.2.gem
 #
 # Since RubyGems will search merb_app_root/gems for dependencies, order
-# in statement above is important: we need to install ActiveSupport which
+# in the statement above is important: we need to install ActiveSupport which
 # ActiveRecord depends on first.
 #
 # Remember that bundling of dependencies as gems with your application
@@ -47,9 +47,9 @@ Gem.path.unshift(Merb.root / "gems")
 # ==== Dependencies
 
 # These are some examples of how you might specify dependencies.
-# Dependencies load is delayed to one of later Merb app
-# boot stages. It may be important when
-# later part of your configuration relies on libraries specified
+# Dependency loading is delayed to a later Merb app
+# boot stage, but it may be important when
+# another part of your configuration relies on libraries specified
 # here.
 #
 # dependencies "RedCloth", "merb_helpers"
@@ -122,7 +122,7 @@ end
 
 # ==== Tune your inflector
 
-# To fine tune your inflector use word, singular_word and plural_word
+# To fine tune your inflector use the word, singular_word and plural_word
 # methods of Language::English::Inflector module metaclass.
 #
 # Here we define erratum/errata exception case:
