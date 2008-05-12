@@ -50,24 +50,15 @@ class Autotest::MerbRspec < Autotest
       model_test_for(m[1])
     end
 
-    # Any change to the global helper will result in all view and controller
+    # Any change to global_helpers will result in all view and controller
     # tests being run
     add_mapping %r%^app/helpers/global_helpers.rb% do
-      files_matching %r%^spec/(views|functional|controllers)/.*_spec\.rb$%
+      files_matching %r%^spec/(views|controllers)/.*_spec\.rb$%
     end
 
-    # Any change to a helper will run it's corresponding view and controller
-    # tests, unless the helper is the global helper. Changes to the global
-    # helper run all view and controller tests.
+    # Any change to a helper will cause its spec to be run
     add_mapping %r%^app/helpers/(.*)_helper(s)?.rb% do |_, m|
-      if m[1] == "global" then
-        files_matching %r%^spec/(views|functional|controllers)/.*_spec\.rb$%
-      else
-        [
-          view_test_for(m[1]),
-          controller_test_for(m[1])
-        ]
-      end
+      spec_for(m[1], 'helper')
     end
 
     # Changes to views result in their corresponding view and controller test
@@ -199,6 +190,22 @@ private
     name << kind_of_test.to_s if kind_of_test == :view
     name << "spec"
     return name.join("_") + ".rb"
+  end
+
+  # Generates a path to some spec given its kind and the match from a mapping
+  #
+  # ==== Arguments
+  # match<String>:: the match from a mapping
+  # kind<String>:: the kind of spec that the match represents
+  #
+  # ==== Returns
+  # String
+  #
+  # ==== Example
+  #   > spec_for('post', :view')
+  #   => "spec/views/post_spec.rb"
+  def spec_for(match, kind)
+    File.join("spec", kind + 's', "#{match}_spec.rb")
   end
 
   def model_test_for(filename)
