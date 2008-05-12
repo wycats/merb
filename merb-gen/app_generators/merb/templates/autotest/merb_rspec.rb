@@ -32,7 +32,7 @@ class Autotest::MerbRspec < Autotest
     end
 
     add_mapping %r%^spec/(spec_helper|shared/.*)\.rb$% do
-      files_matching %r%^spec/.*_spec\.rb$%
+      all_specs
     end
 
     # Any changes to a fixture will run corresponding view, controller and
@@ -103,7 +103,7 @@ class Autotest::MerbRspec < Autotest
     # If any of the major files governing the environment are altered, run
     # everything
     add_mapping %r%^spec/spec_helper.rb|config/(init|rack|environments/test.rb|database.yml)% do # FIX
-      files_matching %r%^spec/(unit|models|controllers|views|functional)/.*_spec\.rb$%
+      all_specs
     end
   end
 
@@ -174,6 +174,11 @@ class Autotest::MerbRspec < Autotest
   end
 
 private
+
+  # Runs +files_matching+ for all specs
+  def all_specs
+    files_matching %r%^spec/.*_spec\.rb$%
+  end
 
   # Determines the paths we can expect tests or specs to reside, as well as
   # corresponding fixtures.
