@@ -122,10 +122,10 @@ class Autotest::MerbRspec < Autotest
   # ~/.autotest to provide a different spec command then the default
   # paths provided.
   def spec_command(separator=File::ALT_SEPARATOR)
-    unless defined? @spec_command then
-      @spec_command = spec_commands.find { |cmd| File.exists? cmd }
+    unless defined?(@spec_command)
+      @spec_command = spec_commands.find { |cmd| File.exists?(cmd) }
 
-      raise RspecCommandError, "No spec command could be found!" unless @spec_command
+      raise RspecCommandError, "No spec command could be found" unless @spec_command
 
       @spec_command.gsub!(File::SEPARATOR, separator) if separator
     end
@@ -138,7 +138,7 @@ class Autotest::MerbRspec < Autotest
   #   * default spec bin/loader installed in Rubygems
   #   * any spec command found in PATH
   def spec_commands
-    [ File.join(Config::CONFIG['bindir'], 'spec'), 'spec' ]
+    [File.join(Config::CONFIG['bindir'], 'spec'), 'spec']
   end
 
 private
