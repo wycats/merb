@@ -111,14 +111,14 @@ class Autotest::MerbRspec < Autotest
     filters
   end
 
-  def make_test_cmd(files_to_test)
+  def make_test_cmd(specs_to_runs)
     [
       ruby,
       "-S",
       spec_command,
       add_options_if_present,
-      files_to_test.keys.flatten.join(' ')
-    ].join(" ")
+      specs_to_run.keys.flatten.join(' ')
+    ].join(' ')
   end
 
   def add_options_if_present
