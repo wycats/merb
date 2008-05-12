@@ -112,16 +112,10 @@ class Autotest::MerbRspec < Autotest
   end
 
   def handle_results(results)
-    @failures = failed_results(results)
-    @files_to_test = consolidate_failures @failures
-    unless $TESTING
-      if @files_to_test.empty?
-        hook :green
-      else
-        hook :red
-      end
-    end
-    @tainted = true unless @files_to_test.empty?
+    @failures      = failed_results(results)
+    @files_to_test = consolidate_failures(@failures)
+    @files_to_test.empty? && !$TESTING ? hook(:green) : hook(:red)
+    @tainted = !@files_to_test.empty?
   end
 
   def consolidate_failures(failed)
