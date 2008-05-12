@@ -19,6 +19,9 @@ class Autotest::MerbRspec < Autotest
     # Ignore any happenings in these directories
     add_exception %r%^\./(?:doc|log|public|tmp)%
 
+    # Ignore SCM directories and custom Autotest mappings
+    %w[.svn .hg .git .autotest].each { |exception| add_exception(exception) }
+
     # Ignore any mappings that Autotest may have already set up
     clear_mappings
 
@@ -124,11 +127,9 @@ class Autotest::MerbRspec < Autotest
   def consolidate_failures(failed)
     filters = Hash.new { |h,k| h[k] = [] }
     failed.each do |spec, failed_trace|
-      find_files.keys.select { |f| f =~ /spec\// }.each do |f|
-        if failed_trace =~ Regexp.new(f)
-          filters[f] << spec
-          break
-        end
+      if f = test_files_for(failed).find { |f| f =~ /spec\// }
+        filters[f] << spec
+        break
       end
     end
     filters
