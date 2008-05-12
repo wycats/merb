@@ -45,7 +45,7 @@ class Autotest::MerbRspec < Autotest
     # Any change to global_helpers will result in all view and controller
     # tests being run
     add_mapping %r%^app/helpers/global_helpers\.rb% do
-      files_matching %r%^spec/(views|controllers)/.*_spec\.rb$%
+      files_matching %r%^spec/(views|controllers|helpers)/.*_spec\.rb$%
     end
 
     # Any change to a helper will cause its spec to be run
