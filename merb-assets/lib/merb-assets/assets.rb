@@ -14,7 +14,6 @@ module Merb
     
     # Helpers for handling asset files.
     module AssetHelpers
-      # :nodoc:
       ASSET_FILE_EXTENSIONS = {
         :javascript => ".js",
         :stylesheet => ".css"

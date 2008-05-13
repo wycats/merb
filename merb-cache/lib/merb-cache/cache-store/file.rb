@@ -9,7 +9,7 @@ class Merb::Cache::FileStore
     prepare
   end
 
-  class NotAccessible < Exception #:nodoc:
+  class NotAccessible < Exception #
     def initialize(message)
       super("Cache directories are not readable/writeable (#{message})")
     end

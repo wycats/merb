@@ -1,6 +1,6 @@
 require 'ruby2ruby'
 
-class ParseTreeArray < Array #:nodoc:
+class ParseTreeArray < Array
   def self.translate(*args)
     sexp = ParseTree.translate(*args)
     # ParseTree.translate returns [nil] if called on an inherited method, so walk
@@ -84,10 +84,10 @@ module GetArgs
   end
 end
 
-class UnboundMethod #:nodoc:
+class UnboundMethod
   include GetArgs
 end
 
-class Method  #:nodoc:
+class Method
   include GetArgs
 end

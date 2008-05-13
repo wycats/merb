@@ -1,5 +1,5 @@
 # Includes files into the class to allow it to minimally delegates to a web controller
-module Merb #:nodoc:
+module Merb
   module Mixins
     module WebController
       
