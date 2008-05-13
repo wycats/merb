@@ -10,7 +10,7 @@ class RspecCommandError < StandardError; end
 # will have to run your spec suite manually, or, better yet, provide your own 
 # Autotest map explaining how your fixtures are set up.
 class Autotest::MerbRspec < Autotest
-  def initialize # :nodoc:
+  def initialize
     super
 
     # Ignore any happenings in these directories
