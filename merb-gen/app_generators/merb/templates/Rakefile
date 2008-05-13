@@ -31,7 +31,6 @@ task :merb_env do
 end
 
 ##############################################################################
-# ADD YOUR CUSTOM TASKS BELOW
-# OR IN /lib/tasks
-# CALL YOUR RAKE FILES file_name.rb
+# ADD YOUR CUSTOM TASKS IN /lib/tasks
+# NAME YOUR RAKE FILES file_name.rb (not file_name.rake)
 ##############################################################################
