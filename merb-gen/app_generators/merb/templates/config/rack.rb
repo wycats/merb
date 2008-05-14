@@ -9,4 +9,4 @@ end
 use Merb::Rack::Static, Merb.dir_for(:public)
 
 # this is our main merb application
-run Merb::Rack::MerbApplication.new
+run Merb::Rack::Application.new
