@@ -1,21 +1,21 @@
 require File.join(File.dirname(__FILE__), "mixins", "web_controller")
 module Merb
-  
+
   # A Merb::PartController is a light weight way to share logic and templates
-  # amongst controllers.  
-  # Merb::PartControllers work just like Merb::controller.  
+  # amongst controllers.
+  # Merb::PartControllers work just like Merb::controller.
   # There is a filter stack, layouts (if needed) all the render functions,
-  # and url generation.  
+  # and url generation.
   #
-  # Cookies, params, and even the request object are shared with the web controller  
+  # Cookies, params, and even the request object are shared with the web controller
   class PartController < AbstractController
     include Merb::Mixins::WebController
-    
+
     attr_reader :params
 
     cattr_accessor :_subclasses
     self._subclasses = Set.new
-    
+
     # ==== Returns
     # Array[Class]:: Classes that inherit from Merb::PartController.
     def self.subclasses_list() _subclasses end
@@ -23,14 +23,14 @@ module Merb
     # ==== Parameters
     # action<~to_s>:: The name of the action that will be rendered.
     # type<~to_s>::
-    #    The mime-type of the template that will be rendered. Defaults to nil.
+    #    The mime-type of the template that will be rendered. Defaults to html.
     # controller<~to_s>::
     #   The name of the controller that will be rendered. Defaults to
     #   controller_name.
     #
     # ==== Returns
     # String:: The template location, i.e. ":controller/:action.:type".
-    def _template_location(action, type = nil, controller = controller_name)
+    def _template_location(action, type = :html, controller = controller_name)
       "#{controller}/#{action}.#{type}"
     end
 
@@ -38,7 +38,7 @@ module Merb
     #
     # ==== Parameters
     # klass<Class>::
-    #   The Merb::PartController inheriting from the base class.  
+    #   The Merb::PartController inheriting from the base class.
     def self.inherited(klass)
       _subclasses << klass.to_s
       super
@@ -65,8 +65,8 @@ module Merb
       self.action_name = action
       super(action)
       @body
-    end    
-    
+    end
+
     # Send any methods that are missing back up to the web controller
     # Patched to set partial locals on the web controller
     def method_missing(sym, *args, &blk)
