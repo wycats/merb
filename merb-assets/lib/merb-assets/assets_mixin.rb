@@ -143,7 +143,7 @@ module Merb
     #   link_to_function('Add to cart', "item_total += 1; alert('Item added!');")
     #     # => <a href="#" onclick="item_total += 1; alert('Item added!'); return false;">Add to cart</a>
     def link_to_function(name, function, opts = {})
-      %{<a href="##{opts.delete('anchor')}" onclick="#{function.chomp(";")}; return false;" #{ opts.to_xml_attributes }>#{name}</a>}
+      %{<a href="##{opts.delete(:anchor)}" onclick="#{function.chomp(";")}; return false;" #{ opts.to_xml_attributes }>#{name}</a>}
     end
     
     # ==== Parameters
