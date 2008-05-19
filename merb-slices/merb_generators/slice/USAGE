@@ -1,0 +1,3 @@
+Creates a Merb slice stub.
+
+USAGE: merb-gen slice your-lowercase-slice-name
