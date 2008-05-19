@@ -27,7 +27,8 @@ class Merb::GeneratorBase < RubiGen::Base
       @choices = %w(test spec)
       
       # Set the assigns that should be used for path-interpolation and building templates
-      @assigns = {:base_name => File.basename(@name), :test_type => options["spec"] ? "rspec" : "test_unit"}
+      @assigns = { :base_name => File.basename(@name), :test_type => options["spec"] ? "rspec" : "test_unit" }
+      @assigns[:underscored_base_name] = @assigns[:base_name].gsub('-', '_')
       
       FileUtils.mkdir_p @name
       create_dirs
