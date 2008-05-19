@@ -145,7 +145,7 @@ module Merb::Cache::ControllerInstanceMethods
       if File.file?(cache_file)
         _data = cache_read_page(cache_file)
         _expire_in, _expire_at = pages[action]
-        if _expire_in.nil? || Time.now < _expire_at
+        if _expire_in.nil? || Time.now.to_i < _expire_at.to_i
           Merb.logger.info("cache: hit (#{path})")
           throw(:halt, _data)
         end
