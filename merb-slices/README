@@ -30,3 +30,72 @@ and other runtime code from within the host application.
 To create your own Slice run this (somewhere outside of your merb app):
 
 $ merb-gen slice <your-lowercase-slice-name>
+
+------------------------------------------------------------------------------
+
+Instructions for installation of an imaginary 'BlogSlice' slice:
+
+file: config/init.rb
+
+# add the slice as a regular dependency
+
+dependency 'blog-slice'
+
+# if needed, configure which slices to load and in which order
+
+Merb::Plugins.config[:merb_slices] = { :queue => ["BlogSlice", ...] }
+
+# optionally configure the plugins in a before_app_loads callback
+
+Merb::BootLoader.before_app_loads do
+  
+  Merb::Slices::config[:blog_slice] = { ... }
+  
+end
+
+file: config/router.rb
+
+# example: /blog-slice/:controller/:action/:id
+
+r.add_slice(BlogSlice)
+
+# example: /foo/:controller/:action/:id
+
+r.add_slice(BlogSlice, 'foo') # same as :path => 'foo'
+
+# example: /:lang/:controller/:action/:id (with :a param set)
+
+r.add_slice(BlogSlice, :path => ':lang', :params => { :a => 'b' })
+
+# example: /:controller/:action/:id
+
+r.slice(BlogSlice)
+
+Normally you should also run the following rake task:
+
+rake blog_slice::install
+
+------------------------------------------------------------------------------
+
+You can put your application-level overrides in:
+
+host-app/slices/blog-slice/app - controllers, models, views ...
+
+Templates are located in this order:
+
+1. host-app/slices/blog-slice/app/views/*
+2. gems/blog-slice/app/views/*
+3. host-app/app/views/*
+
+You can use the host application's layout by configuring the
+blog-slice slice in a before_app_loads block:
+
+Merb::Slices.config[:blog_slice] = { :layout => :application }
+
+By default :blog_slice is used. If you need to override
+stylesheets or javascripts, just specify your own files in your layout
+instead/in addition to the ones supplied (if any) in 
+host-app/public/slices/blog-slice.
+
+In any case don't edit those files directly as they may be clobbered any time
+rake blog_slice:install is run.
