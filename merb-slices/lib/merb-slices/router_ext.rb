@@ -5,7 +5,7 @@ module Merb
       # Add a Slice in a router namespace
       # 
       # ==== Parameters
-      # slice_module<Module, String, Symbol>:: An Slice module to mount
+      # slice_module<Module, String, Symbol>:: A Slice module to mount
       # options<Hash>:: Optional hash, set :path if you want to override what appears on the url
       # &block:: A new Behavior instance is yielded in the block for nested resources.
       #
