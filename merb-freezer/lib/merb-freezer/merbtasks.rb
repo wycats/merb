@@ -18,4 +18,11 @@ namespace :freeze do
     Freezer.freeze(ENV["GEM"], ENV["UPDATE"], ENV["MODE"])
   end
   
+  desc "freeze all merb components (core, more, plugins) - use MODE=rubgygems and UPDATE=true as in regular freezing tasks"
+  task :all do
+    ['core', 'more', 'plugins'].each do |component|
+      Freezer.freeze(component, ENV["UPDATE"], ENV["MODE"])
+    end
+  end
+  
 end

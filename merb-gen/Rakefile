@@ -2,7 +2,7 @@ require 'rubygems'
 require 'rake/gempackagetask'
 
 GEM = "merb-gen"
-VERSION = "0.9.2"
+VERSION = "0.9.4"
 AUTHOR = "Yehuda Katz"
 EMAIL = "wycats@gmail.com"
 HOMEPAGE = "http://www.merbivore.com"
@@ -21,14 +21,14 @@ spec = Gem::Specification.new do |s|
   s.homepage = HOMEPAGE
   s.bindir = "bin"
   s.executables = %w( merb-gen )
-    
+
   # Uncomment this to add a dependency
-  s.add_dependency "merb-core", ">= 0.9.2"
+  s.add_dependency "merb-core", ">= 0.9.4"
   s.add_dependency "rubigen", ">= 1.2.4"
-  
+
   s.require_path = 'lib'
   s.autorequire = GEM
-  s.files = %w(LICENSE README Rakefile TODO) + 
+  s.files = %w(LICENSE README Rakefile TODO) +
           Dir.glob("{lib,bin,spec,app_generators,merb_default_generators,merb_generators,rspec_generators,test_unit_generators}/**/*")
 end
 
@@ -36,12 +36,14 @@ Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
 
+install_home = ENV['GEM_HOME'] ? "-i #{ENV['GEM_HOME']}" : ""
+
 namespace :jruby do
   task :install do
-    sh %{sudo jruby -S gem install pkg/#{GEM}-#{VERSION} --no-update-sources}
+    sh %{sudo jruby -S gem install #{install_home} pkg/#{GEM}-#{VERSION} --no-update-sources}
   end
 end
 
 task :install => [:package] do
-  sh %{sudo gem install pkg/#{GEM}-#{VERSION} --no-update-sources}
+  sh %{sudo gem install #{install_home} pkg/#{GEM}-#{VERSION} --no-update-sources}
 end

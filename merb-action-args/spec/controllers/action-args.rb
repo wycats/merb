@@ -32,4 +32,8 @@ class ActionArgs < Merb::Controller
     "mos def"
   end
   
+  def with_default_nil(foo, bar = nil)
+    "#{foo} #{bar}"
+  end
+  
 end

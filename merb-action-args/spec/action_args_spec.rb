@@ -30,4 +30,8 @@ describe Merb::AbstractController do
     dispatch_to(ActionArgs, :funky_inherited_method, :foo => "bar", :bar => "baz").body.should == "bar baz"
   end
   
+  it "should be able to handle nil defaults" do
+    dispatch_to(ActionArgs, :with_default_nil, :foo => "bar").body.should == "bar "
+  end
+  
 end

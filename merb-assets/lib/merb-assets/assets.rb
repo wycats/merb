@@ -14,7 +14,6 @@ module Merb
     
     # Helpers for handling asset files.
     module AssetHelpers
-      # :nodoc:
       ASSET_FILE_EXTENSIONS = {
         :javascript => ".js",
         :stylesheet => ".css"
@@ -42,7 +41,7 @@ module Merb
       #   # => "public/javascripts/dingo.js"
       def asset_path(asset_type, filename, local_path = false)
         filename = filename.to_s
-        if filename !~ /#{'\\' + ASSET_FILE_EXTENSIONS[asset_type]}\Z/
+        if filename !~ /#{'\\' + ASSET_FILE_EXTENSIONS[asset_type]}\Z/ && filename.index('?').nil?
           filename << ASSET_FILE_EXTENSIONS[asset_type]
         end
         if filename !~ %r{^https?://}
@@ -97,7 +96,40 @@ module Merb
     
     # An abstract class for bundling text assets into single files.
     class AbstractAssetBundler
+      
+      class_inheritable_array :cached_bundles
+      self.cached_bundles ||= []
+      
       class << self
+        
+        # Mark a bundle as cached.
+        #
+        # ==== Parameters
+        # name<~to_s>:: Name of the bundle
+        #
+        def cache_bundle(name)
+          cached_bundles.push(name.to_s)
+        end
+        
+        # Purge a bundle from the cache.
+        #
+        # ==== Parameters
+        # name<~to_s>:: Name of the bundle
+        #
+        def purge_bundle(name)
+          cached_bundles.delete(name.to_s)
+        end
+        
+        # Test if a bundle has been cached.
+        #
+        # ==== Parameters
+        # name<~to_s>:: Name of the bundle
+        #
+        # ==== Returns
+        # Boolean:: Whether the bundle has been cached or not.
+        def cached_bundle?(name)
+          cached_bundles.include?(name.to_s)
+        end
         
         # ==== Parameters
         # &block:: A block to add as a post-bundle callback.
@@ -146,10 +178,19 @@ module Merb
       # ==== Returns
       # Symbol:: Name of the bundle.
       def bundle!
-        # TODO: Move this file check out into an in-memory cache. Also, push it out to the helper level so we don't have to create the helper object.
-        unless File.exist?(@bundle_filename)
+        # TODO: push it out to the helper level so we don't have to create the helper object.
+        unless self.class.cached_bundle?(@bundle_name)
+          # skip regeneration of new bundled files - preventing multiple merb apps stepping on eachother
+          # file needs to be older than 60 seconds to be regenerated
+          if File.exist?(@bundle_filename) && File.mtime(@bundle_filename) >= Time.now - 60
+            return @bundle_name # serve the old file for now - to be regenerated later
+          end
           bundle_files(@bundle_filename, *@files)
-          self.class.callbacks.each { |c| c.call(@bundle_filename) }
+          if File.exist?(@bundle_filename)
+            self.class.callbacks.each { |c| c.call(@bundle_filename) }
+            Merb.logger.info("Assets: bundled :#{@bundle_name} into #{File.basename(@bundle_filename)}")
+            self.class.cache_bundle(@bundle_name)
+          end
         end
         return @bundle_name
       end
@@ -165,7 +206,9 @@ module Merb
       # *files<String>:: Filenames to be bundled.
       def bundle_files(filename, *files)
         File.open(filename, "w") do |f|
+          f.flock(File::LOCK_EX)
           files.each { |file| f.puts(File.read(file)) }
+          f.flock(File::LOCK_UN)
         end
       end
       

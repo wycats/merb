@@ -1,4 +1,4 @@
-test_log
+ytest_log
 pkg
 pkg/*
 */pkg/*
@@ -13,3 +13,4 @@ coverage
 bundle
 lib/merb-more.rb
 *.DS_Store
+TAGS

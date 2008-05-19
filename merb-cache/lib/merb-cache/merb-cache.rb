@@ -5,7 +5,7 @@ require "merb-cache/cache-fragment"
 class Merb::Cache
   attr_reader  :config, :store
 
-  class StoreNotFound < Exception #:nodoc:
+  class StoreNotFound < Exception
     def initialize(cache_store)
       super("cache_store (#{cache_store}) not found (not implemented?)")
     end
@@ -40,6 +40,7 @@ class Merb::Cache
   def start
     @config = DEFAULT_CONFIG.merge(Merb::Plugins.config[:merb_cache] || {})
     if @config[:disable] == true || Merb.environment == @config[:disable]
+      config[:disable_page_caching] = true
       config[:store] = "dummy"
     end
     @config[:cache_html_directory] ||= Merb.dir_for(:public) / "cache"
@@ -145,13 +146,13 @@ class Merb::Cache
   end
 end
 
-module Merb #:nodoc:
-  class Controller #:nodoc:
+module Merb
+  class Controller
     cattr_reader :_cache
     @@_cache = Merb::Cache.new
     # extends Merb::Controller with new instance methods
     include Merb::Cache::ControllerInstanceMethods
-    class << self #:nodoc:
+    class << self
       # extends Merb::Controller with new class methods
       include Merb::Cache::ControllerClassMethods
     end

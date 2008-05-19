@@ -21,3 +21,12 @@ end
 
 class CaptureBuilder < BuilderController
 end
+
+module Merb::ConcatBuilderHelper
+  def concatter(&blk)
+    concat("<node>Concat</node>", blk.binding)
+  end
+end
+
+class ConcatBuilder < BuilderController
+end

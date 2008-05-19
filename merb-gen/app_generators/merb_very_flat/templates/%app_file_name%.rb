@@ -1,3 +1,5 @@
+# run very flat apps with merb -I <app file>.
+
 Merb::Router.prepare do |r|
   r.match('/').to(:controller => '<%= app_file_name %>', :action =>'index')
 end

@@ -8,6 +8,12 @@ class CacheController < Merb::Controller
   cache_page :action5
   cache_page :action6, 0.05
   # or cache_pages :action5, [:action6, 0.05]
+  cache_page :action7
+
+  cache_action :action8, 0.05, :if => proc {|controller| !controller.params[:id].empty?}
+  cache_action :action9, 0.05, :unless => proc {|controller| controller.params[:id].empty?}
+  cache_action :action10, :if => :non_empty_id?
+  cache_action :action11, :unless => :empty_id?
 
   def action1
     render
@@ -31,6 +37,48 @@ class CacheController < Merb::Controller
 
   def action6
     Time.now.to_s
+  end
+
+  def action7
+    provides :js, :css, :html, :xml, :jpg
+    case params[:format]
+    when "css"
+      "CSS"
+    when "js"
+      "JS"
+    when "html"
+      "HTML"
+    when "xml"
+      "XML"
+    when "jpg"
+      "JPG"
+    else
+      raise "BAD FORMAT: #{params[:format].inspect}"
+    end
+  end
+
+  def action8
+    "test action8"
+  end
+
+  def action9
+    "test action9"
+  end
+
+  def action10
+    "test action10"
+  end
+
+  def action11
+    "test action11"
+  end
+
+  def empty_id?
+    params[:id].empty?
+  end
+
+  def non_empty_id?
+    !empty_id?
   end
 
   def index

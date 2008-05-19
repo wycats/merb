@@ -3,7 +3,7 @@ require 'rake/gempackagetask'
 
 PLUGIN = "merb-builder"
 NAME = "merb-builder"
-VERSION = "0.9.2"
+VERSION = "0.9.4"
 AUTHOR = "Jonathan Younger"
 EMAIL = "jonathan@daikini.com"
 HOMEPAGE = "http://merb-plugins.rubyforge.org/merb-builder/"
@@ -20,7 +20,8 @@ spec = Gem::Specification.new do |s|
   s.author = AUTHOR
   s.email = EMAIL
   s.homepage = HOMEPAGE
-  s.add_dependency('merb-core', '>= 0.9.2')
+  s.add_dependency('merb-core', '>= 0.9.4')
+  s.add_dependency('builder', '>= 2.0.0')
   s.require_path = 'lib'
   s.autorequire = PLUGIN
   s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,spec}/**/*")
@@ -30,15 +31,17 @@ Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
 
+install_home = ENV['GEM_HOME'] ? "-i #{ENV['GEM_HOME']}" : ""
+
 task :install => [:package] do
-  sh %{sudo gem install pkg/#{NAME}-#{VERSION} --no-update-sources}
+  sh %{sudo gem install #{install_home} pkg/#{NAME}-#{VERSION} --no-update-sources}
 end
 
 namespace :jruby do
 
   desc "Run :package and install the resulting .gem with jruby"
   task :install => :package do
-    sh %{#{SUDO} jruby -S gem install pkg/#{NAME}-#{Merb::VERSION}.gem --no-rdoc --no-ri}
+    sh %{#{SUDO} jruby -S gem install #{install_home} pkg/#{NAME}-#{Merb::VERSION}.gem --no-rdoc --no-ri}
   end
-  
+
 end
