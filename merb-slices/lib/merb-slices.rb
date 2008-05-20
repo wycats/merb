@@ -11,43 +11,60 @@ if defined?(Merb::Plugins)
   
   # Load Slice classes before the app's classes are loaded.
   #
-  # This allows the application to override/merge any gem-level classes.
-  class Merb::Slices::Setup < Merb::BootLoader
+  # This allows the application to override/merge any slice-level classes.
+  class Merb::Slices::Loader < Merb::BootLoader
 
     before LoadClasses
 
     cattr_accessor :load_paths
 
     def self.run
-      self.load_paths = []      
+      self.load_paths = []
+      Merb::Slices.each_slice do |module_name, path|
+        mod = Object.full_const_get(module_name) rescue nil
+        if mod
+          # For flat apps :application can be a single file
+          Merb::BootLoader::LoadClasses.send(:load_file, mod.dir_for(:application)) if File.file?(mod.dir_for(:application))
+          push_paths(self.load_paths, module_name, path)
+        end
+      end
       Merb::Slices.each_slice { |module_name, path| push_paths(module_name, path) }
-      load_classes
+      load_classes_from(self.load_paths)
     end
     
-    private
-    
-    def self.push_paths(module_name, slice_root)
+    # Add load paths (as pairs of [path, glob]) to load from
+    #
+    # @param module_name<String> Slice module name.
+    # @param slice_root<String> Slice root path.
+    # @param paths<Array[Array]> 
+    #   Array to append pairs of [path, glob] to - defaults to self.load_paths
+    # @param app_paths<Array> 
+    #   Optional array to append pairs of app-level [path, glob] to.
+    def self.push_paths(module_name, slice_root, paths = self.load_paths, app_paths = [])
       mod = Object.full_const_get(module_name) rescue nil
       return unless mod
-      # For flat apps :application can be a single file
-      Merb::BootLoader::LoadClasses.send(:load_file, mod.dir_for(:application)) if File.file?(mod.dir_for(:application))
       mod.slice_paths.each do |component, path|
         if File.directory?(component_path = path.first)
           $LOAD_PATH.unshift(component_path) if component.in?(:model, :controller, :lib)
-          # gem-level component load path - will be preceded by application/app/component - loaded next by Setup.load_classes
-          self.load_paths.push(path) if path[1]
+          # slice-level component load path - will be preceded by application/app/component - loaded next by Setup.load_classes_from
+          paths.push(path) if path[1]
           # app-level component load path (override) path - loaded by BootLoader::LoadClasses
           if (app_glob = mod.app_glob_for(component)) && File.directory?(app_component_dir = mod.app_dir_for(component))
+            app_paths << [app_component_dir, app_glob]
             Merb.push_path(:"#{module_name.snake_case}_#{component}", app_component_dir, app_glob)
           end
         end
       end
     end
 
-    def self.load_classes
+    # Load classes from given paths - using glob pattern
+    #
+    # @param paths<Array[Array]> 
+    #   Array of [path, glob] pairs to load classes from - defaults to self.load_paths
+    def self.load_classes_from(paths = self.load_paths)
       Merb.logger.info!("loading classes for all registered slices ...")
       orphaned_classes = []
-      Merb::Slices::Setup.load_paths.each do |path, glob|
+      paths.each do |path, glob|
         Dir[path / glob].each do |file|
           begin
             Merb::BootLoader::LoadClasses.send(:load_file, file)
@@ -59,6 +76,7 @@ if defined?(Merb::Plugins)
       Merb::BootLoader::LoadClasses.send(:load_classes_with_requirements, orphaned_classes)
     end
     
+    # Reload the router - takes all_slices into account to load slices at runtime
     def self.reload_router!
       if File.file?(router_file = Merb.dir_for(:router) / Merb.glob_for(:router))
         Merb::BootLoader::LoadClasses.send(:load_file, router_file)

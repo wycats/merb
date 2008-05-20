@@ -19,7 +19,7 @@ module Merb
             klass._template_roots = []
             # app-level app/views directory for shared and fallback views, layouts and partials
             klass._template_roots << [Merb.dir_for(:view), :_template_location] if Merb.dir_for(:view)
-            # gem-level app/views for the standard supplied views
+            # slice-level app/views for the standard supplied views
             klass._template_roots << [self._template_root, :_slice_template_location] 
             # app-level slices/<slice>/app/views for specific overrides
             klass._template_roots << [mod.app_dir_for(:view), :_slice_template_location]

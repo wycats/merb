@@ -26,11 +26,8 @@ if defined?(Merb::Plugins)
     def self.activate
     end
     
-    # Deactivation method - not triggered automatically
-    # 
-    # Will unregister the slice module by default.
-    def self.deactivate!
-      Merb::Slices.unregister(self)
+    # Deactivation hook - triggered by Merb::Slices#deactivate
+    def self.deactivate
     end
     
     # Setup routes inside the host application

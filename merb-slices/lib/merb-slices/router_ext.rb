@@ -2,10 +2,29 @@ module Merb
   class Router
     class Behavior
       
+      # Add all known slices to the router
+      #
+      # By combining this with Merb::Slices.register_and_activate and Merb::Slices.deactivate
+      # one can enable/disable slices at runtime, without restarting your app.
+      #
+      # @param config<Hash> 
+      #  Optional hash, mapping slice module names to their settings;
+      #  set :path (or use a string) if you want to override what appears on the url.
+      #
+      # @yield A new Behavior instance is yielded in the block for nested routes.
+      # @yieldparam ns<Behavior>:: The namespace behavior object.
+      #
+      # @example r.all_slices('BlogSlice' => 'blog', 'ForumSlice' => { :path => 'forum' })
+      #
+      # @note The block is yielded for each slice individually.
+      def all_slices(config = {}, &block)
+        Merb::Slices.slices.each { |module_name| add_slice(module_name, config[module_name] || {}, &block) }
+      end
+      
       # Add a Slice in a router namespace
       # 
       # @param slice_module<String, Symbol, Module> A Slice module to mount.
-      # @param options<Hash> Optional hash, set :path if you want to override what appears on the url.
+      # @param options<Hash, String> Optional hash, set :path if you want to override what appears on the url.
       # 
       # @yield A new Behavior instance is yielded in the block for nested routes.
       # @yieldparam ns<Behavior>:: The namespace behavior object.

@@ -1,43 +1,89 @@
 module Merb
   module Slices
     
-    # Register a Slice by its gem/lib path
+    # Register a Slice by its gem/lib path for loading at startup
     #
     # This is referenced from gems/<slice-gem-x.x.x>/lib/<slice-gem>.rb
     # Which gets loaded for any gem. The name of the file is used
     # to extract the Slice module name.
     #
     # @param slice_file<String> The path of the gem 'init file'
+    # @param force<Boolean> Whether to overwrite currently registered slice or not.
     #
     # @return <Module> The Slice module that has been setup.
     #
     # @example Merb::Slices::register(__FILE__)
-    def self.register(slice_file)
+    def self.register(slice_file, force = true)
       identifier  = File.basename(slice_file, '.rb')
       module_name = identifier.gsub('-', '_').camel_case
       slice_path  = File.expand_path(File.dirname(slice_file) + '/..')
-      Merb.logger.info!("registered slice '#{module_name}' located at #{slice_path}")
-      self.paths[module_name] = slice_path
-      mod = setup_module(module_name)
-      mod.identifier = identifier
-      mod.root = slice_path
+      if !self.paths.include?(slice_path) || force
+        Merb.logger.info!("registered slice '#{module_name}' located at #{slice_path}")
+        self.paths[module_name] = slice_path
+        mod = setup_module(module_name)
+        mod.identifier = identifier
+        mod.root = slice_path
+      else
+        Merb.logger.info!("already registered slice '#{module_name}' located at #{slice_path}")
+        mod = Object.full_const_get(module_name)
+      end
       mod
     end
     
-    # Unregister a Slice module at runtime
+    # Unregister a Slice at runtime
     #
-    # @param <Module> The Slice module to unregister.
+    # This clears the slice module from ObjectSpace and reloads the router.
+    # Since the router doesn't add routes for any disabled slices this will
+    # correctly reflect the app's routing state.
+    #
+    # @param slice_module<Module> The Slice module to unregister.
     def self.unregister(slice_module)
       module_name = slice_module.to_s
       if self.paths.delete(module_name)
         Object.send(:remove_const, module_name) rescue nil
         unless Object.const_defined?(module_name)
           Merb.logger.info!("unregistered slice #{slice_module}")
-          Merb::Slices::Setup.reload_router!
+          Merb::Slices::Loader.reload_router!
         end
       end
     end
     
+    # Register a Slice by its gem/lib path and activate it directly
+    #
+    # Normally slices are loaded using BootLoaders on application startup.
+    # This method gives you the possibility to add slices at runtime, all
+    # without restarting your app. Together with #deactivate it allows
+    # you to enable/disable slices at any time. The router is reloaded to
+    # incorporate any changes. Disabled slices will be skipped when 
+    # routes are regenerated.
+    #
+    # @param slice_file<String> The path of the gem 'init file'
+    #
+    # @example Merb::Slices.register_and_activate('/path/to/gems/slice-name/lib/slice-name.rb')
+    def self.register_and_activate(slice_file)
+      slice_paths = []; app_paths = []
+      Merb::Slices::Loader.load_classes_from([[File.dirname(slice_file), File.basename(slice_file)]])
+      mod = self.register(slice_file, false) # just to get module by slice_file
+      Merb::Slices::Loader.push_paths(mod.name, mod.root, slice_paths, app_paths)
+      Merb::Slices::Loader.load_classes_from(slice_paths) # slice-level
+      Merb::Slices::Loader.load_classes_from(app_paths)   # app-level merge/override
+      mod.init     if mod.respond_to?(:init)
+      mod.activate if mod.respond_to?(:activate)
+      true
+    ensure
+      Merb::Slices::Loader.reload_router!
+    end
+    
+    # Deactivate a Slice module at runtime
+    #
+    # @param slice_module<#to_s> The Slice module to unregister.
+    def self.deactivate(slice_module)
+      if self.exists?(slice_module) && mod = Object.full_const_get(slice_module.to_s)
+        mod.deactivate if mod.respond_to?(:deactivate)
+        self.unregister(mod)
+      end
+    end
+        
     # @return <Hash>
     #   The configuration loaded from Merb.root / "config/slices.yml" or, if
     #   the load fails, an empty hash.
@@ -107,12 +153,12 @@ module Merb
         def activate; end
         
         # Stub deactivation method - not triggered automatically.
-        def deactivate!; end
+        def deactivate; end
         
         # Stub to setup routes inside the host application.
         def setup_router(scope); end
         
-        # @return <Hash> The load paths which make up the gem-level structure.
+        # @return <Hash> The load paths which make up the slice-level structure.
         def slice_paths
           @slice_paths ||= Hash.new { [self.root] }
         end
@@ -129,7 +175,7 @@ module Merb
         # @return <String> The full path including the root.
         def root_path(*path) File.join(self.root, *path) end
         
-        # Retrieve the absolute path to a gem-level directory.
+        # Retrieve the absolute path to a slice-level directory.
         #
         # @param type<Symbol> The type of path to retrieve directory for, e.g. :view.
         #
@@ -163,7 +209,7 @@ module Merb
           dir == '.' ? '/' : "/#{dir}"
         end
         
-        # This is the core mechanism for setting up your gem-level layout.
+        # This is the core mechanism for setting up your slice-level layout.
         #
         # @param type<Symbol> The type of path being registered (i.e. :view)
         # @param path<String> The full path
@@ -175,7 +221,7 @@ module Merb
         end
         
         # Removes given types of application components
-        # from gem-level load path this slice uses for autoloading.
+        # from slice-level load path this slice uses for autoloading.
         #
         # @param *args<Array[Symbol]> Components names, for instance, :views, :models
         def remove_paths(*args)
@@ -201,7 +247,7 @@ module Merb
           args.each { |arg| self.app_paths.delete(arg) }
         end
         
-        # This sets up the default gem-level and app-level structure.
+        # This sets up the default slice-level and app-level structure.
         # 
         # You can create your own structure by implementing setup_structure and
         # using the push_path and push_app_paths. By default this setup matches
