@@ -29,7 +29,7 @@ if defined?(Merb::Plugins)
         end
       end
       Merb::Slices.each_slice { |module_name, path| push_paths(module_name, path) }
-      load_classes_from(self.load_paths)
+      load_classes
     end
     
     # Add load paths (as pairs of [path, glob]) to load from
@@ -46,7 +46,7 @@ if defined?(Merb::Plugins)
       mod.slice_paths.each do |component, path|
         if File.directory?(component_path = path.first)
           $LOAD_PATH.unshift(component_path) if component.in?(:model, :controller, :lib)
-          # slice-level component load path - will be preceded by application/app/component - loaded next by Setup.load_classes_from
+          # slice-level component load path - will be preceded by application/app/component - loaded next by Setup.load_classes
           paths.push(path) if path[1]
           # app-level component load path (override) path - loaded by BootLoader::LoadClasses
           if (app_glob = mod.app_glob_for(component)) && File.directory?(app_component_dir = mod.app_dir_for(component))
@@ -61,7 +61,7 @@ if defined?(Merb::Plugins)
     #
     # @param paths<Array[Array]> 
     #   Array of [path, glob] pairs to load classes from - defaults to self.load_paths
-    def self.load_classes_from(paths = self.load_paths)
+    def self.load_classes(paths = self.load_paths)
       Merb.logger.info!("loading classes for all registered slices ...")
       orphaned_classes = []
       paths.each do |path, glob|

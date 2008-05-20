@@ -62,11 +62,11 @@ module Merb
     # @example Merb::Slices.register_and_activate('/path/to/gems/slice-name/lib/slice-name.rb')
     def self.register_and_activate(slice_file)
       slice_paths = []; app_paths = []
-      Merb::Slices::Loader.load_classes_from([[File.dirname(slice_file), File.basename(slice_file)]])
+      Merb::Slices::Loader.load_classes([[File.dirname(slice_file), File.basename(slice_file)]])
       mod = self.register(slice_file, false) # just to get module by slice_file
       Merb::Slices::Loader.push_paths(mod.name, mod.root, slice_paths, app_paths)
-      Merb::Slices::Loader.load_classes_from(slice_paths) # slice-level
-      Merb::Slices::Loader.load_classes_from(app_paths)   # app-level merge/override
+      Merb::Slices::Loader.load_classes(slice_paths) # slice-level
+      Merb::Slices::Loader.load_classes(app_paths)   # app-level merge/override
       mod.init     if mod.respond_to?(:init)
       mod.activate if mod.respond_to?(:activate)
       true
