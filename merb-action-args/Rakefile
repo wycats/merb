@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'rake/gempackagetask'
+require '../merb_rake_helper'
 
 PLUGIN = "merb-action-args"
 NAME = "merb-action-args"
@@ -34,14 +35,14 @@ end
 install_home = ENV['GEM_HOME'] ? "-i #{ENV['GEM_HOME']}" : ""
 
 task :install => [:package] do
-  sh %{sudo gem install #{install_home} pkg/#{NAME}-#{VERSION} --no-update-sources}
+  sh %{#{sudo} gem install #{install_home} pkg/#{NAME}-#{VERSION} --no-update-sources}
 end
 
 namespace :jruby do
 
   desc "Run :package and install the resulting .gem with jruby"
   task :install => :package do
-    sh %{#{SUDO} jruby -S gem install #{install_home} pkg/#{NAME}-#{Merb::VERSION}.gem --no-rdoc --no-ri}
+    sh %{#{sudo} jruby -S gem install #{install_home} pkg/#{NAME}-#{Merb::VERSION}.gem --no-rdoc --no-ri}
   end
 
 end

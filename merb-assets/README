@@ -20,7 +20,6 @@ Quick overview of the API
 	# image_tag creates img tag.
 	
 	# escape_js escapes JavaScript.
-	# link_to_function creates anchor tag that has onlick event with JS function.
 	# js method translates object into JSON.
 	
 	# require_js is smart(-er) way to do includes just once per page no matter
@@ -249,11 +248,3 @@ Utility methods examples
 
   uniq_path('/images/hostsexypicture.jpg')
   #=>"http://assets1.my-awesome-domain.com/images/hostsexypicture.jpg"
-
-
-   link_to_function('Click me', "alert('hi!')")
-     # => <a href="#" onclick="alert('hi!'); return false;">Click me</a>
-
-   link_to_function('Add to cart', "item_total += 1; alert('Item added!');")
-     # => <a href="#" onclick="item_total += 1; alert('Item added!'); return false;">Add to cart</a>
-

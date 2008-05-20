@@ -9,6 +9,7 @@ end
 
 require "rake/clean"
 require "rake/gempackagetask"
+require "merb_rake_helper"
 require 'fileutils'
 include FileUtils
 
@@ -50,9 +51,6 @@ end
 
 CLEAN.include ["**/.*.sw?", "pkg", "lib/*.bundle", "*.gem", "doc/rdoc", ".config", "coverage", "cache", "lib/merb-more.rb"]
 
-windows = (PLATFORM =~ /win32|cygwin/) rescue nil
-
-SUDO = windows ? "" : "sudo"
 
 Rake::GemPackageTask.new(merb_more_spec) do |package|
   package.gem_spec = merb_more_spec
@@ -67,8 +65,8 @@ install_home = ENV['GEM_HOME'] ? "-i #{ENV['GEM_HOME']}" : ""
 
 desc "Install it all"
 task :install => [:install_gems, :package] do
-  sh %{#{SUDO} gem install #{install_home} --local pkg/merb-more-#{Merb::MORE_VERSION}.gem  --no-update-sources}
-  sh %{#{SUDO} gem install #{install_home} --local pkg/merb-#{Merb::MORE_VERSION}.gem --no-update-sources}
+  sh %{#{sudo} gem install #{install_home} --local pkg/merb-more-#{Merb::MORE_VERSION}.gem  --no-update-sources}
+  sh %{#{sudo} gem install #{install_home} --local pkg/merb-#{Merb::MORE_VERSION}.gem --no-update-sources}
 end
 
 desc "Build the merb-more gems"
@@ -88,7 +86,7 @@ end
 desc "Uninstall the merb-more sub-gems"
 task :uninstall_gems do
   gems.each do |sub_gem|
-    sh %{#{SUDO} gem uninstall #{sub_gem}}
+    sh %{#{sudo} gem uninstall #{sub_gem}}
   end
 end
 
