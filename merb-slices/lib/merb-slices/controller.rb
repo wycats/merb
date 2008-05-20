@@ -7,9 +7,8 @@ module Merb
     
         # Setup controller paths when inheriting
         #
-        # ==== Parameters
-        # klass<Merb::Slices::Controller>::
-        #   The Merb::Slices::Controller inheriting from the base class (in a module).
+        # @param klass<Merb::Slices::Controller>
+        #   The new controller inheriting from the base class (in a module).
         def inherited(klass)
           super # important to call this first         
           module_name = klass.to_s.split('::').first
@@ -36,14 +35,11 @@ module Merb
       # of a slice to locate templates without looking in a subdirectory with
       # the name of the module. Instead it will just be app/views/controller/*
       #
-      # ==== Parameters
-      # context<~to_s>:: The controller context (the action or template name).
-      # type<~to_s>:: The content type. Defaults to nil.
-      # controller<~to_s>::
-      #   The name of the controller. Defaults to controller_name.
+      # @param context<#to_str> The controller context (the action or template name).
+      # @param type<#to_str> The content type. Defaults to nil.
+      # @param controller<#to_str> The name of the controller. Defaults to controller_name.
       #
-      # ==== Returns
-      # String:: 
+      # @return <String> 
       #   Indicating where to look for the template for the current controller,
       #   context, and content-type.
       def _slice_template_location(context, type = nil, controller = controller_name)

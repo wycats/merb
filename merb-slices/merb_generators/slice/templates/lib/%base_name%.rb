@@ -28,8 +28,7 @@ if defined?(Merb::Plugins)
     
     # Setup routes inside the host application
     #
-    # ==== Parameters
-    # scope<Merb::Router::Behaviour>::
+    # @param scope<Merb::Router::Behaviour>
     #  Routes will be added within this scope (namespace). In fact, any 
     #  router behaviour is a valid namespace, so you can attach
     #  routes at any level of your router setup.

@@ -4,16 +4,13 @@ module Merb
       
       # Add a Slice in a router namespace
       # 
-      # ==== Parameters
-      # slice_module<Module, String, Symbol>:: A Slice module to mount
-      # options<Hash>:: Optional hash, set :path if you want to override what appears on the url
-      # &block:: A new Behavior instance is yielded in the block for nested resources.
+      # @param slice_module<Module, String, Symbol> A Slice module to mount
+      # @param options<Hash> Optional hash, set :path if you want to override what appears on the url
+      # 
+      # @yield A new Behavior instance is yielded in the block for nested routes.
+      # @yieldparam ns<Behavior>:: The namespace behavior object.
       #
-      # ==== Block parameters
-      # r<Behavior>:: The namespace behavior object.
-      #
-      # ==== Returns
-      # Behaviour:: The current router context.
+      # @return <Behaviour> The current router context.
       def add_slice(slice_module, options = {}, &block)
         options = { :path => options } if options.is_a?(String)
         slice_module = Object.full_const_get(slice_module.to_s) if slice_module.class.in?(String, Symbol)

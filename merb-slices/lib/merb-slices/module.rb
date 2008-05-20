@@ -7,11 +7,9 @@ module Merb
     # Which gets loaded for any gem. The name of the file is used
     # to extract the Slice module name.
     #
-    # ==== Parameters
-    # slice_file<String>:: The path of the gem 'init file'
+    # @param slice_file<String> The path of the gem 'init file'
     #
-    # ==== Example
-    # Merb::Slices::register(__FILE__)
+    # @example Merb::Slices::register(__FILE__)
     def self.register(slice_file)
       identifier  = File.basename(slice_file, '.rb')
       module_name = identifier.gsub('-', '_').camel_case
@@ -23,8 +21,7 @@ module Merb
       mod.root = slice_path
     end
     
-    # ==== Returns
-    # Hash::
+    # @return <Hash>
     #   The configuration loaded from Merb.root / "config/slices.yml" or, if
     #   the load fails, an empty hash.
     def self.config
@@ -32,11 +29,15 @@ module Merb
     end
     
     # All registered Slice module names
+    #
+    # @return <Array> A sorted array of all slice modules
     def self.slices
       self.paths.keys.sort
     end
     
     # A lookup for finding a Slice module's path
+    #
+    # @return <Hash> A Hash mapping module names to root paths.
     def self.paths
       @paths ||= {}
     end
@@ -49,12 +50,9 @@ module Merb
     # used to selectively load slices, and also maintain load-order
     # for slices that depend on eachother.
     #
-    # ==== Parameters
-    # &block:: The module name and slice root path are yielded.
-    #
-    # ==== Block parameters
-    # module_name<String>:: The Slice module name.
-    # path<String>:: The root path of the Slice.
+    # @yield Iterate over known slices and pass name and root path.
+    # @yieldparam module_name<String>  The Slice module name.
+    # @yieldparam path<String> The root path of the Slice.
     def self.each_slice(&block)
       loadable_slices = Merb::Plugins.config[:merb_slices].key?(:queue) ? Merb::Plugins.config[:merb_slices][:queue] : self.slices
       loadable_slices.each do |module_name|
@@ -67,11 +65,9 @@ module Merb
     
     # Prepare a module to be a proper Slice module
     #
-    # ==== Parameters
-    # module_name<~to_s>:: The name of the module to prepare
+    # @param module_name<#to_s>:: The name of the module to prepare
     #
-    # ==== Returns
-    # Module:: The module that has been setup
+    # @return <Module> The module that has been setup
     def self.setup_module(module_name)
       Object.make_module(module_name)
       mod = Object.full_const_get(module_name)
@@ -89,66 +85,52 @@ module Merb
         # Stub to setup routes inside the host application.
         def setup_router(scope); end
         
-        # ==== Returns
-        # Hash:: The load paths which make up the gem-level structure.
+        # @return <Hash> The load paths which make up the gem-level structure.
         def slice_paths
           @slice_paths ||= Hash.new { [self.root] }
         end
         
-        # ==== Returns
-        # Hash:: The load paths which make up the app-level structure.
+        # @return <Hash> The load paths which make up the app-level structure.
         def app_paths
           @app_paths ||= Hash.new { [Merb.root] }
         end
         
-        # ==== Parameters
-        # *path::
+        # @param *path<#to_s>
         #   The relative path (or list of path components) to a directory under the
         #   root of the application.
         #
-        # ==== Returns
-        # String:: The full path including the root.
+        # @return <String> The full path including the root.
         def root_path(*path) File.join(self.root, *path) end
         
         # Retrieve the absolute path to a gem-level directory.
         #
-        # ==== Parameters
-        # type<Symbol>:: The type of path to retrieve directory for, e.g. :view.
+        # @param type<Symbol> The type of path to retrieve directory for, e.g. :view.
         #
-        # ==== Returns
-        # String:: The absolute path for the requested type.
+        # @return <String> The absolute path for the requested type.
         def dir_for(type) self.slice_paths[type].first end
         
-        # ==== Parameters
-        # type<Symbol>:: The type of path to retrieve glob for, e.g. :view.
+        # @param type<Symbol> The type of path to retrieve glob for, e.g. :view.
         #
-        # ===== Returns
-        # String:: The pattern with which to match files within the type directory.
+        # @return <String> The pattern with which to match files within the type directory.
         def glob_for(type) self.slice_paths[type][1] end
 
         # Retrieve the absolute path to a app-level directory. 
         #
-        # ==== Parameters
-        # type<Symbol>:: The type of path to retrieve directory for, e.g. :view.
+        # @param type<Symbol> The type of path to retrieve directory for, e.g. :view.
         #
-        # ==== Returns
-        # String:: The directory for the requested type.
+        # @return <String> The directory for the requested type.
         def app_dir_for(type) self.app_paths[type].first end
         
-        # ==== Parameters
-        # type<Symbol>:: The type of path to retrieve glob for, e.g. :view.
+        # @param type<Symbol> The type of path to retrieve glob for, e.g. :view.
         #
-        # ===== Returns
-        # String:: The pattern with which to match files within the type directory.
+        # @return <String> The pattern with which to match files within the type directory.
         def app_glob_for(type) self.app_paths[type][1] end
         
         # Retrieve the relative path to a public directory.
         #
-        # ==== Parameters
-        # type<Symbol>:: The type of path to retrieve directory for, e.g. :view.
+        # @param type<Symbol> The type of path to retrieve directory for, e.g. :view.
         #
-        # ==== Returns
-        # String:: The relative path to the public directory for the requested type.
+        # @return <String> The relative path to the public directory for the requested type.
         def public_dir_for(type)
           dir = self.app_dir_for(type).relative_path_from(Merb.dir_for(:public)) rescue '.'
           dir == '.' ? '/' : "/#{dir}"
@@ -156,12 +138,10 @@ module Merb
         
         # This is the core mechanism for setting up your gem-level layout.
         #
-        # ==== Parameters
-        # type<Symbol>:: The type of path being registered (i.e. :view)
-        # path<String>:: The full path
-        # file_glob<String>::
-        #   A glob that will be used to autoload files under the path. Defaults to
-        #   "**/*.rb".
+        # @param type<Symbol> The type of path being registered (i.e. :view)
+        # @param path<String> The full path
+        # @param file_glob<String>
+        #   A glob that will be used to autoload files under the path. Defaults to "**/*.rb".
         def push_path(type, path, file_glob = "**/*.rb")
           enforce!(type => Symbol)
           slice_paths[type] = [path, file_glob]
@@ -170,21 +150,17 @@ module Merb
         # Removes given types of application components
         # from gem-level load path this slice uses for autoloading.
         #
-        # ==== Parameters
-        # *args<Array(Symbol)>::
-        #   components names, for instance, :views, :models
+        # @param *args<Array[Symbol]> Components names, for instance, :views, :models
         def remove_paths(*args)
           args.each { |arg| self.slice_paths.delete(arg) }
         end
         
         # This is the core mechanism for setting up your app-level layout.
         #
-        # ==== Parameters
-        # type<Symbol>:: The type of path being registered (i.e. :view)
-        # path<String>:: The full path
-        # file_glob<String>::
-        #   A glob that will be used to autoload files under the path. Defaults to
-        #   "**/*.rb".
+        # @param type<Symbol> The type of path being registered (i.e. :view)
+        # @param path<String> The full path
+        # @param file_glob<String>
+        #   A glob that will be used to autoload files under the path. Defaults to "**/*.rb".
         def push_app_path(type, path, file_glob = "**/*.rb")
           enforce!(type => Symbol)
           app_paths[type] = [path, file_glob]
@@ -193,9 +169,7 @@ module Merb
         # Removes given types of application components
         # from app-level load path this slice uses for autoloading.
         #
-        # ==== Parameters
-        # *args<Array(Symbol)>::
-        #   components names, for instance, :views, :models
+        # @param *args<Array[Symbol]> Components names, for instance, :views, :models
         def remove_app_paths(*args)
           args.each { |arg| self.app_paths.delete(arg) }
         end
