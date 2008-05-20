@@ -1,15 +1,11 @@
 require 'find'
+require '../../../merb_rake_helper'
 module FreezerMode
-  
-  def sudo
-    windows = (PLATFORM =~ /win32|cygwin/) rescue nil
-    sudo = windows ? "" : "sudo"
-  end
-  
+
   def gitmodules
     File.join(Dir.pwd, ".gitmodules")
-  end    
-  
+  end
+
   # Uses the Git submodules to freeze a component
   #
   def submodules_freeze
@@ -34,9 +30,9 @@ module FreezerMode
     else
       puts "Creating submodule for #{@component} ..."
       if framework_component?
-        `cd #{Dir.pwd} & git-submodule --quiet add #{Freezer.components[@component.gsub("merb-", '')]} #{File.basename(freezer_dir)}/#{@component}` 
+        `cd #{Dir.pwd} & git-submodule --quiet add #{Freezer.components[@component.gsub("merb-", '')]} #{File.basename(freezer_dir)}/#{@component}`
       else
-        `cd #{Dir.pwd} & git-submodule --quiet add #{@component} gems/submodules/#{@component.match(/.*\/(.*)\..{3}$/)[1]}` 
+        `cd #{Dir.pwd} & git-submodule --quiet add #{@component} gems/submodules/#{@component.match(/.*\/(.*)\..{3}$/)[1]}`
       end
       if $?.success?
         `git-submodule init`
@@ -46,7 +42,7 @@ module FreezerMode
       end
     end
   end
-  
+
   # Uses rubygems to freeze the components locally
   #
   def rubygems_freeze
@@ -55,14 +51,14 @@ module FreezerMode
     puts "#{action} #{@component} and dependencies from rubygems"
     `#{sudo} gem #{action} #{@component} --no-rdoc --no-ri -i #{framework_component? ? 'framework' : 'gems'}`
   end
-  
+
   def create_freezer_dir(path)
     unless File.directory?(path)
       puts "Creating freezer directory ..."
       FileUtils.mkdir_p(path)
     end
   end
-  
+
   protected
 
   # returns true if submodules are used
@@ -76,10 +72,10 @@ module FreezerMode
   def managed?(component)
     File.directory?(File.join(freezer_dir, component)) || in_submodule?(component)
   end
-  
+
   def in_path?(bin)
     `which #{bin}`
     !$?.nil? && $?.success?
   end
-  
+
 end
