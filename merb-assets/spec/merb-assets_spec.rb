@@ -67,26 +67,6 @@ describe "JavaScript related functions" do
       "Please keep text\\nlines as skinny\\nas possible."
   end
 
-  it "should create link to a function" do
-    link_to_function('Click me', "alert('hi!')").should ==
-      "<a href=\"#\" onclick=\"alert('hi!'); return false;\" >Click me</a>"
-  end
-
-  it "should create a link to a function having multiple statements" do
-    link_to_function('Add to cart', "item_total += 1; alert('Item added!');").should ==
-      "<a href=\"#\" onclick=\"item_total += 1; alert('Item added!'); return false;\" >Add to cart</a>"
-  end
-  
-  it "should create a link to a function with attributes" do
-    link_to_function('Skip It', "skip();", :id => 'skip-link').should ==
-      "<a href=\"#\" onclick=\"skip(); return false;\" id=\"skip-link\">Skip It</a>"
-  end
-  
-  it "should create a link to a function with custom anchor" do
-    link_to_function('Tag', "tag(get_tag());", :anchor => 'tagged').should ==
-      "<a href=\"#tagged\" onclick=\"tag(get_tag()); return false;\" >Tag</a>"
-  end
-
   it "should convert objects that respond to to_json to json" do
     js({'user' => 'Lewis', 'page' => 'home'}).should ==
       "{\"user\":\"Lewis\",\"page\":\"home\"}"
