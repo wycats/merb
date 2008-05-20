@@ -38,7 +38,7 @@ module Merb
           options = { :path => options } if options.is_a?(String)
           slice_module = Object.full_const_get(slice_module.to_s) if slice_module.class.in?(String, Symbol)
           namespace = options[:namespace] || slice_module.to_s.snake_case
-          options[:path] ||= namespace.gsub('_', '-')
+          options[:path] ||= options[:namespace] || slice_module.identifier
           options[:default_routes] = true unless options.key?(:default_routes)
           Merb.logger.info!("mounting slice #{slice_module} at /#{options[:path]}")
           self.namespace(namespace.to_sym, options.except(:default_routes)) do |ns|

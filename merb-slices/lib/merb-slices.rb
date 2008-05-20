@@ -88,7 +88,7 @@ if defined?(Merb::Plugins)
 
   end
   
-  # Call initialization method for each registered Slice.
+  # Call initialization method for each registered Slice
   #
   # This is done just before the app's after_load_callbacks are run.
   # The application has been practically loaded completely, letting
@@ -107,7 +107,7 @@ if defined?(Merb::Plugins)
   
   end
   
-  # Call activation method for each registered Slice.
+  # Call activation method for each registered Slice
   #
   # This is done right after the app's after_load_callbacks are run.
   # Any settings can be taken into account in the activation step.
