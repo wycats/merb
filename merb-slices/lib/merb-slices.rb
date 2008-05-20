@@ -18,17 +18,20 @@ if defined?(Merb::Plugins)
 
     cattr_accessor :load_paths
 
+    # Gather load paths and then load classes from the slice-level
     def self.run
       self.load_paths = []
       Merb::Slices.each_slice do |module_name, path|
-        mod = Object.full_const_get(module_name) rescue nil
-        if mod
-          # For flat apps :application can be a single file
-          Merb::BootLoader::LoadClasses.send(:load_file, mod.dir_for(:application)) if File.file?(mod.dir_for(:application))
-          push_paths(self.load_paths, module_name, path)
+        begin
+          if mod = Object.full_const_get(module_name)
+            # for flat apps :application can be a single file - load it here before anything else
+            Merb::BootLoader::LoadClasses.send(:load_file, mod.dir_for(:application)) if File.file?(mod.dir_for(:application))
+            push_paths(module_name, path) # push all relevant paths to load_paths
+          end
+        rescue => e
+          Merb.logger.warn!("failed loading #{module_name} (#{e.message})")
         end
       end
-      Merb::Slices.each_slice { |module_name, path| push_paths(module_name, path) }
       load_classes
     end
     
