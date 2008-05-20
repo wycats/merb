@@ -4,23 +4,31 @@ module Merb
       
       # Add a Slice in a router namespace
       # 
-      # @param slice_module<Module, String, Symbol> A Slice module to mount
-      # @param options<Hash> Optional hash, set :path if you want to override what appears on the url
+      # @param slice_module<String, Symbol, Module> A Slice module to mount.
+      # @param options<Hash> Optional hash, set :path if you want to override what appears on the url.
       # 
       # @yield A new Behavior instance is yielded in the block for nested routes.
       # @yieldparam ns<Behavior>:: The namespace behavior object.
       #
       # @return <Behaviour> The current router context.
+      #
+      # @note Normally you should specify the slice_module using a String or Symbol
+      #       this ensures that your module can be removed from the router at runtime.
       def add_slice(slice_module, options = {}, &block)
-        options = { :path => options } if options.is_a?(String)
-        slice_module = Object.full_const_get(slice_module.to_s) if slice_module.class.in?(String, Symbol)
-        namespace = options[:namespace] || slice_module.to_s.snake_case
-        options[:path] ||= namespace.gsub('_', '-')
-        options[:default_routes] = true unless options.key?(:default_routes)
-        self.namespace(namespace.to_sym, options.except(:default_routes)) do |ns|
-          slice_module.setup_router(ns)
-          ns.match(%r{/:controller(/:action(/:id)?)?(\.:format)?}).to(options[:params] || {}) if options[:default_routes]
-          block.call(ns) if block.respond_to?(:call)
+        if Merb::Slices.exists?(slice_module)
+          options = { :path => options } if options.is_a?(String)
+          slice_module = Object.full_const_get(slice_module.to_s) if slice_module.class.in?(String, Symbol)
+          namespace = options[:namespace] || slice_module.to_s.snake_case
+          options[:path] ||= namespace.gsub('_', '-')
+          options[:default_routes] = true unless options.key?(:default_routes)
+          Merb.logger.info!("mounting slice #{slice_module} at /#{options[:path]}")
+          self.namespace(namespace.to_sym, options.except(:default_routes)) do |ns|
+            slice_module.setup_router(ns)
+            ns.match(%r{/:controller(/:action(/:id)?)?(\.:format)?}).to(options[:params] || {}) if options[:default_routes]
+            block.call(ns) if block.respond_to?(:call)
+          end
+        else 
+          Merb.logger.info!("skipped adding slice #{slice_module} to router...")
         end
         self
       end

@@ -58,6 +58,12 @@ if defined?(Merb::Plugins)
       end
       Merb::BootLoader::LoadClasses.send(:load_classes_with_requirements, orphaned_classes)
     end
+    
+    def self.reload_router!
+      if File.file?(router_file = Merb.dir_for(:router) / Merb.glob_for(:router))
+        Merb::BootLoader::LoadClasses.send(:load_file, router_file)
+      end
+    end
 
   end
   

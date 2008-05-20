@@ -9,6 +9,8 @@ module Merb
     #
     # @param slice_file<String> The path of the gem 'init file'
     #
+    # @return <Module> The Slice module that has been setup.
+    #
     # @example Merb::Slices::register(__FILE__)
     def self.register(slice_file)
       identifier  = File.basename(slice_file, '.rb')
@@ -19,6 +21,21 @@ module Merb
       mod = setup_module(module_name)
       mod.identifier = identifier
       mod.root = slice_path
+      mod
+    end
+    
+    # Unregister a Slice module at runtime
+    #
+    # @param <Module> The Slice module to unregister.
+    def self.unregister(slice_module)
+      module_name = slice_module.to_s
+      if self.paths.delete(module_name)
+        Object.send(:remove_const, module_name) rescue nil
+        unless Object.const_defined?(module_name)
+          Merb.logger.info!("unregistered slice #{slice_module}")
+          Merb::Slices::Setup.reload_router!
+        end
+      end
     end
     
     # @return <Hash>
@@ -30,9 +47,16 @@ module Merb
     
     # All registered Slice module names
     #
-    # @return <Array> A sorted array of all slice modules
+    # @return <Array> A sorted array of all slice modules.
     def self.slices
       self.paths.keys.sort
+    end
+    
+    # Check whether a Slice exists
+    # 
+    # @param <#to_s> The slice module to check for.
+    def self.exists?(module_name)
+      self.slices.include?(module_name.to_s) && Object.const_defined?(module_name.to_s)
     end
     
     # A lookup for finding a Slice module's path
@@ -81,6 +105,9 @@ module Merb
         
         # Stub activation hook - runs after AfterAppLoads BootLoader.
         def activate; end
+        
+        # Stub deactivation method - not triggered automatically.
+        def deactivate!; end
         
         # Stub to setup routes inside the host application.
         def setup_router(scope); end

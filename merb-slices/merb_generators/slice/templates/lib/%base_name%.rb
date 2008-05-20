@@ -26,6 +26,13 @@ if defined?(Merb::Plugins)
     def self.activate
     end
     
+    # Deactivation method - not triggered automatically
+    # 
+    # Will unregister the slice module by default.
+    def self.deactivate!
+      Merb::Slices.unregister(self)
+    end
+    
     # Setup routes inside the host application
     #
     # @param scope<Merb::Router::Behaviour>
@@ -37,7 +44,7 @@ if defined?(Merb::Plugins)
     
   end
   
-  # Setup the slice layout for <%= module_name %> 
+  # Setup the slice layout for <%= module_name %>
   #
   # Use <%= module_name %>.push_path and <%= module_name %>.push_app_path
   # to set paths to <%= base_name %>-level and app-level paths. Example:
