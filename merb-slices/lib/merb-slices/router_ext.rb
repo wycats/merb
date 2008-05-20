@@ -12,7 +12,7 @@ module Merb
       #  set :path (or use a string) if you want to override what appears on the url.
       #
       # @yield A new Behavior instance is yielded in the block for nested routes.
-      # @yieldparam ns<Behavior>:: The namespace behavior object.
+      # @yieldparam ns<Behavior> The namespace behavior object.
       #
       # @example r.all_slices('BlogSlice' => 'blog', 'ForumSlice' => { :path => 'forum' })
       #
@@ -27,7 +27,7 @@ module Merb
       # @param options<Hash, String> Optional hash, set :path if you want to override what appears on the url.
       # 
       # @yield A new Behavior instance is yielded in the block for nested routes.
-      # @yieldparam ns<Behavior>:: The namespace behavior object.
+      # @yieldparam ns<Behavior> The namespace behavior object.
       #
       # @return <Behaviour> The current router context.
       #

@@ -135,7 +135,7 @@ module Merb
     
     # Prepare a module to be a proper Slice module
     #
-    # @param module_name<#to_s>:: The name of the module to prepare
+    # @param module_name<#to_s> The name of the module to prepare
     #
     # @return <Module> The module that has been setup
     def self.setup_module(module_name)
