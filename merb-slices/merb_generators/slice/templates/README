@@ -1,0 +1,108 @@
+<%= module_name %>
+<%= "=" * module_name.size %>
+
+A slice for the Merb framework. 
+
+------------------------------------------------------------------------------
+
+Instructions for installation:
+
+file: config/init.rb
+
+# add the slice as a regular dependency
+
+dependency '<%= base_name %>'
+
+# if needed, configure which slices to load and in which order
+
+Merb::Plugins.config[:merb_slices] = { :queue => ["<%= module_name %>", ...] }
+
+# optionally configure the plugins in a before_app_loads callback
+
+Merb::BootLoader.before_app_loads do
+  
+  Merb::Slices::config[:<%= underscored_name %>] = { ... }
+  
+end
+
+file: config/router.rb
+
+# example: /<%= base_name %>/:controller/:action/:id
+
+r.add_slice(:<%= module_name %>)
+
+# example: /foo/:controller/:action/:id
+
+r.add_slice(:<%= module_name %>, 'foo') # same as :path => 'foo'
+
+# example: /:lang/:controller/:action/:id (with :a param set)
+
+r.add_slice(:<%= module_name %>, :path => ':lang', :params => { :a => 'b' })
+
+# example: /:controller/:action/:id
+
+r.slice(:<%= module_name %>)
+
+Normally you should also run the following rake task:
+
+rake <%= underscored_name %>::install
+
+------------------------------------------------------------------------------
+
+You can put your application-level overrides in:
+
+host-app/slices/<%= base_name %>/app - controllers, models, views ...
+
+Templates are located in this order:
+
+1. host-app/slices/<%= base_name %>/app/views/*
+2. gems/<%= base_name %>/app/views/*
+3. host-app/app/views/*
+
+You can use the host application's layout by configuring the
+<%= base_name %> slice in a before_app_loads block:
+
+Merb::Slices.config[:<%= underscored_name %>] = { :layout => :application }
+
+By default :<%= underscored_name %> is used. If you need to override
+stylesheets or javascripts, just specify your own files in your layout
+instead/in addition to the ones supplied (if any) in 
+host-app/public/slices/<%= base_name %>.
+
+In any case don't edit those files directly as they may be clobbered any time
+rake <%= underscored_name %>:install is run.
+
+------------------------------------------------------------------------------
+
+About Slices
+================
+
+Merb-Slices is a Merb plugin which forms the basis for using and creating
+application 'slices' which help you modularize your application. Usually these
+are reuseable extractions from your main app. In effect, a Slice is just like
+a regular Merb MVC application, both in functionality as well as in structure.
+
+When you generate a Slice stub structure, a module is setup to serve as a
+namespace for your controller, models, helpers etc. This ensures maximum
+encapsulation. You could say a Slice is a mixture between a Merb plugin (a
+Gem) and a Merb application, reaping the benefits of both.
+
+A host application can 'mount' a Slice inside the router, which means you have
+full over control how it integrates. By default a Slice's routes are prefixed
+by its name (a router :namespace), but you can easily provide your own prefix
+or leave it out, mounting it at the root of your url-schema. You can even
+mount a Slice multiple times and give extra parameters to customize an
+instance's behaviour.
+
+A Slice's Application controller inherits from Merb::Slices::Controller,
+which in turn inherits from Merb::Controller. This isn't strictly necessary to
+work, but it gives you specific view-handling functionality.
+
+There are many ways which let you customize a Slice's functionality and
+appearance without ever touching the Gem-level code itself. It's not only easy
+to add template/layout overrides, you can also add/modify controllers, models
+and other runtime code from within the host application.
+
+To create your own Slice run this (somewhere outside of your merb app):
+
+$ merb-gen slice <your-lowercase-slice-name>
