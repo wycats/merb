@@ -61,7 +61,7 @@ describe "merb-freezer" do
     mr_freeze.mode.should == 'rubygems'
     mr_freeze.freeze
     File.exists?('gems').should be_true
-    File.exists?('gems/gems/googlecharts-1.1.0').should be_true
+    Dir['gems/gems/googlecharts-1.*'].join(' ').include?('gems/gems/googlecharts-').should be_true
   end
   
 end

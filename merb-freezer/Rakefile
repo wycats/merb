@@ -1,6 +1,6 @@
 require 'rubygems'
 require 'rake/gempackagetask'
-require '../merb_rake_helper'
+require "spec/rake/spectask"
 
 PLUGIN = "merb-freezer"
 NAME = "merb-freezer"
@@ -32,6 +32,11 @@ Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
 
+def sudo
+  windows = (PLATFORM =~ /win32|cygwin/) rescue nil
+  ENV['MERB_SUDO'] ||= "sudo"
+  sudo = windows ? "" : ENV['MERB_SUDO']
+end
 
 desc "install merb-freezer"
 task :install => [:package] do
@@ -45,4 +50,10 @@ namespace :jruby do
     sh %{#{sudo} jruby -S gem install pkg/#{NAME}-#{Merb::VERSION}.gem --no-rdoc --no-ri}
   end
 
+end
+
+desc "Run the freezer specs"
+Spec::Rake::SpecTask.new("specs") do |t|
+  t.spec_opts = ["--format", "specdoc", "--colour"]
+  t.spec_files = Dir["spec/**/*_spec.rb"].sort
 end
