@@ -73,7 +73,7 @@ r.slice(:BlogSlice)
 
 Normally you should also run the following rake task:
 
-rake blog_slice::install
+rake slices:blog_slice:install
 
 ------------------------------------------------------------------------------
 

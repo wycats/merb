@@ -4,8 +4,7 @@ namespace :slices do
   namespace :<%= underscored_name %> do
   
     desc "Install <%= module_name %>"
-    task :install => [:preflight, :setup_directories, :copy_assets, :migrate] do
-    end
+    task :install => [:preflight, :setup_directories, :copy_assets, :migrate]
     
     desc "Test for any dependencies"
     task :preflight do
@@ -16,7 +15,7 @@ namespace :slices do
     desc "Setup directories"
     task :setup_directories do
       puts "Creating directories for host application"
-      [:view, :model, :controller, :helper, :mailer, :part, :public].each do |type|
+      [:application, :view, :model, :controller, :helper, :mailer, :part, :public].each do |type|
         if File.directory?(<%= module_name %>.dir_for(type))
           if !File.directory?(dst_path = <%= module_name %>.app_dir_for(type))
             relative_path = dst_path.relative_path_from(Merb.root)
@@ -25,7 +24,7 @@ namespace :slices do
           end
         end
       end
-    end 
+    end
   
     desc "Copy public assets to host application"
     task :copy_assets do

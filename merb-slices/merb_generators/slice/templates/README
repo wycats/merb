@@ -45,7 +45,7 @@ r.slice(:<%= module_name %>)
 
 Normally you should also run the following rake task:
 
-rake <%= underscored_name %>::install
+rake slices:<%= underscored_name %>:install
 
 ------------------------------------------------------------------------------
 
