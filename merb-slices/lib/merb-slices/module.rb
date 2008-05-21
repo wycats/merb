@@ -91,10 +91,19 @@ module Merb
       @config ||= File.exists?(Merb.root / "config" / "slices.yml") ? YAML.load(File.read(Merb.root / "config" / "slices.yml")) || {} : {}
     end
     
+    # All registered Slice modules
+    #
+    # @return <Array[Module]> A sorted array of all slice modules.
+    def self.slices
+      self.slice_names.map do |name|
+        Object.full_const_get(name) rescue nil
+      end.compact
+    end
+    
     # All registered Slice module names
     #
-    # @return <Array> A sorted array of all slice modules.
-    def self.slices
+    # @return <Array[String]> A sorted array of all slice module names.
+    def self.slice_names
       self.paths.keys.sort
     end
     
@@ -102,7 +111,7 @@ module Merb
     # 
     # @param <#to_s> The slice module to check for.
     def self.exists?(module_name)
-      self.slices.include?(module_name.to_s) && Object.const_defined?(module_name.to_s)
+      self.slice_names.include?(module_name.to_s) && Object.const_defined?(module_name.to_s)
     end
     
     # A lookup for finding a Slice module's path
@@ -124,7 +133,7 @@ module Merb
     # @yieldparam module_name<String>  The Slice module name.
     # @yieldparam path<String> The root path of the Slice.
     def self.each_slice(&block)
-      loadable_slices = Merb::Plugins.config[:merb_slices].key?(:queue) ? Merb::Plugins.config[:merb_slices][:queue] : self.slices
+      loadable_slices = Merb::Plugins.config[:merb_slices].key?(:queue) ? Merb::Plugins.config[:merb_slices][:queue] : self.slice_names
       loadable_slices.each do |module_name|
         next unless self.paths.key?(module_name)
         block.call(module_name, self.paths[module_name])

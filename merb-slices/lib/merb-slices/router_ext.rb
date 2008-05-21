@@ -18,7 +18,7 @@ module Merb
       #
       # @note The block is yielded for each slice individually.
       def all_slices(config = {}, &block)
-        Merb::Slices.slices.each { |module_name| add_slice(module_name, config[module_name] || {}, &block) }
+        Merb::Slices.slice_names.each { |module_name| add_slice(module_name, config[module_name] || {}, &block) }
       end
       
       # Add a Slice in a router namespace

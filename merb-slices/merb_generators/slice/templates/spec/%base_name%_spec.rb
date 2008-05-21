@@ -7,7 +7,7 @@ describe "<%= module_name %> (module)" do
   # Feel free to remove the specs below
   
   it "should be registered in Merb::Slices.slices" do
-    Merb::Slices.slices.should include("<%= module_name %>")
+    Merb::Slices.slices.should include(<%= module_name %>)
   end
   
   it "should have an :identifier property" do
