@@ -7,8 +7,7 @@ if defined?(Merb::Plugins)
   Merb::Slices::register(__FILE__)
   
   # Slice configuration - set this in a before_app_loads callback.
-  # By default a Slice uses its own layout.
-  Merb::Slices::config[:<%= underscored_name %>] = { :layout => :<%= underscored_name %> }
+  Merb::Slices::config[:<%= underscored_name %>] = {}
   
   # All Slice code is expected to be namespaced inside a module
   module <%= module_name %>
@@ -43,7 +42,7 @@ if defined?(Merb::Plugins)
     def self.setup_default_structure!
       self.push_path(:application, self.root, 'application.rb')
       self.push_app_path(:application, Merb.root / 'slices' / self.identifier, 'application.rb')
-      
+            
       self.push_path(:public, self.root / 'public', nil)
       self.push_app_path(:public, Merb.root / 'public' / 'slices' / self.identifier, nil)
       

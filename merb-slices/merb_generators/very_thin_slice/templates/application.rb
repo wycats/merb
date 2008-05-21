@@ -1,6 +1,5 @@
 module <%= module_name %>
   
-  # This is a very thin slice - everything is stashed into this file.
   # All Slice code is expected to be namespaced inside this module.
   
   class Application < Merb::Slices::Controller

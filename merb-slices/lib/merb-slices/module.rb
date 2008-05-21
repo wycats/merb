@@ -256,7 +256,7 @@ module Merb
           self.push_path(:application, self.root / 'app')
           self.push_app_path(:application, Merb.root / 'slices' / self.identifier / 'app')
           
-          [:view, :model, :controller, :helper, :mailer, :part, :lib].each do |component|
+          [:view, :model, :controller, :helper, :mailer, :part].each do |component|
             self.push_path(component, dir_for(:application) / "#{component}s")
             self.push_app_path(component, app_dir_for(:application) / "#{component}s")
           end

@@ -1,3 +1,5 @@
+require File.dirname(__FILE__) + '/../spec_helper'
+
 describe "<%= module_name %>::Main (controller)" do
   
   # Feel free to remove the specs below
@@ -20,14 +22,9 @@ describe "<%= module_name %>::Main (controller)" do
   
   it "should have helper methods for dealing with public paths" do
     controller = dispatch_to(<%= module_name %>::Main, :index)
-    
-    controller.image_path.should == controller.public_path_for(:image)
-    controller.javascript_path.should == controller.public_path_for(:javascript)
-    controller.stylesheet_path.should == controller.public_path_for(:stylesheet)
-    
-    controller.image_path.should == "/slices/<%= base_name %>/images"
-    controller.javascript_path.should == "/slices/<%= base_name %>/javascripts"
-    controller.stylesheet_path.should == "/slices/<%= base_name %>/stylesheets"
+    controller.public_path_for(:image).should == "/slices/<%= base_name %>/images"
+    controller.public_path_for(:javascript).should == "/slices/<%= base_name %>/javascripts"
+    controller.public_path_for(:stylesheet).should == "/slices/<%= base_name %>/stylesheets"
   end
 
 end

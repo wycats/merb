@@ -18,9 +18,9 @@ class VeryThinSliceGenerator < Merb::GeneratorBase
   protected
   def banner
     <<-EOS.split("\n").map{|x| x.strip}.join("\n")
-      Creates a Merb slice stub.
+      Creates a very thin Merb slice stub.
 
-      USAGE: #{spec.name} slice your-lowercase-slice-name"
+      USAGE: #{spec.name} very_thin_slice your-lowercase-slice-name"
     EOS
   end
 
