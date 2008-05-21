@@ -1,6 +1,11 @@
 require 'find'
-require '../../../merb_rake_helper'
+#require '../../../merb_rake_helper'
 module FreezerMode
+  
+  def sudo
+    windows = (PLATFORM =~ /win32|cygwin/) rescue nil
+    sudo = windows ? "" : "sudo"
+  end
 
   def gitmodules
     File.join(Dir.pwd, ".gitmodules")
