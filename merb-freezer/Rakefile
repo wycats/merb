@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'rake/gempackagetask'
 require "spec/rake/spectask"
+require '../merb_rake_helper'
 
 PLUGIN = "merb-freezer"
 NAME = "merb-freezer"
