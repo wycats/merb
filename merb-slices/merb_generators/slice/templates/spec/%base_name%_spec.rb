@@ -15,8 +15,8 @@ describe "<%= module_name %> (module)" do
   end
   
   it "should have a :root property" do
-    <%= module_name %>.root.should == SLICE_ROOT
-    <%= module_name %>.root_path('app').should == SLICE_ROOT / 'app'
+    <%= module_name %>.root.should == current_slice_root
+    <%= module_name %>.root_path('app').should == current_slice_root / 'app'
   end
   
   it "should have metadata properties" do
@@ -27,12 +27,12 @@ describe "<%= module_name %> (module)" do
   
   it "should have a dir_for method" do
     app_path = <%= module_name %>.dir_for(:application)
-    app_path.should == SLICE_ROOT / 'app'
+    app_path.should == current_slice_root / 'app'
     [:view, :model, :controller, :helper, :mailer, :part].each do |type|
       <%= module_name %>.dir_for(type).should == app_path / "#{type}s"
     end
     public_path = <%= module_name %>.dir_for(:public)
-    public_path.should == SLICE_ROOT / 'public'
+    public_path.should == current_slice_root / 'public'
     [:stylesheet, :javascript, :image].each do |type|
       <%= module_name %>.dir_for(type).should == public_path / "#{type}s"
     end
