@@ -4,10 +4,10 @@ require 'rake/gempackagetask'
 PLUGIN = "merb-slices"
 NAME = "merb-slices"
 VERSION = "0.9.4"
-AUTHOR = "Your Name"
-EMAIL = "Your Email"
-HOMEPAGE = "http://merb-plugins.rubyforge.org/merb-slices/"
-SUMMARY = "Merb plugin that provides ..."
+AUTHOR = "Fabien Franzen"
+EMAIL = "info@fabien.be"
+HOMEPAGE = "http://merbivore.com/"
+SUMMARY = "Merb-Slices is a Merb plugin for using and creating application 'slices' which help you modularize your application."
 
 spec = Gem::Specification.new do |s|
   s.name = NAME

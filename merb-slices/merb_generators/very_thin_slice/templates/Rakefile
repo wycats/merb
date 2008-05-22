@@ -6,7 +6,7 @@ PLUGIN = "<%= base_name %>"
 NAME = "<%= base_name %>"
 AUTHOR = "Your Name"
 EMAIL = "Your Email"
-HOMEPAGE = "http://merb-slices.rubyforge.org/<%= base_name %>/"
+HOMEPAGE = "http://merbivore.com/"
 SUMMARY = "Merb Slice that provides ..."
 
 spec = Gem::Specification.new do |s|
@@ -20,7 +20,7 @@ spec = Gem::Specification.new do |s|
   s.author = AUTHOR
   s.email = EMAIL
   s.homepage = HOMEPAGE
-  s.add_dependency('merb-core', '>= <%= Merb::VERSION %>')
+  s.add_dependency('merb-slices', '>= <%= Merb::VERSION %>')
   s.require_path = 'lib'
   s.files = %w(LICENSE README Rakefile TODO application.rb) + Dir.glob("{lib,public}/**/*")
 end
