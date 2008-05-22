@@ -13,7 +13,7 @@ if defined?(Merb::Plugins)
   module <%= module_name %>
     
     # Slice metadata
-    self.description = "<%= module_name %> is a chunky Merb slice!"
+    self.description = "<%= module_name %> is a very thin Merb slice!"
     self.version = "0.0.1"
     self.author = "YOUR NAME"
     
