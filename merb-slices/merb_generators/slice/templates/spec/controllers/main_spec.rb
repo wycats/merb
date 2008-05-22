@@ -8,6 +8,12 @@ describe "<%= module_name %>::Main (controller)" do
     Merb::Router.prepare { |r| r.add_slice(:<%= module_name %>) } if standalone?
   end
   
+  it "should have access to the slice module" do
+    controller = dispatch_to(<%= module_name %>::Main, :index)
+    controller.send(:slice).should == <%= module_name %>
+    controller.send(:slice).should == <%= module_name %>::Main.slice
+  end
+  
   it "should have an index action" do
     controller = dispatch_to(<%= module_name %>::Main, :index)
     controller.status.should == 200

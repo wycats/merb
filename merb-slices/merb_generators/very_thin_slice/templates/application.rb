@@ -26,7 +26,7 @@ module <%= module_name %>
   class Main < Application
     
     def index
-      render "#{<%= module_name %>.description} (v. #{<%= module_name %>.version})"
+      render "#{slice.description} (v. #{slice.version})"
     end
     
   end

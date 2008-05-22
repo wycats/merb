@@ -3,6 +3,9 @@ module Merb
     
     class Controller < Merb::Controller
   
+      # Reference this controller's slice module
+      class_inheritable_reader :slice
+  
       class << self
     
         # Setup controller paths when inheriting
@@ -12,9 +15,9 @@ module Merb
         def inherited(klass)
           super # important to call this first         
           module_name = klass.to_s.split('::').first
-          slice_id = module_name.snake_case.to_sym
           mod = Object.full_const_get(module_name) rescue nil
           if (slice_path = Merb::Slices.paths[module_name]) && mod
+            klass.write_inheritable_attribute(:slice, mod)
             klass._template_root  = mod.dir_for(:view)
             klass._template_roots = []
             # app-level app/views directory for shared and fallback views, layouts and partials
@@ -29,6 +32,9 @@ module Merb
       end
   
       private
+      
+      # Reference this controller's slice module directly
+      def slice; self.class.slice; end
   
       # This is called after the controller is instantiated to figure out where to
       # for templates under the _template_root. This helps the controllers
