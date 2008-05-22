@@ -1,0 +1,24 @@
+merb-jquery
+===========
+
+Makes it easy to use jQuery in your application.
+
+$ gem install merb-jquery
+
+Add
+  require 'merb-jquery'
+to your init.rb
+
+$ rake merb:jquery:install
+Installs the latest jQuery to public/javascripts
+
+In your layout, inside <head>:
+
+<%= jquery %>
+
+
+In your views:
+
+<% jquery do %>
+  $('#foo').something();
+<% end %>
