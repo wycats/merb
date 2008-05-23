@@ -26,7 +26,11 @@ spec = Gem::Specification.new do |s|
   s.add_dependency('merb', '>= 0.4.0')
   s.require_path = 'lib'
   s.autorequire = PLUGIN
-  s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,spec}/**/*")
+  s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,spec<%= bin ? ',bin' : '' %>}/**/*")
+  <% if bin %>
+  s.bindir = "bin"
+  s.executables = [NAME]
+  <% end %>
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|
@@ -35,12 +39,12 @@ end
 
 desc "install the plugin locally"
 task :install => [:package] do
-  sh %{#{sudo} gem install pkg/#{NAME}-#{VERSION} --no-update-sources}
+  sh %{sudo gem install pkg/#{NAME}-#{VERSION} --no-update-sources}
 end
 
 desc "create a gemspec file"
 task :make_spec do
-  File.open("#{GEM}.gemspec", "w") do |file|
+  File.open("#{NAME}.gemspec", "w") do |file|
     file.puts spec.to_ruby
   end
 end
