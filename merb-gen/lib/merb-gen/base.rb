@@ -24,10 +24,12 @@ class Merb::GeneratorBase < RubiGen::Base
       options["spec"] = true unless options["test"]
 
       # Set directories that should be optional based on command-line args
-      @choices = %w(test spec)
+      @choices += %w(test spec)
       
       # Set the assigns that should be used for path-interpolation and building templates
-      @assigns = { :base_name => File.basename(@name), :test_type => options["spec"] ? "rspec" : "test_unit" }
+      assigns = choices.inject({}) {|a,c| a[c.to_sym] = options[c]; a}
+      @assigns = assigns.merge(
+        { :base_name => File.basename(@name), :test_type => options["spec"] ? "rspec" : "test_unit" })
       @assigns[:underscored_base_name] = @assigns[:base_name].gsub('-', '_')
       
       FileUtils.mkdir_p @name
