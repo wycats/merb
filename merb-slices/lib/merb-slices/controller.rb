@@ -15,8 +15,7 @@ module Merb
         def inherited(klass)
           super # important to call this first         
           module_name = klass.to_s.split('::').first
-          mod = Object.full_const_get(module_name) rescue nil
-          if (slice_path = Merb::Slices.paths[module_name]) && mod
+          if mod = Merb::Slices[module_name]
             klass.write_inheritable_attribute(:slice, mod)
             klass._template_root  = mod.dir_for(:view)
             klass._template_roots = []
