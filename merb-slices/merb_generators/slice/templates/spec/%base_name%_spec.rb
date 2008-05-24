@@ -14,6 +14,10 @@ describe "<%= module_name %> (module)" do
     <%= module_name %>.identifier.should == "<%= base_name %>"
   end
   
+  it "should have an :identifier_sym property" do
+    <%= module_name %>.identifier_sym.should == :<%= underscored_name %>
+  end
+  
   it "should have a :root property" do
     <%= module_name %>.root.should == current_slice_root
     <%= module_name %>.root_path('app').should == current_slice_root / 'app'
@@ -23,6 +27,14 @@ describe "<%= module_name %> (module)" do
     <%= module_name %>.description.should == "<%= module_name %> is a chunky Merb slice!"
     <%= module_name %>.version.should == "0.0.1"
     <%= module_name %>.author.should == "YOUR NAME"
+  end
+  
+  it "should have a config property (Hash)" do
+    <%= module_name %>.config.should be_kind_of(Hash)
+  end
+  
+  it "should have a :layout config option set" do
+    <%= module_name %>.config[:layout].should == :<%= underscored_name %>
   end
   
   it "should have a dir_for method" do

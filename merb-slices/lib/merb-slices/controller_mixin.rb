@@ -18,6 +18,7 @@ module Merb
         # @param options<Hash> 
         #   Optional parameters to set which component path is used (defaults to :view) and
         #   the :path option lets you specify a subdirectory of that component path.
+        #   When :layout is set, then this is used instead of the config's :layout setting.
         #
         # @example controller_for_slice # uses current module
         # @example controller_for_slice SliceMod # defaults to :view templates and no subdirectory
@@ -27,8 +28,8 @@ module Merb
           options[:templates_for] = :view unless options.key?(:templates_for)
           if mod = Merb::Slices[slice_module.to_s]
             # Include the instance methods
-            unless self.include?(Merb::Slices::ControllerMixin::InstanceMethods)
-              self.send(:include, Merb::Slices::ControllerMixin::InstanceMethods)
+            unless self.kind_of?(Merb::Slices::ControllerMixin::MixinMethods)
+              self.send(:extend, Merb::Slices::ControllerMixin::MixinMethods)
               self.send(:class_inheritable_reader, :slice)
             end
             # Reference this controller's slice module
@@ -44,6 +45,8 @@ module Merb
               # app-level slices/<slice>/app/views for specific overrides
               self._template_roots << [join_template_path(mod.app_dir_for(options[:templates_for]), options[:path]), :_slice_template_location]
             end
+            # Set the layout for this slice controller
+            layout_for_slice(options[:layout])
           end
         end
         
@@ -55,38 +58,55 @@ module Merb
         
       end
       
-      module InstanceMethods
-      
-        # Reference this controller's slice module directly
-        #
-        # @return <Module> A slice module.
-        def slice; self.class.slice; end
-  
-        private
-  
-        # This is called after the controller is instantiated to figure out where to
-        # for templates under the _template_root. This helps the controllers
-        # of a slice to locate templates without looking in a subdirectory with
-        # the name of the module. Instead it will just be app/views/controller/*
-        #
-        # @param context<#to_str> The controller context (the action or template name).
-        # @param type<#to_str> The content type. Defaults to nil.
-        # @param controller<#to_str> The name of the controller. Defaults to controller_name.
-        #
-        # @return <String> 
-        #   Indicating where to look for the template for the current controller,
-        #   context, and content-type.
-        def _slice_template_location(context, type = nil, controller = controller_name)
-          if controller && controller.include?('/')
-            # skip first segment if given (which is the module name)
-            segments = controller.split('/')
-            "#{segments[1,segments.length-1]}/#{context}.#{type}"
-          else
-            # default template location logic
-            _template_location(context, type, controller)
-          end
+      module MixinMethods
+        
+        def self.extended(klass)
+          klass.send(:include, InstanceMethods)
         end
         
+        # Use the slice's layout - defaults to underscored identifier.
+        #
+        # This is set for generated stubs that support layouts.
+        #
+        # @param layout<#to_s> The layout name to use.
+        def layout_for_slice(layout = nil)
+          layout(layout || self.slice.config[:layout]) if layout || self.slice.config.key?(:layout)
+        end
+        
+        module InstanceMethods
+      
+          # Reference this controller's slice module directly
+          #
+          # @return <Module> A slice module.
+          def slice; self.class.slice; end
+  
+          private
+  
+          # This is called after the controller is instantiated to figure out where to
+          # for templates under the _template_root. This helps the controllers
+          # of a slice to locate templates without looking in a subdirectory with
+          # the name of the module. Instead it will just be app/views/controller/*
+          #
+          # @param context<#to_str> The controller context (the action or template name).
+          # @param type<#to_str> The content type. Defaults to nil.
+          # @param controller<#to_str> The name of the controller. Defaults to controller_name.
+          #
+          # @return <String> 
+          #   Indicating where to look for the template for the current controller,
+          #   context, and content-type.
+          def _slice_template_location(context, type = nil, controller = controller_name)
+            if controller && controller.include?('/')
+              # skip first segment if given (which is the module name)
+              segments = controller.split('/')
+              "#{segments[1,segments.length-1]}/#{context}.#{type}"
+            else
+              # default template location logic
+              _template_location(context, type, controller)
+            end
+          end
+        
+        end
+      
       end
 
     end

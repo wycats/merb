@@ -23,7 +23,8 @@ module Merb
       # @example Merb::Slices::register(__FILE__)
       def register(slice_file, force = true)
         identifier  = File.basename(slice_file, '.rb')
-        module_name = identifier.gsub('-', '_').camel_case
+        underscored = identifier.gsub('-', '_')
+        module_name = underscored.camel_case
         slice_path  = File.expand_path(File.dirname(slice_file) + '/..')
         # check if slice_path exists instead of just the module name - more flexible
         if !self.paths.include?(slice_path) || force
@@ -31,6 +32,7 @@ module Merb
           self.paths[module_name] = slice_path
           mod = setup_module(module_name)
           mod.identifier = identifier
+          mod.identifier_sym = underscored.to_sym
           mod.root = slice_path
         else
           Merb.logger.info!("already registered slice '#{module_name}' located at #{slice_path}")
@@ -160,7 +162,7 @@ module Merb
         mod = Object.full_const_get(module_name)
         mod.meta_class.module_eval do
         
-          attr_accessor :identifier, :root, :slice_paths, :app_paths
+          attr_accessor :identifier, :identifier_sym, :root, :slice_paths, :app_paths
           attr_accessor :description, :version, :author
         
           # Stub initialization hook - runs before AfterAppLoads BootLoader.
@@ -174,6 +176,11 @@ module Merb
         
           # Stub to setup routes inside the host application.
           def setup_router(scope); end
+        
+          # @return <Hash> The configuration for this slice.
+          def config
+            Merb::Slices::config[self.identifier_sym] ||= {}
+          end
         
           # @return <Hash> The load paths which make up the slice-level structure.
           def slice_paths
