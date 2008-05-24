@@ -2,7 +2,9 @@ module <%= module_name %>
   
   # All Slice code is expected to be namespaced inside this module.
   
-  class Application < Merb::Slices::Controller
+  class Application < Merb::Controller
+    
+    controller_for_slice
     
     private
     

@@ -94,9 +94,10 @@ or leave it out, mounting it at the root of your url-schema. You can even
 mount a Slice multiple times and give extra parameters to customize an
 instance's behaviour.
 
-A Slice's Application controller inherits from Merb::Slices::Controller,
-which in turn inherits from Merb::Controller. This isn't strictly necessary to
-work, but it gives you specific view-handling functionality.
+A Slice's Application controller uses controller_for_slice to setup slice
+specific behaviour, which mainly affects cascaded view handling. Additionaly,
+this method is available to any kind of controller, so it can be used for
+Merb Mailer too for example.
 
 There are many ways which let you customize a Slice's functionality and
 appearance without ever touching the Gem-level code itself. It's not only easy
