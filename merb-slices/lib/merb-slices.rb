@@ -6,8 +6,12 @@ if defined?(Merb::Plugins)
   
   Merb::Plugins.config[:merb_slices] ||= {}
   
-  require "merb-slices/controller"
+  require "merb-slices/controller_mixin"
   require "merb-slices/router_ext"
+  
+  # Enable slice behaviour for any class inheriting from AbstractController.
+  # To use this call controller_for_slice in your controller class.
+  Merb::AbstractController.send(:include, Merb::Slices::ControllerMixin)
   
   # Load Slice classes before the app's classes are loaded.
   #
