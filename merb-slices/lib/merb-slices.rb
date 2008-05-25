@@ -6,6 +6,7 @@ if defined?(Merb::Plugins)
   
   Merb::Plugins.config[:merb_slices] ||= {}
   
+  require "merb-slices/module_mixin"
   require "merb-slices/controller_mixin"
   require "merb-slices/router_ext"
   
