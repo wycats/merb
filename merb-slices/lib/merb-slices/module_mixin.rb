@@ -172,7 +172,7 @@ module Merb
       
       # Copies all files from mirrored_components to their app-level location
       #
-      # This includes :application, :as well 
+      # This includes application and public components. 
       # 
       # @return <Array[Array]> 
       #   Array of two arrays, one for all copied files, the other for overrides 
@@ -280,6 +280,9 @@ module Merb
       end
       
       # Predicate method to check if a file should be taken into account when unpacking files
+      #
+      # By default any public component paths are skipped; additionally you can set
+      # the :skip_files in the slice's config for other relative paths to skip.
       #
       # @param file<String> The relative path to test.
       # @return <TrueClass,FalseClass> True if the file may be mirrored.

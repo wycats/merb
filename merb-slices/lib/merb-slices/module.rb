@@ -1,6 +1,8 @@
 module Merb
   module Slices
     
+    VERSION = "0.9.4"
+    
     class << self
     
       # Retrieve a slice module by name 
@@ -22,6 +24,7 @@ module Merb
       # @return <Module> The Slice module that has been setup.
       #
       # @example Merb::Slices::register(__FILE__)
+      # @example Merb::Slices::register('/path/to/my-slice/lib/my-slice.rb')
       def register(slice_file, force = true)
         identifier  = File.basename(slice_file, '.rb')
         underscored = identifier.gsub('-', '_')
