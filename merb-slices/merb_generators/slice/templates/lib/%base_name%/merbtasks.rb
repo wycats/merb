@@ -66,7 +66,16 @@ namespace :slices do
       desc "Freeze all views into your application for easy modification" 
       task :views do
         puts "Copying all view templates to your application - resolves any collisions"
-        copied, preserved = <%= module_name %>.mirror_views!
+        copied, preserved = <%= module_name %>.mirror_files_for :view
+        puts "- no files to copy" if copied.empty? && preserved.empty?
+        copied.each { |f| puts "- copied #{f}" }
+        preserved.each { |f| puts "! preserved override as #{f}" }
+      end
+      
+      desc "Freeze all models into your application for easy modification" 
+      task :models do
+        puts "Copying all models to your application - resolves any collisions"
+        copied, preserved = <%= module_name %>.mirror_files_for :model
         puts "- no files to copy" if copied.empty? && preserved.empty?
         copied.each { |f| puts "- copied #{f}" }
         preserved.each { |f| puts "! preserved override as #{f}" }

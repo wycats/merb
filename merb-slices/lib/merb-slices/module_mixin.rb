@@ -199,15 +199,6 @@ module Merb
         mirror_files_for mirrored_public_components
       end
       
-      # Copies all view files to their app-level location - so you can easily modify them
-      #
-      # @return <Array[Array]> 
-      #   Array of two arrays, one for all copied files, the other for overrides 
-      #   that may have been preserved to resolve collisions.
-      def mirror_views!
-        mirror_files_for :view
-      end
-      
       # Copy files from specified component path types to their app-level location
       #
       # App-level overrides are preserved by creating duplicates before writing gem-level files.
@@ -217,10 +208,13 @@ module Merb
       # @return <Array[Array]> 
       #   Array of two arrays, one for all copied files, the other for overrides 
       #   that may have been preserved to resolve collisions.
+      #
+      # @note Only explicitly defined component paths will be taken into account to avoid
+      #   cluttering the app's Merb.root by mistake - since undefined paths default to that.
       def mirror_files_for(*types)
         seen, copied, duplicated = [], [], [] # keep track of files we copied
         types.flatten.each do |type|
-          if File.directory?(src_path = dir_for(type)) && (dst_path = app_dir_for(type))
+          if app_paths.key?(type) && File.directory?(src_path = dir_for(type)) && (dst_path = app_dir_for(type))
             glob = ((type == :view) ? "**/*.{#{Merb::Template.template_extensions.join(',')}}" : glob_for(type) || "**/*")
             Dir[src_path / glob].each do |src|
               next if seen.include?(src)

@@ -1,5 +1,6 @@
 module Merb
   module Slices
+    
     class << self
     
       # Retrieve a slice module by name 
@@ -28,7 +29,7 @@ module Merb
         slice_path  = File.expand_path(File.dirname(slice_file) + '/..')
         # check if slice_path exists instead of just the module name - more flexible
         if !self.paths.include?(slice_path) || force
-          Merb.logger.info!("registered slice '#{module_name}' located at #{slice_path}")
+          Merb.logger.info!("registered slice '#{module_name}' located at #{slice_path}") if force
           self.paths[module_name] = slice_path
           mod = setup_module(module_name)
           mod.identifier = identifier
@@ -45,7 +46,7 @@ module Merb
       # Merb::Plugins.config[:merb_slices][:search_path] (String/Array)
       def register_slices_from_search_path!
         slice_files_from_search_path.each do |slice_file|
-          Merb.logger.info!("found slice '#{File.basename(slice_file, '.rb')}' in search path")
+          Merb.logger.info!("found slice '#{File.basename(slice_file, '.rb')}' in search path at #{slice_file.relative_path_from(Merb.root)}")
           Merb::Slices::Loader.load_classes(slice_file)
         end
       end
@@ -67,7 +68,7 @@ module Merb
         end
       end
       
-      # Register a Slice by its gem/lib path and activate it at runtime
+      # Register a Slice by its gem/lib init file path and activate it at runtime
       #
       # Normally slices are loaded using BootLoaders on application startup.
       # This method gives you the possibility to add slices at runtime, all
@@ -88,7 +89,7 @@ module Merb
         Merb::Slices::Loader.load_classes(app_paths)   # app-level merge/override
         mod.init     if mod.respond_to?(:init)
         mod.activate if mod.respond_to?(:activate)
-        true
+        mod
       ensure
         Merb::Slices::Loader.reload_router!
       end
@@ -102,7 +103,33 @@ module Merb
           unregister(mod)
         end
       end
-        
+      
+      # Deactivate a Slice module at runtime by specifying its slice file
+      #
+      # @param slice_file<String> The Slice location of the slice init file to unregister.
+      def deactivate_by_file(slice_file)
+        deactivate(self.paths.index(File.dirname(File.dirname(slice_file))))
+      end
+      
+      # Watch all specified search paths to dynamically load/unload slices at runtime
+      #
+      # If a valid slice is found it's automatically registered and activated;
+      # once a slice is removed (or renamed to not match the convention), it
+      # will be unregistered and deactivated. Runs in a Thread.
+      #
+      # @example Merb::BootLoader.after_app_loads { Merb::Slices.start_dynamic_loader! }
+      # 
+      # @param interval<Numeric> 
+      #   The interval in seconds of checking the search path(s) for changes.
+      def start_dynamic_loader!(interval = nil)
+        DynamicLoader.start(interval)
+      end
+      
+      # Stop watching search paths to dynamically load/unload slices at runtime
+      def stop_dynamic_loader!
+        DynamicLoader.stop
+      end
+      
       # @return <Hash>
       #   The configuration loaded from Merb.root / "config/slices.yml" or, if
       #   the load fails, an empty hash.
@@ -158,20 +185,6 @@ module Merb
           end
         end
       end
-    
-      private
-    
-      # Prepare a module to be a proper Slice module
-      #
-      # @param module_name<#to_s> The name of the module to prepare
-      #
-      # @return <Module> The module that has been setup
-      def setup_module(module_name)
-        Object.make_module(module_name)
-        mod = Object.full_const_get(module_name)
-        mod.extend(ModuleMixin)
-        mod
-      end
       
       # Slice file locations from all search paths; these default to 
       # host-app/vendor/slices and host-app/slices - loaded in that order.
@@ -189,6 +202,54 @@ module Merb
         end
       end
     
+      private
+    
+      # Prepare a module to be a proper Slice module
+      #
+      # @param module_name<#to_s> The name of the module to prepare
+      #
+      # @return <Module> The module that has been setup
+      def setup_module(module_name)
+        Object.make_module(module_name)
+        mod = Object.full_const_get(module_name)
+        mod.extend(ModuleMixin)
+        mod
+      end
+      
     end
+    
+    class DynamicLoader
+      
+      cattr_accessor :lookup
+      
+      def self.start(interval = nil)
+        self.lookup ||= Set.new(Merb::Slices.slice_files_from_search_path)
+        @thread = self.every(interval || Merb::Plugins.config[:merb_slices][:autoload_interval] || 1.0) do
+          current_files = Set.new(Merb::Slices.slice_files_from_search_path)
+          (current_files - self.lookup).each { |f| Merb::Slices.register_and_activate(f) }
+          (self.lookup - current_files).each { |f| Merb::Slices.deactivate_by_file(f) }
+          self.lookup = current_files
+        end
+      end
+      
+      def self.stop
+        @thread.exit if @thread.is_a?(Thread)
+      end
+      
+      private
+      
+      def self.every(seconds, &block)
+        Thread.abort_on_exception = true
+        Thread.new do
+          loop do
+            sleep(seconds)
+            block.call
+          end
+          Thread.exit
+        end
+      end
+      
+    end
+    
   end
 end
