@@ -270,29 +270,195 @@ module Merb
           def remove_app_paths(*args)
             args.each { |arg| self.app_paths.delete(arg) }
           end
+          
+          # Return all application path component types
+          #
+          # @return <Array[Symbol]> Component types.
+          def app_components
+            [:view, :model, :controller, :helper, :mailer, :part]
+          end
+          
+          # Return all public path component types
+          #
+          # @return <Array[Symbol]> Component types.
+          def public_components
+            [:stylesheet, :javascript, :image]
+          end
         
+          # Return all path component types to mirror
+          #
+          # If config option :mirror is set return a subset, otherwise return all types.
+          #
+          # @return <Array[Symbol]> Component types.
+          def mirrored_components
+            all = slice_paths.keys
+            config[:mirror].is_a?(Array) ? config[:mirror] & all : all
+          end
+          
+          # Return all application path component types to mirror
+          #
+          # @return <Array[Symbol]> Component types.
+          def mirrored_app_components
+            mirrored_components & app_components
+          end
+          
+          # Return all public path component types to mirror
+          #
+          # @return <Array[Symbol]> Component types.
+          def mirrored_public_components
+            mirrored_components & public_components
+          end
+          
+          # Unpack all files from the slice to their app-level location; this will
+          # also copy /lib, causing merb-slices to pick up the slice there.
+          # 
+          # @return <Array[Array]> 
+          #   Array of two arrays, one for all copied files, the other for overrides 
+          #   that may have been preserved to resolve collisions.
+          def unpack_slice!
+            app_slice_root = app_dir_for(:root)
+            copied, duplicated = [], []
+            Dir.glob(self.root / "**/*").each do |source|
+              relative_path = source.relative_path_from(root)
+              mirror_file(source, app_slice_root / relative_path, copied, duplicated) if unpack_file?(relative_path)
+            end
+            public_copied, public_duplicated = mirror_public!
+            [copied + public_copied, duplicated + public_duplicated]
+          end
+          
+          # Copies all files from mirrored_components to their app-level location
+          #
+          # This includes :application, :as well 
+          # 
+          # @return <Array[Array]> 
+          #   Array of two arrays, one for all copied files, the other for overrides 
+          #   that may have been preserved to resolve collisions.
+          def mirror_all!
+            mirror_files_for mirrored_components + mirrored_public_components
+          end
+          
+          # Copies all application files from mirrored_components to their app-level location
+          #
+          # @return <Array[Array]> 
+          #   Array of two arrays, one for all copied files, the other for overrides 
+          #   that may have been preserved to resolve collisions.
+          def mirror_app!
+            mirror_files_for mirrored_app_components
+          end
+          
+          # Copies all application files from mirrored_components to their app-level location
+          #
+          # @return <Array[Array]> 
+          #   Array of two arrays, one for all copied files, the other for overrides 
+          #   that may have been preserved to resolve collisions.
+          def mirror_public!
+            mirror_files_for mirrored_public_components
+          end
+          
+          # Copies all view files to their app-level location - so you can easily modify them
+          #
+          # @return <Array[Array]> 
+          #   Array of two arrays, one for all copied files, the other for overrides 
+          #   that may have been preserved to resolve collisions.
+          def mirror_views!
+            mirror_files_for :view
+          end
+          
+          # Copy files from specified component path types to their app-level location
+          #
+          # App-level overrides are preserved by creating duplicates before writing gem-level files.
+          # Because of their _override postfix they will load after their original implementation.
+          # In the case of views, this won't work, but the user override is preserved nonetheless.
+          # 
+          # @return <Array[Array]> 
+          #   Array of two arrays, one for all copied files, the other for overrides 
+          #   that may have been preserved to resolve collisions.
+          def mirror_files_for(*types)
+            seen, copied, duplicated = [], [], [] # keep track of files we copied
+            types.flatten.each do |type|
+              if File.directory?(src_path = dir_for(type)) && (dst_path = app_dir_for(type))
+                glob = ((type == :view) ? "**/*.{#{Merb::Template.template_extensions.join(',')}}" : glob_for(type) || "**/*")
+                Dir[src_path / glob].each do |src|
+                  next if seen.include?(src)
+                  mirror_file(src, dst_path / src.relative_path_from(src_path), copied, duplicated)
+                  seen << src
+                end
+              end
+            end
+            [copied, duplicated]
+          end
+          
+          # Helper method to copy a source file to destination while resolving any conflicts.
+          #
+          # @param source<String> The source path.
+          # @param dest<String> The destination path.
+          # @param copied<Array> Keep track of all copied files - relative paths.
+          # @param duplicated<Array> Keep track of all duplicated files - relative paths.
+          # @param postfix<String> The postfix to use for resolving conflicting filenames.
+          def mirror_file(source, dest, copied = [], duplicated = [], postfix = '_override')
+            base, rest = split_name(source)
+            dst_dir = File.dirname(dest)
+            dup_path = dst_dir / "#{base}#{postfix}.#{rest}"           
+            if File.file?(source)
+              mkdir_p(dst_dir) unless File.directory?(dst_dir)
+              if File.exists?(dest) && !File.exists?(dup_path) && !FileUtils.identical?(source, dest)
+                # copy app-level override to *_override.ext
+                copy_entry(dest, dup_path, false, false, true)
+                duplicated << dup_path.relative_path_from(Merb.root)
+              end
+              # copy gem-level original to location
+              if !File.exists?(dest) || (File.exists?(dest) && !FileUtils.identical?(source, dest))
+                copy_entry(source, dest, false, false, true) 
+                copied << dest.relative_path_from(Merb.root)
+              end
+            end
+          end
+          
+          # Predicate method to check if a file should be taken into account when unpacking files
+          #
+          # @param file<String> The relative path to test.
+          # @return <TrueClass,FalseClass> True if the file may be mirrored.
+          def unpack_file?(file)
+            @mirror_exceptions_regexp ||= begin
+              skip_paths = mirrored_public_components.map { |type| dir_for(type).relative_path_from(self.root) }
+              skip_paths += config[:skip_files] if config[:skip_files].is_a?(Array)
+              Regexp.new("^(#{skip_paths.join('|')})")
+            end
+            not file.match(@mirror_exceptions_regexp)
+          end
+
           # This sets up the default slice-level and app-level structure.
           # 
           # You can create your own structure by implementing setup_structure and
           # using the push_path and push_app_paths. By default this setup matches
           # what the merb-gen slice generator creates.
           def setup_default_structure!
-            self.push_path(:application, self.root / 'app')
-            self.push_app_path(:application, Merb.root / 'slices' / self.identifier / 'app')
+            self.push_app_path(:root, Merb.root / 'slices' / self.identifier)
+            
+            self.push_path(:application, root_path('app'))
+            self.push_app_path(:application, app_dir_for(:root) / 'app')
           
-            [:view, :model, :controller, :helper, :mailer, :part].each do |component|
+            app_components.each do |component|
               self.push_path(component, dir_for(:application) / "#{component}s")
               self.push_app_path(component, app_dir_for(:application) / "#{component}s")
             end
           
-            self.push_path(:public, self.root / 'public', nil)
-            self.push_app_path(:public, Merb.root / 'public' / 'slices' / self.identifier, nil)
+            self.push_path(:public, root_path('public'), nil)
+            self.push_app_path(:public,  Merb.dir_for(:public) / 'slices' / self.identifier, nil)
           
-            [:stylesheet, :javascript, :image].each do |component|
+            public_components.each do |component|
               self.push_path(component, dir_for(:public) / "#{component}s", nil)
               self.push_app_path(component, app_dir_for(:public) / "#{component}s", nil)
             end
-          end       
+          end   
+          
+          private
+          
+          def split_name(name)
+            file_name = File.basename(name)
+            mres = /^([^\/\.]+)\.(.+)$/i.match(file_name)
+            mres.nil? ? [file_name, ''] : [mres[1], mres[2]]
+          end
         
         end
         mod

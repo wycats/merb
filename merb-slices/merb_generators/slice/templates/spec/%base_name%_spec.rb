@@ -51,8 +51,10 @@ describe "<%= module_name %> (module)" do
   end
   
   it "should have a app_dir_for method" do
+    root_path = <%= module_name %>.app_dir_for(:root)
+    root_path.should == Merb.root / 'slices' / '<%= base_name %>'
     app_path = <%= module_name %>.app_dir_for(:application)
-    app_path.should == Merb.root / 'slices' / '<%= base_name %>' / 'app'
+    app_path.should == root_path / 'app'
     [:view, :model, :controller, :helper, :mailer, :part].each do |type|
       <%= module_name %>.app_dir_for(type).should == app_path / "#{type}s"
     end
@@ -69,6 +71,10 @@ describe "<%= module_name %> (module)" do
     [:stylesheet, :javascript, :image].each do |type|
       <%= module_name %>.public_dir_for(type).should == public_path / "#{type}s"
     end
+  end
+  
+  it "should keep a list of path component types to use when copying files" do
+    (<%= module_name %>.mirrored_components & <%= module_name %>.slice_paths.keys).length.should == <%= module_name %>.mirrored_components.length
   end
   
 end

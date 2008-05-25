@@ -54,7 +54,7 @@ module FreezerMode
     create_freezer_dir(freezer_dir)
     action = update ? 'update' : 'install'
     puts "#{action} #{@component} and dependencies from rubygems"
-    `#{sudo} gem #{action} #{@component} --no-rdoc --no-ri -i #{framework_component? ? 'framework' : 'gems'}`
+    `#{sudo} gem #{action} #{@component} --no-rdoc --no-ri -i #{freezer_dir}`
   end
 
   def create_freezer_dir(path)

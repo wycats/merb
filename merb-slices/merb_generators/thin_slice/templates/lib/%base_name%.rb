@@ -41,13 +41,15 @@ if defined?(Merb::Plugins)
     
     # This sets up a thin slice's structure.
     def self.setup_default_structure!
-      self.push_path(:application, self.root, 'application.rb')
-      self.push_app_path(:application, Merb.root / 'slices' / self.identifier, 'application.rb')
+      self.push_app_path(:root, Merb.root / 'slices' / self.identifier)
+      
+      self.push_path(:application, root, 'application.rb')
+      self.push_app_path(:application, app_dir_for(:root), 'application.rb')
       
       self.push_path(:view, dir_for(:application) / "views")
       self.push_app_path(:view, app_dir_for(:application) / "views")
       
-      self.push_path(:public, self.root / 'public', nil)
+      self.push_path(:public, root_path('public'), nil)
       self.push_app_path(:public, Merb.root / 'public' / 'slices' / self.identifier, nil)
       
       [:stylesheet, :javascript, :image].each do |component|
