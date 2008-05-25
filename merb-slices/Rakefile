@@ -30,6 +30,7 @@ Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
 
+desc "Install Merb-Slices as a gem"
 task :install => [:package] do
   sh %{sudo gem install pkg/#{NAME}-#{VERSION} --no-update-sources --local}
 end
@@ -38,7 +39,7 @@ namespace :jruby do
 
   desc "Run :package and install the resulting .gem with jruby"
   task :install => :package do
-    sh %{#{SUDO} jruby -S gem install pkg/#{NAME}-#{Merb::VERSION}.gem --no-rdoc --no-ri}
+    sh %{#{SUDO} jruby -S gem install pkg/#{NAME}-#{VERSION}.gem --no-rdoc --no-ri}
   end
   
 end
