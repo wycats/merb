@@ -40,7 +40,16 @@ module Merb
         end
         mod
       end
-    
+      
+      # Look for any slices in Merb.root / 'slices' (the default) or if given, 
+      # Merb::Plugins.config[:merb_slices][:search_path] (String/Array)
+      def register_slices_from_search_path!
+        slice_files_from_search_path.each do |slice_file|
+          Merb.logger.info!("found slice '#{File.basename(slice_file, '.rb')}' in search path")
+          Merb::Slices::Loader.load_classes(slice_file)
+        end
+      end
+      
       # Unregister a Slice at runtime
       #
       # This clears the slice module from ObjectSpace and reloads the router.
@@ -57,8 +66,8 @@ module Merb
           end
         end
       end
-    
-      # Register a Slice by its gem/lib path and activate it directly
+      
+      # Register a Slice by its gem/lib path and activate it at runtime
       #
       # Normally slices are loaded using BootLoaders on application startup.
       # This method gives you the possibility to add slices at runtime, all
@@ -72,7 +81,7 @@ module Merb
       # @example Merb::Slices.register_and_activate('/path/to/gems/slice-name/lib/slice-name.rb')
       def register_and_activate(slice_file)
         slice_paths = []; app_paths = []
-        Merb::Slices::Loader.load_classes(File.dirname(slice_file) / File.basename(slice_file))
+        Merb::Slices::Loader.load_classes(slice_file)
         mod = register(slice_file, false) # just to get module by slice_file
         Merb::Slices::Loader.push_paths(mod, slice_paths, app_paths)
         Merb::Slices::Loader.load_classes(slice_paths) # slice-level
@@ -162,6 +171,22 @@ module Merb
         mod = Object.full_const_get(module_name)
         mod.extend(ModuleMixin)
         mod
+      end
+      
+      # Slice file locations from all search paths; these default to 
+      # host-app/vendor/slices and host-app/slices - loaded in that order.
+      #
+      # Look for any slices in those default locations or if given, 
+      # Merb::Plugins.config[:merb_slices][:search_path] (String/Array)
+      def slice_files_from_search_path
+        search_paths = Array(Merb::Plugins.config[:merb_slices][:search_path] || [Merb.root / "vendor" / "slices", Merb.root / "slices"])
+        search_paths.inject([]) do |files, path|
+          Dir[path / '**/lib/*.rb'].each do |libfile|
+            basename = File.basename(libfile, '.rb')
+            files << libfile if File.basename(File.dirname(File.dirname(libfile))) == basename
+            files
+          end
+        end
       end
     
     end

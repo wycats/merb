@@ -27,6 +27,8 @@ if defined?(Merb::Plugins)
 
       # Gather load paths and then load classes from the slice-level
       def run
+        Merb::Slices.register_slices_from_search_path!
+        
         self.load_paths = []
         Merb::Slices.each_slice do |slice|
           begin
