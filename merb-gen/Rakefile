@@ -3,8 +3,8 @@ require 'rake/gempackagetask'
 
 GEM = "merb-gen"
 VERSION = "0.9.4"
-AUTHOR = "Yehuda Katz"
-EMAIL = "wycats@gmail.com"
+AUTHOR = "Jonas Nicklas"
+EMAIL = "jonas.nicklas@gmail.com"
 HOMEPAGE = "http://www.merbivore.com"
 SUMMARY = "Merb More: Merb's Application and Plugin Generators"
 
@@ -24,7 +24,7 @@ spec = Gem::Specification.new do |s|
 
   # Uncomment this to add a dependency
   s.add_dependency "merb-core", ">= 0.9.4"
-  s.add_dependency "rubigen", ">= 1.2.4"
+  s.add_dependency "templater", ">= 0.1"
 
   s.require_path = 'lib'
   s.autorequire = GEM
