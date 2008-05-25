@@ -1,4 +1,6 @@
 require 'rubygems'
 require 'templater'
 
-require File.join(File.dirname(__FILE__), "merb-gen", "generator")
+%w(generator model).each do |file|
+  require File.join(File.dirname(__FILE__), "merb-gen", file)
+end
