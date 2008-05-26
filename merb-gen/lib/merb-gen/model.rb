@@ -1,8 +1,10 @@
 module Merb::ComponentGenerators
-    
+  
   class ModelGenerator < ComponentGenerator
     
-    first_argument :name
+    option :testing_framework, :default => :rspec, :desc => 'Specify which testing framework to use (spec, test_unit)'
+    
+    first_argument :name, :required => true
     second_argument :attributes, :as => :hash
     
     template :model do
@@ -11,7 +13,7 @@ module Merb::ComponentGenerators
     end
     
     def class_name
-      self.name.to_const_string
+      self.name.camel_case
     end
     
     def file_name

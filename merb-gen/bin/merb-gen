@@ -4,10 +4,12 @@ require 'rubygems'
 require 'merb-core'
 require 'merb-gen'
 
+puts Dir.pwd
+
 application = false # TODO: figure out a way to infer this
 
 if application
-  Merb::ApplicationGenerators.run_cli(ARGV)
+  Merb::ApplicationGenerators.run_cli(Dir.pwd, 'merb-gen', Merb::VERSION, ARGV)
 else
-  Merb::ComponentGenerators.run_cli(ARGV)
+  Merb::ComponentGenerators.run_cli(Dir.pwd, 'merb-gen', Merb::VERSION, ARGV)
 end
