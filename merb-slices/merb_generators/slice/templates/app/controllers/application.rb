@@ -1,5 +1,5 @@
-class <%= module_name %>::Application < Merb::Slices::Controller
+class <%= module_name %>::Application < Merb::Controller
   
-  layout(Merb::Slices::config[:<%= underscored_name %>][:layout]) if Merb::Slices::config[:<%= underscored_name %>].key?(:layout)
+  controller_for_slice
   
 end

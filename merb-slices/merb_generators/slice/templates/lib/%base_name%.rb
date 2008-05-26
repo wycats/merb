@@ -7,7 +7,12 @@ if defined?(Merb::Plugins)
   Merb::Slices::register(__FILE__)
   
   # Slice configuration - set this in a before_app_loads callback.
-  # By default a Slice uses its own layout.
+  # By default a Slice uses its own layout, so you can swicht to 
+  # the main application layout or no layout at all if needed.
+  # 
+  # Configuration options:
+  # :layout - the layout to use; defaults to :<%= underscored_name %>
+  # :mirror - which path component types to use on copy operations; defaults to all
   Merb::Slices::config[:<%= underscored_name %>] = { :layout => :<%= underscored_name %> }
   
   # All Slice code is expected to be namespaced inside a module

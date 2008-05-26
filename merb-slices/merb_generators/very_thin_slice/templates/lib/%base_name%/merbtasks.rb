@@ -28,22 +28,71 @@ namespace :slices do
     
     desc "Copy public assets to host application"
     task :copy_assets do
-      puts "Copying assets for <%= module_name %> - do not edit these as the will be overwritten!"
-      [:image, :javascript, :stylesheet].each do |type|
-        src_path = <%= module_name %>.dir_for(type)
-        dst_path = <%= module_name %>.app_dir_for(type)
-        Dir[src_path / '**/*'].each do |file|
-          relative_path = file.relative_path_from(src_path)
-          puts "- installing :#{type} #{relative_path}"
-          mkdir_p(dst_path / File.dirname(relative_path))
-          copy_entry(file, dst_path / relative_path, false, false, true)
-        end
-      end
+      puts "Copying assets for <%= module_name %> - resolves any collisions"
+      copied, preserved = <%= module_name %>.mirror_public!
+      puts "- no files to copy" if copied.empty? && preserved.empty?
+      copied.each { |f| puts "- copied #{f}" }
+      preserved.each { |f| puts "! preserved override as #{f}" }
     end
     
     desc "Migrate the database"
     task :migrate do
       # implement this to perform any database related setup steps
+    end
+    
+    desc "Freeze <%= module_name %> into your app (only <%= base_name %>/app)" 
+    task :freeze => [ "freeze:app" ]
+
+    namespace :freeze do
+      
+      desc "Freezes <%= module_name %> by installing the gem into application/gems using merb-freezer"
+      task :gem do
+        begin
+          Object.const_get(:Freezer).freeze(ENV["GEM"] || "<%= base_name %>", ENV["UPDATE"], ENV["MODE"] || 'rubygems')
+        rescue NameError
+          puts "! dependency 'merb-freezer' missing"
+        end
+      end
+      
+      desc "Freezes <%= module_name %> by copying all files from <%= base_name %>/app to your application"
+      task :app do
+        puts "Copying all <%= base_name %>/app files to your application - resolves any collisions"
+        copied, preserved = <%= module_name %>.mirror_app!
+        puts "- no files to copy" if copied.empty? && preserved.empty?
+        copied.each { |f| puts "- copied #{f}" }
+        preserved.each { |f| puts "! preserved override as #{f}" }
+      end
+      
+      desc "Freeze all views into your application for easy modification" 
+      task :views do
+        puts "Copying all view templates to your application - resolves any collisions"
+        copied, preserved = <%= module_name %>.mirror_files_for :view
+        puts "- no files to copy" if copied.empty? && preserved.empty?
+        copied.each { |f| puts "- copied #{f}" }
+        preserved.each { |f| puts "! preserved override as #{f}" }
+      end
+      
+      desc "Freeze all models into your application for easy modification" 
+      task :models do
+        puts "Copying all models to your application - resolves any collisions"
+        copied, preserved = <%= module_name %>.mirror_files_for :model
+        puts "- no files to copy" if copied.empty? && preserved.empty?
+        copied.each { |f| puts "- copied #{f}" }
+        preserved.each { |f| puts "! preserved override as #{f}" }
+      end
+      
+      desc "Freezes <%= module_name %> as a gem and copies over <%= base_name %>/app"
+      task :app_with_gem => [:gem, :app]
+      
+      desc "Freezes <%= module_name %> by unpacking all files into your application"
+      task :unpack do
+        puts "Unpacking <%= module_name %> files to your application - resolves any collisions"
+        copied, preserved = <%= module_name %>.unpack_slice!
+        puts "- no files to copy" if copied.empty? && preserved.empty?
+        copied.each { |f| puts "- copied #{f}" }
+        preserved.each { |f| puts "! preserved override as #{f}" }
+      end
+      
     end
     
   end

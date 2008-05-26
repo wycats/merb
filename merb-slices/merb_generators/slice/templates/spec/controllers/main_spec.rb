@@ -10,8 +10,8 @@ describe "<%= module_name %>::Main (controller)" do
   
   it "should have access to the slice module" do
     controller = dispatch_to(<%= module_name %>::Main, :index)
-    controller.send(:slice).should == <%= module_name %>
-    controller.send(:slice).should == <%= module_name %>::Main.slice
+    controller.slice.should == <%= module_name %>
+    controller.slice.should == <%= module_name %>::Main.slice
   end
   
   it "should have an index action" do
@@ -31,6 +31,11 @@ describe "<%= module_name %>::Main (controller)" do
     controller.public_path_for(:image).should == "/slices/<%= base_name %>/images"
     controller.public_path_for(:javascript).should == "/slices/<%= base_name %>/javascripts"
     controller.public_path_for(:stylesheet).should == "/slices/<%= base_name %>/stylesheets"
+  end
+  
+  it "should have a slice-specific _template_root" do
+    <%= module_name %>::Main._template_root.should == <%= module_name %>.dir_for(:view)
+    <%= module_name %>::Main._template_root.should == <%= module_name %>::Application._template_root
   end
 
 end

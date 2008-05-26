@@ -1,5 +1,6 @@
 module Merb
   module Slices
+    
     class << self
     
       # Retrieve a slice module by name 
@@ -23,14 +24,16 @@ module Merb
       # @example Merb::Slices::register(__FILE__)
       def register(slice_file, force = true)
         identifier  = File.basename(slice_file, '.rb')
-        module_name = identifier.gsub('-', '_').camel_case
+        underscored = identifier.gsub('-', '_')
+        module_name = underscored.camel_case
         slice_path  = File.expand_path(File.dirname(slice_file) + '/..')
         # check if slice_path exists instead of just the module name - more flexible
         if !self.paths.include?(slice_path) || force
-          Merb.logger.info!("registered slice '#{module_name}' located at #{slice_path}")
+          Merb.logger.info!("registered slice '#{module_name}' located at #{slice_path}") if force
           self.paths[module_name] = slice_path
           mod = setup_module(module_name)
           mod.identifier = identifier
+          mod.identifier_sym = underscored.to_sym
           mod.root = slice_path
         else
           Merb.logger.info!("already registered slice '#{module_name}' located at #{slice_path}")
@@ -38,7 +41,16 @@ module Merb
         end
         mod
       end
-    
+      
+      # Look for any slices in Merb.root / 'slices' (the default) or if given, 
+      # Merb::Plugins.config[:merb_slices][:search_path] (String/Array)
+      def register_slices_from_search_path!
+        slice_files_from_search_path.each do |slice_file|
+          Merb.logger.info!("found slice '#{File.basename(slice_file, '.rb')}' in search path at #{slice_file.relative_path_from(Merb.root)}")
+          Merb::Slices::Loader.load_classes(slice_file)
+        end
+      end
+      
       # Unregister a Slice at runtime
       #
       # This clears the slice module from ObjectSpace and reloads the router.
@@ -55,8 +67,8 @@ module Merb
           end
         end
       end
-    
-      # Register a Slice by its gem/lib path and activate it directly
+      
+      # Register a Slice by its gem/lib init file path and activate it at runtime
       #
       # Normally slices are loaded using BootLoaders on application startup.
       # This method gives you the possibility to add slices at runtime, all
@@ -70,14 +82,14 @@ module Merb
       # @example Merb::Slices.register_and_activate('/path/to/gems/slice-name/lib/slice-name.rb')
       def register_and_activate(slice_file)
         slice_paths = []; app_paths = []
-        Merb::Slices::Loader.load_classes(File.dirname(slice_file) / File.basename(slice_file))
+        Merb::Slices::Loader.load_classes(slice_file)
         mod = register(slice_file, false) # just to get module by slice_file
         Merb::Slices::Loader.push_paths(mod, slice_paths, app_paths)
         Merb::Slices::Loader.load_classes(slice_paths) # slice-level
         Merb::Slices::Loader.load_classes(app_paths)   # app-level merge/override
         mod.init     if mod.respond_to?(:init)
         mod.activate if mod.respond_to?(:activate)
-        true
+        mod
       ensure
         Merb::Slices::Loader.reload_router!
       end
@@ -91,7 +103,33 @@ module Merb
           unregister(mod)
         end
       end
-        
+      
+      # Deactivate a Slice module at runtime by specifying its slice file
+      #
+      # @param slice_file<String> The Slice location of the slice init file to unregister.
+      def deactivate_by_file(slice_file)
+        deactivate(self.paths.index(File.dirname(File.dirname(slice_file))))
+      end
+      
+      # Watch all specified search paths to dynamically load/unload slices at runtime
+      #
+      # If a valid slice is found it's automatically registered and activated;
+      # once a slice is removed (or renamed to not match the convention), it
+      # will be unregistered and deactivated. Runs in a Thread.
+      #
+      # @example Merb::BootLoader.after_app_loads { Merb::Slices.start_dynamic_loader! }
+      # 
+      # @param interval<Numeric> 
+      #   The interval in seconds of checking the search path(s) for changes.
+      def start_dynamic_loader!(interval = nil)
+        DynamicLoader.start(interval)
+      end
+      
+      # Stop watching search paths to dynamically load/unload slices at runtime
+      def stop_dynamic_loader!
+        DynamicLoader.stop
+      end
+      
       # @return <Hash>
       #   The configuration loaded from Merb.root / "config/slices.yml" or, if
       #   the load fails, an empty hash.
@@ -147,6 +185,22 @@ module Merb
           end
         end
       end
+      
+      # Slice file locations from all search paths; these default to 
+      # host-app/vendor/slices and host-app/slices - loaded in that order.
+      #
+      # Look for any slices in those default locations or if given, 
+      # Merb::Plugins.config[:merb_slices][:search_path] (String/Array)
+      def slice_files_from_search_path
+        search_paths = Array(Merb::Plugins.config[:merb_slices][:search_path] || [Merb.root / "vendor" / "slices", Merb.root / "slices"])
+        search_paths.inject([]) do |files, path|
+          Dir[path / '**/lib/*.rb'].each do |libfile|
+            basename = File.basename(libfile, '.rb')
+            files << libfile if File.basename(File.dirname(File.dirname(libfile))) == basename
+            files
+          end
+        end
+      end
     
       private
     
@@ -158,139 +212,44 @@ module Merb
       def setup_module(module_name)
         Object.make_module(module_name)
         mod = Object.full_const_get(module_name)
-        mod.meta_class.module_eval do
-        
-          attr_accessor :identifier, :root, :slice_paths, :app_paths
-          attr_accessor :description, :version, :author
-        
-          # Stub initialization hook - runs before AfterAppLoads BootLoader.
-          def init; end
-        
-          # Stub activation hook - runs after AfterAppLoads BootLoader.
-          def activate; end
-        
-          # Stub deactivation method - not triggered automatically.
-          def deactivate; end
-        
-          # Stub to setup routes inside the host application.
-          def setup_router(scope); end
-        
-          # @return <Hash> The load paths which make up the slice-level structure.
-          def slice_paths
-            @slice_paths ||= Hash.new { [self.root] }
-          end
-        
-          # @return <Hash> The load paths which make up the app-level structure.
-          def app_paths
-            @app_paths ||= Hash.new { [Merb.root] }
-          end
-        
-          # @param *path<#to_s>
-          #   The relative path (or list of path components) to a directory under the
-          #   root of the application.
-          #
-          # @return <String> The full path including the root.
-          def root_path(*path) File.join(self.root, *path) end
-        
-          # Retrieve the absolute path to a slice-level directory.
-          #
-          # @param type<Symbol> The type of path to retrieve directory for, e.g. :view.
-          #
-          # @return <String> The absolute path for the requested type.
-          def dir_for(type) self.slice_paths[type].first end
-        
-          # @param type<Symbol> The type of path to retrieve glob for, e.g. :view.
-          #
-          # @return <String> The pattern with which to match files within the type directory.
-          def glob_for(type) self.slice_paths[type][1] end
-
-          # Retrieve the absolute path to a app-level directory. 
-          #
-          # @param type<Symbol> The type of path to retrieve directory for, e.g. :view.
-          #
-          # @return <String> The directory for the requested type.
-          def app_dir_for(type) self.app_paths[type].first end
-        
-          # @param type<Symbol> The type of path to retrieve glob for, e.g. :view.
-          #
-          # @return <String> The pattern with which to match files within the type directory.
-          def app_glob_for(type) self.app_paths[type][1] end
-        
-          # Retrieve the relative path to a public directory.
-          #
-          # @param type<Symbol> The type of path to retrieve directory for, e.g. :view.
-          #
-          # @return <String> The relative path to the public directory for the requested type.
-          def public_dir_for(type)
-            dir = self.app_dir_for(type).relative_path_from(Merb.dir_for(:public)) rescue '.'
-            dir == '.' ? '/' : "/#{dir}"
-          end
-        
-          # This is the core mechanism for setting up your slice-level layout.
-          #
-          # @param type<Symbol> The type of path being registered (i.e. :view)
-          # @param path<String> The full path
-          # @param file_glob<String>
-          #   A glob that will be used to autoload files under the path. Defaults to "**/*.rb".
-          def push_path(type, path, file_glob = "**/*.rb")
-            enforce!(type => Symbol)
-            slice_paths[type] = [path, file_glob]
-          end
-        
-          # Removes given types of application components
-          # from slice-level load path this slice uses for autoloading.
-          #
-          # @param *args<Array[Symbol]> Components names, for instance, :views, :models
-          def remove_paths(*args)
-            args.each { |arg| self.slice_paths.delete(arg) }
-          end
-        
-          # This is the core mechanism for setting up your app-level layout.
-          #
-          # @param type<Symbol> The type of path being registered (i.e. :view)
-          # @param path<String> The full path
-          # @param file_glob<String>
-          #   A glob that will be used to autoload files under the path. Defaults to "**/*.rb".
-          def push_app_path(type, path, file_glob = "**/*.rb")
-            enforce!(type => Symbol)
-            app_paths[type] = [path, file_glob]
-          end
-        
-          # Removes given types of application components
-          # from app-level load path this slice uses for autoloading.
-          #
-          # @param *args<Array[Symbol]> Components names, for instance, :views, :models
-          def remove_app_paths(*args)
-            args.each { |arg| self.app_paths.delete(arg) }
-          end
-        
-          # This sets up the default slice-level and app-level structure.
-          # 
-          # You can create your own structure by implementing setup_structure and
-          # using the push_path and push_app_paths. By default this setup matches
-          # what the merb-gen slice generator creates.
-          def setup_default_structure!
-            self.push_path(:application, self.root / 'app')
-            self.push_app_path(:application, Merb.root / 'slices' / self.identifier / 'app')
-          
-            [:view, :model, :controller, :helper, :mailer, :part].each do |component|
-              self.push_path(component, dir_for(:application) / "#{component}s")
-              self.push_app_path(component, app_dir_for(:application) / "#{component}s")
-            end
-          
-            self.push_path(:public, self.root / 'public', nil)
-            self.push_app_path(:public, Merb.root / 'public' / 'slices' / self.identifier, nil)
-          
-            [:stylesheet, :javascript, :image].each do |component|
-              self.push_path(component, dir_for(:public) / "#{component}s", nil)
-              self.push_app_path(component, app_dir_for(:public) / "#{component}s", nil)
-            end
-          end       
-        
-        end
+        mod.extend(ModuleMixin)
         mod
       end
-    
+      
     end
+    
+    class DynamicLoader
+      
+      cattr_accessor :lookup
+      
+      def self.start(interval = nil)
+        self.lookup ||= Set.new(Merb::Slices.slice_files_from_search_path)
+        @thread = self.every(interval || Merb::Plugins.config[:merb_slices][:autoload_interval] || 1.0) do
+          current_files = Set.new(Merb::Slices.slice_files_from_search_path)
+          (current_files - self.lookup).each { |f| Merb::Slices.register_and_activate(f) }
+          (self.lookup - current_files).each { |f| Merb::Slices.deactivate_by_file(f) }
+          self.lookup = current_files
+        end
+      end
+      
+      def self.stop
+        @thread.exit if @thread.is_a?(Thread)
+      end
+      
+      private
+      
+      def self.every(seconds, &block)
+        Thread.abort_on_exception = true
+        Thread.new do
+          loop do
+            sleep(seconds)
+            block.call
+          end
+          Thread.exit
+        end
+      end
+      
+    end
+    
   end
 end
