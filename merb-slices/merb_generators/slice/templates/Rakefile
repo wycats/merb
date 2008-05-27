@@ -10,7 +10,7 @@ AUTHOR = "Your Name"
 EMAIL = "Your Email"
 HOMEPAGE = "http://merbivore.com/"
 SUMMARY = "Merb Slice that provides ..."
-VERSION = "<%= Merb::VERSION %>"
+GEM_VERSION = "<%= Merb::VERSION %>"
 
 spec = Gem::Specification.new do |s|
   s.rubyforge_project = 'merb'
