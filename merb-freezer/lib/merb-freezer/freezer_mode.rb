@@ -1,5 +1,5 @@
 require 'find'
-#require '../../../merb_rake_helper'
+#require 'merb-core/tasks/merb_rake_helper'
 module FreezerMode
   
   def sudo
