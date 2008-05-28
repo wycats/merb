@@ -21,47 +21,50 @@ if defined?(Merb::Plugins)
 
     before LoadClasses
 
-    cattr_accessor :load_paths
+    cattr_accessor :slice_paths, :app_paths
 
     class << self
 
       # Gather load paths and then load classes from the slice-level
       def run
+        self.slice_paths, self.app_paths = [], []
         Merb::Slices.register_slices_from_search_path!
         
-        self.load_paths = []
         Merb::Slices.each_slice do |slice|
+          paths_for_slice, paths_for_app = [], []
           begin
             # for flat apps :application can be a single file - load it here before anything else
             load_file slice.dir_for(:application) if File.file?(slice.dir_for(:application))
-            push_paths(slice) # push all relevant paths to load_paths
+            push_paths(slice, paths_for_slice, paths_for_app) # push all relevant paths
+            self.slice_paths, self.app_paths = paths_for_slice, paths_for_app
+            load_classes slice_paths # load all slice-level paths
+            slice.loaded if slice.respond_to?(:loaded) # call hook if available
+            Merb.logger.info!("loaded slice '#{slice}' ...")
           rescue => e
             Merb.logger.warn!("failed loading #{slice} (#{e.message})")
           end
         end
-        load_classes load_paths
       end
     
       # Collect load paths to load from
       #
       # @param slice<Module> Slice module.
-      # @param paths<Array> 
-      #   Array to append slice-level paths to - defaults to self.load_paths
-      # @param app_paths<Array> 
-      #   Optional array to append app-level paths to.
-      def push_paths(slice, paths = self.load_paths, app_paths = [])
+      # @param paths_for_slice<Array> Optional array to append slice-level paths to.
+      # @param paths_for_app<Array> Optional array to append app-level paths to.
+      def push_paths(slice, paths_for_slice = [], paths_for_app = [])
         slice.slice_paths.each do |component, path|
           if File.directory?(component_path = path.first)
             $LOAD_PATH.unshift(component_path) if component.in?(:model, :controller, :lib)
             # slice-level component load path - will be preceded by application/app/component - loaded next by Setup.load_classes
-            paths << path.first / path.last if path.last
+            paths_for_slice << path.first / path.last if path.last
             # app-level component load path (override) path - loaded by BootLoader::LoadClasses
             if (app_glob = slice.app_glob_for(component)) && File.directory?(app_component_dir = slice.app_dir_for(component))
-              app_paths << app_component_dir / app_glob
+              paths_for_app << app_component_dir / app_glob
               Merb.push_path(:"#{slice.name.snake_case}_#{component}", app_component_dir, app_glob)
             end
           end
         end
+        [paths_for_slice, paths_for_app]
       end
       
       # ==== Parameters

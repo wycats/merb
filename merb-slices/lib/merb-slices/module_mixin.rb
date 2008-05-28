@@ -9,6 +9,12 @@ module Merb
         end
       end
     
+      # Stub classes loaded hook - runs before LoadClasses BootLoader
+      # right after a slice's classes have been loaded internally.
+      def loaded
+        Merb.logger.info!("#{self.name} #loaded hook")
+      end
+    
       # Stub initialization hook - runs before AfterAppLoads BootLoader.
       def init; end
     
