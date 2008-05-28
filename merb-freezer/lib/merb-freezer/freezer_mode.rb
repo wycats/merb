@@ -54,7 +54,12 @@ module FreezerMode
     create_freezer_dir(freezer_dir)
     action = update ? 'update' : 'install'
     puts "#{action} #{@component} and dependencies from rubygems"
-    `#{sudo} gem #{action} #{@component} --no-rdoc --no-ri -i #{freezer_dir}`
+    if File.exist?(freezer_dir) && !File.writable?("#{freezer_dir}/cache")
+      puts "you might want to CHOWN the gems folder so it's not owned by root: sudo chown -R #{`whoami`} #{freezer_dir}"
+      `#{sudo} gem #{action} #{@component} --no-rdoc --no-ri -i #{freezer_dir}`
+    else
+      `gem #{action} #{@component} --no-rdoc --no-ri -i #{freezer_dir}`
+    end
   end
 
   def create_freezer_dir(path)
