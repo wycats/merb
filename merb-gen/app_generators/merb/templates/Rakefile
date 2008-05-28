@@ -42,7 +42,7 @@ def require_frozen_framework
 end
 
 if ENV['FROZEN']
-  require_frozen_stuff
+  require_frozen_framework
 else
   require 'merb-core'
 end
