@@ -4,7 +4,7 @@ module Merb
       
       # Add all known slices to the router
       #
-      # By combining this with Merb::Slices.register_and_activate and Merb::Slices.deactivate
+      # By combining this with Merb::Slices.register_and_load and Merb::Slices.deactivate
       # one can enable/disable slices at runtime, without restarting your app.
       #
       # @param config<Hash> 

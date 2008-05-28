@@ -9,6 +9,15 @@ module Merb
         end
       end
     
+      # Stub that gets triggered when a slice has been registered.
+      #
+      # @note This is rarely needed but still provided for edge cases.
+      def registered; end
+    
+      # Stub classes loaded hook - runs before LoadClasses BootLoader
+      # right after a slice's classes have been loaded internally.
+      def loaded; end
+    
       # Stub initialization hook - runs before AfterAppLoads BootLoader.
       def init; end
     
@@ -20,17 +29,69 @@ module Merb
     
       # Stub to setup routes inside the host application.
       def setup_router(scope); end
-    
+
+      # @param <Symbol> The configuration key.
+      # @return <Object> The configuration value.
+      def [](key)
+        self.config[key]
+      end
+      
+      # @param <Symbol> The configuration key.
+      # @param <Object> The configuration value.
+      def []=(key, value)
+        self.config[key] = value
+      end
+      
       # @return <Hash> The configuration for this slice.
       def config
         Merb::Slices::config[self.identifier_sym] ||= {}
       end
+      
+      # Load slice and it's classes located in the slice-level load paths.
+      # 
+      # Assigns collected_slice_paths and collected_app_paths, then loads
+      # the collected_slice_paths and triggers the #loaded hook method.
+      def load_slice
+        # load application.rb (or similar) for thin slices
+        Merb::Slices::Loader.load_file self.dir_for(:application) if File.file?(self.dir_for(:application))
+        # assign all relevant paths for slice-level and app-level
+        self.collect_load_paths 
+        # load all slice-level classes from paths
+        Merb::Slices::Loader.load_classes self.collected_slice_paths
+        # call hook if available
+        self.loaded if self.respond_to?(:loaded)
+        Merb.logger.info!("loaded slice '#{self}' ...")
+      rescue => e
+        Merb.logger.warn!("failed loading #{self} (#{e.message})")
+      end
+      
+      # The slice-level load paths that have been used when the slice was loaded.
+      # 
+      # This may be a subset of app_paths, which includes any path to look for.
+      #
+      # @return <Array[String]> load paths (with glob pattern)
+      def collected_slice_paths
+        @collected_slice_paths ||= []
+      end
+      
+      # The app-level load paths that have been used when the slice was loaded.
+      # 
+      # This may be a subset of app_paths, which includes any path to look for.
+      #
+      # @return <Array[String]> Application load paths (with glob pattern)
+      def collected_app_paths
+        @collected_app_paths ||= []
+      end
     
+      # The slice-level load paths to use when loading the slice.
+      #
       # @return <Hash> The load paths which make up the slice-level structure.
       def slice_paths
         @slice_paths ||= Hash.new { [self.root] }
       end
     
+      # The app-level load paths to use when loading the slice.
+      #
       # @return <Hash> The load paths which make up the app-level structure.
       def app_paths
         @app_paths ||= Hash.new { [Merb.root] }
@@ -251,7 +312,29 @@ module Merb
         end
       end   
       
-      private
+      protected
+      
+      # Collect slice-level and app-level load paths to load from.
+      #
+      # @param modify_load_path<Boolean> 
+      #   Whether to add certain paths to $LOAD_PATH; defaults to true.
+      # @param push_merb_path<Boolean> 
+      #   Whether to add app-level paths using Merb.push_path; defaults to true.
+      def collect_load_paths(modify_load_path = true, push_merb_path = true)
+        self.collected_slice_paths.clear; self.collected_app_paths.clear
+        self.slice_paths.each do |component, path|
+          if File.directory?(component_path = path.first)
+            $LOAD_PATH.unshift(component_path) if modify_load_path && component.in?(:model, :controller, :lib) && !$LOAD_PATH.include?(component_path)
+            # slice-level component load path - will be preceded by application/app/component - loaded next by Setup.load_classes
+            self.collected_slice_paths << path.first / path.last if path.last
+            # app-level component load path (override) path - loaded by BootLoader::LoadClasses
+            if (app_glob = self.app_glob_for(component)) && File.directory?(app_component_dir = self.app_dir_for(component))
+              self.collected_app_paths << app_component_dir / app_glob
+              Merb.push_path(:"#{self.name.snake_case}_#{component}", app_component_dir, app_glob) if push_merb_path
+            end
+          end
+        end
+      end
       
       # Helper method to copy a source file to destination while resolving any conflicts.
       #

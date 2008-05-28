@@ -18,6 +18,11 @@ if defined?(Merb::Plugins)
     self.version = "0.0.1"
     self.author = "YOUR NAME"
     
+    # Stub classes loaded hook - runs before LoadClasses BootLoader
+    # right after a slice's classes have been loaded internally.
+    def self.loaded
+    end
+    
     # Initialization hook - runs before AfterAppLoads BootLoader
     def self.init
     end

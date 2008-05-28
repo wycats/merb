@@ -34,15 +34,16 @@ module Merb
         if !self.paths.include?(slice_path) || force
           Merb.logger.info!("registered slice '#{module_name}' located at #{slice_path}") if force
           self.paths[module_name] = slice_path
-          mod = setup_module(module_name)
-          mod.identifier = identifier
-          mod.identifier_sym = underscored.to_sym
-          mod.root = slice_path
+          slice_mod = setup_module(module_name)
+          slice_mod.identifier = identifier
+          slice_mod.identifier_sym = underscored.to_sym
+          slice_mod.root = slice_path
+          slice_mod.registered
+          slice_mod
         else
           Merb.logger.info!("already registered slice '#{module_name}' located at #{slice_path}")
-          mod = Object.full_const_get(module_name)
+          Object.full_const_get(module_name)
         end
-        mod
       end
       
       # Look for any slices in Merb.root / 'slices' (the default) or if given, 
@@ -82,17 +83,14 @@ module Merb
       #
       # @param slice_file<String> The path of the gem 'init file'
       #
-      # @example Merb::Slices.register_and_activate('/path/to/gems/slice-name/lib/slice-name.rb')
-      def register_and_activate(slice_file)
-        slice_paths = []; app_paths = []
+      # @example Merb::Slices.register_and_load('/path/to/gems/slice-name/lib/slice-name.rb')
+      def register_and_load(slice_file)
         Merb::Slices::Loader.load_classes(slice_file)
-        mod = register(slice_file, false) # just to get module by slice_file
-        Merb::Slices::Loader.push_paths(mod, slice_paths, app_paths)
-        Merb::Slices::Loader.load_classes(slice_paths) # slice-level
-        Merb::Slices::Loader.load_classes(app_paths)   # app-level merge/override
-        mod.init     if mod.respond_to?(:init)
-        mod.activate if mod.respond_to?(:activate)
-        mod
+        slice = register(slice_file, false) # just to get module by slice_file
+        slice.load_slice # load the slice
+        slice.init     if slice.respond_to?(:init)
+        slice.activate if slice.respond_to?(:activate)
+        slice
       ensure
         Merb::Slices::Loader.reload_router!
       end
@@ -101,9 +99,9 @@ module Merb
       #
       # @param slice_module<#to_s> The Slice module to unregister.
       def deactivate(slice_module)
-        if mod = self[slice_module]
-          mod.deactivate if mod.respond_to?(:deactivate)
-          unregister(mod)
+        if slice = self[slice_module]
+          slice.deactivate if slice.respond_to?(:deactivate)
+          unregister(slice)
         end
       end
       
@@ -214,9 +212,9 @@ module Merb
       # @return <Module> The module that has been setup
       def setup_module(module_name)
         Object.make_module(module_name)
-        mod = Object.full_const_get(module_name)
-        mod.extend(ModuleMixin)
-        mod
+        slice_mod = Object.full_const_get(module_name)
+        slice_mod.extend(ModuleMixin)
+        slice_mod
       end
       
     end
@@ -229,7 +227,7 @@ module Merb
         self.lookup ||= Set.new(Merb::Slices.slice_files_from_search_path)
         @thread = self.every(interval || Merb::Plugins.config[:merb_slices][:autoload_interval] || 1.0) do
           current_files = Set.new(Merb::Slices.slice_files_from_search_path)
-          (current_files - self.lookup).each { |f| Merb::Slices.register_and_activate(f) }
+          (current_files - self.lookup).each { |f| Merb::Slices.register_and_load(f) }
           (self.lookup - current_files).each { |f| Merb::Slices.deactivate_by_file(f) }
           self.lookup = current_files
         end
