@@ -29,7 +29,19 @@ module Merb
     
       # Stub to setup routes inside the host application.
       def setup_router(scope); end
-    
+
+      # @param <Symbol> The configuration key.
+      # @return <Object> The configuration value.
+      def [](key)
+        self.config[key]
+      end
+      
+      # @param <Symbol> The configuration key.
+      # @param <Object> The configuration value.
+      def []=(key, value)
+        self.config[key] = value
+      end
+      
       # @return <Hash> The configuration for this slice.
       def config
         Merb::Slices::config[self.identifier_sym] ||= {}
