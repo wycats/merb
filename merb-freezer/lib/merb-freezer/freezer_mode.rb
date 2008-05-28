@@ -1,5 +1,7 @@
 require 'find'
-#require 'merb-core/tasks/merb_rake_helper'
+require 'rubygems'
+require 'rubygems/dependency_installer'
+
 module FreezerMode
   
   def sudo
@@ -49,16 +51,39 @@ module FreezerMode
   end
 
   # Uses rubygems to freeze the components locally
-  #
   def rubygems_freeze
     create_freezer_dir(freezer_dir)
-    action = update ? 'update' : 'install'
-    puts "#{action} #{@component} and dependencies from rubygems"
+    puts "Install #{@component} and dependencies from rubygems"
     if File.exist?(freezer_dir) && !File.writable?("#{freezer_dir}/cache")
       puts "you might want to CHOWN the gems folder so it's not owned by root: sudo chown -R #{`whoami`} #{freezer_dir}"
-      `#{sudo} gem #{action} #{@component} --no-rdoc --no-ri -i #{freezer_dir}`
-    else
-      `gem #{action} #{@component} --no-rdoc --no-ri -i #{freezer_dir}`
+    end
+    install_rubygem @component
+  end
+  
+  # Install a gem - looks remotely and locally
+  # won't process rdoc or ri options.
+  def install_rubygem(gem, version = nil)
+    Gem.configuration.update_sources = false
+    Gem.clear_paths
+    installer = Gem::DependencyInstaller.new(:install_dir => freezer_dir)
+    exception = nil
+    begin
+      installer.install gem, version
+    rescue Gem::InstallError => e
+      exception = e
+    rescue Gem::GemNotFoundException => e
+      puts "Locating #{gem} in local gem path cache..."
+      spec = version ? Gem.cache.find_name(gem, "= #{version}").first : Gem.cache.find_name(gem).sort_by { |g| g.version }.last
+      if spec && File.exists?(gem_file = spec.installation_path / 'cache' / "#{spec.full_name}.gem")
+        installer.install gem_file
+      end
+      exception = e
+    end
+    if installer.installed_gems.empty? && e
+      puts "Failed to install gem '#{gem}' (#{e.message})"
+    end
+    installer.installed_gems.each do |spec|
+      puts "Successfully installed #{spec.full_name}"
     end
   end
 

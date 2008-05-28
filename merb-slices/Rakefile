@@ -32,7 +32,7 @@ end
 
 desc "Install Merb-Slices as a gem"
 task :install => [:package] do
-  sh %{#{sudo} gem install pkg/#{NAME}-#{GEM_VERSION} --no-update-sources}
+  sh %{#{sudo} gem install #{install_home} pkg/#{NAME}-#{GEM_VERSION} --no-update-sources}
 end
 
 namespace :jruby do
