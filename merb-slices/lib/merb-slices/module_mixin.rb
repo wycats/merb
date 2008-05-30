@@ -306,11 +306,11 @@ module Merb
       def setup_default_structure!
         self.push_app_path(:root, Merb.root / 'slices' / self.identifier)
         
-        self.push_path(:stub, root_path('stubs'))
-        self.push_app_path(:stub, app_dir_for(:root))
+        self.push_path(:stub, root_path('stubs'), nil)
+        self.push_app_path(:stub, app_dir_for(:root), nil)
         
-        self.push_path(:application, root_path('app'))
-        self.push_app_path(:application, app_dir_for(:root) / 'app')
+        self.push_path(:application, root_path('app'), nil)
+        self.push_app_path(:application, app_dir_for(:root) / 'app', nil)
       
         app_components.each do |component|
           self.push_path(component, dir_for(:application) / "#{component}s")
@@ -336,10 +336,7 @@ module Merb
       #   Whether to add app-level paths using Merb.push_path; defaults to true.
       def collect_load_paths(modify_load_path = true, push_merb_path = true)
         self.collected_slice_paths.clear; self.collected_app_paths.clear
-        skip_application_component = application_contains_components?
         self.slice_paths.each do |component, path|
-          # skip :application if it contains other components, and never try to load from stubs
-          next if (component == :application && skip_application_component) || component == :stub
           if File.directory?(component_path = path.first)
             $LOAD_PATH.unshift(component_path) if modify_load_path && component.in?(:model, :controller, :lib) && !$LOAD_PATH.include?(component_path)
             # slice-level component load path - will be preceded by application/app/component - loaded next by Setup.load_classes
@@ -398,16 +395,6 @@ module Merb
       # Predicate method to check if the :application component is a file
       def application_file?
         File.file?(dir_for(:application) / glob_for(:application))
-      end
-      
-      # Predicate method to check if the :application glob clobbers contained application component paths
-      def application_contains_components?
-        if glob_for(:application) == '**/*.rb' && application_path = dir_for(:application)
-          root_path = dir_for(:root)
-          app_components.all? do |comp|
-            dir_for(comp) != root_path && dir_for(comp).index(application_path) == 0
-          end
-        end
       end
       
       # Split a file name so a postfix can be inserted
