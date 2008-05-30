@@ -56,7 +56,7 @@ if defined?(Merb::Plugins)
       self.push_path(:public, root_path('public'), nil)
       self.push_app_path(:public, Merb.root / 'public' / 'slices' / self.identifier, nil)
       
-      [:stylesheet, :javascript, :image].each do |component|
+      public_components.each do |component|
         self.push_path(component, dir_for(:public) / "#{component}s", nil)
         self.push_app_path(component, app_dir_for(:public) / "#{component}s", nil)
       end
