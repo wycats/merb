@@ -1,2 +1,2 @@
-class <%= module_name %>::Main < <%= module_name %>::Application  
+class <%= module_name %>::Main < <%= module_name %>::Application
 end

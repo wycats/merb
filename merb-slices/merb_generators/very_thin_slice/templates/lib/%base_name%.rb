@@ -47,6 +47,9 @@ if defined?(Merb::Plugins)
     def self.setup_default_structure!
       self.push_app_path(:root, Merb.root / 'slices' / self.identifier)
       
+      self.push_path(:stub, root_path('stubs'))
+      self.push_app_path(:stub, app_dir_for(:root))
+      
       self.push_path(:application, root, 'application.rb')
       self.push_app_path(:application, app_dir_for(:root), 'application.rb')
             

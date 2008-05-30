@@ -7,9 +7,7 @@ namespace :slices do
     task :install => [:preflight, :setup_directories, :copy_assets, :migrate]
     
     desc "Test for any dependencies"
-    task :preflight do
-      # implement this to test for structural/code dependencies
-      # like certain directories or availability of other files
+    task :preflight do # see slicetasks.rb
     end
     
     desc "Setup directories"
@@ -48,8 +46,7 @@ namespace :slices do
     end
     
     desc "Migrate the database"
-    task :migrate do
-      # implement this to perform any database related setup steps
+    task :migrate do # see slicetasks.rb
     end
     
     desc "Freeze <%= module_name %> into your app (only <%= base_name %>/app)" 
