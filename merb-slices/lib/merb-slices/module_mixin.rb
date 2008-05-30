@@ -255,13 +255,12 @@ module Merb
       # @note Files for the :stub component type are skipped.
       def unpack_slice!
         app_slice_root = app_dir_for(:root)
-        copied, duplicated = [], []
+        copied, duplicated = mirror_public!
         manifest.each do |source, relative_path|
           next unless unpack_file?(relative_path)
           mirror_file(source, app_slice_root / relative_path, copied, duplicated)
         end
-        public_copied, public_duplicated = mirror_public!
-        [copied + public_copied, duplicated + public_duplicated]
+        [copied, duplicated]
       end
       
       # Copies all files from mirrored_components to their app-level location
