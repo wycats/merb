@@ -24,7 +24,7 @@ spec = Gem::Specification.new do |s|
   s.homepage = HOMEPAGE
   s.add_dependency('merb-slices', '>= <%= Merb::VERSION %>')
   s.require_path = 'lib'
-  s.files = %w(LICENSE README Rakefile TODO application.rb) + Dir.glob("{lib,public,views}/**/*")
+  s.files = %w(LICENSE README Rakefile TODO application.rb) + Dir.glob("{lib,public,views,stubs}/**/*")
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|

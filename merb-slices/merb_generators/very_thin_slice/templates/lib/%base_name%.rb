@@ -1,7 +1,7 @@
 if defined?(Merb::Plugins)
 
   require 'merb-slices'
-  Merb::Plugins.add_rakefiles "<%= base_name %>/merbtasks"
+  Merb::Plugins.add_rakefiles "<%= base_name %>/merbtasks", "<%= base_name %>/slicetasks"
 
   # Register the Slice for the current host application
   Merb::Slices::register(__FILE__)

@@ -55,7 +55,7 @@ module Merb
         # load application.rb (or similar) for thin slices
         Merb::Slices::Loader.load_file self.dir_for(:application) if File.file?(self.dir_for(:application))
         # assign all relevant paths for slice-level and app-level
-        self.collect_load_paths 
+        self.collect_load_paths
         # load all slice-level classes from paths
         Merb::Slices::Loader.load_classes self.collected_slice_paths
         # call hook if available
@@ -242,13 +242,24 @@ module Merb
         mirror_files_for mirrored_components + mirrored_public_components
       end
       
+      # Copies all files from the (optional) stubs directory to their app-level location
+      #
+      # @return <Array[Array]> 
+      #   Array of two arrays, one for all copied files, the other for overrides 
+      #   that may have been preserved to resolve collisions.
+      def mirror_stubs!
+        mirror_files_for :stub
+      end
+      
       # Copies all application files from mirrored_components to their app-level location
       #
       # @return <Array[Array]> 
       #   Array of two arrays, one for all copied files, the other for overrides 
       #   that may have been preserved to resolve collisions.
       def mirror_app!
-        mirror_files_for mirrored_app_components
+        components = mirrored_app_components
+        components << :application if application_file?
+        mirror_files_for components
       end
       
       # Copies all application files from mirrored_components to their app-level location
@@ -295,6 +306,9 @@ module Merb
       def setup_default_structure!
         self.push_app_path(:root, Merb.root / 'slices' / self.identifier)
         
+        self.push_path(:stub, root_path('stubs'))
+        self.push_app_path(:stub, app_dir_for(:root))
+        
         self.push_path(:application, root_path('app'))
         self.push_app_path(:application, app_dir_for(:root) / 'app')
       
@@ -322,7 +336,10 @@ module Merb
       #   Whether to add app-level paths using Merb.push_path; defaults to true.
       def collect_load_paths(modify_load_path = true, push_merb_path = true)
         self.collected_slice_paths.clear; self.collected_app_paths.clear
+        skip_application_component = application_contains_components?
         self.slice_paths.each do |component, path|
+          # skip :application if it contains other components, and never try to load from stubs
+          next if (component == :application && skip_application_component) || component == :stub
           if File.directory?(component_path = path.first)
             $LOAD_PATH.unshift(component_path) if modify_load_path && component.in?(:model, :controller, :lib) && !$LOAD_PATH.include?(component_path)
             # slice-level component load path - will be preceded by application/app/component - loaded next by Setup.load_classes
@@ -376,6 +393,21 @@ module Merb
           Regexp.new("^(#{skip_paths.join('|')})")
         end
         not file.match(@mirror_exceptions_regexp)
+      end
+      
+      # Predicate method to check if the :application component is a file
+      def application_file?
+        File.file?(dir_for(:application) / glob_for(:application))
+      end
+      
+      # Predicate method to check if the :application glob clobbers contained application component paths
+      def application_contains_components?
+        if glob_for(:application) == '**/*.rb' && application_path = dir_for(:application)
+          root_path = dir_for(:root)
+          app_components.all? do |comp|
+            dir_for(comp) != root_path && dir_for(comp).index(application_path) == 0
+          end
+        end
       end
       
       # Split a file name so a postfix can be inserted
