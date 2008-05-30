@@ -135,3 +135,28 @@ describe "merb-cache-action" do
     CACHE.cached_action?(:key => "/cache_controller/action11/cache").should be_true
   end
 end
+
+describe "merb-cache-actions" do
+  it "should cache multiple actions passed as arguments to it (cache_actions_1, cache_actions_2, cache_actions_3)" do
+    c = get("/cache_controller/cache_actions_1")
+    c.body.strip.should == "test cache_actions_1"
+    c.cached?("/cache_controller/cache_actions_1").should be_true
+    c.cached_action?("cache_actions_1").should be_true
+    c.cache_get("/cache_controller/cache_actions_1").should == "test cache_actions_1"
+
+    c = get("/cache_controller/cache_actions_2")
+    c.body.strip.should == "test cache_actions_2"
+    c.cached?("/cache_controller/cache_actions_2").should be_true
+    c.cached_action?("cache_actions_2").should be_true
+    c.cache_get("/cache_controller/cache_actions_2").should == "test cache_actions_2"
+    sleep 4
+    c.cache_get("/cache_controller/cache_actions_2").should be_nil
+    c.cached_action?(:action => "cache_actions_2").should be_false
+
+    c = get("/cache_controller/cache_actions_3")
+    CACHE.cached_action?(:key => "/cache_controller/cache_actions_3").should be_true
+
+    c = get("/cache_controller/cache_actions_3/cache")
+    CACHE.cached_action?(:key => "/cache_controller/cache_actions_3/cache").should be_false
+  end
+end

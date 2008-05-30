@@ -3,7 +3,6 @@ class CacheController < Merb::Controller
 
   cache_action :action3
   cache_action :action4, 0.05
-  # or cache_actions :action3, [:action4, 0.05]
 
   cache_page :action5
   cache_page :action6, 0.05
@@ -14,6 +13,8 @@ class CacheController < Merb::Controller
   cache_action :action9, 0.05, :unless => proc {|controller| controller.params[:id].empty?}
   cache_action :action10, :if => :non_empty_id?
   cache_action :action11, :unless => :empty_id?
+
+  cache_actions :cache_actions_1, [:cache_actions_2, 0.05], [:cache_actions_3, { :if => :empty_id? }]
 
   def action1
     render
@@ -73,15 +74,28 @@ class CacheController < Merb::Controller
     "test action11"
   end
 
-  def empty_id?
-    params[:id].empty?
+  def cache_actions_1
+    'test cache_actions_1'
   end
 
-  def non_empty_id?
-    !empty_id?
+  def cache_actions_2
+    'test cache_actions_2'
+  end
+
+  def cache_actions_3
+    'test cache_actions_3'
   end
 
   def index
     "test index"
   end
+
+  private
+    def empty_id?
+      params[:id].empty?
+    end
+
+    def non_empty_id?
+      !empty_id?
+    end
 end

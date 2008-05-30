@@ -4,38 +4,47 @@ class Merb::Cache
 end
 
 module Merb::Cache::ControllerClassMethods
-  # Mixed in Merb::Controller. Provides methods related to action caching
+  # Mixed in Merb::Controller. Provides methods related to action caching.
 
-  # Register the action for action caching
+  # Registers an action for action caching via before and after filters.
   #
   # ==== Parameters
-  # action<Symbol>:: The name of the action to register
-  # from_now<~minutes>::
-  #   The number of minutes (from now) the cache should persist
+  # action<Symbol>:: The name of the action to register.
+  # from_now<~minutes>:: The number of minutes (from now) the cache should persist.
+  # opts<Hash>::
+  #   Filter options (see <tt>Filter Options</tt> in <tt>Merb::AbstractController</tt>). The filters created apply :only
+  #   to specified <tt>action</tt>.
   #
   # ==== Examples
   #   cache_action :mostly_static
   #   cache_action :barely_dynamic, 10
+  #   cache_action :list, :if => Proc.new { |controller| !controller.params[:id].empty? }
+  #   cache_action :show, :unless => proc { |controller| !controller.params[:id].empty? }
   def cache_action(action, from_now = nil, opts = {})
     cache_actions([action, from_now, opts])
   end
 
-  # Register actions for action caching (before and after filters)
+  # Register multiple actions for action caching via before and after filters.
   #
   # ==== Parameter
-  # actions<Symbol,Array[Symbol,~minutes]>:: See #cache_action
+  # actions<Symbol,Array[Symbol,~minutes],Hash>:: See #cache_action.
   #
   # ==== Example
-  #   cache_actions :mostly_static, [:barely_dynamic, 10]
+  #   cache_actions(
+  #     :mostly_static,
+  #     [:barely_dynamic, 10],
+  #     [:conditional, { :if => proc { |controller| controller.params[:id].empty? } }]
+  #   )
   def cache_actions(*actions)
     actions.each do |action, from_now, opts|
       from_now, opts = nil, from_now if Hash === from_now
-      
+      opts ||= {}
+
       before("cache_#{action}_before", opts.merge(:only => action))
       after("cache_#{action}_after", opts.merge(:only => action))
       alias_method "cache_#{action}_before", :cache_action_before
       alias_method "cache_#{action}_after", :cache_action_after
-      
+
       _actions = Merb::Cache.cached_actions[controller_name] ||= {}
       _actions[action] = from_now
     end
