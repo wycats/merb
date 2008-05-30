@@ -214,18 +214,51 @@ module Merb
         mirrored_components & public_components
       end
       
-      # Unpack all files from the slice to their app-level location; this will
+      # Return all slice files mapped from the source to their relative path
+      #
+      # @param type<Symbol> Which type to use; defaults to :root (all)
+      # @return <Array[Array]> An array of arrays [abs. source, relative dest.]
+      def manifest(type = :root)
+        files = if type == :root
+          Dir.glob(self.root / "**/*")
+        elsif slice_paths.key?(type)
+          glob = ((type == :view) ? view_templates_glob : glob_for(type) || "**/*")
+          Dir.glob(dir_for(type) / glob)
+        else 
+          []
+        end
+        files.map { |source| [source, source.relative_path_from(root)] }
+      end
+      
+      # Clone all files from the slice to their app-level location; this will
       # also copy /lib, causing merb-slices to pick up the slice there.
       # 
       # @return <Array[Array]> 
       #   Array of two arrays, one for all copied files, the other for overrides 
       #   that may have been preserved to resolve collisions.
+      def clone_slice!
+        app_slice_root = app_dir_for(:root)
+        copied, duplicated = [], []
+        manifest.each do |source, relative_path|
+          mirror_file(source, app_slice_root / relative_path, copied, duplicated)
+        end
+        [copied, duplicated]
+      end
+      
+      # Unpack a subset of files from the slice to their app-level location; 
+      # this will also copy /lib, causing merb-slices to pick up the slice there.
+      # 
+      # @return <Array[Array]> 
+      #   Array of two arrays, one for all copied files, the other for overrides 
+      #   that may have been preserved to resolve collisions.
+      #
+      # @note Files for the :stub component type are skipped.
       def unpack_slice!
         app_slice_root = app_dir_for(:root)
         copied, duplicated = [], []
-        Dir.glob(self.root / "**/*").each do |source|
-          relative_path = source.relative_path_from(root)
-          mirror_file(source, app_slice_root / relative_path, copied, duplicated) if unpack_file?(relative_path)
+        manifest.each do |source, relative_path|
+          next unless unpack_file?(relative_path)
+          mirror_file(source, app_slice_root / relative_path, copied, duplicated)
         end
         public_copied, public_duplicated = mirror_public!
         [copied + public_copied, duplicated + public_duplicated]
@@ -286,12 +319,11 @@ module Merb
       def mirror_files_for(*types)
         seen, copied, duplicated = [], [], [] # keep track of files we copied
         types.flatten.each do |type|
-          if app_paths.key?(type) && File.directory?(src_path = dir_for(type)) && (dst_path = app_dir_for(type))
-            glob = ((type == :view) ? "**/*.{#{Merb::Template.template_extensions.join(',')}}" : glob_for(type) || "**/*")
-            Dir[src_path / glob].each do |src|
-              next if seen.include?(src)
-              mirror_file(src, dst_path / src.relative_path_from(src_path), copied, duplicated)
-              seen << src
+          if app_paths.key?(type) && (source_path = dir_for(type)) && (destination_path = app_dir_for(type))
+            manifest(type).each do |source, relative_path| # this relative path is not what we need here
+              next if seen.include?(source)
+              mirror_file(source, destination_path / source.relative_path_from(source_path), copied, duplicated)
+              seen << source
             end
           end
         end
@@ -304,7 +336,7 @@ module Merb
       # using the push_path and push_app_paths. By default this setup matches
       # what the merb-gen slice generator creates.
       def setup_default_structure!
-        self.push_app_path(:root, Merb.root / 'slices' / self.identifier)
+        self.push_app_path(:root, Merb.root / 'slices' / self.identifier, nil)
         
         self.push_path(:stub, root_path('stubs'), nil)
         self.push_app_path(:stub, app_dir_for(:root), nil)
@@ -378,14 +410,14 @@ module Merb
       
       # Predicate method to check if a file should be taken into account when unpacking files
       #
-      # By default any public component paths are skipped; additionally you can set
+      # By default any public component paths and stubs are skipped; additionally you can set
       # the :skip_files in the slice's config for other relative paths to skip.
       #
       # @param file<String> The relative path to test.
       # @return <TrueClass,FalseClass> True if the file may be mirrored.
       def unpack_file?(file)
         @mirror_exceptions_regexp ||= begin
-          skip_paths = mirrored_public_components.map { |type| dir_for(type).relative_path_from(self.root) }
+          skip_paths = (mirrored_public_components + [:stub]).map { |type| dir_for(type).relative_path_from(self.root) }
           skip_paths += config[:skip_files] if config[:skip_files].is_a?(Array)
           Regexp.new("^(#{skip_paths.join('|')})")
         end
@@ -395,6 +427,11 @@ module Merb
       # Predicate method to check if the :application component is a file
       def application_file?
         File.file?(dir_for(:application) / glob_for(:application))
+      end
+      
+      # Glob pattern matching all valid template extensions
+      def view_templates_glob
+        "**/*.{#{Merb::Template.template_extensions.join(',')}}"
       end
       
       # Split a file name so a postfix can be inserted

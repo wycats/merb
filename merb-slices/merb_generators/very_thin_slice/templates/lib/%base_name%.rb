@@ -45,7 +45,7 @@ if defined?(Merb::Plugins)
     
     # This sets up a very thin slice's structure.
     def self.setup_default_structure!
-      self.push_app_path(:root, Merb.root / 'slices' / self.identifier)
+      self.push_app_path(:root, Merb.root / 'slices' / self.identifier, nil)
       
       self.push_path(:stub, root_path('stubs'), nil)
       self.push_app_path(:stub, app_dir_for(:root), nil)
