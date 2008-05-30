@@ -24,7 +24,7 @@ module Merb
         # @example controller_for_slice SliceMod # defaults to :view templates and no subdirectory
         # @example controller_for_slice SliceMod, :templates_for => :mailer, :path => 'views' # for Merb::Mailer
         def controller_for_slice(slice_module = nil, options = {})
-          slice_module = self.name.split('::').first
+          slice_module ||= self.name.split('::').first
           options[:templates_for] = :view unless options.key?(:templates_for)
           if slice_mod = Merb::Slices[slice_module.to_s]
             # Include the instance methods
@@ -62,6 +62,7 @@ module Merb
         
         def self.extended(klass)
           klass.send(:include, InstanceMethods)
+          klass.hide_action :slice
         end
         
         # Use the slice's layout - defaults to underscored identifier.
@@ -79,6 +80,8 @@ module Merb
           #
           # @return <Module> A slice module.
           def slice; self.class.slice; end
+          
+          protected
           
           # Generate a url - takes the slice's :path_prefix into account.
           #

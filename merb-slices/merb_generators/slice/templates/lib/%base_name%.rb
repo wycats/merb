@@ -36,7 +36,7 @@ if defined?(Merb::Plugins)
     def self.activate
     end
     
-    # Deactivation hook - triggered by Merb::Slices#deactivate
+    # Deactivation hook - triggered by Merb::Slices.deactivate(<%= module_name %>)
     def self.deactivate
     end
     

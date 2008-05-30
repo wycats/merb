@@ -71,6 +71,13 @@ module Merb
     attr_accessor :params, :mailer, :mail
     attr_reader   :session, :base_controller
 
+    cattr_accessor :_subclasses
+    self._subclasses = Set.new
+
+    # ==== Returns
+    # Array[Class]:: Classes that inherit from Merb::MailController.
+    def self.subclasses_list() _subclasses end
+
     # ==== Parameters
     # action<~to_s>:: The name of the action that will be rendered.
     # type<~to_s>::
