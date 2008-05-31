@@ -25,7 +25,7 @@ if defined?(Merb::Plugins)
 
       # Gather all slices from search path and gems and load their classes.
       def run
-        Merb::Slices.register_slices_from_search_path!
+        Merb::Slices.register_slices_from_search_path! if auto_register?
         Merb::Slices.each_slice { |slice| slice.load_slice }
       end
       
@@ -71,6 +71,14 @@ if defined?(Merb::Plugins)
         paths = []
         Merb::Slices.each_slice { |slice| paths += slice.collected_app_paths }
         paths
+      end
+      
+      private
+      
+      # Whether slices from search paths should be registered automatically.
+      # Defaults to true if not explicitly set.
+      def auto_register?
+        Merb::Plugins.config[:merb_slices][:auto_register] || !Merb::Plugins.config[:merb_slices].key?(:auto_register)
       end
       
     end

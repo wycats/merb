@@ -112,7 +112,7 @@ module Merb
         end
         register_and_load(slice_file) if slice_file
       rescue => e
-        Merb.logger.error!("Failed to activate slice #{slice_module}")
+        Merb.logger.error!("Failed to activate slice #{slice_module} (#{e.message})")
       end
     
       # Deactivate a Slice module at runtime

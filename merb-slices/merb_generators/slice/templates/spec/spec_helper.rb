@@ -4,7 +4,8 @@ require 'merb-slices'
 require 'spec'
 
 # Add <%= base_name %>.rb to the search path
-Merb::Plugins.config[:merb_slices][:search_path] = File.join(File.dirname(__FILE__), '..', 'lib', '<%= base_name %>.rb')
+Merb::Plugins.config[:merb_slices][:auto_register] = true
+Merb::Plugins.config[:merb_slices][:search_path]   = File.join(File.dirname(__FILE__), '..', 'lib', '<%= base_name %>.rb')
 
 # Using Merb.root below makes sure that the correct root is set for
 # - testing standalone, without being installed as a gem and no host application
