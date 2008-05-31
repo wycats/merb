@@ -50,7 +50,7 @@ rake slices:<%= underscored_name %>:install
 ------------------------------------------------------------------------------
 
 About Slices
-================
+============
 
 Merb-Slices is a Merb plugin for using and creating application 'slices' which
 help you modularize your application. Usually these are reuseable extractions
