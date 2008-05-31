@@ -33,6 +33,7 @@ module Merb
         # check if slice_path exists instead of just the module name - more flexible
         if !self.paths.include?(slice_path) || force
           Merb.logger.info!("Registered slice '#{module_name}' located at #{slice_path}") if force
+          self.slice_files[module_name] = slice_file
           self.paths[module_name] = slice_path
           slice_mod = setup_module(module_name)
           slice_mod.identifier = identifier
@@ -97,18 +98,19 @@ module Merb
         Merb::Slices::Loader.reload_router!
       end
       
-      # Activate a Slice module at runtime - searches :search_path for matches
+      # Activate a Slice module at runtime
+      #
+      # Looks for previously registered slices; then searches :search_path for matches.
       #
       # @param slice_module<#to_s> Usually a string of version of the slice module name.
-      def activate(slice_module)
-        module_name_underscored = slice_module.to_s.snake_case.escape_regexp
-        module_name_dasherized  = module_name_underscored.tr('_', '-').escape_regexp
-        regexp = Regexp.new(/\/(#{module_name_underscored}|#{module_name_dasherized})\/lib\/(#{module_name_underscored}|#{module_name_dasherized})\.rb$/)
-        if slice_file = slice_files_from_search_path.find { |path| path.match(regexp) }
-          register_and_load(slice_file)
-        else
-          Merb.logger.info!("No slice file found for #{slice_module}")
+      def activate(slice_module)  
+        unless slice_file = self.slice_files[slice_module.to_s] # if previously registered
+          module_name_underscored = slice_module.to_s.snake_case.escape_regexp
+          module_name_dasherized  = module_name_underscored.tr('_', '-').escape_regexp
+          regexp = Regexp.new(/\/(#{module_name_underscored}|#{module_name_dasherized})\/lib\/(#{module_name_underscored}|#{module_name_dasherized})\.rb$/)
+          slice_file = slice_files_from_search_path.find { |path| path.match(regexp) } # from search path(s)
         end
+        register_and_load(slice_file) if slice_file
       rescue => e
         Merb.logger.error!("Failed to activate slice #{slice_module}")
       end
@@ -202,6 +204,13 @@ module Merb
       # @return <Hash> A Hash mapping module names to root paths.
       def paths
         @paths ||= {}
+      end
+      
+      # A lookup for finding a Slice module's slice file path
+      #
+      # @return <Hash> A Hash mapping module names to slice files.
+      def slice_files
+        @slice_files ||= {}
       end
   
       # Iterate over all registered slices
