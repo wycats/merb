@@ -10,6 +10,14 @@ describe "<%= module_name %> (module)" do
     Merb::Slices.slices.should include(<%= module_name %>)
   end
   
+  it "should be registered in Merb::Slices.paths" do
+    Merb::Slices.paths[<%= module_name %>.name].should == current_slice_root
+  end
+  
+  it "should be registered in Merb::Slices.slice_files" do
+    Merb::Slices.slice_files[<%= module_name %>.name].should == current_slice_root / 'lib' / '<%= base_name %>.rb'
+  end
+  
   it "should have an :identifier property" do
     <%= module_name %>.identifier.should == "<%= base_name %>"
   end
@@ -19,8 +27,12 @@ describe "<%= module_name %> (module)" do
   end
   
   it "should have a :root property" do
-    <%= module_name %>.root.should == current_slice_root
+    <%= module_name %>.root.should == Merb::Slices.paths[<%= module_name %>.name]
     <%= module_name %>.root_path('app').should == current_slice_root / 'app'
+  end
+  
+  it "should have a :slice_file property" do
+    <%= module_name %>.slice_file.should == Merb::Slices.slice_files[<%= module_name %>.name]
   end
   
   it "should have metadata properties" do

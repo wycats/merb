@@ -39,6 +39,7 @@ module Merb
           slice_mod.identifier = identifier
           slice_mod.identifier_sym = underscored.to_sym
           slice_mod.root = slice_path
+          slice_mod.slice_file = slice_file
           slice_mod.registered
           slice_mod
         else
@@ -129,16 +130,15 @@ module Merb
       #
       # @param slice_file<String> The Slice location of the slice init file to unregister.
       def deactivate_by_file(slice_file)
-        deactivate(self.paths.index(File.dirname(File.dirname(slice_file))))
+        deactivate(self.slice_files.index(slice_file))
       end
       
       # Reload a Slice at runtime
       #
       # @param slice_module<#to_s> The Slice module to reload.
       def reload(slice_module)
-        if (slice = self[slice_module.to_s]) && (slice_path = self.paths[slice.name])
-          deactivate slice
-          register_and_load(slice_path / 'lib' / "#{slice.identifier}.rb")
+        if slice_file = self.slice_files[slice_module.to_s]
+          reload_by_file(slice_file)
         end
       end
       
