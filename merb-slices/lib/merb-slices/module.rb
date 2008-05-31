@@ -32,7 +32,7 @@ module Merb
         slice_path  = File.expand_path(File.dirname(slice_file) + '/..')
         # check if slice_path exists instead of just the module name - more flexible
         if !self.paths.include?(slice_path) || force
-          Merb.logger.info!("registered slice '#{module_name}' located at #{slice_path}") if force
+          Merb.logger.info!("Registered slice '#{module_name}' located at #{slice_path}") if force
           self.paths[module_name] = slice_path
           slice_mod = setup_module(module_name)
           slice_mod.identifier = identifier
@@ -41,7 +41,7 @@ module Merb
           slice_mod.registered
           slice_mod
         else
-          Merb.logger.info!("already registered slice '#{module_name}' located at #{slice_path}")
+          Merb.logger.info!("Already registered slice '#{module_name}' located at #{slice_path}")
           Object.full_const_get(module_name)
         end
       end
@@ -51,7 +51,7 @@ module Merb
       def register_slices_from_search_path!
         slice_files_from_search_path.each do |slice_file|
           absolute_path = File.expand_path(slice_file)
-          Merb.logger.info!("found slice '#{File.basename(absolute_path, '.rb')}' in search path at #{absolute_path.relative_path_from(Merb.root)}")
+          Merb.logger.info!("Found slice '#{File.basename(absolute_path, '.rb')}' in search path at #{absolute_path.relative_path_from(Merb.root)}")
           Merb::Slices::Loader.load_classes(absolute_path)
         end
       end
@@ -62,13 +62,13 @@ module Merb
       # Since the router doesn't add routes for any disabled slices this will
       # correctly reflect the app's routing state.
       #
-      # @param slice_module<Module> The Slice module to unregister.
+      # @param slice_module<#to_s> The Slice module to unregister.
       def unregister(slice_module)
-        if self.paths.delete(module_name = slice_module.to_s)
-          slice_module.loadable_files.each { |file| Merb::Slices::Loader.remove_file file }
+        if (slice = self[slice_module.to_s]) && self.paths.delete(module_name = slice.name)
+          slice.loadable_files.each { |file| Merb::Slices::Loader.remove_file file }
           Object.send(:remove_const, module_name)
           unless Object.const_defined?(module_name)
-            Merb.logger.info!("unregistered slice #{slice_module}")
+            Merb.logger.info!("Unregistered slice #{module_name}")
             Merb::Slices::Loader.reload_router!
           end
         end
@@ -96,12 +96,28 @@ module Merb
       ensure
         Merb::Slices::Loader.reload_router!
       end
+      
+      # Activate a Slice module at runtime - searches :search_path for matches
+      #
+      # @param slice_module<#to_s> Usually a string of version of the slice module name.
+      def activate(slice_module)
+        module_name_underscored = slice_module.to_s.snake_case.escape_regexp
+        module_name_dasherized  = module_name_underscored.tr('_', '-').escape_regexp
+        regexp = Regexp.new(/\/(#{module_name_underscored}|#{module_name_dasherized})\/lib\/(#{module_name_underscored}|#{module_name_dasherized})\.rb$/)
+        if slice_file = slice_files_from_search_path.find { |path| path.match(regexp) }
+          register_and_load(slice_file)
+        else
+          Merb.logger.info!("No slice file found for #{slice_module}")
+        end
+      rescue => e
+        Merb.logger.error!("Failed to activate slice #{slice_module}")
+      end
     
       # Deactivate a Slice module at runtime
       #
       # @param slice_module<#to_s> The Slice module to unregister.
       def deactivate(slice_module)
-        if slice = self[slice_module]
+        if slice = self[slice_module.to_s]
           slice.deactivate if slice.respond_to?(:deactivate)
           unregister(slice)
         end
@@ -112,6 +128,24 @@ module Merb
       # @param slice_file<String> The Slice location of the slice init file to unregister.
       def deactivate_by_file(slice_file)
         deactivate(self.paths.index(File.dirname(File.dirname(slice_file))))
+      end
+      
+      # Reload a Slice at runtime
+      #
+      # @param slice_module<#to_s> The Slice module to reload.
+      def reload(slice_module)
+        if (slice = self[slice_module.to_s]) && (slice_path = self.paths[slice.name])
+          deactivate slice
+          register_and_load(slice_path / 'lib' / "#{slice.identifier}.rb")
+        end
+      end
+      
+      # Reload a Slice at runtime by specifying its slice file
+      #
+      # @param slice_file<String> The Slice location of the slice init file to reload.
+      def reload_by_file(slice_file)
+        deactivate_by_file slice_file
+        register_and_load  slice_file
       end
       
       # Watch all specified search paths to dynamically load/unload slices at runtime

@@ -60,9 +60,9 @@ module Merb
         Merb::Slices::Loader.load_classes self.collected_slice_paths
         # call hook if available
         self.loaded if self.respond_to?(:loaded)
-        Merb.logger.info!("loaded slice '#{self}' ...")
+        Merb.logger.info!("Loaded slice '#{self}' ...")
       rescue => e
-        Merb.logger.warn!("failed loading #{self} (#{e.message})")
+        Merb.logger.warn!("Failed loading #{self} (#{e.message})")
       end
       
       # The slice-level load paths that have been used when the slice was loaded.

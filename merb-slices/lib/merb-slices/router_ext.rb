@@ -40,7 +40,7 @@ module Merb
           namespace = options[:namespace] || slice_module.to_s.snake_case
           options[:path] ||= slice_module[:path_prefix] || options[:namespace] || slice_module.identifier
           options[:default_routes] = true unless options.key?(:default_routes)
-          Merb.logger.info!("mounting slice #{slice_module} at /#{options[:path]}")
+          Merb.logger.info!("Mounting slice #{slice_module} at /#{options[:path]}")
           self.namespace(namespace.to_sym, options.except(:default_routes)) do |ns|
             slice_module[:path_prefix] = options[:path]
             slice_module.setup_router(ns)
@@ -48,7 +48,7 @@ module Merb
             block.call(ns) if block.respond_to?(:call)
           end
         else 
-          Merb.logger.info!("skipped adding slice #{slice_module} to router...")
+          Merb.logger.info!("Skipped adding slice #{slice_module} to router...")
         end
         self
       end
