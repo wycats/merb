@@ -50,8 +50,9 @@ module Merb
       # Merb::Plugins.config[:merb_slices][:search_path] (String/Array)
       def register_slices_from_search_path!
         slice_files_from_search_path.each do |slice_file|
-          Merb.logger.info!("found slice '#{File.basename(slice_file, '.rb')}' in search path at #{slice_file.relative_path_from(Merb.root)}")
-          Merb::Slices::Loader.load_classes(slice_file)
+          absolute_path = File.expand_path(slice_file)
+          Merb.logger.info!("found slice '#{File.basename(absolute_path, '.rb')}' in search path at #{absolute_path.relative_path_from(Merb.root)}")
+          Merb::Slices::Loader.load_classes(absolute_path)
         end
       end
       
@@ -61,10 +62,11 @@ module Merb
       # Since the router doesn't add routes for any disabled slices this will
       # correctly reflect the app's routing state.
       #
-      # @param slice_module<#to_s> The Slice module to unregister.
+      # @param slice_module<Module> The Slice module to unregister.
       def unregister(slice_module)
         if self.paths.delete(module_name = slice_module.to_s)
-          Object.send(:remove_const, module_name) rescue nil
+          slice_module.loadable_files.each { |file| Merb::Slices::Loader.remove_file file }
+          Object.send(:remove_const, module_name)
           unless Object.const_defined?(module_name)
             Merb.logger.info!("unregistered slice #{slice_module}")
             Merb::Slices::Loader.reload_router!
@@ -191,15 +193,19 @@ module Merb
       # host-app/vendor/slices and host-app/slices - loaded in that order.
       #
       # Look for any slices in those default locations or if given, 
-      # Merb::Plugins.config[:merb_slices][:search_path] (String/Array)
+      # Merb::Plugins.config[:merb_slices][:search_path] (String/Array).
+      # Specify files, glob patterns or paths containing slices.
       def slice_files_from_search_path
         search_paths = Array(Merb::Plugins.config[:merb_slices][:search_path] || [Merb.root / "vendor" / "slices", Merb.root / "slices"])
         search_paths.inject([]) do |files, path|
-          Dir[path / '**/lib/*.rb'].each do |libfile|
-            basename = File.basename(libfile, '.rb')
-            files << libfile if File.basename(File.dirname(File.dirname(libfile))) == basename
-            files
+          if File.file?(path) && File.extname(path) == ".rb"
+            files << path
+          elsif path.include?("*")
+            files += glob_search_path(path)
+          elsif File.directory?(path)
+            files += glob_search_path(path / "**/lib/*.rb")
           end
+          files
         end
       end
     
@@ -215,6 +221,18 @@ module Merb
         slice_mod = Object.full_const_get(module_name)
         slice_mod.extend(ModuleMixin)
         slice_mod
+      end
+      
+      # Glob slice files
+      #
+      # @param glob_pattern<String> A glob path with pattern
+      # @return <Array> Valid slice file paths.
+      def glob_search_path(glob_pattern)
+        Dir[glob_pattern].inject([]) do |files, libfile|
+          basename = File.basename(libfile, '.rb')
+          files << libfile if File.basename(File.dirname(File.dirname(libfile))) == basename
+          files
+        end
       end
       
     end

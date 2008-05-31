@@ -1,9 +1,10 @@
 require 'rubygems'
 require 'merb-core'
+require 'merb-slices'
 require 'spec'
 
-# Add the dependency in a before_app_loads hook
-Merb::BootLoader.before_app_loads { require(File.join(File.dirname(__FILE__), '..', 'lib', '<%= base_name %>')) }
+# Add <%= base_name %>.rb to the search path
+Merb::Plugins.config[:merb_slices][:search_path] = File.join(File.dirname(__FILE__), '..', 'lib', '<%= base_name %>.rb')
 
 # Using Merb.root below makes sure that the correct root is set for
 # - testing standalone, without being installed as a gem and no host application
@@ -12,7 +13,8 @@ Merb.start_environment(
   :testing => true, 
   :adapter => 'runner', 
   :environment => ENV['MERB_ENV'] || 'test',
-  :merb_root => Merb.root
+  :merb_root => Merb.root,
+  :session_store => 'memory'
 )
 
 module Merb

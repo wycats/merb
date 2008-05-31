@@ -176,6 +176,17 @@ module Merb
         args.each { |arg| self.app_paths.delete(arg) }
       end
       
+      # Return all *.rb files from valid component paths
+      #
+      # @return <Array> Full paths to loadable ruby files.
+      def loadable_files
+        app_components.inject([]) do |paths, type|
+          paths += Dir[dir_for(type) / '**/*.rb'] if slice_paths.key?(type)
+          paths += Dir[app_dir_for(type) / '**/*.rb'] if app_paths.key?(type)
+          paths
+        end        
+      end
+      
       # Return all application path component types
       #
       # @return <Array[Symbol]> Component types.
