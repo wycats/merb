@@ -126,7 +126,7 @@ module Merb
             if controller && controller.include?('/')
               # skip first segment if given (which is the module name)
               segments = controller.split('/')
-              "#{segments[1,segments.length-1]}/#{context}.#{type}"
+              "#{segments[1,segments.length-1].join('/')}/#{context}.#{type}"
             else
               # default template location logic
               _template_location(context, type, controller)
