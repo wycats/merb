@@ -32,9 +32,9 @@ module Merb
             # Include the instance methods
             unless self.kind_of?(Merb::Slices::ControllerMixin::MixinMethods)
               self.send(:extend, Merb::Slices::ControllerMixin::MixinMethods)
-              self.send(:class_inheritable_reader, :slice)
             end
             # Reference this controller's slice module
+            self.send(:class_inheritable_reader, :slice)
             self.send(:write_inheritable_attribute, :slice, slice_mod)
             # Setup template roots
             if options[:templates_for]
