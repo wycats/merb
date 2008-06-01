@@ -179,7 +179,10 @@ module Merb
       #   The configuration loaded from Merb.root / "config/slices.yml" or, if
       #   the load fails, an empty hash.
       def config
-        @config ||= File.exists?(Merb.root / "config" / "slices.yml") ? YAML.load(File.read(Merb.root / "config" / "slices.yml")) || {} : {}
+        @config ||= begin
+          empty_hash = Hash.new { |h,k| h[k] = {} }
+          File.exists?(Merb.root / "config" / "slices.yml") ? YAML.load(File.read(Merb.root / "config" / "slices.yml")) || empty_hash : empty_hash
+        end
       end
     
       # All registered Slice modules

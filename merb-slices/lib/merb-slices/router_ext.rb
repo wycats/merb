@@ -20,6 +20,7 @@ module Merb
       def all_slices(config = {}, &block)
         Merb::Slices.slice_names.each { |module_name| add_slice(module_name, config[module_name] || {}, &block) }
       end
+      alias :add_slices :all_slices
       
       # Add a Slice in a router namespace
       # 

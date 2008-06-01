@@ -13,7 +13,7 @@ if defined?(Merb::Plugins)
   # Configuration options:
   # :layout - the layout to use; defaults to :<%= underscored_name %>
   # :mirror - which path component types to use on copy operations; defaults to all
-  Merb::Slices::config[:<%= underscored_name %>] = { :layout => :<%= underscored_name %> }
+  Merb::Slices::config[:<%= underscored_name %>][:layout] ||= :<%= underscored_name %>
   
   # All Slice code is expected to be namespaced inside a module
   module <%= module_name %>

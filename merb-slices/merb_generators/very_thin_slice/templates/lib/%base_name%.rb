@@ -7,7 +7,7 @@ if defined?(Merb::Plugins)
   Merb::Slices::register(__FILE__)
   
   # Slice configuration - set this in a before_app_loads callback.
-  Merb::Slices::config[:<%= underscored_name %>] = {}
+  Merb::Slices::config[:<%= underscored_name %>][:foo] ||= :bar
   
   # All Slice code is expected to be namespaced inside a module
   module <%= module_name %>

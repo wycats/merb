@@ -21,7 +21,7 @@ Merb::Plugins.config[:merb_slices] = { :queue => ["<%= module_name %>", ...] }
 
 Merb::BootLoader.before_app_loads do
   
-  Merb::Slices::config[:<%= underscored_name %>] = { ... }
+  Merb::Slices::config[:<%= underscored_name %>][:option] = value
   
 end
 
