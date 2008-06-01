@@ -22,8 +22,10 @@ module Merb
         #
         # @example controller_for_slice # uses current module
         # @example controller_for_slice SliceMod # defaults to :view templates and no subdirectory
+        # @example controller_for_slice :templates_for => :mailer, :path => 'views' # for Merb::Mailer
         # @example controller_for_slice SliceMod, :templates_for => :mailer, :path => 'views' # for Merb::Mailer
         def controller_for_slice(slice_module = nil, options = {})
+          options, slice_module = slice_module.merge(options), nil if slice_module.is_a?(Hash)
           slice_module ||= self.name.split('::').first
           options[:templates_for] = :view unless options.key?(:templates_for)
           if slice_mod = Merb::Slices[slice_module.to_s]
