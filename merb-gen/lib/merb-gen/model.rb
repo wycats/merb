@@ -2,10 +2,14 @@ module Merb::ComponentGenerators
   
   class ModelGenerator < ComponentGenerator
     
+    desc <<-DESC
+      This is a model generator
+    DESC
+    
     option :testing_framework, :default => :rspec, :desc => 'Specify which testing framework to use (spec, test_unit)'
     
     first_argument :name, :required => true
-    second_argument :attributes, :as => :hash
+    second_argument :attributes, :as => :array
     
     template :model do
       source('model.rbt')
@@ -25,7 +29,7 @@ module Merb::ComponentGenerators
     end
     
     def attributes_for_accessor
-      self.attributes.map{|a| ":#{a.first}" }.compact.uniq.join(", ")
+      self.attributes.map{|a| ":#{a}" }.compact.uniq.join(", ")
     end
     
     def source_root
