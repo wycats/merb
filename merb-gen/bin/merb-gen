@@ -4,8 +4,6 @@ require 'rubygems'
 require 'merb-core'
 require 'merb-gen'
 
-puts Dir.pwd
-
 application = false # TODO: figure out a way to infer this
 
 if application
