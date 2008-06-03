@@ -41,7 +41,7 @@ describe "<%= module_name %> (module)" do
     <%= module_name %>.config.should be_kind_of(Hash)
   end
   
-  it "should have a bracket accessors as shortcuts to the config" do
+  it "should have bracket accessors as shortcuts to the config" do
     <%= module_name %>[:foo] = 'bar'
     <%= module_name %>[:foo].should == 'bar'
     <%= module_name %>[:foo].should == <%= module_name %>.config[:foo]

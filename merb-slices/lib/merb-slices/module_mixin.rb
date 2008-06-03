@@ -404,15 +404,15 @@ module Merb
         dst_dir = File.dirname(dest)
         dup_path = dst_dir / "#{base}#{postfix}.#{rest}"           
         if File.file?(source)
-          mkdir_p(dst_dir) unless File.directory?(dst_dir)
+          FileUtils.mkdir_p(dst_dir) unless File.directory?(dst_dir)
           if File.exists?(dest) && !File.exists?(dup_path) && !FileUtils.identical?(source, dest)
             # copy app-level override to *_override.ext
-            copy_entry(dest, dup_path, false, false, true)
+            FileUtils.copy_entry(dest, dup_path, false, false, true)
             duplicated << dup_path.relative_path_from(Merb.root)
           end
           # copy gem-level original to location
           if !File.exists?(dest) || (File.exists?(dest) && !FileUtils.identical?(source, dest))
-            copy_entry(source, dest, false, false, true) 
+            FileUtils.copy_entry(source, dest, false, false, true) 
             copied << dest.relative_path_from(Merb.root)
           end
         end
