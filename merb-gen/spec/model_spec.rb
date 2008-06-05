@@ -8,6 +8,26 @@ describe Merb::ComponentGenerators::ModelGenerator do
     }.should raise_error(::Templater::TooFewArgumentsError)
   end
   
+  it "should default to the rspec testing framework" do
+    @generator = Merb::ComponentGenerators::ModelGenerator.new('/tmp', {}, 'User')
+    @generator.testing_framework.should == :spec
+  end
+  
+  it "should have the model and spec templates by default" do
+    @generator = Merb::ComponentGenerators::ModelGenerator.new('/tmp', {}, 'User')
+    @generator.templates.map{|t| t.name}.should == [:model, :spec]
+  end
+  
+  it "should have the model and test_unit templates if test_unit is specified as testing framework" do
+    @generator = Merb::ComponentGenerators::ModelGenerator.new('/tmp', { :testing_framework => :test_unit }, 'User')
+    @generator.templates.map{|t| t.name}.should == [:model, :test_unit]
+  end
+  
+  it "should have the model and spec templates if spec is specified as testing framework" do
+    @generator = Merb::ComponentGenerators::ModelGenerator.new('/tmp', { :testing_framework => :spec }, 'User')
+    @generator.templates.map{|t| t.name}.should == [:model, :spec]
+  end
+  
 end
 
 describe Merb::ComponentGenerators::ModelGenerator, '#file_name' do

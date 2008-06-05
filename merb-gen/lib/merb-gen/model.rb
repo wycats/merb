@@ -53,5 +53,6 @@ module Merb::ComponentGenerators
   end
   
   add :model, ModelGenerator
+  add :model_normal, ModelGenerator
   
 end
