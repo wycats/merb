@@ -1,5 +1,6 @@
 Merb::Config[:framework] = {
   :application => "application.rb",
   :view => "views",
-  :config => "config"
+  :config => "config",
+  :public => "public"
 }
