@@ -243,14 +243,13 @@ module Merb
         end
       end
       
-      # Slice file locations from all search paths; these default to 
-      # host-app/vendor/slices and host-app/slices - loaded in that order.
+      # Slice file locations from all search paths; this default to host-app/slices.
       #
       # Look for any slices in those default locations or if given, 
       # Merb::Plugins.config[:merb_slices][:search_path] (String/Array).
       # Specify files, glob patterns or paths containing slices.
       def slice_files_from_search_path
-        search_paths = Array(Merb::Plugins.config[:merb_slices][:search_path] || [Merb.root / "vendor" / "slices", Merb.root / "slices"])
+        search_paths = Array(Merb::Plugins.config[:merb_slices][:search_path] || [Merb.root / "slices"])
         search_paths.inject([]) do |files, path|
           if File.file?(path) && File.extname(path) == ".rb"
             files << path
