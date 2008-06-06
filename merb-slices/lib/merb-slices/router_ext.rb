@@ -27,7 +27,7 @@ module Merb
       # @param slice_module<String, Symbol, Module> A Slice module to mount.
       # @param options<Hash, String> Optional hash, set :path if you want to override what appears on the url.
       # 
-      # @yield A new Behavior instance is yielded in the block for nested routes.
+      # @yield A new Behavior instance is yielded in the block for nested routes - runs before the slice routes are setup.
       # @yieldparam ns<Behavior> The namespace behavior object.
       #
       # @return <Behaviour> The current router context.
@@ -41,12 +41,14 @@ module Merb
           namespace = options[:namespace] || slice_module.to_s.snake_case
           options[:path] ||= slice_module[:path_prefix] || options[:namespace] || slice_module.identifier
           options[:default_routes] = true unless options.key?(:default_routes)
+          options[:prepend_routes] = block if block_given?
+          slice_module[:path_prefix] = options[:path]
           Merb.logger.info!("Mounting slice #{slice_module} at /#{options[:path]}")
-          self.namespace(namespace.to_sym, options.except(:default_routes)) do |ns|
-            slice_module[:path_prefix] = options[:path]
-            slice_module.setup_router(ns)
+          self.namespace(namespace.to_sym, options.except(:default_routes, :prepend_routes, :append_routes)) do |ns|
+            options[:prepend_routes].call(ns) if options[:prepend_routes].respond_to?(:call)
+            slice_module.setup_router(ns)     # setup the routes from the slice itself
+            options[:append_routes].call(ns)  if options[:append_routes].respond_to?(:call)
             ns.match(%r{/:controller(/:action(/:id)?)?(\.:format)?}).to(options[:params] || {}) if options[:default_routes]
-            block.call(ns) if block.respond_to?(:call)
           end
         else 
           Merb.logger.info!("Skipped adding slice #{slice_module} to router...")
