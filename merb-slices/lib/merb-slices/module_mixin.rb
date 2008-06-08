@@ -29,6 +29,10 @@ module Merb
     
       # Stub to setup routes inside the host application.
       def setup_router(scope); end
+      
+      def to_param
+        self.identifier
+      end
 
       # @param <Symbol> The configuration key.
       # @return <Object> The configuration value.
