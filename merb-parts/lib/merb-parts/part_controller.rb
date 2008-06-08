@@ -59,7 +59,7 @@ module Merb
     def self.inherited(klass)
       _subclasses << klass.to_s
       super
-      self._template_root = Merb.dir_for(:part) / "views" unless self._template_root
+      klass._template_root = Merb.dir_for(:part) / "views" unless self._template_root
     end
 
     # ==== Parameters

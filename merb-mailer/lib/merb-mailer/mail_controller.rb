@@ -126,7 +126,7 @@ module Merb
     #   The Merb::MailController inheriting from the base class.  
     def self.inherited(klass)
       super
-      klass.class_eval %{self._template_root = Merb.dir_for(:mailer) / "views"}
+      klass._template_root = Merb.dir_for(:mailer) / "views" unless self._template_root
     end
 
     # Override filters halted to return nothing.
