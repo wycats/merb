@@ -29,7 +29,7 @@ describe "A Merb PartController" do
   
   it "should render the html format by default to the controller that set it" do
     controller = dispatch_to(Main, :index4)
-    controller.body.should match(/part_html_format/m) 
+    controller.body.should match(/part_html_format/m)
   end
   
   it "should render the xml format according to the controller" do
@@ -52,6 +52,10 @@ describe "A Merb PartController" do
     controller.body.should match( /Do this/)
   end
   
+  it "should render a template from an absolute path" do
+    controller = dispatch_to(Main, :parth_with_absolute_template)
+    controller.body.should match(/part_html_format/m)
+  end
   
 end  
 

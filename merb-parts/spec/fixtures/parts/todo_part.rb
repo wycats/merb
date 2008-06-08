@@ -23,4 +23,9 @@ class TodoPart < Merb::PartController
     render
   end
   
+  def parth_with_absolute_template
+    p File.expand_path(self._template_root)
+    render :template => File.expand_path(self._template_root) / 'todo_part' / 'formatted_output'
+  end
+  
 end
