@@ -45,7 +45,7 @@ module FreezerMode
         `git-submodule init`
       else
         # Should this instead be a raise?
-        $stderr.puts("ERROR: unable to create submodule for #{@component} - you might want to freeze using MODE=rubygems")
+        $stderr.puts("ERROR: unable to create submodule for #{@component} - you might want to freeze using MODE=rubygems (make sure the current project has a git repository)")
       end
     end
   end
