@@ -73,3 +73,12 @@ describe "A Merb Part Controller with urls" do
   end
 
 end
+
+describe "A Merb Part Controller inheriting from another Part Controller" do
+  
+  it "should inherit the _template_root" do
+    TodoPart._template_root.should == File.expand_path(File.dirname(__FILE__) / 'fixtures' / 'parts' / 'views')
+    TodoPart._template_root.should == DonePart._template_root
+  end
+  
+end

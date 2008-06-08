@@ -59,7 +59,7 @@ module Merb
     def self.inherited(klass)
       _subclasses << klass.to_s
       super
-      klass.class_eval %{self._template_root = Merb.dir_for(:part) / "views"}
+      self._template_root = Merb.dir_for(:part) / "views" unless self._template_root
     end
 
     # ==== Parameters
