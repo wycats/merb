@@ -29,7 +29,7 @@ module Merb
       
       # Whether the specs are being run from a host application or standalone
       def standalone?
-        not $SLICED_APP
+        Merb.root == ::<%= module_name %>.root
       end
       
     end

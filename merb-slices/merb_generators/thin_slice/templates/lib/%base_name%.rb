@@ -2,7 +2,7 @@ if defined?(Merb::Plugins)
 
   $:.unshift File.dirname(__FILE__)
 
-  dependency 'merb-slices'
+  load_dependency 'merb-slices'
   Merb::Plugins.add_rakefiles "<%= base_name %>/merbtasks", "<%= base_name %>/slicetasks"
 
   # Register the Slice for the current host application
@@ -43,6 +43,9 @@ if defined?(Merb::Plugins)
     #  Routes will be added within this scope (namespace). In fact, any 
     #  router behaviour is a valid namespace, so you can attach
     #  routes at any level of your router setup.
+    #
+    # @note prefix your named routes with :<%= underscored_name %>_
+    #   to avoid potential conflicts with global named routes.
     def self.setup_router(scope)
     end
     
