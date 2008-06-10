@@ -79,6 +79,7 @@ module Merb
     # ==== Returns
     # String:: The part body.
     def _dispatch(action=:to_s)
+      action = action.to_s
       self.action_name = action
       super(action)
       @body
