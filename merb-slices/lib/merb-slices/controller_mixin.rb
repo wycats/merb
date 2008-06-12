@@ -83,29 +83,13 @@ module Merb
           # @return <Module> A slice module.
           def slice; self.class.slice; end
           
-          protected
-          
           # Generate a url - takes the slice's :path_prefix into account.
-          #
-          # This is only relevant for default routes, as named routes are
-          # handled correctly without any special considerations.
-          #
-          # @param name<#to_sym,Hash> The name of the URL to generate.
-          # @param rparams<Hash> Parameters for the route generation.
-          #
-          # @return String The generated URL.
-          #
-          # @notes If a hash is used as the first argument, a default route will be
-          #   generated based on it and rparams.
           def slice_url(name, rparams={})
-            rparams[:controller] = prefix_slice_controller_name(rparams[:controller]) if rparams[:controller]
-            uri = Merb::Router.generate(name, rparams, { 
-                :controller => prefix_slice_controller_name(controller_name),
-                :action => action_name,
-                :format => params[:format]
-              }
-            )
-            Merb::Config[:path_prefix] ? Merb::Config[:path_prefix] + uri : uri
+            self.slice.url(name, rparams, { 
+              :controller => controller_name,
+              :action => action_name,
+              :format => params[:format]
+            })
           end
 
           private
@@ -132,13 +116,7 @@ module Merb
               _template_location(context, type, controller)
             end
           end
-        
-          # Helper method to add :path_prefix if needed.
-          def prefix_slice_controller_name(name)
-            controller = name.gsub(%r|^#{slice.identifier_sym}/|, '')
-            slice[:path_prefix].blank? ? controller : slice[:path_prefix] / controller
-          end
-        
+          
         end
       
       end

@@ -1,5 +1,6 @@
 module Merb
   class Router
+        
     class Behavior
       
       # Add all known slices to the router
@@ -32,6 +33,8 @@ module Merb
       #
       # @return <Behaviour> The current router context.
       #
+      # @note If a slice has no routes at all, the activate hook won't be executed.
+      #
       # @note Normally you should specify the slice_module using a String or Symbol
       #       this ensures that your module can be removed from the router at runtime.
       def add_slice(slice_module, options = {}, &block)
@@ -44,11 +47,15 @@ module Merb
           options[:prepend_routes] = block if block_given?
           slice_module[:path_prefix] = options[:path]
           Merb.logger.info!("Mounting slice #{slice_module} at /#{options[:path]}")
-          self.namespace(namespace.to_sym, options.except(:default_routes, :prepend_routes, :append_routes)) do |ns|
-            options[:prepend_routes].call(ns) if options[:prepend_routes].respond_to?(:call)
-            slice_module.setup_router(ns)     # setup the routes from the slice itself
-            options[:append_routes].call(ns)  if options[:append_routes].respond_to?(:call)
-            ns.match(%r{/:controller(/:action(/:id)?)?(\.:format)?}).to(options[:params] || {}) if options[:default_routes]
+          
+          # setup routes - capture the slice's routes for easy reference
+          slice_module.routes, slice_module.named_routes = Merb::Router.capture do
+            self.namespace(namespace.to_sym, options.except(:default_routes, :prepend_routes, :append_routes)) do |ns|
+              options[:prepend_routes].call(ns) if options[:prepend_routes].respond_to?(:call)
+              slice_module.setup_router(ns)     # setup the routes from the slice itself
+              options[:append_routes].call(ns)  if options[:append_routes].respond_to?(:call)
+              ns.default_routes(options[:params] || {}) if options[:default_routes]
+            end
           end
         else 
           Merb.logger.info!("Skipped adding slice #{slice_module} to router...")

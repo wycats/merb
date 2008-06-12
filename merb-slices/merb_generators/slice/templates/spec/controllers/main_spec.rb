@@ -8,6 +8,10 @@ describe "<%= module_name %>::Main (controller)" do
     Merb::Router.prepare { |r| r.add_slice(:<%= module_name %>) } if standalone?
   end
   
+  after :all do
+    Merb::Router.reset! if standalone?
+  end
+  
   it "should have access to the slice module" do
     controller = dispatch_to(<%= module_name %>::Main, :index)
     controller.slice.should == <%= module_name %>
@@ -24,6 +28,22 @@ describe "<%= module_name %>::Main (controller)" do
     controller = get("/<%= base_name %>/main/index")
     controller.should be_kind_of(<%= module_name %>::Main)
     controller.action_name.should == 'index'
+  end
+  
+  it "should work with the example named route" do
+    controller = get("/<%= base_name %>/index.html")
+    controller.should be_kind_of(<%= module_name %>::Main)
+    controller.action_name.should == 'index'
+  end
+  
+  it "should have routes in <%= module_name %>.routes" do
+    <%= module_name %>.routes.should_not be_empty
+  end
+  
+  it "should have a slice_url helper method for slice-specific routes" do
+    controller = dispatch_to(<%= module_name %>::Main, 'index')
+    controller.slice_url(:action => 'show', :format => 'html').should == "/<%= base_name %>/main/show.html"
+    controller.slice_url(:<%= underscored_name %>_index, :format => 'html').should == "/<%= base_name %>/index.html"
   end
   
   it "should have helper methods for dealing with public paths" do

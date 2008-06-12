@@ -1,6 +1,8 @@
 if defined?(Merb::Plugins)
 
-  require 'merb-slices'
+  $:.unshift File.dirname(__FILE__)
+
+  load_dependency 'merb-slices'
   Merb::Plugins.add_rakefiles "<%= base_name %>/merbtasks", "<%= base_name %>/slicetasks"
 
   # Register the Slice for the current host application
@@ -46,7 +48,12 @@ if defined?(Merb::Plugins)
     #  Routes will be added within this scope (namespace). In fact, any 
     #  router behaviour is a valid namespace, so you can attach
     #  routes at any level of your router setup.
+    #
+    # @note prefix your named routes with :<%= underscored_name %>_
+    #   to avoid potential conflicts with global named routes.
     def self.setup_router(scope)
+      # example of a named route
+      scope.match('/index.:format').to(:controller => 'main', :action => 'index').name(:<%= underscored_name %>_index)
     end
     
   end
@@ -64,5 +71,8 @@ if defined?(Merb::Plugins)
   #
   # Or just call setup_default_structure! to setup a basic Merb MVC structure.
   <%= module_name %>.setup_default_structure!
+  
+  # Add dependencies for other <%= module_name %> classes below. Example:
+  # dependency "<%= base_name %>/other"
   
 end

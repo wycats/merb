@@ -6,6 +6,14 @@ describe "<%= module_name %> (module)" do
   
   # Feel free to remove the specs below
   
+  before :all do
+    Merb::Router.prepare { |r| r.add_slice(:<%= module_name %>) } if standalone?
+  end
+  
+  after :all do
+    Merb::Router.reset! if standalone?
+  end
+  
   it "should be registered in Merb::Slices.slices" do
     Merb::Slices.slices.should include(<%= module_name %>)
   end
@@ -35,6 +43,16 @@ describe "<%= module_name %> (module)" do
     <%= module_name %>.description.should == "<%= module_name %> is a chunky Merb slice!"
     <%= module_name %>.version.should == "0.0.1"
     <%= module_name %>.author.should == "YOUR NAME"
+  end
+  
+  it "should have :routes and :named_routes properties" do
+    <%= module_name %>.routes.should_not be_empty
+    <%= module_name %>.named_routes[:<%= underscored_name %>_index].should be_kind_of(Merb::Router::Route)
+  end
+
+  it "should have an url helper method for slice-specific routes" do
+    <%= module_name %>.url(:controller => 'main', :action => 'show', :format => 'html').should == "/<%= base_name %>/main/show.html"
+    <%= module_name %>.url(:<%= underscored_name %>_index, :format => 'html').should == "/<%= base_name %>/index.html"
   end
   
   it "should have a config property (Hash)" do

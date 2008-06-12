@@ -107,6 +107,9 @@ if defined?(Merb::Plugins)
   #
   # This is done right after the app's after_load_callbacks are run.
   # Any settings can be taken into account in the activation step.
+  #
+  # @note Activation will only take place if the slice has been routed;
+  #   this means you need have at least one slice route setup.
   class Merb::Slices::Activate < Merb::BootLoader
   
     after AfterAppLoads
@@ -114,7 +117,7 @@ if defined?(Merb::Plugins)
     def self.run
       Merb::Slices.each_slice do |slice|
         Merb.logger.info!("Activating slice '#{slice}' ...")
-        slice.activate if slice.respond_to?(:activate)
+        slice.activate if slice.respond_to?(:activate) && slice.routed?
       end
     end
   
