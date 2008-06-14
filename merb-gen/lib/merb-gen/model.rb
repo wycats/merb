@@ -7,11 +7,12 @@ module Merb::ComponentGenerators
     DESC
     
     option :testing_framework, :default => :spec, :desc => 'Specify which testing framework to use (spec, test_unit)'
+    option :orm, :default => :none, :desc => 'Specify which Object-Relation Mapper to use (none, activerecord, datamapper, sequel)'
     
     first_argument :name, :required => true
     second_argument :attributes, :as => :array
     
-    template :model do
+    template :model, :orm => :none do
       source('model.rbt')
       destination('app/models/' + file_name + '.rb')
     end
@@ -53,6 +54,5 @@ module Merb::ComponentGenerators
   end
   
   add :model, ModelGenerator
-  add :model_normal, ModelGenerator
   
 end
