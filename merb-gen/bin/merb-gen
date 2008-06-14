@@ -73,7 +73,11 @@ elsif ARGV[0] && ARGV[0] == "app" && ARGV[1] && ARGV[1] !~ /^-/
       
 # merb-gen plugin foo
 elsif ARGV[0] && ARGV[0] == "plugin"
-  Merb::ApplicationGenerator.run ARGV[1], ARGV[2..-1], "merb_plugin", command || "generate"
+  if ARGV[1]
+    Merb::ApplicationGenerator.run ARGV[1], ARGV[2..-1], "merb_plugin", command || "generate"
+  else
+    puts app_help
+  end
 
 # merb-gen controller foo
 # merb-gen resource foo --test
