@@ -1,6 +1,6 @@
 module Merb::ComponentGenerators
   
-  class ResourceGenerator < ComponentGenerator
+  class ResourceControllerGenerator < ComponentGenerator
     
     desc <<-DESC
       This is a resource generator
@@ -61,6 +61,6 @@ module Merb::ComponentGenerators
     
   end
   
-  add :resource, ResourceGenerator
+  add :resource_controller, ResourceControllerGenerator
   
 end
