@@ -1,7 +1,7 @@
 namespace :merb do
   namespace :jquery do
     download_location = "http://jqueryjs.googlecode.com/files"
-    latest_version = "1.2.3"
+    latest_version = "1.2.6"
     task :required_stuff do
       require 'uri'
       require 'net/http'
