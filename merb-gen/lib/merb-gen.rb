@@ -15,7 +15,6 @@ module Merb
         File.join(File.dirname(__FILE__), "..", "app_generators"))
       RubiGen::Base.reset_sources
       RubiGen::Base.append_sources source
-      puts RubiGen::Scripts.const_get(command.capitalize).inspect
       RubiGen::Scripts.const_get(command.capitalize).new.run([File.expand_path(path), *argv], :generator => generator, :backtrace => true)
     end
   end
