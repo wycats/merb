@@ -1,8 +1,10 @@
 module Merb
   module JqueryMixin
     def jquery(string=nil, &blk)
-      if string || block_given?
-        throw_content(:for_jquery, (string || &blk))
+      if string 
+        throw_content(:for_jquery, string)
+      elsif block_given?
+        throw_content(:for_jquery, &blk)
       else
         catch_content :for_jquery
       end
