@@ -346,12 +346,15 @@ module Merb
     #
     def include_required_js(options = {})
       return '' if @required_js.nil? || @required_js.empty?
+      seen = []
       @required_js.map do |req_js|
-        if req_js.last.is_a?(Hash)
-          js_include_tag(*(req_js[0..-2] + [options.merge(req_js.last)]))
+        js_files, js_options = if req_js.last.is_a?(Hash)
+          [req_js[0..-2], options.merge(req_js.last)]
         else
-          js_include_tag(*(req_js + [options]))
+          [req_js, options]
         end
+        seen += (includes = js_files - seen)
+        js_include_tag(*(includes + [js_options]))
       end.join
     end
 
@@ -385,12 +388,15 @@ module Merb
     #
     def include_required_css(options = {})
       return '' if @required_css.nil? || @required_css.empty?
+      seen = []
       @required_css.map do |req_css|
-        if req_css.last.is_a?(Hash)
-          css_include_tag(*(req_css[0..-2] + [options.merge(req_css.last)]))
+        css_files, css_options = if req_css.last.is_a?(Hash)
+          [req_css[0..-2], options.merge(req_css.last)]
         else
-          css_include_tag(*(req_css + [options]))
+          [req_css, options]
         end
+        seen += (includes = css_files - seen)
+        css_include_tag(*(includes + [css_options]))
       end.join
     end
 
