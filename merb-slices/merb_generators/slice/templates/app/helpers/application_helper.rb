@@ -34,7 +34,7 @@ module Merb
       # @return <String> 
       #  A path relative to the public directory, with added segments.
       def public_path_for(type, *segments)
-        File.join(::<%= module_name %>.public_dir_for(type), *segments)
+        ::<%= module_name %>.public_path_for(type, *segments)
       end
       
       # Construct an app-level path.
@@ -45,7 +45,7 @@ module Merb
       # @return <String> 
       #  A path within the host application, with added segments.
       def app_path_for(type, *segments)
-        File.join(::<%= module_name %>.app_dir_for(type), *segments)
+        ::<%= module_name %>.app_path_for(type, *segments)
       end
       
       # Construct a slice-level path.
@@ -56,7 +56,7 @@ module Merb
       # @return <String> 
       #  A path within the slice source (Gem), with added segments.
       def slice_path_for(type, *segments)
-        File.join(::<%= module_name %>.dir_for(type), *segments)
+        ::<%= module_name %>.slice_path_for(type, *segments)
       end
       
     end

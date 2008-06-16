@@ -105,6 +105,24 @@ describe "<%= module_name %> (module)" do
     end
   end
   
+  it "should have a public_path_for method" do
+    public_path = <%= module_name %>.public_dir_for(:public)
+    <%= module_name %>.public_path_for("path", "to", "file").should == public_path / "path" / "to" / "file"
+    [:stylesheet, :javascript, :image].each do |type|
+      <%= module_name %>.public_path_for(type, "path", "to", "file").should == public_path / "#{type}s" / "path" / "to" / "file"
+    end
+  end
+  
+  it "should have a app_path_for method" do
+    <%= module_name %>.app_path_for("path", "to", "file").should == <%= module_name %>.app_dir_for(:root) / "path" / "to" / "file"
+    <%= module_name %>.app_path_for(:controller, "path", "to", "file").should == <%= module_name %>.app_dir_for(:controller) / "path" / "to" / "file"
+  end
+  
+  it "should have a slice_path_for method" do
+    <%= module_name %>.slice_path_for("path", "to", "file").should == <%= module_name %>.dir_for(:root) / "path" / "to" / "file"
+    <%= module_name %>.slice_path_for(:controller, "path", "to", "file").should == <%= module_name %>.dir_for(:controller) / "path" / "to" / "file"
+  end
+  
   it "should keep a list of path component types to use when copying files" do
     (<%= module_name %>.mirrored_components & <%= module_name %>.slice_paths.keys).length.should == <%= module_name %>.mirrored_components.length
   end

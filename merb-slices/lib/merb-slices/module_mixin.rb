@@ -174,8 +174,44 @@ module Merb
       #
       # @return <String> The relative path to the public directory for the requested type.
       def public_dir_for(type)
-        dir = self.app_dir_for(type).relative_path_from(Merb.dir_for(:public)) rescue '.'
+        dir = type.is_a?(Symbol) ? self.app_dir_for(type) : self.app_dir_for(:public) / type
+        dir = dir.relative_path_from(Merb.dir_for(:public)) rescue '.'
         dir == '.' ? '/' : "/#{dir}"
+      end
+      
+      # Construct a path relative to the public directory
+      # 
+      # @param <Symbol> The type of component.
+      # @param *segments<Array[#to_s]> Path segments to append.
+      #
+      # @return <String> 
+      #  A path relative to the public directory, with added segments.
+      def public_path_for(type, *segments)
+        File.join(self.public_dir_for(type), *segments)
+      end
+      
+      # Construct an app-level path.
+      # 
+      # @param <Symbol> The type of component.
+      # @param *segments<Array[#to_s]> Path segments to append.
+      #
+      # @return <String> 
+      #  A path within the host application, with added segments.
+      def app_path_for(type, *segments)
+        prefix = type.is_a?(Symbol) ? self.app_dir_for(type) : self.app_dir_for(:root) / type
+        File.join(prefix, *segments)
+      end
+      
+      # Construct a slice-level path.
+      # 
+      # @param <Symbol> The type of component.
+      # @param *segments<Array[#to_s]> Path segments to append.
+      #
+      # @return <String> 
+      #  A path within the slice source (Gem), with added segments.
+      def slice_path_for(type, *segments)
+        prefix = type.is_a?(Symbol) ? self.dir_for(type) : self.dir_for(:root) / type
+        File.join(prefix, *segments)
       end
     
       # This is the core mechanism for setting up your slice-level layout.
