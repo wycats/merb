@@ -12,6 +12,11 @@ module Merb
       def [](module_name)
         Object.full_const_get(module_name.to_s) if exists?(module_name)
       end
+      
+      # Helper method to transform a slice filename to a module Symbol
+      def filename2module(slice_file)
+        File.basename(slice_file, '.rb').gsub('-', '_').camel_case.to_sym
+      end
     
       # Register a Slice by its gem/lib path for loading at startup
       #
@@ -27,6 +32,7 @@ module Merb
       # @example Merb::Slices::register(__FILE__)
       # @example Merb::Slices::register('/path/to/my-slice/lib/my-slice.rb')
       def register(slice_file, force = true)
+        # do what filename2module does, but with intermediate variables
         identifier  = File.basename(slice_file, '.rb')
         underscored = identifier.gsub('-', '_')
         module_name = underscored.camel_case
