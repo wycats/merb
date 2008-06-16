@@ -294,6 +294,14 @@ module Merb
       @required_js ||= []
       @required_js << js
     end
+    
+    # All javascript files to include, without duplicates.
+    #
+    # ==== Parameters
+    # options<Hash>:: Default options to pass to js_include_tag.
+    def required_js(options = {})
+      extract_required_files(@required_js, options)
+    end
 
     # The require_css method can be used to require any CSS file anywhere in
     # your templates. Regardless of how many times a single stylesheet is
@@ -315,6 +323,14 @@ module Merb
     def require_css(*css)
       @required_css ||= []
       @required_css << css
+    end
+    
+    # All css files to include, without duplicates.
+    #
+    # ==== Parameters
+    # options<Hash>:: Default options to pass to css_include_tag.
+    def required_css(options = {})
+      extract_required_files(@required_css, options)
     end
 
     # A method used in the layout of an application to create +<script>+ tags
@@ -345,17 +361,7 @@ module Merb
     #   #    <script src="/javascripts/validation.js" type="text/javascript"></script>
     #
     def include_required_js(options = {})
-      return '' if @required_js.nil? || @required_js.empty?
-      seen = []
-      @required_js.map do |req_js|
-        js_files, js_options = if req_js.last.is_a?(Hash)
-          [req_js[0..-2], options.merge(req_js.last)]
-        else
-          [req_js, options]
-        end
-        seen += (includes = js_files - seen)
-        js_include_tag(*(includes + [js_options]))
-      end.join
+      required_js(options).map { |req_js| js_include_tag(*req_js) }.join
     end
 
     # A method used in the layout of an application to create +<link>+ tags for
@@ -387,17 +393,7 @@ module Merb
     #   #    <link href="/stylesheets/ie-specific.css" media="all" rel="Stylesheet" type="text/css"/>
     #
     def include_required_css(options = {})
-      return '' if @required_css.nil? || @required_css.empty?
-      seen = []
-      @required_css.map do |req_css|
-        css_files, css_options = if req_css.last.is_a?(Hash)
-          [req_css[0..-2], options.merge(req_css.last)]
-        else
-          [req_css, options]
-        end
-        seen += (includes = css_files - seen)
-        css_include_tag(*(includes + [css_options]))
-      end.join
+      required_css(options).map { |req_js| css_include_tag(*req_js) }.join
     end
 
     # ==== Parameters
@@ -613,5 +609,27 @@ module Merb
     def uniq_css_tag(*assets)
       css_include_tag(*uniq_css_path(assets))
     end
+    
+    private 
+    
+    # Helper method to filter out duplicate files.
+    #
+    # ==== Parameters
+    # options<Hash>:: Options to pass to include tag methods.
+    def extract_required_files(files, options = {})
+      return [] if files.nil? || files.empty?
+      seen = []
+      files.inject([]) do |extracted, req_js|
+        include_files, include_options = if req_js.last.is_a?(Hash)
+          [req_js[0..-2], options.merge(req_js.last)]
+        else
+          [req_js, options]
+        end
+        seen += (includes = include_files - seen)
+        extracted << (includes + [include_options]) unless includes.empty?
+        extracted
+      end
+    end
+    
   end
 end

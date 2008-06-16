@@ -80,16 +80,15 @@ end
 
 describe "External JavaScript and Stylesheets" do
   it "should require a js file only once" do
-    require_js 'jquery'
-    require_js 'jquery', 'effects'
-    
+    require_js :jquery
+    require_js :jquery, :effects
     include_required_js.scan(%r{src="/javascripts/jquery.js"}).should have(1).things
     include_required_js.scan(%r{src="/javascripts/effects.js"}).should have(1).things
   end
 
   it "should require a css file only once" do
-    require_css('style')
-    require_css('style', 'ie-specific')
+    require_css :style
+    require_css :style, 'ie-specific'
 
     include_required_css.scan(%r{href="/stylesheets/style.css"}).should have(1).things
     include_required_css.scan(%r{href="/stylesheets/ie-specific.css"}).should have(1).things
@@ -126,6 +125,18 @@ describe "External JavaScript and Stylesheets" do
     result.scan(/<link/).should have(2).things
     result.should match(%r{href="/styles/theme.css"})
     result.should match(%r{href="/styles/fonts.css"})
+  end
+  
+  it "should accept options for required javascript files" do
+    require_js :jquery, :effects, :bundle => 'basics'
+    require_js :jquery, :effects, :other
+    required_js.should == [[:jquery, :effects, {:bundle=>"basics"}], [:other, {}]]
+  end
+  
+  it "should accept options for required css files" do
+    require_css :reset, :fonts, :bundle => 'basics'
+    require_css :reset, :fonts, :layout
+    required_css.should == [[:reset, :fonts, {:bundle=>"basics"}], [:layout, {}]]
   end
 
   it "should create a js include tag with the extension specified" do
