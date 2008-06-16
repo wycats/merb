@@ -44,7 +44,7 @@ module Merb
         if filename !~ /#{'\\' + ASSET_FILE_EXTENSIONS[asset_type]}\Z/ && filename.index('?').nil?
           filename = "#{filename}#{ASSET_FILE_EXTENSIONS[asset_type]}" # don't modify receiver
         end
-        if filename !~ %r{^https?://}
+        if filename !~ %r{^(/|https?://)}
           filename = "/#{asset_type}s/#{filename}"
         end
         if local_path
