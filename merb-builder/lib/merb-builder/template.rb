@@ -9,8 +9,8 @@ module Merb::Template
     # name<~to_s>:: The name of the template method.
     # mod<Class, Module>::
     #   The class or module wherein this method should be defined.
-    def self.compile_template(path, name, mod)
-      path = File.expand_path(path)
+    def self.compile_template(io, name, mod)
+      path = File.expand_path(io.path)
       method = mod.is_a?(Module) ? :module_eval : :instance_eval
       mod.send(method, %{
         def #{name}
@@ -20,7 +20,7 @@ module Merb::Template
             c
           end
           xml = ::Builder::XmlMarkup.new(config)
-          self.instance_eval %{#{File.read(path)}}
+          self.instance_eval %{#{io.read}}
           xml.target!
         end
       })
