@@ -80,36 +80,63 @@ end
 
 describe "External JavaScript and Stylesheets" do
   it "should require a js file only once" do
-    require_js 'jquery'
-    require_js 'jquery', 'effects'
-
-    include_required_js.scan(%r{/javascripts/jquery.js}).should have(1).things
-    include_required_js.scan(%r{/javascripts/effects.js}).should have(1).things
+    require_js :jquery
+    require_js :jquery, :effects
+    include_required_js.scan(%r{src="/javascripts/jquery.js"}).should have(1).things
+    include_required_js.scan(%r{src="/javascripts/effects.js"}).should have(1).things
   end
 
   it "should require a css file only once" do
-    require_css('style')
-    require_css('style', 'ie-specific')
+    require_css :style
+    require_css :style, 'ie-specific'
 
-    include_required_css.scan(%r{/stylesheets/style.css}).should have(1).things
-    include_required_css.scan(%r{/stylesheets/ie-specific.css}).should have(1).things
+    include_required_css.scan(%r{href="/stylesheets/style.css"}).should have(1).things
+    include_required_css.scan(%r{href="/stylesheets/ie-specific.css"}).should have(1).things
   end
 
   it "should require included js" do
     require_js 'jquery', 'effects', 'validation'
     result = include_required_js
     result.scan(/<script/).should have(3).things
-    result.should match(%r{/javascripts/jquery.js})
-    result.should match(%r{/javascripts/effects.js})
-    result.should match(%r{/javascripts/validation.js})
+    result.should match(%r{src="/javascripts/jquery.js"})
+    result.should match(%r{src="/javascripts/effects.js"})
+    result.should match(%r{src="/javascripts/validation.js"})
   end
 
   it "should require included css" do
     require_css 'style', 'ie-specific'
     result = include_required_css
     result.scan(/<link/).should have(2).things
-    result.should match(%r{/stylesheets/style.css})
-    result.should match(%r{/stylesheets/ie-specific.css})
+    result.should match(%r{href="/stylesheets/style.css"})
+    result.should match(%r{href="/stylesheets/ie-specific.css"})
+  end
+
+  it "should require included js from an absolute path" do
+    require_js '/other/scripts.js', '/other/utils'
+    result = include_required_js
+    result.scan(/<script/).should have(2).things
+    result.should match(%r{src="/other/scripts.js"})
+    result.should match(%r{src="/other/utils.js"})
+  end
+
+  it "should require included css from an absolute path" do
+    require_css '/styles/theme.css', '/styles/fonts'
+    result = include_required_css
+    result.scan(/<link/).should have(2).things
+    result.should match(%r{href="/styles/theme.css"})
+    result.should match(%r{href="/styles/fonts.css"})
+  end
+  
+  it "should accept options for required javascript files" do
+    require_js :jquery, :effects, :bundle => 'basics'
+    require_js :jquery, :effects, :other
+    required_js.should == [[:jquery, :effects, {:bundle=>"basics"}], [:other, {}]]
+  end
+  
+  it "should accept options for required css files" do
+    require_css :reset, :fonts, :bundle => 'basics'
+    require_css :reset, :fonts, :layout
+    required_css.should == [[:reset, :fonts, {:bundle=>"basics"}], [:layout, {}]]
   end
 
   it "should create a js include tag with the extension specified" do

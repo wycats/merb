@@ -7,11 +7,11 @@ class SliceGenerator < Merb::GeneratorBase
   
   def initialize(args, runtime_options = {})
     @base = File.dirname(__FILE__)
+    super
     @name = args.first
     @underscored_name = @name.gsub('-', '_')
     @module_name = @underscored_name.to_const_string
     raise 'Invalid Slice name' if @module_name.include?('::')
-    super
     @destination_root = @name    
   end
   

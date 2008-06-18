@@ -46,6 +46,8 @@ module Merb
               self._template_roots << [self._template_root, :_slice_template_location] 
               # app-level slices/<slice>/app/views for specific overrides
               self._template_roots << [join_template_path(slice_mod.app_dir_for(options[:templates_for]), options[:path]), :_slice_template_location]
+              # additional template roots for specific overrides (optional)
+              self._template_roots += Array(options[:template_roots]) if options[:template_roots]
             end
             # Set the layout for this slice controller
             layout_for_slice(options[:layout])

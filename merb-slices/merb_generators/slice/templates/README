@@ -1,7 +1,68 @@
 <%= module_name %>
 <%= "=" * module_name.size %>
 
-A slice for the Merb framework. 
+A slice for the Merb framework.
+
+------------------------------------------------------------------------------
+
+<%= base_name %>
+|-- LICENSE
+|-- README
+|-- Rakefile [1]
+|-- TODO
+|-- app [2]
+|   |-- controllers
+|   |   |-- application.rb
+|   |   `-- main.rb
+|   |-- helpers
+|   |   `-- application_helper.rb
+|   `-- views
+|       |-- layout
+|       |   `-- <%= underscored_name %>.html.erb [3]
+|       `-- main
+|           `-- index.html.erb
+|-- lib
+|   |-- <%= base_name %>
+|   |   |-- merbtasks.rb [4]
+|   |   `-- slicetasks.rb [5]
+|   `-- <%= base_name %>.rb [6]
+|-- log
+|   `-- merb_test.log
+|-- public [7]
+|   |-- javascripts 
+|   |   `-- master.js
+|   `-- stylesheets
+|       `-- master.css
+|-- spec [8]
+|   |-- <%= base_name %>_spec.rb
+|   |-- controllers
+|   |   `-- main_spec.rb
+|   `-- spec_helper.rb
+`-- stubs [9]
+    `-- app
+        `-- controllers
+            |-- application.rb
+            `-- main.rb
+
+
+1. Rake tasks to package/install the gem - edit this to modify the manifest.
+2. The slice application: controllers, models, helpers, views.
+3. The default layout, as specified in Merb::Slices::config[:<%= underscored_name %>][:layout]
+   change this to :application to use the app's layout.
+4. Standard rake tasks available to your application.
+5. Your custom application rake tasks.
+6. The main slice file - contains all slice setup logic/config.
+7. Public assets you (optionally) install using rake slices:<%= underscored_name %>:install
+8. Specs for basis slice behaviour - you usually adapt these for your slice.
+9. Stubs of classes/views/files for the end-user to override - usually these 
+   mimic the files in app/ and/or public/; use rake slices:<%= underscored_name %>:stubs to
+   get started with the override stubs. Also, slices:<%= underscored_name %>:patch will
+   copy over views to override in addition to the files found in /stubs.
+   
+
+To see all available tasks for <%= module_name %> run:
+
+rake -T slices:<%= underscored_name %>
 
 ------------------------------------------------------------------------------
 

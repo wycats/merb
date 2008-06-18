@@ -1,7 +1,53 @@
 <%= module_name %>
 <%= "=" * module_name.size %>
 
-A thin slice for the Merb framework. 
+A thin slice for the Merb framework.
+
+------------------------------------------------------------------------------
+
+<%= base_name %>
+|-- LICENSE
+|-- README
+|-- Rakefile [1]
+|-- TODO
+|-- application.rb [2]
+|-- lib
+|   |-- <%= base_name %>
+|   |   |-- merbtasks.rb [3]
+|   |   `-- slicetasks.rb [4]
+|   `-- <%= base_name %>.rb [5]
+|-- public [6]
+|   |-- javascripts
+|   |   `-- master.js
+|   `-- stylesheets
+|       `-- master.css
+|-- stubs [7]
+|   `-- application.rb
+`-- views [8]
+    |-- layout
+    |   `-- <%= underscored_name %>.html.erb [9]
+    `-- main
+        `-- index.html.erb
+
+
+1. Rake tasks to package/install the gem - edit this to modify the manifest.
+2. The slice application in a single file: controllers, models, helper methods.
+3. Standard rake tasks available to your application.
+4. Your custom application rake tasks.
+5. The main slice file - contains all slice setup logic/config.
+6. Public assets you (optionally) install using rake slices:my_slice:install
+7. Stubs of classes/views/files for the end-user to override - usually these 
+   mimic the files in app/ and/or public/; use rake slices:<%= underscored_name %>:stubs to
+   get started with the override stubs. Also, slices:<%= underscored_name %>:patch will
+   copy over views to override in addition to the files found in /stubs.
+8. A thin slice stores its views seperately.
+9. The default layout, as specified in Merb::Slices::config[:my_slice][:layout]
+   change this to :application to use the app's layout.
+   
+   
+To see all available tasks for <%= module_name %> run:
+
+rake -T slices:<%= underscored_name %>
 
 ------------------------------------------------------------------------------
 

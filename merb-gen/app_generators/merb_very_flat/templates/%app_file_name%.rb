@@ -11,7 +11,7 @@ class <%= app_file_name.camel_case %> < Merb::Controller
 end
 
 Merb::Config.use { |c|
-  c[:framework]           = {:public => "public"},
+  c[:framework]           = { :public => [Merb.root / "public", nil] },
   c[:session_store]       = 'none',
   c[:exception_details]   = true
 }
