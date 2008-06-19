@@ -13,7 +13,7 @@ module Merb
     #
     # ==== Returns
     # html<String>
-    #    
+    #
     # ==== Examples
     #  We want all possible matches in the FileSys up to the action name
     #     Given:  controller_name = "namespace/controller"
@@ -24,7 +24,7 @@ module Merb
     #     namespace/controller/action.(css|js)
     #
     def auto_link
-      html    = "" 
+      html    = ""
       prefix  = ""
       (controller_name / action_name).split("/").each do |path|
         path = prefix + path
@@ -52,7 +52,7 @@ module Merb
     # name<~to_s>:: The text of the link.
     # url<~to_s>:: The URL to link to. Defaults to an empty string.
     # opts<Hash>:: Additional HTML options for the link.
-    #    
+    #
     # ==== Examples
     #   link_to("The Merb home page", "http://www.merbivore.com/")
     #     # => <a href="http://www.merbivore.com/">The Merb home page</a>
@@ -67,7 +67,7 @@ module Merb
       opts[:href] ||= url
       %{<a #{ opts.to_xml_attributes }>#{name}</a>}
     end
-  
+
     # ==== Parameters
     # img<~to_s>:: The image path.
     # opts<Hash>:: Additional options for the image tag (see below).
@@ -77,31 +77,31 @@ module Merb
     #   Sets the path prefix for the image. Defaults to "/images/" or whatever
     #   is specified in Merb::Config. This is ignored if img is an absolute
     #   path or full URL.
-    # 
+    #
     # All other options set HTML attributes on the tag.
     #
     # ==== Examples
-    #   image_tag('foo.gif') 
+    #   image_tag('foo.gif')
     #   # => <img src='/images/foo.gif' />
-    #   
-    #   image_tag('foo.gif', :class => 'bar') 
+    #
+    #   image_tag('foo.gif', :class => 'bar')
     #   # => <img src='/images/foo.gif' class='bar' />
     #
-    #   image_tag('foo.gif', :path => '/files/') 
+    #   image_tag('foo.gif', :path => '/files/')
     #   # => <img src='/files/foo.gif' />
     #
     #   image_tag('http://test.com/foo.gif')
     #   # => <img src="http://test.com/foo.gif">
     #
     #   image_tag('charts', :path => '/dynamic/')
-    #   or 
+    #   or
     #   image_tag('/dynamic/charts')
     #   # => <img src="/dynamic/charts">
     def image_tag(img, opts={})
       if img[0].chr == '/'
         opts[:src] = img
       else
-        opts[:path] ||= 
+        opts[:path] ||=
           if img =~ %r{^https?://}
             ''
           else
@@ -113,12 +113,12 @@ module Merb
           end
         opts[:src] ||= opts.delete(:path) + img
       end
-      %{<img #{ opts.to_xml_attributes } />}    
+      %{<img #{ opts.to_xml_attributes } />}
     end
 
     # :section: JavaScript related functions
     #
-    
+
     # ==== Parameters
     # javascript<String>:: Text to escape for use in JavaScript.
     #
@@ -131,21 +131,7 @@ module Merb
     def escape_js(javascript)
       (javascript || '').gsub('\\','\0\0').gsub(/\r\n|\n|\r/, "\\n").gsub(/["']/) { |m| "\\#{m}" }
     end
-    
-    # ==== Parameters
-    # name<~to_s>:: The text in the link.
-    # function<~to_s>:: The onClick event in JavaScript.
-    #
-    # ==== Examples
-    #   link_to_function('Click me', "alert('hi!')")
-    #     # => <a href="#" onclick="alert('hi!'); return false;">Click me</a>
-    #
-    #   link_to_function('Add to cart', "item_total += 1; alert('Item added!');")
-    #     # => <a href="#" onclick="item_total += 1; alert('Item added!'); return false;">Add to cart</a>
-    def link_to_function(name, function)
-      %{<a href="#" onclick="#{function.chomp(";")}; return false;">#{name}</a>}
-    end
-    
+
     # ==== Parameters
     # data<Object>::
     #   Object to translate into JSON. If the object does not respond to
@@ -164,7 +150,7 @@ module Merb
         data.inspect.to_json
       end
     end
-      
+
     # :section: External JavaScript and Stylesheets
     #
     # You can use require_js(:prototype) or require_css(:shinystyles)
@@ -185,12 +171,12 @@ module Merb
     #       <%= catch_content :layout %>
     #     </body>
     #   </html>
-    # 
+    #
     #   # File: app/views/whatever/_part1.herb
     #
     #   <% require_js  'this' -%>
     #   <% require_css 'that', 'another_one' -%>
-    # 
+    #
     #   # File: app/views/whatever/_part2.herb
     #
     #   <% require_js 'this', 'something_else' -%>
@@ -215,78 +201,78 @@ module Merb
     #   </html>
     #
     # See each method's documentation for more information.
-    
+
     # :section: Bundling Asset Files
-    # 
+    #
     # The key to making a fast web application is to reduce both the amount of
     # data transfered and the number of client-server interactions. While having
     # many small, module Javascript or stylesheet files aids in the development
     # process, your web application will benefit from bundling those assets in
     # the production environment.
-    # 
+    #
     # An asset bundle is a set of asset files which are combined into a single
     # file. This reduces the number of requests required to render a page, and
     # can reduce the amount of data transfer required if you're using gzip
     # encoding.
-    # 
+    #
     # Asset bundling is always enabled in production mode, and can be optionally
     # enabled in all environments by setting the <tt>:bundle_assets</tt> value
     # in <tt>config/merb.yml</tt> to +true+.
-    # 
+    #
     # ==== Examples
-    # 
+    #
     # In the development environment, this:
-    # 
+    #
     #   js_include_tag :prototype, :lowpro, :bundle => true
-    # 
+    #
     # will produce two <script> elements. In the production mode, however, the
     # two files will be concatenated in the order given into a single file,
     # <tt>all.js</tt>, in the <tt>public/javascripts</tt> directory.
-    # 
+    #
     # To specify a different bundle name:
-    # 
+    #
     #   css_include_tag :typography, :whitespace, :bundle => :base
     #   css_include_tag :header, :footer, :bundle => "content"
     #   css_include_tag :lightbox, :images, :bundle => "lb.css"
-    # 
+    #
     # (<tt>base.css</tt>, <tt>content.css</tt>, and <tt>lb.css</tt> will all be
     # created in the <tt>public/stylesheets</tt> directory.)
-    # 
+    #
     # == Callbacks
-    # 
+    #
     # To use a Javascript or CSS compressor, like JSMin or YUI Compressor:
-    # 
+    #
     #   Merb::Assets::JavascriptAssetBundler.add_callback do |filename|
     #     system("/usr/local/bin/yui-compress #{filename}")
     #   end
-    #   
+    #
     #   Merb::Assets::StylesheetAssetBundler.add_callback do |filename|
     #     system("/usr/local/bin/css-min #{filename}")
     #   end
-    # 
+    #
     # These blocks will be run after a bundle is created.
-    # 
+    #
     # == Bundling Required Assets
-    # 
+    #
     # Combining the +require_css+ and +require_js+ helpers with bundling can be
     # problematic. You may want to separate out the common assets for your
     # application -- Javascript frameworks, common CSS, etc. -- and bundle those
     # in a "base" bundle. Then, for each section of your site, bundle the
     # required assets into a section-specific bundle.
-    # 
+    #
     # <b>N.B.: If you bundle an inconsistent set of assets with the same name,
     # you will have inconsistent results. Be thorough and test often.</b>
-    # 
+    #
     # ==== Example
-    # 
+    #
     # In your application layout:
-    # 
+    #
     #   js_include_tag :prototype, :lowpro, :bundle => :base
-    # 
+    #
     # In your controller layout:
-    # 
+    #
     #   require_js :bundle => :posts
-    
+
     # The require_js method can be used to require any JavaScript file anywhere
     # in your templates. Regardless of how many times a single script is
     # included with require_js, Merb will only include it once in the header.
@@ -309,6 +295,14 @@ module Merb
       @required_js << js
     end
     
+    # All javascript files to include, without duplicates.
+    #
+    # ==== Parameters
+    # options<Hash>:: Default options to pass to js_include_tag.
+    def required_js(options = {})
+      extract_required_files(@required_js, options)
+    end
+
     # The require_css method can be used to require any CSS file anywhere in
     # your templates. Regardless of how many times a single stylesheet is
     # included with require_css, Merb will only include it once in the header.
@@ -331,17 +325,25 @@ module Merb
       @required_css << css
     end
     
+    # All css files to include, without duplicates.
+    #
+    # ==== Parameters
+    # options<Hash>:: Default options to pass to css_include_tag.
+    def required_css(options = {})
+      extract_required_files(@required_css, options)
+    end
+
     # A method used in the layout of an application to create +<script>+ tags
     # to include JavaScripts required in in templates and subtemplates using
     # require_js.
-    # 
+    #
     # ==== Parameters
     # options<Hash>:: Options to pass to js_include_tag.
     #
     # ==== Options
     # :bundle<~to_s>::
     #   The name of the bundle the scripts should be combined into.
-    # 
+    #
     # ==== Returns
     # String:: The JavaScript tag.
     #
@@ -359,23 +361,16 @@ module Merb
     #   #    <script src="/javascripts/validation.js" type="text/javascript"></script>
     #
     def include_required_js(options = {})
-      return '' if @required_js.nil? || @required_js.empty?
-      @required_js.map do |req_js|
-        if req_js.last.is_a?(Hash)
-          js_include_tag(*(req_js[0..-2] + [options.merge(req_js.last)]))
-        else
-          js_include_tag(*(req_js + [options]))
-        end
-      end.join
+      required_js(options).map { |req_js| js_include_tag(*req_js) }.join
     end
-    
+
     # A method used in the layout of an application to create +<link>+ tags for
     # CSS stylesheets required in in templates and subtemplates using
     # require_css.
-    # 
+    #
     # ==== Parameters
     # options<Hash>:: Options to pass to css_include_tag.
-    # 
+    #
     # ==== Returns
     # String:: The CSS tag.
     #
@@ -384,7 +379,7 @@ module Merb
     #   The name of the bundle the stylesheets should be combined into.
     # :media<~to_s>::
     #   The media attribute for the generated link element. Defaults to :all.
-    # 
+    #
     # ==== Examples
     #   # my_action.herb has a call to require_css 'style'
     #   # File: layout/application.html.erb
@@ -398,16 +393,9 @@ module Merb
     #   #    <link href="/stylesheets/ie-specific.css" media="all" rel="Stylesheet" type="text/css"/>
     #
     def include_required_css(options = {})
-      return '' if @required_css.nil? || @required_css.empty?
-      @required_css.map do |req_css|
-        if req_css.last.is_a?(Hash)
-          css_include_tag(*(req_css[0..-2] + [options.merge(req_css.last)]))
-        else
-          css_include_tag(*(req_css + [options]))
-        end
-      end.join
+      required_css(options).map { |req_js| css_include_tag(*req_js) }.join
     end
-    
+
     # ==== Parameters
     # *scripts::
     #   The scripts to include. If the last element is a Hash, it will be used
@@ -439,7 +427,7 @@ module Merb
     def js_include_tag(*scripts)
       options = scripts.last.is_a?(Hash) ? scripts.pop : {}
       return nil if scripts.empty?
-      
+
       if (bundle_name = options[:bundle]) && Merb::Assets.bundle? && scripts.size > 1
         bundler = Merb::Assets::JavascriptAssetBundler.new(bundle_name, *scripts)
         bundled_asset = bundler.bundle!
@@ -458,7 +446,7 @@ module Merb
 
       return tags
     end
-    
+
     # ==== Parameters
     # *stylesheets::
     #   The stylesheets to include. If the last element is a Hash, it will be
@@ -488,7 +476,7 @@ module Merb
     #   css_include_tag :style, :screen
     #   # => <link href="/stylesheets/style.css" media="all" rel="Stylesheet" type="text/css" charset="utf-8" />
     #   #    <link href="/stylesheets/screen.css" media="all" rel="Stylesheet" type="text/css" charset="utf-8" />
-    # 
+    #
     #  css_include_tag :style, :media => :print
     #  # => <link href="/stylesheets/style.css" media="print" rel="Stylesheet" type="text/css" charset="utf-8" />
     #
@@ -497,7 +485,7 @@ module Merb
     def css_include_tag(*stylesheets)
       options = stylesheets.last.is_a?(Hash) ? stylesheets.pop : {}
       return nil if stylesheets.empty?
-      
+
       if (bundle_name = options[:bundle]) && Merb::Assets.bundle? && stylesheets.size > 1
         bundler = Merb::Assets::StylesheetAssetBundler.new(bundle_name, *stylesheets)
         bundled_asset = bundler.bundle!
@@ -519,7 +507,7 @@ module Merb
 
       return tags
     end
-    
+
     # ==== Parameters
     # *assets::
     #   The assets to include. These should be the full paths to any static served file
@@ -542,14 +530,14 @@ module Merb
     #
     #  uniq_path('/images/hostsexypicture.jpg')
     #  #=>"http://assets1.my-awesome-domain.com/images/hostsexypicture.jpg"
-    def uniq_path(*assets)      
+    def uniq_path(*assets)
       paths = []
       assets.collect.flatten.each do |filename|
         paths.push(Merb::Assets::UniqueAssetPath.build(filename))
       end
       paths.length > 1 ? paths : paths.first
     end
-    
+
     # ==== Parameters
     # *assets::
     #   Creates unique paths for javascript files (prepends "/javascripts" and appends ".js")
@@ -562,7 +550,7 @@ module Merb
     #  #=> "http://assets2.my-awesome-domain.com/javascripts/my.js"
     #
     #  uniq_js_path(["admin/secrets","home/signup"])
-    #  #=> ["http://assets2.my-awesome-domain.com/javascripts/admin/secrets.js", 
+    #  #=> ["http://assets2.my-awesome-domain.com/javascripts/admin/secrets.js",
     #         "http://assets1.my-awesome-domain.com/javascripts/home/signup.js"]
     def uniq_js_path(*assets)
       paths = []
@@ -571,7 +559,7 @@ module Merb
       end
       paths.length > 1 ? paths : paths.first
     end
-    
+
     # ==== Parameters
     # *assets::
     #   Creates unique paths for stylesheet files (prepends "/stylesheets" and appends ".css")
@@ -584,7 +572,7 @@ module Merb
     #  #=> "http://assets2.my-awesome-domain.com/stylesheets/my.css"
     #
     #  uniq_css_path(["admin/secrets","home/signup"])
-    #  #=> ["http://assets2.my-awesome-domain.com/stylesheets/admin/secrets.css", 
+    #  #=> ["http://assets2.my-awesome-domain.com/stylesheets/admin/secrets.css",
     #         "http://assets1.my-awesome-domain.com/stylesheets/home/signup.css"]
     def uniq_css_path(*assets)
       paths = []
@@ -593,7 +581,7 @@ module Merb
       end
       paths.length > 1 ? paths : paths.first
     end
-    
+
     # ==== Parameters
     # *assets::
     #   As js_include_tag but has unique path
@@ -607,7 +595,7 @@ module Merb
     def uniq_js_tag(*assets)
       js_include_tag(*uniq_js_path(assets))
     end
-    
+
     # ==== Parameters
     # *assets::
     #   As uniq_css_tag but has unique path
@@ -621,5 +609,27 @@ module Merb
     def uniq_css_tag(*assets)
       css_include_tag(*uniq_css_path(assets))
     end
+    
+    private 
+    
+    # Helper method to filter out duplicate files.
+    #
+    # ==== Parameters
+    # options<Hash>:: Options to pass to include tag methods.
+    def extract_required_files(files, options = {})
+      return [] if files.nil? || files.empty?
+      seen = []
+      files.inject([]) do |extracted, req_js|
+        include_files, include_options = if req_js.last.is_a?(Hash)
+          [req_js[0..-2], options.merge(req_js.last)]
+        else
+          [req_js, options]
+        end
+        seen += (includes = include_files - seen)
+        extracted << (includes + [include_options]) unless includes.empty?
+        extracted
+      end
+    end
+    
   end
 end

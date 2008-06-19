@@ -111,11 +111,16 @@ end
 # if you want to know more.
 Merb::Config.use do |c|
 
-  # Sets up a custom session id key, if you want to piggyback sessions of other applications
-  # with the cookie session store. If not specified, defaults to '_session_id'.
+  # Sets up a custom session id key which is used for the session persistence
+  # cookie name.  If not specified, defaults to '_session_id'.
   # c[:session_id_key] = '_session_id'
-
+  
+  # The session_secret_key is only required for the cookie session store.
   c[:session_secret_key]  = '<%= SHA1.new(rand(100000000000).to_s).to_s %>'
+  
+  # There are various options here, by default Merb comes with 'cookie', 
+  # 'memory' or 'memcached'.  You can of course use your favorite ORM 
+  # instead: 'datamapper', 'sequel' or 'activerecord'.
   c[:session_store] = 'cookie'
 end
 

@@ -2,16 +2,18 @@ require 'rubygems'
 require 'rake/gempackagetask'
 require 'rubygems/specification'
 require 'date'
+require 'merb-core/version'
+require 'merb-core/tasks/merb_rake_helper'
 
-PLUGIN = "<%= base_name %>"
 NAME = "<%= base_name %>"
 GEM_VERSION = "0.0.1"
 AUTHOR = "Your Name"
 EMAIL = "Your Email"
-HOMEPAGE = "http://merb-plugins.rubyforge.org/<%= base_name %>/"
+HOMEPAGE = "http://merbivore.com/"
 SUMMARY = "Merb plugin that provides ..."
 
 spec = Gem::Specification.new do |s|
+  s.rubyforge_project = 'merb'
   s.name = NAME
   s.version = GEM_VERSION
   s.platform = Gem::Platform::RUBY
@@ -22,10 +24,13 @@ spec = Gem::Specification.new do |s|
   s.author = AUTHOR
   s.email = EMAIL
   s.homepage = HOMEPAGE
-  s.add_dependency('merb', '>= 0.4.0')
+  s.add_dependency('merb', '>= <%= Merb::VERSION %>')
   s.require_path = 'lib'
-  s.autorequire = PLUGIN
-  s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,spec}/**/*")
+  s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,spec<%= bin ? ',bin' : '' %>}/**/*")
+  <% if bin %>
+  s.bindir = "bin"
+  s.executables = [NAME]
+  <% end %>
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|
@@ -34,12 +39,12 @@ end
 
 desc "install the plugin locally"
 task :install => [:package] do
-  sh %{sudo gem install pkg/#{NAME}-#{VERSION} --no-update-sources}
+  sh %{#{sudo} gem install #{install_home} pkg/#{NAME}-#{GEM_VERSION} --no-update-sources}
 end
 
 desc "create a gemspec file"
 task :make_spec do
-  File.open("#{GEM}.gemspec", "w") do |file|
+  File.open("#{NAME}.gemspec", "w") do |file|
     file.puts spec.to_ruby
   end
 end
@@ -48,7 +53,7 @@ namespace :jruby do
 
   desc "Run :package and install the resulting .gem with jruby"
   task :install => :package do
-    sh %{#{SUDO} jruby -S gem install pkg/#{NAME}-#{Merb::VERSION}.gem --no-rdoc --no-ri}
+    sh %{#{sudo} jruby -S gem install #{install_home} pkg/#{NAME}-#{GEM_VERSION}.gem --no-rdoc --no-ri}
   end
-  
+
 end

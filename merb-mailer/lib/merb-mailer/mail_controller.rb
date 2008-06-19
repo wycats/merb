@@ -71,6 +71,13 @@ module Merb
     attr_accessor :params, :mailer, :mail
     attr_reader   :session, :base_controller
 
+    cattr_accessor :_subclasses
+    self._subclasses = Set.new
+
+    # ==== Returns
+    # Array[Class]:: Classes that inherit from Merb::MailController.
+    def self.subclasses_list() _subclasses end
+
     # ==== Parameters
     # action<~to_s>:: The name of the action that will be rendered.
     # type<~to_s>::
@@ -83,6 +90,23 @@ module Merb
     # String:: The template location, i.e. ":controller/:action.:type".
     def _template_location(action, type = nil, controller = controller_name)
       "#{controller}/#{action}.#{type}"
+    end
+    
+    # The location to look for a template and mime-type. This is overridden 
+    # from AbstractController, which defines a version of this that does not 
+    # involve mime-types.
+    #
+    # ==== Parameters
+    # template<String>:: 
+    #    The absolute path to a template - without mime and template extension.
+    #    The mime-type extension is optional - it will be appended from the 
+    #    current content type if it hasn't been added already.
+    # type<~to_s>::
+    #    The mime-type of the template that will be rendered. Defaults to nil.
+    #
+    # @public
+    def _absolute_template_location(template, type)
+      template.match(/\.#{type.to_s.escape_regexp}$/) ? template : "#{template}.#{type}"
     end
 
     # ==== Parameters
@@ -102,7 +126,7 @@ module Merb
     #   The Merb::MailController inheriting from the base class.  
     def self.inherited(klass)
       super
-      klass.class_eval %{self._template_root = Merb.dir_for(:mailer) / "views"}
+      klass._template_root = Merb.dir_for(:mailer) / "views" unless self._template_root
     end
 
     # Override filters halted to return nothing.

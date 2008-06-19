@@ -9,13 +9,13 @@ module Merb::Template
     # name<~to_s>:: The name of the template method.
     # mod<Class, Module>::
     #   The class or module wherein this method should be defined.
-    def self.compile_template(path, name, mod)
-      path = File.expand_path(path)
-      config = (Merb::Config[:haml] || {}).inject({}) do |c, (k, v)|
+    def self.compile_template(io, name, mod)
+      path = File.expand_path(io.path)
+      config = (Merb::Plugins.config[:haml] || {}).inject({}) do |c, (k, v)|
         c[k.to_sym] = v
         c
       end.merge :filename => path
-      template = ::Haml::Engine.new(File.read(path), config)
+      template = ::Haml::Engine.new(io.read, config)
       template.def_method(mod, name)
       name
     end

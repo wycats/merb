@@ -63,7 +63,6 @@ class Freezer
     
     # Calls the freezer mode on the component
     def freeze
-      puts "Ice, Ice Baby!"
       puts "freezing mode: #{@mode}"
       send "#{@mode}_freeze"
     end

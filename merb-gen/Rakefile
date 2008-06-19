@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'rake/gempackagetask'
+require 'merb-core/tasks/merb_rake_helper'
 
 GEM = "merb-gen"
 VERSION = "0.9.4"
@@ -9,8 +10,9 @@ HOMEPAGE = "http://www.merbivore.com"
 SUMMARY = "Merb More: Merb's Application and Plugin Generators"
 
 spec = Gem::Specification.new do |s|
-  s.name = GEM
-  s.version = VERSION
+  s.rubyforge_project = 'merb'
+  s.name = NAME
+  s.version = GEM_VERSION
   s.platform = Gem::Platform::RUBY
   s.has_rdoc = true
   s.extra_rdoc_files = ["README", "LICENSE", 'TODO']
@@ -35,14 +37,14 @@ Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
 
-install_home = ENV['GEM_HOME'] ? "-i #{ENV['GEM_HOME']}" : ""
+task :install => [:package] do
+  sh %{#{sudo} gem install #{install_home} pkg/#{NAME}-#{GEM_VERSION} --no-update-sources}
+end
 
 namespace :jruby do
   task :install do
-    sh %{sudo jruby -S gem install #{install_home} pkg/#{GEM}-#{VERSION} --no-update-sources}
+    sh %{#{sudo} jruby -S gem install #{install_home} pkg/#{NAME}-#{GEM_VERSION}.gem --no-rdoc --no-ri}
   end
 end
 
-task :install => [:package] do
-  sh %{sudo gem install #{install_home} pkg/#{GEM}-#{VERSION} --no-update-sources}
-end
+

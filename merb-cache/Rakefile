@@ -2,18 +2,19 @@ require 'rubygems'
 require "rake/rdoctask"
 require 'rake/gempackagetask'
 require "spec/rake/spectask"
+require 'merb-core/tasks/merb_rake_helper'
 
-PLUGIN = "merb-cache"
 NAME = "merb-cache"
-MERB_CACHE_VERSION = Merb::MORE_VERSION rescue "0.9.4"
+GEM_VERSION = Merb::MORE_VERSION rescue "0.9.4"
 AUTHOR = "Alex Boussinet"
 EMAIL = "alex.boussinet@gmail.com"
 HOMEPAGE = "http://www.merbivore.com"
 SUMMARY = "Merb plugin that provides caching (page, action, fragment, object)"
 
 spec = Gem::Specification.new do |s|
+  s.rubyforge_project = 'merb'
   s.name = NAME
-  s.version = MERB_CACHE_VERSION
+  s.version = GEM_VERSION
   s.platform = Gem::Platform::RUBY
   s.has_rdoc = true
   s.extra_rdoc_files = ["README", "LICENSE", 'TODO']
@@ -24,7 +25,6 @@ spec = Gem::Specification.new do |s|
   s.homepage = HOMEPAGE
   s.add_dependency('merb-core', '>= 0.9.4')
   s.require_path = 'lib'
-  s.autorequire = PLUGIN
   s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,spec}/**/*")
 
   # rdoc
@@ -63,17 +63,15 @@ Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
 
-install_home = ENV['GEM_HOME'] ? "-i #{ENV['GEM_HOME']}" : ""
-
 task :install => [:package] do
-  sh %{sudo gem install #{install_home} pkg/#{NAME}-#{MERB_CACHE_VERSION} --no-update-sources}
+  sh %{#{sudo} gem install #{install_home} pkg/#{NAME}-#{GEM_VERSION} --no-update-sources}
 end
 
 namespace :jruby do
 
   desc "Run :package and install the resulting .gem with jruby"
   task :install => :package do
-    sh %{#{SUDO} jruby -S gem install #{install_home} pkg/#{NAME}-#{Merb::VERSION}.gem --no-rdoc --no-ri}
+    sh %{#{sudo} jruby -S gem install #{install_home} pkg/#{NAME}-#{GEM_VERSION}.gem --no-rdoc --no-ri}
   end
 
 end
