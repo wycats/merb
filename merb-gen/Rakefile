@@ -1,8 +1,7 @@
 require 'rubygems'
 require 'rake/gempackagetask'
-require 'merb-core/tasks/merb_rake_helper'
 
-GEM = "merb-gen"
+NAME = "merb-gen"
 VERSION = "0.9.4"
 AUTHOR = "Jonas Nicklas"
 EMAIL = "jonas.nicklas@gmail.com"
@@ -12,7 +11,7 @@ SUMMARY = "Merb More: Merb's Application and Plugin Generators"
 spec = Gem::Specification.new do |s|
   s.rubyforge_project = 'merb'
   s.name = NAME
-  s.version = GEM_VERSION
+  s.version = VERSION
   s.platform = Gem::Platform::RUBY
   s.has_rdoc = true
   s.extra_rdoc_files = ["README", "LICENSE", 'TODO']
@@ -29,7 +28,7 @@ spec = Gem::Specification.new do |s|
   #s.add_dependency "templater", ">= 0.1"
 
   s.require_path = 'lib'
-  s.autorequire = GEM
+  s.autorequire = NAME
   s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,bin,spec,templates}/**/*")
 end
 

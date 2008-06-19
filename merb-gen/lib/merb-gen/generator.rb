@@ -2,16 +2,17 @@ module Merb
 
   class Generator < Templater::Generator
     
+    # Inside a template, wraps a block of code properly in modules, keeping the indentation correct
     # TODO: spec me
     def with_modules(modules, options={}, &block)
       text = capture(&block)
       modules.each_with_index do |mod, i|
-        concat(("  " * (i * 2)) + "module #{mod}\n", block.binding)
+        concat(("  " * i) + "module #{mod}\n", block.binding)
       end
-      text = text.to_a.map{ |line| ("  " * (modules.size * 2)) + line }.join
+      text = text.to_a.map{ |line| ("  " * modules.size) + line }.join
       concat(text, block.binding)
       modules.reverse.each_with_index do |mod, i|
-        concat(("  " * ((modules.size - i - 1) * 2)) + "end # #{mod}\n", block.binding)
+        concat(("  " * (modules.size - i - 1)) + "end # #{mod}\n", block.binding)
       end
     end
     
