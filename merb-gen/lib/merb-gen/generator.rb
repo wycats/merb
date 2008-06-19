@@ -1,54 +1,46 @@
 module Merb
 
-  class Generator < Templater::Generator
-    
-    # Inside a template, wraps a block of code properly in modules, keeping the indentation correct
-    # TODO: spec me
-    def with_modules(modules, options={}, &block)
-      text = capture(&block)
-      modules.each_with_index do |mod, i|
-        concat(("  " * i) + "module #{mod}\n", block.binding)
-      end
-      text = text.to_a.map{ |line| ("  " * modules.size) + line }.join
-      concat(text, block.binding)
-      modules.reverse.each_with_index do |mod, i|
-        concat(("  " * (modules.size - i - 1)) + "end # #{mod}\n", block.binding)
-      end
-    end
-    
-    def source_root
-      File.join(File.dirname(__FILE__), '..', '..', 'templates')
-    end
-  end
-  
-  module ApplicationGenerators
+  module Generators
     
     extend Templater::Manifold
     
     desc <<-DESC
-      Generate a merb application
+      Generate components for your application or entirely new applications.
     DESC
     
-    class ApplicationGenerator < Merb::Generator
+    class Generator < Templater::Generator
+    
+      # Inside a template, wraps a block of code properly in modules, keeping the indentation correct
+      # TODO: spec me
+      def with_modules(modules, options={}, &block)
+        text = capture(&block)
+        modules.each_with_index do |mod, i|
+          concat(("  " * i) + "module #{mod}\n", block.binding)
+        end
+        text = text.to_a.map{ |line| ("  " * modules.size) + line }.join
+        concat(text, block.binding)
+        modules.reverse.each_with_index do |mod, i|
+          concat(("  " * (modules.size - i - 1)) + "end # #{mod}\n", block.binding)
+        end
+      end
+    
+      def source_root
+        File.join(File.dirname(__FILE__), '..', '..', 'templates')
+      end
+    end
+    
+    class ApplicationGenerator < Generator
       def source_root
         File.join(super, 'application')
       end
     end    
-  end
-  
-  module ComponentGenerators
     
-    extend Templater::Manifold
-    
-    desc <<-DESC
-      Generate code to speed up the development of your merb application
-    DESC
-    
-    class ComponentGenerator < Merb::Generator
+    class ComponentGenerator < Generator
       def source_root
         File.join(super, 'component')
       end
     end
+    
   end  
   
 end

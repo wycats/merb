@@ -6,8 +6,7 @@ require 'merb-gen'
 
 application = false # TODO: figure out a way to infer this
 
-if application
-  Merb::ApplicationGenerators.run_cli(Dir.pwd, 'merb-gen', Merb::VERSION, ARGV)
-else
-  Merb::ComponentGenerators.run_cli(Dir.pwd, 'merb-gen', Merb::VERSION, ARGV)
-end
+# start merb
+Merb.start :environment => 'development', :log_level => 'error'
+
+Merb::Generators.run_cli(Dir.pwd, 'merb-gen', Merb::VERSION, ARGV)

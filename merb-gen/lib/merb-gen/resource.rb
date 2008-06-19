@@ -1,4 +1,4 @@
-module Merb::ComponentGenerators
+module Merb::Generators
   
   class ResourceGenerator < ComponentGenerator
     
@@ -9,7 +9,7 @@ module Merb::ComponentGenerators
     first_argument :name, :required => true
     second_argument :attributes, :as => :array
     
-    invoke Merb::ComponentGenerators::ModelGenerator
+    invoke Merb::Generators::ModelGenerator
     
     def class_name
       self.name.camel_case

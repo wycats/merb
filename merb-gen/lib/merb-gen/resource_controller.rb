@@ -1,4 +1,4 @@
-module Merb::ComponentGenerators
+module Merb::Generators
   
   class ResourceControllerGenerator < ComponentGenerator
     

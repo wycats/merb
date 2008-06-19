@@ -1,9 +1,9 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
-describe Merb::ComponentGenerators::ModelGenerator do
+describe Merb::Generators::ControllerGenerator do
 
   before(:each) do
-    @generator = Merb::ComponentGenerators::ControllerGenerator.new('/tmp', {}, 'Stuff')
+    @generator = Merb::Generators::ControllerGenerator.new('/tmp', {}, 'Stuff')
   end
   
   describe "#controller_class_name" do
