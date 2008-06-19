@@ -31,31 +31,29 @@ module Merb::ComponentGenerators
     #end
     
     def controller_modules
-      %w(Monkey Blah Gurr)
+      chunks[0..-2]
     end
     
     def controller_class_name
-      self.name.camel_case
+      chunks.last
     end
     
     def test_class_name
-      self.class_name + "Test"
+      controller_class_name + "Test"
     end
     
     def file_name
-      self.name.snake_case
-    end
-    
-    def attributes?
-      self.attributes && !self.attributes.empty?
-    end
-    
-    def attributes_for_accessor
-      self.attributes.map{|a| ":#{a}" }.compact.uniq.join(", ")
+      controller_class_name.snake_case
     end
     
     def source_root
       File.join(super, 'controller')
+    end
+    
+    protected
+    
+    def chunks
+      name.gsub('/', '::').split('::').map { |c| c.camel_case }
     end
     
   end
