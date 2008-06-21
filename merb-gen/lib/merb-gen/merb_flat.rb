@@ -1,46 +1,22 @@
 module Merb::Generators
   
-  class MerbGenerator < ApplicationGenerator
+  class MerbFlatGenerator < ApplicationGenerator
     
     desc <<-DESC
-      This generates a full merb application
+      This generates a flat merb application
     DESC
-    
-    option :testing_framework, :default => :spec, :desc => 'Specify which testing framework to use (spec, test_unit)'
-    option :orm, :default => :none, :desc => 'Specify which Object-Relation Mapper to use (none, activerecord, datamapper, sequel)'
     
     first_argument :name, :required => true
     
     template :init_rb, 'config/init.rb'
     
     file_list <<-LIST
-      app/controllers/application.rb
-      app/controllers/exceptions.rb
-      app/helpers/global_helpers.rb
-      app/views/exceptions/internal_server_error.html.erb
-      app/views/exceptions/not_acceptable.html.erb
-      app/views/exceptions/not_found.html.erb
-      app/views/layout/application.html.erb
-      autotest/discover.rb
-      autotest/merb.rb
-      autotest/merb_rspec.rb
-      config/environments/development.rb
-      config/environments/production.rb
-      config/environments/rake.rb
-      config/environments/test.rb
-      config/rack.rb
-      config/router.rb
-      public/images/merb.jpg
-      public/stylesheets/master.css
-      public/merb.fcgi
-      Rakefile
+      config/framework.rb
+      views/foo.html.erb
+      application.rb
+      README.txt
     LIST
 
-    file :spec, 'spec/spec_helper.rb', :testing_framework => :spec
-    file :spec_opts, 'spec/spec.opts', :testing_framework => :spec
-    file :test, 'test/test_helper.rb', :testing_framework => :test_unit
-    file :htaccess, 'public/htaccess', 'public/.htaccess'
-    
     def app_name
       self.name.snake_case
     end
@@ -50,11 +26,11 @@ module Merb::Generators
     end
     
     def source_root
-      File.join(super, 'merb')
+      File.join(super, 'merb_flat')
     end
     
   end
   
-  add :app, MerbGenerator
+  add :app_flat, MerbFlatGenerator
   
 end
