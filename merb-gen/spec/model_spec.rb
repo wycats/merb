@@ -30,20 +30,37 @@ describe Merb::Generators::ModelGenerator do
   
 end
 
-describe Merb::Generators::ModelGenerator, '#file_name' do
+describe Merb::Generators::ModelGenerator do
   
-  it "should convert the name to snake case" do
+  before do
     @generator = Merb::Generators::ModelGenerator.new('/tmp', {}, 'SomeMoreStuff')
-    @generator.file_name.should == 'some_more_stuff'
   end
   
-end
-
-describe Merb::Generators::ModelGenerator, '#class_name' do
+  describe '#file_name' do
   
-  it "should convert the name to camel case" do
-    @generator = Merb::Generators::ModelGenerator.new('/tmp', {}, 'some_more_stuff')
-    @generator.class_name.should == 'SomeMoreStuff'
+    it "should convert the name to snake case" do
+      @generator.name = 'SomeMoreStuff'
+      @generator.file_name.should == 'some_more_stuff'
+    end
+  
+  end
+
+  describe '#class_name' do
+  
+    it "should convert the name to camel case" do
+      @generator.name = 'some_more_stuff'
+      @generator.class_name.should == 'SomeMoreStuff'
+    end
+  
+  end
+  
+  describe '#attributes_for_accessor' do
+  
+    it "should convert the name to camel case" do
+      @generator = Merb::Generators::ModelGenerator.new('/tmp', {}, 'SomeMoreStuff', 'test:object', 'arg:object', 'blah:object')
+      @generator.attributes_for_accessor.should == ':arg, :blah, :test'
+    end  
+  
   end
   
 end

@@ -41,9 +41,6 @@ Gem.path.unshift(Merb.root / "gems")
 # uncomment this.
 # Merb.push_path(:lib, Merb.root / "lib") # uses **/*.rb as path glob.
 
-<% require 'sha1' %>
-
-
 # ==== Dependencies
 
 # These are some examples of how you might specify dependencies.
@@ -72,13 +69,13 @@ end
 # if you need a database.
 
 # Uncomment for DataMapper ORM
-<%= "# " unless default_orm?(:datamapper) %>use_orm :datamapper
+<%= "# " unless orm == :datamapper %>use_orm :datamapper
 
 # Uncomment for ActiveRecord ORM
-<%= "# " unless default_orm?(:activerecord) %>use_orm :activerecord
+<%= "# " unless orm == :activerecord %>use_orm :activerecord
 
 # Uncomment for Sequel ORM
-<%= "# " unless default_orm?(:sequel) %>use_orm :sequel
+<%= "# " unless orm == :sequel %>use_orm :sequel
 
 
 #
@@ -92,8 +89,8 @@ end
 # To use RSpec, you don't have to install any additional gems, since
 # merb-core provides support for RSpec.
 #
-<%= "# " unless default_test_suite?(:test) %>use_test :test_unit
-<%= "# " unless default_test_suite?(:spec) %>use_test :rspec
+<%= "# " unless testing_framework == :test_unit %>use_test :test_unit
+<%= "# " unless testing_framework == :spec %>use_test :rspec
 
 #
 # ==== Set up your basic configuration

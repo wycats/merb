@@ -10,7 +10,7 @@ module Merb::Generators
     option :orm, :default => :none, :desc => 'Specify which Object-Relation Mapper to use (none, activerecord, datamapper, sequel)'
     
     first_argument :name, :required => true
-    second_argument :attributes, :as => :array
+    second_argument :attributes, :as => :hash
     
     template :model, :orm => :none do
       source('model.rbt')
@@ -44,7 +44,7 @@ module Merb::Generators
     end
     
     def attributes_for_accessor
-      self.attributes.map{|a| ":#{a}" }.compact.uniq.join(", ")
+      self.attributes.keys.map{|a| ":#{a}" }.compact.uniq.join(", ")
     end
     
     def source_root

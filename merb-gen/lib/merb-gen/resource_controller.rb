@@ -13,7 +13,7 @@ module Merb::Generators
     
     #invoke Merb::ComponentGenerators::ResourceControllerTest
     
-    template :controller,  do
+    template :controller do
       source("controller.rbt")
       destination("app/controllers/#{file_name}.rb")
     end
