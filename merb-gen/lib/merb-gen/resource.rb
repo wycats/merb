@@ -7,15 +7,21 @@ module Merb::Generators
     DESC
     
     first_argument :name, :required => true
-    second_argument :attributes, :as => :array
+    second_argument :attributes, :as => :hash
     
-    invoke Merb::Generators::ModelGenerator
+    invoke Merb::Generators::ModelGenerator do
+      [model_name, *attributes]
+    end
     invoke Merb::Generators::ResourceControllerGenerator do
-      [controller_name, *attributes]
+      [controller_name]
     end
     
     def controller_name
       name.pluralize
+    end
+    
+    def model_name
+      name.singularize
     end
     
   end

@@ -11,8 +11,6 @@ module Merb::Generators
     
     first_argument :name, :required => true
     
-    #invoke Merb::ComponentGenerators::ResourceControllerTest
-    
     template :controller do
       source("controller.rbt")
       destination("app/controllers/#{file_name}.rb")
@@ -43,20 +41,30 @@ module Merb::Generators
       destination("app/helpers/#{file_name}/new.html.erb")
     end
     
-    def class_name
-      self.name.camel_case
+    def controller_modules
+      chunks[0..-2]
+    end
+    
+    def controller_class_name
+      chunks.last
     end
     
     def test_class_name
-      self.class_name + "Test"
+      controller_class_name + "Test"
     end
     
     def file_name
-      self.name.snake_case
+      controller_class_name.snake_case
     end
     
     def source_root
       File.join(super, 'resource_controller')
+    end
+    
+    protected
+    
+    def chunks
+      name.gsub('/', '::').split('::').map { |c| c.camel_case }
     end
     
   end

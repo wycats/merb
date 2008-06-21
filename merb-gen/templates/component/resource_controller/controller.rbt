@@ -1,46 +1,36 @@
-<% counter = 0 -%>
-<% controller_modules.each_with_index do |mod, i| -%>
-<%= "  " * i %>module <%= mod %>
-<% counter = i -%>
-<% end -%>
-<% counter = counter == 0 ? 0 : (counter + 1) -%>
-<%= "  " * counter %>class <%= controller_class_name %> < Application
+<% with_modules(controller_modules) do -%>
+class <%= controller_class_name %> < Application
   
-<%= "  " * counter %>  def index
-<%= "  " * counter %>    render
-<%= "  " * counter %>  end
+  def index
+    render
+  end
 
-<%= "  " * counter %>  def show
-<%= "  " * counter %>    render
-<%= "  " * counter %>  end
+  def show
+    render
+  end
 
-<%= "  " * counter %>  def new
-<%= "  " * counter %>    render
-<%= "  " * counter %>  end
+  def new
+    render
+  end
 
-<%= "  " * counter %>  def edit
-<%= "  " * counter %>    render
-<%= "  " * counter %>  end
+  def edit
+    render
+  end
 
-<%= "  " * counter %>  def delete
-<%= "  " * counter %>    render
-<%= "  " * counter %>  end
+  def delete
+    render
+  end
 
-<%= "  " * counter %>  def create
-<%= "  " * counter %>    render
-<%= "  " * counter %>  end
+  def create
+    render
+  end
 
-<%= "  " * counter %>  def update
-<%= "  " * counter %>    render
-<%= "  " * counter %>  end
+  def update
+    render
+  end
 
-<%= "  " * counter %>  def destroy
-<%= "  " * counter %>    render
-<%= "  " * counter %>  end
-  
-<%= "  " * counter %>end
-<% counter = counter == 0 ? 0 : (counter - 1) -%>
-<% controller_modules.reverse.each_with_index do |mod, i| -%>
-<%= "  " * counter %>end # <%= mod %>
-<% counter = counter - 1 -%>
+  def destroy
+    render
+  end
+end
 <% end -%>

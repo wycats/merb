@@ -6,5 +6,7 @@ Merb-gen is now ported to templater, instead of rubigen. Some things are left to
 * Move test_unit stuff into merb-test-unit
 * Move part controller generator into merb-parts
 * Automatically infer ORM and testing framework (this should be easy, really)
+* Add migration generators
+* Add generators for session migrations
 
 * Fix remaining stuff in templater (see separate TODO)
