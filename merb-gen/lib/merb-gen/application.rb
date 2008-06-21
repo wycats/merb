@@ -13,7 +13,7 @@ module Merb::Generators
     
     first_argument :name, :required => true
     
-    template 'config/init.rb'
+    template :init_rb, 'config/init.rb'
     
     file_list <<-LIST
       app/controllers/application.rb
@@ -22,7 +22,7 @@ module Merb::Generators
       app/views/exceptions/internal_server_error.html.erb
       app/views/exceptions/not_acceptable.html.erb
       app/views/exceptions/not_found.html.erb
-      app/views/layouts/application.html.erb
+      app/views/layout/application.html.erb
       autotest/discover.rb
       autotest/merb.rb
       autotest/merb_rspec.rb
@@ -32,7 +32,6 @@ module Merb::Generators
       config/environments/test.rb
       config/rack.rb
       config/router.rb
-      public/.htaccess
       public/images/merb.jpg
       public/stylesheets/master.css
       public/merb.fcgi
@@ -42,7 +41,7 @@ module Merb::Generators
     file :spec, 'spec/spec_helper.rb', :testing_framework => :spec
     file :spec_opts, 'spec/spec.opts', :testing_framework => :spec
     file :test, 'test/test_helper.rb', :testing_framework => :test_unit
-    
+    file :htaccess, 'public/htaccess', 'public/.htaccess'
     
     def app_name
       self.name.snake_case
