@@ -1,5 +1,3 @@
-require 'sha1'
-
 module Merb::Generators
   
   class MerbGenerator < ApplicationGenerator
