@@ -10,10 +10,25 @@ module Merb::Generators
     option :orm, :default => :none, :desc => 'Specify which Object-Relation Mapper to use (none, activerecord, datamapper, sequel)'
     
     first_argument :name, :required => true
-    second_argument :attributes, :as => :hash
+    second_argument :attributes, :as => :hash, :default => {}
     
     template :model, :orm => :none do
       source('model.rbt')
+      destination('app/models/' + file_name + '.rb')
+    end
+    
+    template :model_activerecord, :orm => :activerecord do
+      source('model_activerecord.rbt')
+      destination('app/models/' + file_name + '.rb')
+    end
+    
+    template :model_datamapper, :orm => :datamapper do
+      source('model_datamapper.rbt')
+      destination('app/models/' + file_name + '.rb')
+    end
+    
+    template :model_sequel, :orm => :sequel do
+      source('model_sequel.rbt')
       destination('app/models/' + file_name + '.rb')
     end
     
