@@ -74,4 +74,21 @@ describe Merb::Generators::ControllerGenerator do
     end
   end
   
+  describe "#full_class_name" do
+    it "should camelize the name" do
+      @generator.name = "project_pictures"
+      @generator.full_class_name.should == "ProjectPictures"
+    end
+    
+    it "should leave double colon separated chunks" do
+      @generator.name = "Test::Monkey::ProjectPictures"
+      @generator.full_class_name.should == "Test::Monkey::ProjectPictures"
+    end
+    
+    it "should convert slashes to double colons and camel case" do
+      @generator.name = "test/monkey/project_pictures"
+      @generator.full_class_name.should == "Test::Monkey::ProjectPictures"
+    end
+  end
+  
 end
