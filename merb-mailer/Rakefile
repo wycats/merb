@@ -1,4 +1,5 @@
 require 'rubygems'
+require "rake/rdoctask"
 require 'rake/gempackagetask'
 require "spec/rake/spectask"
 require 'merb-core/tasks/merb_rake_helper'
@@ -15,8 +16,6 @@ spec = Gem::Specification.new do |s|
   s.name = NAME
   s.version = GEM_VERSION
   s.platform = Gem::Platform::RUBY
-  s.has_rdoc = true
-  s.extra_rdoc_files = ["README", "LICENSE", 'TODO']
   s.summary = SUMMARY
   s.description = s.summary
   s.author = AUTHOR
@@ -25,7 +24,10 @@ spec = Gem::Specification.new do |s|
   s.add_dependency('merb-core', '>= 0.9.4')
   s.add_dependency("mailfactory", ">= 1.2.3")
   s.require_path = 'lib'
-  s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,spec,merb_generators}/**/*")
+  s.files = %w(LICENSE README.textile Rakefile TODO) + Dir.glob("{lib,spec,merb_generators}/**/*")
+  
+  s.has_rdoc = true
+  s.extra_rdoc_files = ["README.textile", "LICENSE", 'TODO']  
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|
