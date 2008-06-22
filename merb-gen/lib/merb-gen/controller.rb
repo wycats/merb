@@ -15,10 +15,15 @@ module Merb::Generators
       destination("app/controllers/#{file_name}.rb")
     end
     
-    #template :helpers do
-    #  source('helpers.rbt')
-    #  destination("app/helpers/#{file_name}_helpers.rb")
-    #end
+    template :helpers do
+      source('helpers.rbt')
+      destination("app/helpers/#{file_name}_helpers.rb")
+    end
+    
+    template :index do
+      source('index.html.erbt')
+      destination("app/views/#{file_name}/index.html.erb")
+    end
     
     #template :spec, :testing_framework => :spec do
     #  source('spec.rbt')
