@@ -15,9 +15,9 @@ module Merb::Generators
       destination("app/controllers/#{file_name}.rb")
     end
     
-    template :helpers do
-      source('helpers.rbt')
-      destination("app/helpers/#{file_name}_helpers.rb")
+    template :helper do
+      source('helper.rbt')
+      destination("app/helpers/#{file_name}_helper.rb")
     end
     
     template :index do
