@@ -13,14 +13,15 @@ module Merb
       # Inside a template, wraps a block of code properly in modules, keeping the indentation correct
       # TODO: spec me
       def with_modules(modules, options={}, &block)
+        indent = options[:indent] || 0
         text = capture(&block)
         modules.each_with_index do |mod, i|
-          concat(("  " * (options[:indent] + i)) + "module #{mod}\n", block.binding)
+          concat(("  " * (indent + i)) + "module #{mod}\n", block.binding)
         end
         text = text.to_a.map{ |line| ("  " * modules.size) + line }.join
         concat(text, block.binding)
         modules.reverse.each_with_index do |mod, i|
-          concat(("  " * (options[:indent] + modules.size - i - 1)) + "end # #{mod}\n", block.binding)
+          concat(("  " * (indent + modules.size - i - 1)) + "end # #{mod}\n", block.binding)
         end
       end
     

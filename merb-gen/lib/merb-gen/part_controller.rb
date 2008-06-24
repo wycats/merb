@@ -20,7 +20,7 @@ module Merb::Generators
     
     template :index do
       source('index.html.erbt')
-      destination("app/parts/views/#{file_name}/index.html.erb")
+      destination("app/parts/views/#{file_name}_part/index.html.erb")
     end
     
     def controller_modules
@@ -40,7 +40,7 @@ module Merb::Generators
     end
     
     def source_root
-      File.join(super, 'controller')
+      File.join(super, 'part_controller')
     end
     
     protected
@@ -51,6 +51,6 @@ module Merb::Generators
     
   end
   
-  add :part_controller, PartControllerGenerator
+  add :part, PartControllerGenerator
   
 end
