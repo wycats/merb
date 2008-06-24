@@ -193,7 +193,7 @@ with text method of mailer and html body with html method, respectively.
 
 h2. Testing mailers.
 
-A word of warning: merb-mailer does not raise exceptions when you template is not found.
+A word of warning: merb-mailer does not raise exceptions when your template is not found.
 So if nothing gets rendered, check merb test environment log to make sure you have no
 warnings. If it is considered a bug, file a ticket to LightHouse.
 
