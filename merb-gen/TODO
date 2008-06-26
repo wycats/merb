@@ -8,5 +8,6 @@ Merb-gen is now ported to templater, instead of rubigen. Some things are left to
 * Automatically infer ORM and testing framework (this should be easy, really)
 * Add migration generators
 * Add generators for session migrations
+* Change ActiveRecord migrations to use new datestamp format
 
 * Fix remaining stuff in templater (see separate TODO)
