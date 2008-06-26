@@ -10,7 +10,7 @@ describe Merb::Generators::ModelGenerator do
   
   it "should default to the rspec testing framework" do
     @generator = Merb::Generators::ModelGenerator.new('/tmp', {}, 'User')
-    @generator.testing_framework.should == :spec
+    @generator.testing_framework.should == :rspec
   end
   
   it "should have the model and spec templates by default" do
@@ -24,7 +24,7 @@ describe Merb::Generators::ModelGenerator do
   end
   
   it "should have the model and spec templates if spec is specified as testing framework" do
-    @generator = Merb::Generators::ModelGenerator.new('/tmp', { :testing_framework => :spec }, 'User')
+    @generator = Merb::Generators::ModelGenerator.new('/tmp', { :testing_framework => :rspec }, 'User')
     @generator.templates.map{|t| t.name}.should == [:model, :spec]
   end
   

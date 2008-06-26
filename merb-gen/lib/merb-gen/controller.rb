@@ -6,7 +6,7 @@ module Merb::Generators
       This is a controller generator
     DESC
     
-    option :testing_framework, :default => :spec, :desc => 'Specify which testing framework to use (spec, test_unit)'
+    option :testing_framework, :desc => 'Specify which testing framework to use (spec, test_unit)'
     
     first_argument :name, :required => true
     
@@ -25,12 +25,12 @@ module Merb::Generators
       destination("app/views/#{file_name}/index.html.erb")
     end
     
-    template :helper_spec, :testing_framework => :spec do
+    template :helper_spec, :testing_framework => :rspec do
       source('helper_spec.rbt')
       destination("spec/helpers/#{file_name}_helper_spec.rb")
     end
     
-    template :controller_spec, :testing_framework => :spec do
+    template :controller_spec, :testing_framework => :rspec do
       source('controller_spec.rbt')
       destination("spec/controllers/#{file_name}_spec.rb")
     end

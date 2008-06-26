@@ -90,7 +90,7 @@ end
 # merb-core provides support for RSpec.
 #
 <%= "# " unless testing_framework == :test_unit %>use_test :test_unit
-<%= "# " unless testing_framework == :spec %>use_test :rspec
+<%= "# " unless testing_framework == :rspec %>use_test :rspec
 
 #
 # ==== Set up your basic configuration

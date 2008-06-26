@@ -6,7 +6,7 @@ module Merb::Generators
       This generates a full merb application
     DESC
     
-    option :testing_framework, :default => :spec, :desc => 'Specify which testing framework to use (spec, test_unit)'
+    option :testing_framework, :default => :rspec, :desc => 'Specify which testing framework to use (spec, test_unit)'
     option :orm, :default => :none, :desc => 'Specify which Object-Relation Mapper to use (none, activerecord, datamapper, sequel)'
     
     first_argument :name, :required => true
@@ -36,8 +36,8 @@ module Merb::Generators
       Rakefile
     LIST
 
-    file :spec, 'spec/spec_helper.rb', :testing_framework => :spec
-    file :spec_opts, 'spec/spec.opts', :testing_framework => :spec
+    file :spec, 'spec/spec_helper.rb', :testing_framework => :rspec
+    file :spec_opts, 'spec/spec.opts', :testing_framework => :rspec
     file :test, 'test/test_helper.rb', :testing_framework => :test_unit
     file :htaccess, 'public/htaccess', 'public/.htaccess'
     

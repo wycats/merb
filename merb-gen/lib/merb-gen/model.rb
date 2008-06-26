@@ -6,11 +6,16 @@ module Merb::Generators
       This is a model generator
     DESC
     
-    option :testing_framework, :default => :spec, :desc => 'Specify which testing framework to use (spec, test_unit)'
-    option :orm, :default => :none, :desc => 'Specify which Object-Relation Mapper to use (none, activerecord, datamapper, sequel)'
+    option :testing_framework, :desc => 'Specify which testing framework to use (spec, test_unit)'
+    option :orm, :desc => 'Specify which Object-Relation Mapper to use (none, activerecord, datamapper, sequel)'
     
     first_argument :name, :required => true
     second_argument :attributes, :as => :hash, :default => {}
+    
+    # TODO: this is how the syntax for invoking other generators *should* look like, refactor in templater!
+    #invoke :migration do |generator|
+    #  generator.new(destination_root, options.merge(:model => true), *arguments)
+    #end
     
     template :model, :orm => :none do
       source('model.rbt')
@@ -32,7 +37,7 @@ module Merb::Generators
       destination('app/models/' + file_name + '.rb')
     end
     
-    template :spec, :testing_framework => :spec do
+    template :spec, :testing_framework => :rspec do
       source('spec.rbt')
       destination('spec/models/' + file_name + '_spec.rb')
     end
