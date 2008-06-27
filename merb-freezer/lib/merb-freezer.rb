@@ -1,6 +1,9 @@
+<<<<<<< HEAD:merb-freezer/lib/merb-freezer.rb
+=======
 require 'merb-freezer/freezer'
 require 'fileutils'
 
+>>>>>>> new_merb_gen:merb-freezer/lib/merb-freezer.rb
 # make sure we're running inside Merb
 if defined?(Merb::Plugins)
 

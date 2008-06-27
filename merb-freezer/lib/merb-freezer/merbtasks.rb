@@ -1,3 +1,9 @@
+<<<<<<< HEAD:merb-freezer/lib/merb-freezer/merbtasks.rb
+namespace :merb_freezer do
+  desc "Do something for merb-freezer"
+  task :default do
+    puts "merb-freezer doesn't do anything"
+=======
 require File.dirname(__FILE__) + "/../merb-freezer"
 
 task :freeze => Freezer.components.keys.map { |component| "freeze:#{component}" }
@@ -7,7 +13,11 @@ namespace :freeze do
     task component do
       Freezer.freeze(component, ENV["UPDATE"], ENV["MODE"])
     end
+>>>>>>> new_merb_gen:merb-freezer/lib/merb-freezer/merbtasks.rb
   end
+<<<<<<< HEAD:merb-freezer/lib/merb-freezer/merbtasks.rb
+end
+=======
 end
 
 namespace :freeze do
@@ -26,3 +36,4 @@ namespace :freeze do
   end
   
 end
+>>>>>>> new_merb_gen:merb-freezer/lib/merb-freezer/merbtasks.rb

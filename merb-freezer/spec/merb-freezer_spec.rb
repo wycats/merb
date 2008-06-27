@@ -1,11 +1,18 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
 describe "merb-freezer" do
+<<<<<<< HEAD:merb-freezer/spec/merb-freezer_spec.rb
+  it "should do nothing" do
+    true.should == true
+=======
   
   before(:each) do
     FileUtils.rm_rf('framework')
     FileUtils.rm_rf('gems')
+>>>>>>> new_merb_gen:merb-freezer/spec/merb-freezer_spec.rb
   end
+<<<<<<< HEAD:merb-freezer/spec/merb-freezer_spec.rb
+=======
   
   after(:all) do
     FileUtils.rm_rf('framework')
@@ -64,4 +71,5 @@ describe "merb-freezer" do
     Dir['gems/gems/googlecharts-1.*'].join(' ').include?('gems/gems/googlecharts-').should be_true
   end
   
+>>>>>>> new_merb_gen:merb-freezer/spec/merb-freezer_spec.rb
 end
