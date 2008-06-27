@@ -1,4 +1,16 @@
+module ExtraActions
+  def self.included(base)
+    base.show_action(:funky_inherited_method)
+  end
+  
+  def funky_inherited_method(foo, bar)
+    "#{foo} #{bar}"
+  end
+end
+
+
 class ActionArgs < Merb::Controller
+  include ExtraActions
   
   def index(foo)
     foo
@@ -18,6 +30,10 @@ class ActionArgs < Merb::Controller
   
   define_method :dynamic_define_method do
     "mos def"
+  end
+  
+  def with_default_nil(foo, bar = nil)
+    "#{foo} #{bar}"
   end
   
 end

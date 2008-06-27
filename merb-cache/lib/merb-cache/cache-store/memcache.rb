@@ -6,13 +6,13 @@ class Merb::Cache::MemcacheStore
     prepare
   end
 
-  class NotReady < Exception #:nodoc:
+  class NotReady < Exception
     def initialize
       super("Memcache server is not ready")
     end
   end
 
-  class NotDefined < Exception #:nodoc:
+  class NotDefined < Exception
     def initialize
       super("Memcache is not defined (require it in init.rb)")
     end

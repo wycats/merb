@@ -6,7 +6,7 @@ class Merb::Cache::DatabaseStore
     prepare
   end
 
-  class OrmNotFound < Exception #:nodoc:
+  class OrmNotFound < Exception #
     def initialize
       super("No valid ORM found (did you specify use_orm in init.rb?)")
     end

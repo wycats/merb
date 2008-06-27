@@ -29,7 +29,7 @@ describe "A Merb PartController" do
   
   it "should render the html format by default to the controller that set it" do
     controller = dispatch_to(Main, :index4)
-    controller.body.should match(/part_html_format/m) 
+    controller.body.should match(/part_html_format/m)
   end
   
   it "should render the xml format according to the controller" do
@@ -52,6 +52,10 @@ describe "A Merb PartController" do
     controller.body.should match( /Do this/)
   end
   
+  it "should render a template from an absolute path" do
+    controller = dispatch_to(Main, :parth_with_absolute_template)
+    controller.body.should match(/part_html_format/m)
+  end
   
 end  
 
@@ -68,4 +72,13 @@ describe "A Merb Part Controller with urls" do
     the_url.should == "/main/bar"
   end
 
+end
+
+describe "A Merb Part Controller inheriting from another Part Controller" do
+  
+  it "should inherit the _template_root" do
+    TodoPart._template_root.should == File.expand_path(File.dirname(__FILE__) / 'fixtures' / 'parts' / 'views')
+    TodoPart._template_root.should == DonePart._template_root
+  end
+  
 end

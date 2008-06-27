@@ -1,23 +1,25 @@
 ## THESE ARE CRUCIAL
 module Merb
   # Set this to the version of merb-core that you are building against/for
-  VERSION = "0.9.2"
+  VERSION = "0.9.4"
 
   # Set this to the version of merb-more you plan to release
-  MORE_VERSION = "0.9.2"
+  MORE_VERSION = "0.9.4"
 end
 
 require "rake/clean"
 require "rake/gempackagetask"
+require 'merb-core/tasks/merb_rake_helper'
 require 'fileutils'
 include FileUtils
 
 gems = %w[
   merb-action-args merb-assets merb-gen merb-haml
-  merb-builder merb-mailer merb-parts merb-cache
+  merb-builder merb-mailer merb-parts merb-cache merb-freezer merb-slices
 ]
 
 merb_more_spec = Gem::Specification.new do |s|
+  s.rubyforge_project = 'merb'
   s.name         = "merb-more"
   s.version      = Merb::MORE_VERSION
   s.platform     = Gem::Platform::RUBY
@@ -34,6 +36,7 @@ merb_more_spec = Gem::Specification.new do |s|
 end
 
 merb_spec = Gem::Specification.new do |s|
+  s.rubyforge_project = 'merb'
   s.name         = "merb"
   s.version      = Merb::MORE_VERSION
   s.platform     = Gem::Platform::RUBY
@@ -50,13 +53,6 @@ end
 
 CLEAN.include ["**/.*.sw?", "pkg", "lib/*.bundle", "*.gem", "doc/rdoc", ".config", "coverage", "cache", "lib/merb-more.rb"]
 
-windows = (PLATFORM =~ /win32|cygwin/) rescue nil
-
-SUDO = windows ? "" : "sudo"
-
-# desc "Installs Merb More."
-# task :default => :install
-
 Rake::GemPackageTask.new(merb_more_spec) do |package|
   package.gem_spec = merb_more_spec
 end
@@ -65,10 +61,11 @@ Rake::GemPackageTask.new(merb_spec) do |package|
   package.gem_spec = merb_spec
 end
 
+gem_home = ENV['GEM_HOME'] ? "GEM_HOME=#{ENV['GEM_HOME']}" : ""
 desc "Install it all"
 task :install => [:install_gems, :package] do
-  sh %{#{SUDO} gem install --local pkg/merb-more-#{Merb::MORE_VERSION}.gem  --no-update-sources}
-  sh %{#{SUDO} gem install --local pkg/merb-#{Merb::MORE_VERSION}.gem --no-update-sources}
+  sh %{#{sudo} gem install #{install_home} --local pkg/merb-more-#{Merb::MORE_VERSION}.gem  --no-update-sources}
+  sh %{#{sudo} gem install #{install_home} --local pkg/merb-#{Merb::MORE_VERSION}.gem --no-update-sources}
 end
 
 desc "Build the merb-more gems"
@@ -88,7 +85,7 @@ end
 desc "Uninstall the merb-more sub-gems"
 task :uninstall_gems do
   gems.each do |sub_gem|
-    sh %{#{SUDO} gem uninstall #{sub_gem}}
+    sh %{#{sudo} gem uninstall #{sub_gem}}
   end
 end
 
@@ -111,9 +108,6 @@ task :bundle => [:package, :build_gems] do
   cp "pkg/merb-#{Merb::MORE_VERSION}.gem", "bundle"
   cp "pkg/merb-more-#{Merb::MORE_VERSION}.gem", "bundle"
   gems.each do |gem|
-    File.open("#{gem}/Rakefile") do |rakefile|
-      rakefile.read.detect {|l| l =~ /^VERSION\s*=\s*"(.*)"$/ }
-      sh %{cp #{gem}/pkg/#{gem}-#{$1}.gem bundle/}
-    end
+    sh %{cp #{gem}/pkg/#{gem}-#{Merb::MORE_VERSION}.gem bundle/}
   end
 end

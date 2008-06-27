@@ -103,4 +103,35 @@ describe "merb-cache-action" do
     CACHE.cached_action?(:key => "/cache_controller/action4/id1/id2").should be_false
   end
 
+  it "should allow :if conditions with procs" do
+    c = get("/cache_controller/action8")
+    CACHE.cached_action?(:key => "/cache_controller/action8").should be_false
+
+    c = get("/cache_controller/action8/cache")
+    CACHE.cached_action?(:key => "/cache_controller/action8/cache").should be_true
+  end
+
+  it "should allow :unless conditions with procs" do
+    c = get("/cache_controller/action9")
+    CACHE.cached_action?(:key => "/cache_controller/action9").should be_false
+
+    c = get("/cache_controller/action9/cache")
+    CACHE.cached_action?(:key => "/cache_controller/action9/cache").should be_true
+  end
+
+  it "should allow :if conditions with symbols" do
+    c = get("/cache_controller/action10")
+    CACHE.cached_action?(:key => "/cache_controller/action10").should be_false
+
+    c = get("/cache_controller/action10/cache")
+    CACHE.cached_action?(:key => "/cache_controller/action10/cache").should be_true
+  end
+
+  it "should allow :unless conditions with symbols" do
+    c = get("/cache_controller/action11")
+    CACHE.cached_action?(:key => "/cache_controller/action11").should be_false
+
+    c = get("/cache_controller/action11/cache")
+    CACHE.cached_action?(:key => "/cache_controller/action11/cache").should be_true
+  end
 end

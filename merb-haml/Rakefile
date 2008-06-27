@@ -1,17 +1,18 @@
 require 'rubygems'
 require 'rake/gempackagetask'
+require 'merb-core/tasks/merb_rake_helper'
 
-PLUGIN = "merb-haml"
 NAME = "merb-haml"
-VERSION = "0.9.2"
+GEM_VERSION = Merb::MORE_VERSION rescue "0.9.4"
 AUTHOR = "Yehuda Katz"
 EMAIL = "ykatz@engineyard.com"
-HOMEPAGE = "http://merb-plugins.rubyforge.org/merb-haml/"
+HOMEPAGE = "http://merbivore.com/"
 SUMMARY = "Merb plugin that provides HAML support"
 
 spec = Gem::Specification.new do |s|
+  s.rubyforge_project = 'merb'
   s.name = NAME
-  s.version = VERSION
+  s.version = GEM_VERSION
   s.platform = Gem::Platform::RUBY
   s.has_rdoc = true
   s.extra_rdoc_files = ["README", "LICENSE", 'TODO']
@@ -20,10 +21,10 @@ spec = Gem::Specification.new do |s|
   s.author = AUTHOR
   s.email = EMAIL
   s.homepage = HOMEPAGE
-  s.add_dependency('merb-core', '>= 0.9.2')
+  s.add_dependency('merb-core', '>= 0.9.4')
+  s.add_dependency('haml', '>= 1.8.2')
   s.require_path = 'lib'
-  s.autorequire = PLUGIN
-  s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,specs}/**/*")
+  s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,spec}/**/*")
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|
@@ -31,14 +32,14 @@ Rake::GemPackageTask.new(spec) do |pkg|
 end
 
 task :install => [:package] do
-  sh %{sudo gem install pkg/#{NAME}-#{VERSION} --no-update-sources}
+  sh %{#{sudo} gem install #{install_home} pkg/#{NAME}-#{GEM_VERSION} --no-update-sources}
 end
 
 namespace :jruby do
 
   desc "Run :package and install the resulting .gem with jruby"
   task :install => :package do
-    sh %{#{SUDO} jruby -S gem install pkg/#{NAME}-#{Merb::VERSION}.gem --no-rdoc --no-ri}
+    sh %{#{sudo} jruby -S gem install #{install_home} pkg/#{NAME}-#{GEM_VERSION}.gem --no-rdoc --no-ri}
   end
-  
+
 end

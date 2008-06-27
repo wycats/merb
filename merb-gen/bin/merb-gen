@@ -1,16 +1,15 @@
 #!/usr/bin/env ruby
 
-at_exit { exit }
+require 'rubygems'
+require 'merb-core'
+require 'merb-gen'
 
-command = ARGV.shift if %w(generate destroy update).include?(ARGV[0])
-
-%w(rubygems merb-core).each do |file|
-  require file
-end
+application = false # TODO: figure out a way to infer this
 
 # start merb
 Merb.start :environment => 'development', :log_level => 'error'
 
+<<<<<<< HEAD:merb-gen/bin/merb-gen
 # remove dependency
 module Kernel
   undef dependency if defined?(Kernel.dependency)
@@ -97,3 +96,6 @@ else
     puts e.message
   end  
 end
+=======
+Merb::Generators.run_cli(Dir.pwd, 'merb-gen', Merb::VERSION, ARGV)
+>>>>>>> new_merb_gen:merb-gen/bin/merb-gen

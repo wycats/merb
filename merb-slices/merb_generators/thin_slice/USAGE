@@ -1,0 +1,3 @@
+Creates a thin Merb slice stub.
+
+USAGE: merb-gen thin_slice your-lowercase-slice-name
