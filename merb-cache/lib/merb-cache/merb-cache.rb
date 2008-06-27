@@ -39,7 +39,7 @@ class Merb::Cache
   #   If the cache_store mentionned in the config is unknown
   def start
     @config = DEFAULT_CONFIG.merge(Merb::Plugins.config[:merb_cache] || {})
-    if @config[:disable] == true || Merb.environment == @config[:disable]
+    if @config[:disable] == true || Merb.environment.to_s == @config[:disable].to_s
       config[:disable_page_caching] = true
       config[:store] = "dummy"
     end
