@@ -3,7 +3,7 @@ if defined?(Merb::Plugins)
   # so raise unless it's so: usually happens in test
   # environment with Merb.start_environment is placed
   # below require 'merb-slices'.
-  raise "you have to start Merb environment before loading slices: make sure you have Merb.start_environment line above require 'merb-slices' in your spec helper. This usually should never arise in development/production environments." unless Merb.started?
+  raise "you have to start Merb environment before loading slices: make sure you have Merb.start_environment line above require 'merb-slices' in your spec helper. This usually should never arise in development/production environments." unless Merb.instance_variable_get("@started")
   
   require 'merb-slices/module'
   
