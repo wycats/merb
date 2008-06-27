@@ -16,29 +16,16 @@ module Merb::Generators
       destination("app/controllers/#{file_name}.rb")
     end
     
+    [:index, :show, :edit, :new].each do |view|
+      file "view_#{view}".to_sym, :orm => :none do
+        source("views/#{view}.html.erb")
+        destination("app/views/#{file_name}/#{view}.rb")
+      end
+    end
+    
     template :helpers do
       source("helpers.rbt")
       destination("app/helpers/#{file_name}_helper.rb")
-    end
-    
-    template :view_index, :orm => :none do
-      source("views/index.html.erbt")
-      destination("app/helpers/#{file_name}/index.rb")
-    end
-    
-    template :view_show, :orm => :none do
-      source("views/show.html.erbt")
-      destination("app/helpers/#{file_name}/show.html.erb")
-    end
-    
-    template :view_edit, :orm => :none do
-      source("views/edit.html.erbt")
-      destination("app/helpers/#{file_name}/edit.html.erb")
-    end
-    
-    template :view_new, :orm => :none do
-      source("views/new.html.erbt")
-      destination("app/helpers/#{file_name}/new.html.erb")
     end
     
     def controller_modules
