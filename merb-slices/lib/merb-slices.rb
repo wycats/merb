@@ -1,6 +1,5 @@
-require 'merb-slices/module'
-
 if defined?(Merb::Plugins)
+  require 'merb-slices/module'
   
   Merb::Plugins.add_rakefiles "merb-slices/merbtasks"
   
