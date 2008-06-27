@@ -63,4 +63,30 @@ describe Merb::Generators::ModelGenerator do
   
   end
   
+  describe '#invocations' do
+  
+    before(:each) do
+      @generator.attributes = { 'test' => 'string', 'blah' => 'integer' }
+      @invocation = @generator.invocations.first
+    end
+  
+    it "should invoke a migration" do
+      @invocation.should be_kind_of(Merb::Generators::MigrationGenerator)
+    end
+    
+    it "should have the same name as the model" do
+      @invocation.name.should == "SomeMoreStuff"
+    end
+    
+    it "should have the same attributes" do
+      @invocation.attributes['test'].should == 'string'
+      @invocation.attributes['blah'].should == 'integer'
+    end
+    
+    it "should set the options 'model' to true" do
+      @invocation.options[:model].should be_true
+    end
+  
+  end
+  
 end

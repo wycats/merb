@@ -12,10 +12,9 @@ module Merb::Generators
     first_argument :name, :required => true
     second_argument :attributes, :as => :hash, :default => {}
     
-    # TODO: this is how the syntax for invoking other generators *should* look like, refactor in templater!
-    #invoke :migration do |generator|
-    #  generator.new(destination_root, options.merge(:model => true), *arguments)
-    #end
+    invoke :migration do |generator|
+      generator.new(destination_root, options.merge(:model => true), name, attributes)
+    end
     
     template :model, :orm => :none do
       source('model.rbt')
