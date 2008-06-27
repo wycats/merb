@@ -16,8 +16,8 @@ module Merb::Cache::ControllerClassMethods
   # ==== Examples
   #   cache_action :mostly_static
   #   cache_action :barely_dynamic, 10
-  def cache_action(action, from_now = nil)
-    cache_actions([action, from_now])
+  def cache_action(action, from_now = nil, opts = {})
+    cache_actions([action, from_now, opts])
   end
 
   # Register actions for action caching (before and after filters)
@@ -28,11 +28,22 @@ module Merb::Cache::ControllerClassMethods
   # ==== Example
   #   cache_actions :mostly_static, [:barely_dynamic, 10]
   def cache_actions(*actions)
+<<<<<<< HEAD:merb-cache/lib/merb-cache/cache-action.rb
     if actions.any? && !Merb::Cache.cached_actions.key?(controller_name)
       before(:cache_action_before)
       after(:cache_action_after)
     end
     actions.each do |action, from_now| 
+=======
+    actions.each do |action, from_now, opts|
+      from_now, opts = nil, from_now if Hash === from_now
+      
+      before("cache_#{action}_before", opts.merge(:only => action))
+      after("cache_#{action}_after", opts.merge(:only => action))
+      alias_method "cache_#{action}_before", :cache_action_before
+      alias_method "cache_#{action}_after", :cache_action_after
+      
+>>>>>>> new_merb_gen:merb-cache/lib/merb-cache/cache-action.rb
       _actions = Merb::Cache.cached_actions[controller_name] ||= {}
       _actions[action] = from_now
     end

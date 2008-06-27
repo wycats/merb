@@ -26,4 +26,8 @@ class Main < Merb::Controller
     render
   end
   
+  def parth_with_absolute_template
+    part(TodoPart => :parth_with_absolute_template)
+  end
+  
 end

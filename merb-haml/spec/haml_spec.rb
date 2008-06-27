@@ -11,7 +11,7 @@ describe "HAML" do
     c.body.should == ::Haml::Engine.new("#foo\n  %p Partial").render
   end
 
-  it "should use the haml configuration in Merb::Config" do
+  it "should use the haml configuration in Merb::Plugins.config" do
     c = dispatch_to(HamlConfig, :index)
     c.body.should == ::Haml::Engine.new("#foo\n  %foo", :autoclose => ["foo"]).render
   end

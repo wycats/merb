@@ -1,6 +1,7 @@
 merb-freezer
 ============
 
+<<<<<<< HEAD:merb-freezer/README
 This plugin lets you freeze Merb and run it using the frozen gems. 
 
 ==Why would you want to freeze Merb?
@@ -29,3 +30,6 @@ Instead of starting merb by typing "merb" in your console, type "frozen-merb" an
 
 
 If frozen-merb can't find frozen gems in /framework or /gems then Merb will start normally using the system's gems.
+=======
+see README.markdown
+>>>>>>> new_merb_gen:merb-freezer/README

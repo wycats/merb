@@ -33,4 +33,24 @@ describe "Builder" do
     end
     c.body.should == xml.target!
   end
+  
+  it "should capture_builder properly" do
+    c = dispatch_to(CaptureBuilder, :index, :format => "xml")
+    xml = ::Builder::XmlMarkup.new :indent => 4
+    xml.instruct!
+    xml.comment! "I would not say such things if I were you"
+    xml.node 'Capture'
+    
+    c.body.should == xml.target!
+  end
+  
+  it "should concat_builder properly" do
+    c = dispatch_to(ConcatBuilder, :index, :format => "xml")
+    xml = ::Builder::XmlMarkup.new :indent => 4
+    xml.instruct!
+    xml.node 'Concat'
+    
+    c.body.should == xml.target!.chomp
+  end
+  
 end

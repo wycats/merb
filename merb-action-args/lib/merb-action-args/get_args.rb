@@ -1,10 +1,20 @@
+require 'parse_tree'
 require 'ruby2ruby'
 
-class ParseTreeArray < Array #:nodoc:
+class ParseTreeArray < Array
   def self.translate(*args)
-    self.new(ParseTree.translate(*args))
+    sexp = ParseTree.translate(*args)
+    # ParseTree.translate returns [nil] if called on an inherited method, so walk
+    # up the inheritance chain to find the class that the method was defined in
+    unless sexp.first
+      klass = args.first.ancestors.detect do |klass| 
+        klass.public_instance_methods(false).include?(args.last.to_s)
+      end
+      sexp = ParseTree.translate(klass, args.last) if klass
+    end
+    self.new(sexp)
   end
-
+  
   def deep_array_node(type = nil)
     each do |node|
       return ParseTreeArray.new(node) if node.is_a?(Array) && (!type || node[0] == type)
@@ -26,20 +36,19 @@ class ParseTreeArray < Array #:nodoc:
       # method defined with def keyword
       args = arg_node.arg_nodes
       default_node = arg_node.deep_array_node(:block)
-      return args unless default_node
+      return [args, []] unless default_node
     else
       # assuming method defined with Module#define_method
-      return []
+      return [[],[]]
     end
     
     # if it was defined with def, and we found the default_node,
     # that should bring us back to regularly scheduled programming..
-    
     lasgns = default_node[1..-1]
     lasgns.each do |asgn|
       args.assoc(asgn[1]) << eval(RubyToRuby.new.process(asgn[2]))
     end
-    args
+    [args, (default_node[1..-1].map { |asgn| asgn[1] })]
   end
 
 end
@@ -75,10 +84,10 @@ module GetArgs
   end
 end
 
-class UnboundMethod #:nodoc:
+class UnboundMethod
   include GetArgs
 end
 
-class Method  #:nodoc:
+class Method
   include GetArgs
 end
