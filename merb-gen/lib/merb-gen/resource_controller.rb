@@ -11,16 +11,21 @@ module Merb::Generators
     
     first_argument :name, :required => true
     
-    template :controller do
-      source("controller.rbt")
-      destination("app/controllers/#{file_name}.rb")
-    end
+    # add controller and view templates for each of the four big ORM's
+    [:none, :activerecord, :sequel, :datamapper].each do |orm|
     
-    [:index, :show, :edit, :new].each do |view|
-      file "view_#{view}".to_sym, :orm => :none do
-        source("views/#{view}.html.erb")
-        destination("app/views/#{file_name}/#{view}.rb")
+      template "controller_#{orm}".to_sym, :orm => orm do
+        source("controller_#{orm}.rbt")
+        destination("app/controllers/#{file_name}.rb")
       end
+    
+      [:index, :show, :edit, :new].each do |view|
+        file "view_#{view}_#{orm}".to_sym, :orm => orm do
+          source("views_#{orm}/#{view}.html.erb")
+          destination("app/views/#{file_name}/#{view}.rb")
+        end
+      end
+    
     end
     
     template :helpers do

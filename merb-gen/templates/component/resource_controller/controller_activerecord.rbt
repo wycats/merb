@@ -1,68 +1,57 @@
-<% counter = 0 -%>
-<% controller_modules.each_with_index do |mod, i| -%>
-<%= "  " * i %>module <%= mod %>
-<% counter = i -%>
-<% end -%>
-<% counter = counter == 0 ? 0 : (counter + 1) -%>
-<%= "  " * counter %>class <%= controller_class_name %> < Application
-<%= "  " * counter %>  # provides :xml, :yaml, :js
+class <%= controller_class_name %> < Application
+  # provides :xml, :yaml, :js
 
-<%= "  " * counter %>  def index
-<%= "  " * counter %>    @<%= plural_model %> = <%= model_class_name %>.find(:all)
-<%= "  " * counter %>    display @<%= plural_model %>
-<%= "  " * counter %>  end
+  def index
+    @<%= plural_model %> = <%= model_class_name %>.find(:all)
+    display @<%= plural_model %>
+  end
 
-<%= "  " * counter %>  def show
-<%= "  " * counter %>    @<%= singular_model %> = <%= model_class_name %>.find_by_id(params[:id])
-<%= "  " * counter %>    raise NotFound unless @<%= singular_model %>
-<%= "  " * counter %>    display @<%= singular_model %>
-<%= "  " * counter %>  end
+  def show
+    @<%= singular_model %> = <%= model_class_name %>.find_by_id(params[:id])
+    raise NotFound unless @<%= singular_model %>
+    display @<%= singular_model %>
+  end
 
-<%= "  " * counter %>  def new
-<%= "  " * counter %>    only_provides :html
-<%= "  " * counter %>    @<%= singular_model %> = <%= model_class_name %>.new(params[:<%= singular_model %>])
-<%= "  " * counter %>    render
-<%= "  " * counter %>  end
+  def new
+    only_provides :html
+    @<%= singular_model %> = <%= model_class_name %>.new(params[:<%= singular_model %>])
+    render
+  end
 
-<%= "  " * counter %>  def create
-<%= "  " * counter %>    @<%= singular_model %> = <%= model_class_name %>.new(params[:<%= singular_model %>])
-<%= "  " * counter %>    if @<%= singular_model %>.save
-<%= "  " * counter %>      redirect url(:<%= (controller_modules.collect{|m| m.downcase} << singular_model).join("_") %>, @<%= singular_model %>)
-<%= "  " * counter %>    else
-<%= "  " * counter %>      render :new
-<%= "  " * counter %>    end
-<%= "  " * counter %>  end
+  def create
+    @<%= singular_model %> = <%= model_class_name %>.new(params[:<%= singular_model %>])
+    if @<%= singular_model %>.save
+      redirect url(:<%= (controller_modules.collect{|m| m.downcase} << singular_model).join("_") %>, @<%= singular_model %>)
+    else
+      render :new
+    end
+  end
 
-<%= "  " * counter %>  def edit
-<%= "  " * counter %>    only_provides :html
-<%= "  " * counter %>    @<%= singular_model %> = <%= model_class_name %>.find_by_id(params[:id])
-<%= "  " * counter %>    raise NotFound unless @<%= singular_model %>
-<%= "  " * counter %>    render
-<%= "  " * counter %>  end
+  def edit
+    only_provides :html
+    @<%= singular_model %> = <%= model_class_name %>.find_by_id(params[:id])
+    raise NotFound unless @<%= singular_model %>
+    render
+  end
 
-<%= "  " * counter %>  def update
-<%= "  " * counter %>    @<%= singular_model %> = <%= model_class_name %>.find_by_id(params[:id])
-<%= "  " * counter %>    raise NotFound unless @<%= singular_model %>
-<%= "  " * counter %>    if @<%= singular_model %>.update_attributes(params[:<%= singular_model %>])
-<%= "  " * counter %>      redirect url(:<%= (controller_modules.collect{|m| m.downcase} << singular_model).join("_") %>, @<%= singular_model %>)
-<%= "  " * counter %>    else
-<%= "  " * counter %>      raise BadRequest
-<%= "  " * counter %>    end
-<%= "  " * counter %>  end
+  def update
+    @<%= singular_model %> = <%= model_class_name %>.find_by_id(params[:id])
+    raise NotFound unless @<%= singular_model %>
+    if @<%= singular_model %>.update_attributes(params[:<%= singular_model %>])
+      redirect url(:<%= (controller_modules.collect{|m| m.downcase} << singular_model).join("_") %>, @<%= singular_model %>)
+    else
+      raise BadRequest
+    end
+  end
 
-<%= "  " * counter %>  def destroy
-<%= "  " * counter %>    @<%= singular_model %> = <%= model_class_name %>.find_by_id(params[:id])
-<%= "  " * counter %>    raise NotFound unless @<%= singular_model %>
-<%= "  " * counter %>    if @<%= singular_model %>.destroy
-<%= "  " * counter %>      redirect url(:<%= (controller_modules.collect{|m| m.downcase} << singular_model).join("_") %>s)
-<%= "  " * counter %>    else
-<%= "  " * counter %>      raise BadRequest
-<%= "  " * counter %>    end
-<%= "  " * counter %>  end
+  def destroy
+    @<%= singular_model %> = <%= model_class_name %>.find_by_id(params[:id])
+    raise NotFound unless @<%= singular_model %>
+    if @<%= singular_model %>.destroy
+      redirect url(:<%= (controller_modules.collect{|m| m.downcase} << singular_model).join("_") %>s)
+    else
+      raise BadRequest
+    end
+  end
 
-<%= "  " * counter %>end
-<% counter = counter == 0 ? 0 : (counter - 1) -%>
-<% controller_modules.reverse.each_with_index do |mod, i| -%>
-<%= "  " * counter %>end # <%= mod %>
-<% counter = counter - 1 -%>
-<% end -%>
+end
