@@ -34,8 +34,8 @@ module Merb
               self.send(:extend, Merb::Slices::ControllerMixin::MixinMethods)
             end
             # Reference this controller's slice module
-            self.send(:class_inheritable_reader, :slice)
-            self.send(:write_inheritable_attribute, :slice, slice_mod)
+            self.class_inheritable_accessor :slice
+            self.slice = slice_mod
             # Setup template roots
             if options[:templates_for]
               self._template_root  = join_template_path(slice_mod.dir_for(options[:templates_for]), options[:path])
