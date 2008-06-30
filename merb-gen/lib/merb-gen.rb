@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'merb-core'
 require 'templater'
 require 'sha1'
 

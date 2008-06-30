@@ -9,7 +9,7 @@ describe Merb::Generators::MerbGenerator do
     end
     
     it "should have an init.rb" do
-      template = @generator.template(:init_rb)
+      template = @generator.template(:config_init_rb)
       template.destination.should == '/tmp/testing/config/init.rb'
     end
     

@@ -66,7 +66,7 @@ module Merb::Generators
       self.attributes.keys.map{|a| ":#{a}" }.compact.uniq.join(", ")
     end
     
-    def source_root
+    def self.source_root
       File.join(super, 'model')
     end
     

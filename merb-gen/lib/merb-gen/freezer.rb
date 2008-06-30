@@ -8,7 +8,7 @@ module Merb::Generators
     
     file :freezer, 'frozen_merb', 'script/frozen_merb'
     
-    def source_root
+    def self.source_root
       File.join(super, 'freezer')
     end
     

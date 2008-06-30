@@ -21,7 +21,7 @@ module Merb::Generators
       self.name.camel_case
     end
     
-    def source_root
+    def self.source_root
       File.join(super, 'merb_very_flat')
     end
     

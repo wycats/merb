@@ -39,7 +39,7 @@ module Merb::Generators
       self.name.snake_case
     end
     
-    def source_root
+    def self.source_root
       File.join(super, 'migration')
     end
     

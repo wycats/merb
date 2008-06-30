@@ -49,7 +49,7 @@ module Merb::Generators
       controller_class_name.snake_case
     end
     
-    def source_root
+    def self.source_root
       File.join(super, 'resource_controller')
     end
     

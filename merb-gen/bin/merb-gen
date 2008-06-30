@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
 require 'rubygems'
-require 'merb-core'
 require 'merb-gen'
 
 # start merb
