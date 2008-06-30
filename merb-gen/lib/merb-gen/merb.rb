@@ -6,6 +6,9 @@ module Merb::Generators
       File.join(super, 'merb')
     end
     
+    option :testing_framework, :default => :rspec, :desc => 'Specify which testing framework to use (spec, test_unit)'
+    option :orm, :default => :none, :desc => 'Specify which Object-Relation Mapper to use (none, activerecord, datamapper, sequel)'
+    
     desc <<-DESC
       This generates a full merb application
     DESC
