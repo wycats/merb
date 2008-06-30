@@ -18,3 +18,13 @@ require path / "model"
 require path / "resource_controller"
 require path / "resource"
 require path / "freezer"
+
+# Require all generators that plugins have added to merb, after the app has loaded.
+Merb::BootLoader.after_app_loads do
+  # TODO: remove this if statement once generator hooks are added to merb-core proper
+  if Merb.respond_to?(:generators)
+    Merb.generators.each do |file|
+      require file
+    end
+  end
+end

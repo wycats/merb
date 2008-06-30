@@ -3,7 +3,8 @@
 require 'rubygems'
 require 'merb-gen'
 
-# start merb
-Merb.start :environment => 'development', :log_level => 'error'
+Merb::BootLoader.after_app_loads do
+  Merb::Generators.run_cli(Dir.pwd, 'merb-gen', Merb::VERSION, ARGV)
+end
 
-Merb::Generators.run_cli(Dir.pwd, 'merb-gen', Merb::VERSION, ARGV)
+Merb.start :environment => 'development', :log_level => 'error'
