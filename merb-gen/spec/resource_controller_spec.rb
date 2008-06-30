@@ -74,4 +74,25 @@ describe Merb::Generators::ResourceControllerGenerator do
     end
   end
   
+  describe "#model_class_name" do
+    it "should camel case and singularize the controller name" do
+      @generator.name = "project_pictures"
+      @generator.model_class_name == "ProjectPicture"
+    end
+  end
+  
+  describe "#plural_model" do
+    it "should snake case the controller name" do
+      @generator.name = "ProjectPictures"
+      @generator.plural_model == "project_pictures"
+    end
+  end
+  
+  describe "#singular_model" do
+    it "should snake case and singularize the controller name" do
+      @generator.name = "ProjectPictures"
+      @generator.singular_model == "project_picture"
+    end
+  end
+  
 end

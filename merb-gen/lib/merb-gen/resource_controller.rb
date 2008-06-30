@@ -53,6 +53,18 @@ module Merb::Generators
       controller_class_name.snake_case
     end
     
+    def model_class_name
+      controller_class_name.singularize
+    end
+    
+    def plural_model
+      controller_class_name.snake_case
+    end
+    
+    def singular_model
+      plural_model.singularize
+    end
+    
     protected
     
     def chunks
