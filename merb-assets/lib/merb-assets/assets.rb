@@ -97,7 +97,7 @@ module Merb
     # An abstract class for bundling text assets into single files.
     class AbstractAssetBundler
       
-      class_inheritable_array :cached_bundles
+      class_inheritable_accessor :cached_bundles
       self.cached_bundles ||= []
       
       class << self
