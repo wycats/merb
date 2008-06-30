@@ -16,6 +16,10 @@ module Merb::Generators
     first_argument :name, :required => true
     second_argument :attributes, :as => :hash, :default => {}
     
+    invoke :helper do |generator|
+      generator.new(destination_root, options, name)
+    end
+    
     # add controller and view templates for each of the four big ORM's
     [:none, :activerecord, :sequel, :datamapper].each do |orm|
     
@@ -31,11 +35,6 @@ module Merb::Generators
         end
       end
     
-    end
-    
-    template :helpers do
-      source("helpers.rbt")
-      destination("app/helpers/#{file_name}_helper.rb")
     end
     
     def controller_modules
