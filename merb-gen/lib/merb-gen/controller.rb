@@ -1,6 +1,10 @@
 module Merb::Generators
   
   class ControllerGenerator < ComponentGenerator
+
+    def self.source_root
+      File.join(super, 'controller')
+    end
     
     desc <<-DESC
       This is a controller generator
@@ -58,10 +62,6 @@ module Merb::Generators
     
     def file_name
       controller_class_name.snake_case
-    end
-    
-    def self.source_root
-      File.join(super, 'controller')
     end
     
     protected

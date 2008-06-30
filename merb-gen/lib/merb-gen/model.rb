@@ -1,6 +1,10 @@
 module Merb::Generators
   
   class ModelGenerator < ComponentGenerator
+
+    def self.source_root
+      File.join(super, 'model')
+    end
     
     desc <<-DESC
       This is a model generator
@@ -64,10 +68,6 @@ module Merb::Generators
     
     def attributes_for_accessor
       self.attributes.keys.map{|a| ":#{a}" }.compact.uniq.join(", ")
-    end
-    
-    def self.source_root
-      File.join(super, 'model')
     end
     
   end

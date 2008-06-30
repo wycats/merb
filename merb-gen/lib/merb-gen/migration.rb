@@ -1,6 +1,10 @@
 module Merb::Generators
   
   class MigrationGenerator < ComponentGenerator
+
+    def self.source_root
+      File.join(super, 'migration')
+    end
     
     desc <<-DESC
       This is a migration generator
@@ -37,10 +41,6 @@ module Merb::Generators
     
     def file_name
       self.name.snake_case
-    end
-    
-    def self.source_root
-      File.join(super, 'migration')
     end
     
     def version

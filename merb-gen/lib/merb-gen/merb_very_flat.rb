@@ -1,6 +1,10 @@
 module Merb::Generators
   
   class MerbVeryFlatGenerator < ApplicationGenerator
+
+    def self.source_root
+      File.join(super, 'merb_very_flat')
+    end
     
     desc <<-DESC
       This generates a very flat merb application
@@ -19,10 +23,6 @@ module Merb::Generators
     
     def class_name
       self.name.camel_case
-    end
-    
-    def self.source_root
-      File.join(super, 'merb_very_flat')
     end
     
   end
