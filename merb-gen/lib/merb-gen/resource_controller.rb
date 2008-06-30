@@ -14,6 +14,7 @@ module Merb::Generators
     option :orm, :desc => 'Specify which Object-Relation Mapper to use (none, activerecord, datamapper, sequel)'
     
     first_argument :name, :required => true
+    second_argument :attributes, :as => :hash, :default => {}
     
     # add controller and view templates for each of the four big ORM's
     [:none, :activerecord, :sequel, :datamapper].each do |orm|
@@ -24,9 +25,9 @@ module Merb::Generators
       end
     
       [:index, :show, :edit, :new].each do |view|
-        file "view_#{view}_#{orm}".to_sym, :orm => orm do
+        template "view_#{view}_#{orm}".to_sym, :orm => orm do
           source("views_#{orm}/#{view}.html.erb")
-          destination("app/views/#{file_name}/#{view}.rb")
+          destination("app/views/#{file_name}/#{view}.html.erb")
         end
       end
     
@@ -63,6 +64,16 @@ module Merb::Generators
     
     def singular_model
       plural_model.singularize
+    end
+    
+    # TODO: fix this for Datamapper, so that it returns the primary keys for the model
+    def params_for_get
+      "params[:id]"
+    end
+    
+    # TODO: implement this for Datamapper so that we get the model properties
+    def properties
+      []
     end
     
     protected

@@ -10,11 +10,11 @@ module Merb::Generators
     second_argument :attributes, :as => :hash
     
     invoke :model do |generator|
-      generator.new(destination_root, options, model_name, *attributes)
+      generator.new(destination_root, options, model_name, attributes)
     end
     
     invoke :resource_controller do |generator|
-      generator.new(destination_root, options, controller_name)
+      generator.new(destination_root, options, controller_name, attributes)
     end
     
     def controller_name
