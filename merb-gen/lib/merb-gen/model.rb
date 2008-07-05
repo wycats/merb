@@ -20,35 +20,13 @@ module Merb::Generators
       generator.new(destination_root, options.merge(:model => true), name, attributes)
     end
     
-    template :model, :orm => :none do
-      source('model.rbt')
-      destination('app/models/' + file_name + '.rb')
-    end
+    invoke :model_none, :orm => :none
+    invoke :model_activerecord, :orm => :activerecord
+    invoke :model_datamapper, :orm => :datamapper
+    invoke :model_sequel, :orm => :sequel
     
-    template :model_activerecord, :orm => :activerecord do
-      source('model_activerecord.rbt')
-      destination('app/models/' + file_name + '.rb')
-    end
-    
-    template :model_datamapper, :orm => :datamapper do
-      source('model_datamapper.rbt')
-      destination('app/models/' + file_name + '.rb')
-    end
-    
-    template :model_sequel, :orm => :sequel do
-      source('model_sequel.rbt')
-      destination('app/models/' + file_name + '.rb')
-    end
-    
-    template :spec, :testing_framework => :rspec do
-      source('spec.rbt')
-      destination('spec/models/' + file_name + '_spec.rb')
-    end
-    
-    template :test_unit, :testing_framework => :test_unit do
-      source('test_unit.rbt')
-      destination('test/models/' + file_name + '_test.rb')
-    end
+    invoke :model_rspec, :testing_framework => :rspec
+    invoke :model_test_unit, :testing_framework => :test_unit
     
     def class_name
       self.name.camel_case
@@ -72,6 +50,90 @@ module Merb::Generators
     
   end
   
+  class NoneModelGenerator < ModelGenerator
+    
+    first_argument :name, :required => true
+    second_argument :attributes, :as => :hash, :default => {}
+    
+    def self.source_root
+      File.join(super, 'none')
+    end
+    
+    glob!
+    
+  end
+  
+  class ActiveRecordModelGenerator < ModelGenerator
+    
+    first_argument :name, :required => true
+    second_argument :attributes, :as => :hash, :default => {}
+    
+    def self.source_root
+      File.join(super, 'activerecord')
+    end
+    
+    glob!
+    
+  end
+  
+  class DataMapperModelGenerator < ModelGenerator
+    
+    first_argument :name, :required => true
+    second_argument :attributes, :as => :hash, :default => {}
+    
+    def self.source_root
+      File.join(super, 'datamapper')
+    end
+    
+    glob!
+    
+  end
+  
+  class SequelModelGenerator < ModelGenerator
+    
+    first_argument :name, :required => true
+    second_argument :attributes, :as => :hash, :default => {}
+    
+    def self.source_root
+      File.join(super, 'sequel')
+    end
+    
+    glob!
+    
+  end
+  
+  class SpecModelGenerator < ModelGenerator
+    
+    first_argument :name, :required => true
+    second_argument :attributes, :as => :hash, :default => {}
+    
+    def self.source_root
+      File.join(super, 'rspec')
+    end
+    
+    glob!
+    
+  end
+  
+  class TestUnitModelGenerator < ModelGenerator
+    
+    first_argument :name, :required => true
+    second_argument :attributes, :as => :hash, :default => {}
+    
+    def self.source_root
+      File.join(super, 'test_unit')
+    end
+    
+    glob!
+    
+  end
+  
   add :model, ModelGenerator
+  add :model_none, NoneModelGenerator
+  add :model_datamapper, DataMapperModelGenerator
+  add :model_activerecord, ActiveRecordModelGenerator
+  add :model_sequel, SequelModelGenerator
+  add :model_test_unit, TestUnitModelGenerator
+  add :model_rspec, SpecModelGenerator
   
 end
