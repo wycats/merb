@@ -52,12 +52,12 @@ module Merb::Generators
   
   class NoneModelGenerator < ModelGenerator
     
-    first_argument :name, :required => true
-    second_argument :attributes, :as => :hash, :default => {}
-    
     def self.source_root
       File.join(super, 'none')
     end
+
+    first_argument :name, :required => true
+    second_argument :attributes, :as => :hash, :default => {}
     
     glob!
     
@@ -65,12 +65,12 @@ module Merb::Generators
   
   class ActiveRecordModelGenerator < ModelGenerator
     
-    first_argument :name, :required => true
-    second_argument :attributes, :as => :hash, :default => {}
-    
     def self.source_root
       File.join(super, 'activerecord')
     end
+
+    first_argument :name, :required => true
+    second_argument :attributes, :as => :hash, :default => {}
     
     glob!
     
@@ -78,12 +78,12 @@ module Merb::Generators
   
   class DataMapperModelGenerator < ModelGenerator
     
-    first_argument :name, :required => true
-    second_argument :attributes, :as => :hash, :default => {}
-    
     def self.source_root
       File.join(super, 'datamapper')
     end
+
+    first_argument :name, :required => true
+    second_argument :attributes, :as => :hash, :default => {}
     
     glob!
     
@@ -91,12 +91,12 @@ module Merb::Generators
   
   class SequelModelGenerator < ModelGenerator
     
-    first_argument :name, :required => true
-    second_argument :attributes, :as => :hash, :default => {}
-    
     def self.source_root
       File.join(super, 'sequel')
     end
+
+    first_argument :name, :required => true
+    second_argument :attributes, :as => :hash, :default => {}
     
     glob!
     
@@ -104,12 +104,12 @@ module Merb::Generators
   
   class SpecModelGenerator < ModelGenerator
     
-    first_argument :name, :required => true
-    second_argument :attributes, :as => :hash, :default => {}
-    
     def self.source_root
       File.join(super, 'rspec')
     end
+
+    first_argument :name, :required => true
+    second_argument :attributes, :as => :hash, :default => {}
     
     glob!
     
@@ -117,23 +117,23 @@ module Merb::Generators
   
   class TestUnitModelGenerator < ModelGenerator
     
-    first_argument :name, :required => true
-    second_argument :attributes, :as => :hash, :default => {}
-    
     def self.source_root
       File.join(super, 'test_unit')
     end
+
+    first_argument :name, :required => true
+    second_argument :attributes, :as => :hash, :default => {}
     
     glob!
     
   end
   
   add :model, ModelGenerator
-  add :model_none, NoneModelGenerator
-  add :model_datamapper, DataMapperModelGenerator
-  add :model_activerecord, ActiveRecordModelGenerator
-  add :model_sequel, SequelModelGenerator
-  add :model_test_unit, TestUnitModelGenerator
-  add :model_rspec, SpecModelGenerator
+  add_private :model_none, NoneModelGenerator
+  add_private :model_datamapper, DataMapperModelGenerator
+  add_private :model_activerecord, ActiveRecordModelGenerator
+  add_private :model_sequel, SequelModelGenerator
+  add_private :model_test_unit, TestUnitModelGenerator
+  add_private :model_rspec, SpecModelGenerator
   
 end
