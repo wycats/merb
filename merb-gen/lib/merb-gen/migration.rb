@@ -17,18 +17,18 @@ module Merb::Generators
     second_argument :attributes, :as => :hash, :default => {}
     
     template :migration_activerecord, :orm => :activerecord do
-      source('migration_activerecord.rbt')
-      destination("schema/migrations/#{version}_#{file_name}.rb")
+      source('activerecord/schema/migrations/%file_name%.rb')
+      destination("schema/migrations/#{file_name}.rb")
     end
     
     template :migration_datamapper, :orm => :datamapper do
-      source('migration_datamapper.rbt')
-      destination("schema/migrations/#{version}_#{file_name}.rb")
+      source('datamapper/schema/migrations/%file_name%.rb')
+      destination("schema/migrations/#{file_name}.rb")
     end
     
     template :migration_sequel, :orm => :sequel do
-      source('migration_sequel.rbt')
-      destination("schema/migrations/#{version}_#{file_name}.rb")
+      source('sequel/schema/migrations/%file_name%.rb')
+      destination("schema/migrations/#{file_name}.rb")
     end
     
     def table_name
@@ -40,7 +40,7 @@ module Merb::Generators
     end
     
     def file_name
-      self.name.snake_case
+      "#{version}_#{self.name.snake_case}"
     end
     
     def version

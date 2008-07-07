@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
-describe Merb::Generators::ModelGenerator do
+describe Merb::Generators::MigrationGenerator do
   
   before do
     @generator = Merb::Generators::MigrationGenerator.new('/tmp', {}, 'SomeMoreStuff')
@@ -8,9 +8,9 @@ describe Merb::Generators::ModelGenerator do
   
   describe '#file_name' do
   
-    it "should convert the name to snake case" do
+    it "should convert the name to snake case and prepend the version number" do
       @generator.name = 'SomeMoreStuff'
-      @generator.file_name.should == 'some_more_stuff'
+      @generator.file_name.should == '001_some_more_stuff'
     end
   
   end
