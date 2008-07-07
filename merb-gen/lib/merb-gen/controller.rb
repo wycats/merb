@@ -17,22 +17,22 @@ module Merb::Generators
     invoke :helper
     
     template :controller do
-      source('controller.rbt')
+      source('app/controllers/%file_name%.rb')
       destination("app/controllers/#{file_name}.rb")
     end
     
     template :index do
-      source('index.html.erbt')
+      source('app/views/%file_name%/index.html.erb')
       destination("app/views/#{file_name}/index.html.erb")
     end
     
     template :controller_spec, :testing_framework => :rspec do
-      source('controller_spec.rbt')
+      source('spec/controllers/%file_name%_spec.rb')
       destination("spec/controllers/#{file_name}_spec.rb")
     end
     
     template :controller_test_unit, :testing_framework => :test_unit do
-      source('controller_test_unit.rbt')
+      source('test/controllers/%file_name%_test.rb')
       destination("test/controllers/#{file_name}_test.rb")
     end
     
