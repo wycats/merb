@@ -7,7 +7,7 @@ module Merb::Generators
     end
     
     desc <<-DESC
-      This is a resource generator
+      This is a resource controller generator
     DESC
     
     option :testing_framework, :desc => 'Specify which testing framework to use (spec, test_unit)'
@@ -24,13 +24,13 @@ module Merb::Generators
     [:none, :activerecord, :sequel, :datamapper].each do |orm|
     
       template "controller_#{orm}".to_sym, :orm => orm do
-        source("controller_#{orm}.rbt")
+        source("#{orm}/app/controllers/%file_name%.rb")
         destination("app/controllers/#{file_name}.rb")
       end
     
       [:index, :show, :edit, :new].each do |view|
         template "view_#{view}_#{orm}".to_sym, :orm => orm do
-          source("views_#{orm}/#{view}.html.erb")
+          source("#{orm}/app/views/%file_name%/#{view}.html.erb")
           destination("app/views/#{file_name}/#{view}.html.erb")
         end
       end
