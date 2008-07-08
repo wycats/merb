@@ -85,7 +85,12 @@ module Merb
     def attach(file_or_files, filename = file_or_files.is_a?(File) ? File.basename(file_or_files.path) : nil,
       type = nil, headers = nil)
       if file_or_files.is_a?(Array)
-        file_or_files.each {|k,v| @mail.add_attachment_as k, *v}
+        file_or_files.each do |v|
+	  if v.length < 2
+	    v << v.first.is_a?(File) ? File.basename(v.first.path) : nil
+	  end
+	  @mail.add_attachment_as *v
+	end
       else
         raise ArgumentError, "You did not pass in a file. Instead, you sent a #{file_or_files.class}" if !file_or_files.is_a?(File)
         @mail.add_attachment_as(file_or_files, filename, type, headers)
