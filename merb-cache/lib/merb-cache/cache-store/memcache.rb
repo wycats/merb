@@ -124,7 +124,10 @@ class Merb::Cache::MemcacheStore
   def expire_match(key)
     if @tracking_key
       for _key in get_tracked_keys
-        expire(_key) if /#{key}/ =~ _key
+        if /#{key}/ =~ _key
+          expire(_key)
+          Merb.logger.info("cache: expired #{_key}")
+        end
       end
     else
       Merb.logger.info("cache: expire_match is not supported with memcache (set :no_tracking => false in your config")
