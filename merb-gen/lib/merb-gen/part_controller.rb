@@ -12,18 +12,17 @@ module Merb::Generators
     
     first_argument :name, :required => true
     
+    invoke :helper do |generator|
+      generator.new(destination_root, options, "#{full_class_name}Part")
+    end
+    
     template :controller do
-      source('controller.rbt')
+      source('app/parts/%file_name%_part.rb')
       destination("app/parts/#{file_name}_part.rb")
     end
     
-    template :helpers do
-      source('helper.rbt')
-      destination("app/helpers/#{file_name}_part_helper.rb")
-    end
-    
     template :index do
-      source('index.html.erbt')
+      source('app/parts/views/%file_name%_part/index.html.erb')
       destination("app/parts/views/#{file_name}_part/index.html.erb")
     end
     
