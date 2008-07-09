@@ -97,7 +97,11 @@ class Merb::Cache::MemcacheStore
   #   nil is returned whether the entry expired or was not found
   def cache_get(key)
     data = @memcache.get(key)
-    Merb.logger.info!("cache: #{data.nil? ? "miss" : "hit"} (#{key})")
+    if data.nil?
+      Merb.logger.info!("cache: miss (#{key})")
+    else
+      Merb.logger.debug!("cache: hit (#{key})")
+    end
     data
   end
 
