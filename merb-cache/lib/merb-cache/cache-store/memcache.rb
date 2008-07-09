@@ -24,7 +24,7 @@ class Merb::Cache::MemcacheStore
     namespace = @config[:namespace] || 'merb-cache'
     host = @config[:host] || '127.0.0.1:11211'
     @memcache = MemCache.new(host, {:namespace => namespace})
-    @tracking_key = "_#{namespace}_keys" unless @config[:no_tracking]
+    @tracking_key = "_#{namespace}_keys" unless @config[:no_tracking] == true
     raise NotReady unless @memcache.active?
     true
   rescue NameError
@@ -39,7 +39,7 @@ class Merb::Cache::MemcacheStore
   # ==== Returns
   # true if the cache entry exists, false otherwise
   def cached?(key)
-    not @memcache.get(key).nil?
+    not cache_get(key).nil?
   end
 
   # Capture or restore the data in cache.
@@ -62,11 +62,10 @@ class Merb::Cache::MemcacheStore
   # It uses the capture_#{engine} and concat_#{engine} methods to do so.
   # The captured data are then marshalled and stored.
   def cache(_controller, key, from_now = nil, &block)
-    _data = @memcache.get(key)
+    _data = cache_get(key)
     if _data.nil?
-      _expire = from_now ? from_now.minutes.from_now.to_i : 0
       _data = _controller.send(:capture, &block)
-      @memcache.set(key, _data, _expire)
+      cache_set(key, _data, from_now)
     end
     _controller.send(:concat, _data, block.binding)
     true
@@ -83,7 +82,7 @@ class Merb::Cache::MemcacheStore
     _expire = from_now ? from_now.minutes.from_now.to_i : 0
     @memcache.set(key, data, _expire)
     cache_start_tracking(key)
-    Merb.logger.info("cache: set (#{key})")
+    Merb.logger.info!("cache: set (#{key})")
     true
   end
 
@@ -98,7 +97,7 @@ class Merb::Cache::MemcacheStore
   #   nil is returned whether the entry expired or was not found
   def cache_get(key)
     data = @memcache.get(key)
-    Merb.logger.info("cache: #{data.nil? ? "miss" : "hit"} (#{key})")
+    Merb.logger.info!("cache: #{data.nil? ? "miss" : "hit"} (#{key})")
     data
   end
 
@@ -109,7 +108,7 @@ class Merb::Cache::MemcacheStore
   def expire(key)
     @memcache.delete(key)
     cache_stop_tracking(key)
-    Merb.logger.info("cache: expired (#{key})")
+    Merb.logger.info!("cache: expired (#{key})")
     true
   end
 
@@ -122,12 +121,10 @@ class Merb::Cache::MemcacheStore
   #   In memcache this requires to keep track of all keys (on by default).
   #   If you don't need this, set :no_tracking => true in the config.
   def expire_match(key)
+    Merb.logger.debug!("cache: attempting to expire #{key}")
     if @tracking_key
       for _key in get_tracked_keys
-        if /#{key}/ =~ _key
-          expire(_key)
-          Merb.logger.info("cache: expired #{_key}")
-        end
+        expire(_key) if /#{key}/ =~ _key
       end
     else
       Merb.logger.info("cache: expire_match is not supported with memcache (set :no_tracking => false in your config")

@@ -20,6 +20,7 @@ def use_cache_store(store, orm = nil)
     :store => store,
     :cache_directory => File.dirname(__FILE__) / "tmp/cache",
     :cache_html_directory => File.dirname(__FILE__) / "tmp/html",
+    :no_tracking => false
   }
   FileUtils.rm_rf(Dir.glob(File.dirname(__FILE__) / "/tmp"))
   case store
