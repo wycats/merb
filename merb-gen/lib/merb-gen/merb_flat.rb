@@ -24,6 +24,6 @@ module Merb::Generators
     
   end
   
-  add :app_flat, MerbFlatGenerator
+  add_private :app_flat, MerbFlatGenerator
   
 end
