@@ -8,11 +8,11 @@ module Merb::Generators
     
     option :testing_framework, :default => :rspec, :desc => 'Specify which testing framework to use (spec, test_unit)'
     option :orm, :default => :none, :desc => 'Specify which Object-Relation Mapper to use (none, activerecord, datamapper, sequel)'
-    option :flat, :as => :boolean
-    option :very_flat, :as => :boolean
+    option :flat, :as => :boolean, :desc => 'Generates a flattened application'
+    option :very_flat, :as => :boolean, :desc => 'Generates a single file application'
     
     desc <<-DESC
-      This generates a full merb application
+      Generates a merb application.
     DESC
     
     first_argument :name, :required => true
