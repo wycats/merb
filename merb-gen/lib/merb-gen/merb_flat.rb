@@ -7,10 +7,12 @@ module Merb::Generators
     end
     
     desc <<-DESC
-      This generates a flat merb application
+      This generates a flat merb application: all code but config files and
+      templates fits in one application. This is something in between Sinatra
+      and "regular" Merb application.
     DESC
     
-    first_argument :name, :required => true
+    first_argument :name, :required => true, :desc => "Application name"
     
     glob!
 

@@ -1,5 +1,11 @@
 # run very flat apps with merb -I <app file>.
 
+Merb::Config.use { |c|
+  c[:framework]           = { :public => [Merb.root / "public", nil] },
+  c[:session_store]       = 'none',
+  c[:exception_details]   = true
+}
+
 Merb::Router.prepare do |r|
   r.match('/').to(:controller => '<%= app_name %>', :action =>'index')
 end
@@ -9,9 +15,3 @@ class <%= class_name %> < Merb::Controller
     "hi"
   end
 end
-
-Merb::Config.use { |c|
-  c[:framework]           = { :public => [Merb.root / "public", nil] },
-  c[:session_store]       = 'none',
-  c[:exception_details]   = true
-}

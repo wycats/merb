@@ -7,14 +7,15 @@ module Merb::Generators
     end
     
     desc <<-DESC
-      This is a model generator
+      Generates a new model. You can specify an ORM different from what the rest
+      of the application uses.
     DESC
     
-    option :testing_framework, :desc => 'Specify which testing framework to use (spec, test_unit)'
-    option :orm, :desc => 'Specify which Object-Relation Mapper to use (none, activerecord, datamapper, sequel)'
+    option :testing_framework, :desc => 'Testing framework to use (one of: spec, test_unit)'
+    option :orm, :desc => 'Object-Relation Mapper to use (one of: none, activerecord, datamapper, sequel)'
     
-    first_argument :name, :required => true
-    second_argument :attributes, :as => :hash, :default => {}
+    first_argument :name, :required => true, :desc => "model name"
+    second_argument :attributes, :as => :hash, :default => {}, :desc => "space separated model properties in form of name:type. Example: state:string"
     
     invoke :migration do |generator|
       generator.new(destination_root, options.merge(:model => true), name, attributes)

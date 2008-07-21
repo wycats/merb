@@ -7,12 +7,12 @@ module Merb::Generators
     end
     
     desc <<-DESC
-      This is a controller generator
+      Generates a new helper.
     DESC
     
-    option :testing_framework, :desc => 'Specify which testing framework to use (spec, test_unit)'
+    option :testing_framework, :desc => 'Testing framework to use (one of: spec, test_unit)'
     
-    first_argument :name, :required => true
+    first_argument :name, :required => true, :desc => "helper name"
     
     template :helper do
       source('app/helpers/%file_name%_helper.rb')

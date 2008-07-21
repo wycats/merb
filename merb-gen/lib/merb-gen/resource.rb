@@ -3,11 +3,11 @@ module Merb::Generators
   class ResourceGenerator < ComponentGenerator
     
     desc <<-DESC
-      This is a resource generator
+      Generates a new resource.
     DESC
     
-    first_argument :name, :required => true
-    second_argument :attributes, :as => :hash
+    first_argument :name, :required => true, :desc => "resource name"
+    second_argument :attributes, :as => :hash, :default => {}, :desc => "space separated resource model properties in form of name:type. Example: state:string"
     
     invoke :model do |generator|
       generator.new(destination_root, options, model_name, attributes)

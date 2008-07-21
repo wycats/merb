@@ -7,7 +7,7 @@ module Merb::Generators
     end
     
     desc <<-DESC
-      Generates a freezer
+      Generates Merb freezer scripts.
     DESC
     
     template :freezer, 'script/frozen_merb', 'script/frozen_merb'

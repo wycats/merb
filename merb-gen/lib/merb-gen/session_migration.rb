@@ -7,10 +7,10 @@ module Merb::Generators
     end
     
     desc <<-DESC
-      This is a migration generator
+      Generates a new session migration.
     DESC
     
-    option :orm, :desc => 'Specify which Object-Relation Mapper to use (none, activerecord, datamapper, sequel)'
+    option :orm, :desc => 'Object-Relation Mapper to use (one of: none, activerecord, datamapper, sequel)'
     
     template :session_migration_activerecord, :orm => :activerecord do
       source('activerecord/schema/migrations/%version%_sessions.rb')

@@ -10,8 +10,8 @@ module Merb::Generators
       This is a migration generator
     DESC
     
-    option :orm, :desc => 'Specify which Object-Relation Mapper to use (none, activerecord, datamapper, sequel)'
-    option :model, :as => :boolean, :desc => 'Set this option to generate a migration which creates a table for the provided model'
+    option :orm, :desc => 'Object-Relation Mapper to use (one of: none, activerecord, datamapper, sequel)'
+    option :model, :as => :boolean, :desc => 'Specify this option to generate a migration which creates a table for the provided model'
     
     first_argument :name, :required => true
     second_argument :attributes, :as => :hash, :default => {}

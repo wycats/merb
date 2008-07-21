@@ -7,10 +7,11 @@ module Merb::Generators
     end
     
     desc <<-DESC
-      This generates a very flat merb application
+      This generates a very flat merb application: the whole application
+      fits in one file, very much like Sinatra or Camping.
     DESC
     
-    first_argument :name, :required => true
+    first_argument :name, :required => true, :desc => "Application name"
     
     template :application do
       source('application.rbt')
