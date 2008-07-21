@@ -1,4 +1,6 @@
 require 'rubygems'
+require "merb-core"
+require 'merb-core/tasks/merb_rake_helper'
 require 'rake/gempackagetask'
 
 NAME = "merb-gen"
@@ -6,7 +8,7 @@ VERSION = "0.9.4"
 AUTHOR = "Jonas Nicklas"
 EMAIL = "jonas.nicklas@gmail.com"
 HOMEPAGE = "http://www.merbivore.com"
-SUMMARY = "Merb More: Merb's Application and Plugin Generators"
+SUMMARY = "Merb gen: generators suite for Merb."
 
 spec = Gem::Specification.new do |s|
   s.rubyforge_project = 'merb'
@@ -23,9 +25,8 @@ spec = Gem::Specification.new do |s|
   s.bindir = "bin"
   s.executables = %w( merb-gen )
 
-  # Uncomment this to add a dependency
-  #s.add_dependency "merb-core", ">= 0.9.4"
-  #s.add_dependency "templater", ">= 0.1"
+  s.add_dependency "merb-core", ">= 0.9.4"
+  s.add_dependency "templater", ">= 0.1"
 
   s.require_path = 'lib'
   s.autorequire = NAME
@@ -37,12 +38,12 @@ Rake::GemPackageTask.new(spec) do |pkg|
 end
 
 task :install => [:package] do
-  sh %{#{sudo} gem install #{install_home} pkg/#{NAME}-#{GEM_VERSION} --no-update-sources}
+  sh %{#{sudo} gem install #{install_home} pkg/#{NAME}-#{VERSION} --no-update-sources}
 end
 
 namespace :jruby do
   task :install do
-    sh %{#{sudo} jruby -S gem install #{install_home} pkg/#{NAME}-#{GEM_VERSION}.gem --no-rdoc --no-ri}
+    sh %{#{sudo} jruby -S gem install #{install_home} pkg/#{NAME}-#{VERSION}.gem --no-rdoc --no-ri}
   end
 end
 
