@@ -8,6 +8,7 @@ module Merb::Generators
     
     option :testing_framework, :default => :rspec, :desc => 'Specify which testing framework to use (spec, test_unit)'
     option :orm, :default => :none, :desc => 'Specify which Object-Relation Mapper to use (none, activerecord, datamapper, sequel)'
+    option :bin, :as => :boolean # TODO: explain this
     
     desc <<-DESC
       This generates a plugin for merb
