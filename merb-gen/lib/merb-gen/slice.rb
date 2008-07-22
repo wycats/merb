@@ -10,7 +10,7 @@ module Merb::Generators
     option :very_thin, :as => :boolean, :desc => 'Generates an even thinner slice'
     
     desc <<-DESC
-      Generates a merb application.
+      Generates a merb slice.
     DESC
     
     first_argument :name, :required => true
