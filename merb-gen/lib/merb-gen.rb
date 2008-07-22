@@ -1,15 +1,20 @@
 require 'rubygems'
 require 'merb-core'
-require 'templater'
 require 'sha1'
+gem 'templater', '>= 0.1.2'
+require 'templater'
 
 path = File.join(File.dirname(__FILE__), "merb-gen")
 
 require path / "generator"
 require path / "merb"
-require path / "merb_full"
-require path / "merb_flat"
-require path / "merb_very_flat"
+require path / "merb" / "merb_full"
+require path / "merb" / "merb_flat"
+require path / "merb" / "merb_very_flat"
+require path / "slice"
+require path / "slice" / "full"
+require path / "slice" / "thin"
+require path / "slice" / "very_thin"
 require path / "merb_plugin"
 require path / "controller"
 require path / "helper"

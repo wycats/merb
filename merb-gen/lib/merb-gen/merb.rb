@@ -12,7 +12,7 @@ module Merb::Generators
     option :very_flat, :as => :boolean, :desc => "Generate a very flat, Sinatra-like one file application."
     
     desc <<-DESC
-      This generates a full merb application
+      Generates a merb application.
     DESC
     
     first_argument :name, :required => true, :desc => "Application name"
