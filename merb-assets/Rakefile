@@ -47,3 +47,20 @@ desc "Run specs"
 task :spec do
   sh %{spec -r spec/spec_helper.rb spec/*_spec.rb}
 end
+
+##############################################################################
+# Release
+##############################################################################
+RUBY_FORGE_PROJECT = NAME
+
+PKG_NAME      = NAME
+PKG_BUILD     = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
+PKG_VERSION   = GEM_VERSION + PKG_BUILD
+PKG_FILE_NAME = "#{PKG_NAME}-#{PKG_VERSION}"
+
+RELEASE_NAME  = "REL #{PKG_VERSION}"
+
+# FIXME: hey, someone take care of me
+RUBY_FORGE_USER    = ""
+
+require "extlib/tasks/release"

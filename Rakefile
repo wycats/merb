@@ -7,6 +7,8 @@ module Merb
   MORE_VERSION = "0.9.4"
 end
 
+GEM_VERSION = Merb::VERSION
+
 require "rake/clean"
 require "rake/gempackagetask"
 require 'merb-core/tasks/merb_rake_helper'
@@ -89,6 +91,14 @@ task :uninstall_gems do
   end
 end
 
+desc "Clobber the merb-more sub-gems"
+task :clobber_gems do
+  gems.each do |gem|
+    Dir.chdir(gem){ sh "rake clobber" }
+  end
+end
+
+
 task :package => ["lib/merb-more.rb"]
 desc "Create merb-more.rb"
 task "lib/merb-more.rb" do
@@ -109,5 +119,53 @@ task :bundle => [:package, :build_gems] do
   cp "pkg/merb-more-#{Merb::MORE_VERSION}.gem", "bundle"
   gems.each do |gem|
     sh %{cp #{gem}/pkg/#{gem}-#{Merb::MORE_VERSION}.gem bundle/}
+  end
+end
+
+
+RUBY_FORGE_PROJECT = "merb"
+
+GROUP_NAME    = "merb"
+PKG_BUILD     = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
+PKG_VERSION   = GEM_VERSION + PKG_BUILD
+# PKG_FILE_NAME = "#{PKG_NAME}-#{PKG_VERSION}"
+
+RELEASE_NAME  = "REL #{PKG_VERSION}"
+
+# FIXME: hey, someone take care of me
+RUBY_FORGE_USER    = ""
+
+namespace :release do
+  desc "Publish Merb More release files to RubyForge."
+  task :merb_more => [ :package ] do
+    require 'rubyforge'
+    require 'rake/contrib/rubyforgepublisher'
+
+    packages = %w( gem tgz zip ).collect{ |ext| "pkg/merb-more-#{PKG_VERSION}.#{ext}" }
+
+    rubyforge = RubyForge.new
+    rubyforge.login
+    rubyforge.add_release(GROUP_NAME, "merb-more", "REL #{PKG_VERSION}", *packages)
+  end
+
+  
+  desc "Publish Merb More gem to RubyForge, one by one."
+  task :merb_more_gems => [ :build_gems ] do
+    gems.each do |gem|
+      Dir.chdir(gem){ sh "rake release" }
+    end
+  end
+
+  
+  desc "Publish Merb release files to RubyForge."
+  task :merb => [ :package ] do
+    require 'rubyforge'
+    require 'rake/contrib/rubyforgepublisher'
+
+    packages = %w( gem tgz zip ).collect{ |ext| "pkg/merb-#{PKG_VERSION}.#{ext}" }
+
+    rubyforge = RubyForge.new
+    rubyforge.login
+    rubyforge.add_release(GROUP_NAME, "merb", "REL #{PKG_VERSION}", *packages)
   end
 end

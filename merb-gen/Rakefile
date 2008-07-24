@@ -4,7 +4,7 @@ require 'merb-core/tasks/merb_rake_helper'
 require 'rake/gempackagetask'
 
 NAME = "merb-gen"
-VERSION = "0.9.4"
+GEM_VERSION = Merb::MORE_VERSION rescue "0.9.4"
 AUTHOR = "Jonas Nicklas"
 EMAIL = "jonas.nicklas@gmail.com"
 HOMEPAGE = "http://www.merbivore.com"
@@ -13,7 +13,7 @@ SUMMARY = "Merb gen: generators suite for Merb."
 spec = Gem::Specification.new do |s|
   s.rubyforge_project = 'merb'
   s.name = NAME
-  s.version = VERSION
+  s.version = GEM_VERSION
   s.platform = Gem::Platform::RUBY
   s.has_rdoc = true
   s.extra_rdoc_files = ["README", "LICENSE", 'TODO']
@@ -38,13 +38,29 @@ Rake::GemPackageTask.new(spec) do |pkg|
 end
 
 task :install => [:package] do
-  sh %{#{sudo} gem install #{install_home} pkg/#{NAME}-#{VERSION} --no-update-sources}
+  sh %{#{sudo} gem install #{install_home} pkg/#{NAME}-#{GEM_VERSION} --no-update-sources}
 end
 
 namespace :jruby do
   task :install do
-    sh %{#{sudo} jruby -S gem install #{install_home} pkg/#{NAME}-#{VERSION}.gem --no-rdoc --no-ri}
+    sh %{#{sudo} jruby -S gem install #{install_home} pkg/#{NAME}-#{GEM_VERSION}.gem --no-rdoc --no-ri}
   end
 end
 
 
+##############################################################################
+# Release
+##############################################################################
+RUBY_FORGE_PROJECT = NAME
+
+PKG_NAME      = NAME
+PKG_BUILD     = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
+PKG_VERSION   = GEM_VERSION + PKG_BUILD
+PKG_FILE_NAME = "#{PKG_NAME}-#{PKG_VERSION}"
+
+RELEASE_NAME  = "REL #{PKG_VERSION}"
+
+# FIXME: hey, someone take care of me
+RUBY_FORGE_USER    = ""
+
+require "extlib/tasks/release"

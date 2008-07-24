@@ -68,10 +68,25 @@ task :install => [:package] do
 end
 
 namespace :jruby do
-
   desc "Run :package and install the resulting .gem with jruby"
   task :install => :package do
     sh %{#{sudo} jruby -S gem install #{install_home} pkg/#{NAME}-#{GEM_VERSION}.gem --no-rdoc --no-ri}
   end
-
 end
+
+##############################################################################
+# Release
+##############################################################################
+RUBY_FORGE_PROJECT = NAME
+
+PKG_NAME      = NAME
+PKG_BUILD     = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
+PKG_VERSION   = GEM_VERSION + PKG_BUILD
+PKG_FILE_NAME = "#{PKG_NAME}-#{PKG_VERSION}"
+
+RELEASE_NAME  = "REL #{PKG_VERSION}"
+
+# FIXME: hey, someone take care of me
+RUBY_FORGE_USER    = ""
+
+require "extlib/tasks/release"
