@@ -1,56 +1,35 @@
 #!/usr/bin/env ruby
-
-<<<<<<< HEAD:merb-freezer/bin/frozen-merb
-__DIR__ = Dir.getwd
-=======
 root = nil
 %w[-m --merb-root].detect { |o| root = ARGV.index(o) }
 __DIR__ = root ? ARGV[root+1] : Dir.getwd
->>>>>>> new_merb_gen:merb-freezer/bin/frozen-merb
+
 framework = File.join(__DIR__,"framework")
 
-<<<<<<< HEAD:merb-freezer/bin/frozen-merb
-=======
 # load merb from the framework folder
->>>>>>> new_merb_gen:merb-freezer/bin/frozen-merb
+
 if File.directory?(framework)
   puts "Running from frozen framework"
   core = File.join(framework,"merb-core")
   if File.directory?(core)
-<<<<<<< HEAD:merb-freezer/bin/frozen-merb
-    $:.push File.join(core,"lib")
-=======
     puts "using merb-core from #{core}"
     $:.unshift File.join(core,"lib")
->>>>>>> new_merb_gen:merb-freezer/bin/frozen-merb
   end
   more = File.join(framework,"merb-more")
   if File.directory?(more)
     Dir.new(more).select {|d| d =~ /merb-/}.each do |d|
-<<<<<<< HEAD:merb-freezer/bin/frozen-merb
-      $:.push File.join(more,d,'lib')
-=======
       $:.unshift File.join(more,d,'lib')
->>>>>>> new_merb_gen:merb-freezer/bin/frozen-merb
     end
   end
   plugins = File.join(framework,"merb-plugins")
   if File.directory?(plugins)
     Dir.new(plugins).select {|d| d =~ /merb_/}.each do |d|
-<<<<<<< HEAD:merb-freezer/bin/frozen-merb
-      $:.push File.join(plugins,d,'lib')
-=======
       $:.unshift File.join(plugins,d,'lib')
->>>>>>> new_merb_gen:merb-freezer/bin/frozen-merb
     end
   end
   require "merb-core/core_ext/kernel"
   require "merb-core/core_ext/rubygems"
 else
-<<<<<<< HEAD:merb-freezer/bin/frozen-merb
-=======
   # load from the gems folder
->>>>>>> new_merb_gen:merb-freezer/bin/frozen-merb
   gem = Dir["./gems/gems/merb-core-*"].last
   if gem
     require gem + "/lib/merb-core/core_ext/kernel"
@@ -64,8 +43,6 @@ else
   end
 end
 
-<<<<<<< HEAD:merb-freezer/bin/frozen-merb
-=======
 # load submodule gems
 gem_submodules_dir = File.join(__DIR__,"gems/submodules")
 if File.directory?(gem_submodules_dir)
@@ -74,7 +51,6 @@ if File.directory?(gem_submodules_dir)
   end
 end
 
->>>>>>> new_merb_gen:merb-freezer/bin/frozen-merb
 require 'merb-core'
 unless %w[-a --adapter -i --irb-console -r --script-runner].any? { |o| ARGV.index(o) }
   ARGV.push *%w[-a mongrel]
