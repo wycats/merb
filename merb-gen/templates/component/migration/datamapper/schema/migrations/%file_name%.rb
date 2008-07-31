@@ -1,7 +1,7 @@
-class <%= class_name %>Migration < DataMapper::Migration
-  def self.up
+migration <%= current_migration_nr %>, :<%= migration_name %>  do
+  up do
   end
 
-  def self.down
+  down do
   end
 end
