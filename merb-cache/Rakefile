@@ -35,7 +35,6 @@ spec = Gem::Specification.new do |s|
   s.email = GEM_EMAIL
   s.homepage = PROJECT_URL
   s.add_dependency('merb-core', '>= 0.9.4')
-  s.add_dependency('builder', '>= 2.0.0')
   s.require_path = 'lib'
   s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,spec}/**/*")
 end
