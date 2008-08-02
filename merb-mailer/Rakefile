@@ -1,48 +1,60 @@
 require 'rubygems'
-require "rake/rdoctask"
 require 'rake/gempackagetask'
-require "spec/rake/spectask"
+require "extlib"
 require 'merb-core/tasks/merb_rake_helper'
+require "spec/rake/spectask"
 
-NAME = "merb-mailer"
-GEM_VERSION = Merb::MORE_VERSION rescue "0.9.4"
-AUTHOR = "Yehuda Katz"
-EMAIL = "wycats@gmail.com"
-HOMEPAGE = "http://merbivore.com/"
-SUMMARY = "Merb plugin that provides mailer functionality to Merb"
+##############################################################################
+# Package && release
+##############################################################################
+RUBY_FORGE_PROJECT  = "merb"
+PROJECT_URL         = "http://merbivore.com"
+PROJECT_SUMMARY     = "Merb plugin that provides mailer functionality to Merb"
+PROJECT_DESCRIPTION = PROJECT_SUMMARY
+
+GEM_AUTHOR = "Yehuda Katz"
+GEM_EMAIL  = "ykatz@engineyard.com"
+
+GEM_NAME    = "merb-mailer"
+PKG_BUILD   = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
+GEM_VERSION = (Merb::MORE_VERSION rescue "0.9.4") + PKG_BUILD
+
+RELEASE_NAME    = "REL #{GEM_VERSION}"
+
+require "extlib/tasks/release"
 
 spec = Gem::Specification.new do |s|
-  s.rubyforge_project = 'merb'
-  s.name = NAME
+  s.rubyforge_project = RUBY_FORGE_PROJECT
+  s.name = GEM_NAME
   s.version = GEM_VERSION
   s.platform = Gem::Platform::RUBY
-  s.summary = SUMMARY
-  s.description = s.summary
-  s.author = AUTHOR
-  s.email = EMAIL
-  s.homepage = HOMEPAGE
+  s.has_rdoc = true
+  s.extra_rdoc_files = ["README.textile", "LICENSE", 'TODO']
+  s.summary = PROJECT_SUMMARY
+  s.description = PROJECT_DESCRIPTION
+  s.author = GEM_AUTHOR
+  s.email = GEM_EMAIL
+  s.homepage = PROJECT_URL
   s.add_dependency('merb-core', '>= 0.9.4')
-  s.add_dependency("mailfactory", ">= 1.2.3")
+  s.add_dependency('mailfactory', '>= 1.2.3')
   s.require_path = 'lib'
   s.files = %w(LICENSE README.textile Rakefile TODO) + Dir.glob("{lib,spec,merb_generators}/**/*")
-  
-  s.has_rdoc = true
-  s.extra_rdoc_files = ["README.textile", "LICENSE", 'TODO']  
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
 
+desc "Install the gem"
 task :install => [:package] do
-  sh %{#{sudo} gem install #{install_home} pkg/#{NAME}-#{GEM_VERSION} --no-update-sources}
+  sh %{#{sudo} gem install #{install_home} pkg/#{GEM_NAME}-#{GEM_VERSION} --no-update-sources}
 end
 
 namespace :jruby do
 
   desc "Run :package and install the resulting .gem with jruby"
   task :install => :package do
-    sh %{#{sudo} jruby -S gem install #{install_home} pkg/#{NAME}-#{GEM_VERSION}.gem --no-rdoc --no-ri}
+    sh %{#{sudo} jruby -S gem install #{install_home} pkg/#{GEM_NAME}-#{GEM_VERSION}.gem --no-rdoc --no-ri}
   end
 
 end
@@ -52,20 +64,3 @@ Spec::Rake::SpecTask.new("specs") do |t|
   t.spec_opts = ["--format", "specdoc", "--colour"]
   t.spec_files = Dir["spec/**/*_spec.rb"].sort
 end
-
-##############################################################################
-# Release
-##############################################################################
-RUBY_FORGE_PROJECT = NAME
-
-PKG_NAME      = NAME
-PKG_BUILD     = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
-PKG_VERSION   = GEM_VERSION + PKG_BUILD
-PKG_FILE_NAME = "#{PKG_NAME}-#{PKG_VERSION}"
-
-RELEASE_NAME  = "REL #{PKG_VERSION}"
-
-# FIXME: hey, someone take care of me
-RUBY_FORGE_USER    = ""
-
-require "extlib/tasks/release"
