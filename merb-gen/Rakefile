@@ -1,27 +1,40 @@
 require 'rubygems'
-require "merb-core"
-require 'merb-core/tasks/merb_rake_helper'
 require 'rake/gempackagetask'
+require "extlib"
+require 'merb-core/tasks/merb_rake_helper'
+require "spec/rake/spectask"
 
-NAME = "merb-gen"
-GEM_VERSION = Merb::MORE_VERSION rescue "0.9.4"
-AUTHOR = "Jonas Nicklas"
-EMAIL = "jonas.nicklas@gmail.com"
-HOMEPAGE = "http://www.merbivore.com"
-SUMMARY = "Merb gen: generators suite for Merb."
+##############################################################################
+# Package && release
+##############################################################################
+RUBY_FORGE_PROJECT  = "merb"
+PROJECT_URL         = "http://merbivore.com"
+PROJECT_SUMMARY     = "Generators suite for Merb."
+PROJECT_DESCRIPTION = PROJECT_SUMMARY
+
+GEM_AUTHOR = "Jonas Nicklas"
+GEM_EMAIL  = "jonas.nicklas@gmail.com"
+
+GEM_NAME    = "merb-gen"
+PKG_BUILD   = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
+GEM_VERSION = (Merb::MORE_VERSION rescue "0.9.4") + PKG_BUILD
+
+RELEASE_NAME    = "REL #{GEM_VERSION}"
+
+require "extlib/tasks/release"
 
 spec = Gem::Specification.new do |s|
-  s.rubyforge_project = 'merb'
-  s.name = NAME
+  s.rubyforge_project = RUBY_FORGE_PROJECT
+  s.name = GEM_NAME
   s.version = GEM_VERSION
   s.platform = Gem::Platform::RUBY
   s.has_rdoc = true
   s.extra_rdoc_files = ["README", "LICENSE", 'TODO']
-  s.summary = SUMMARY
-  s.description = s.summary
-  s.author = AUTHOR
-  s.email = EMAIL
-  s.homepage = HOMEPAGE
+  s.summary = PROJECT_SUMMARY
+  s.description = PROJECT_DESCRIPTION
+  s.author = GEM_AUTHOR
+  s.email = GEM_EMAIL
+  s.homepage = PROJECT_URL
   s.bindir = "bin"
   s.executables = %w( merb-gen )
 
@@ -29,7 +42,7 @@ spec = Gem::Specification.new do |s|
   s.add_dependency "templater", ">= 0.1.2"
 
   s.require_path = 'lib'
-  s.autorequire = NAME
+  s.autorequire = GEM_NAME
   s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,bin,spec,templates}/**/*")
 end
 
@@ -37,30 +50,16 @@ Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
 
+desc "Install the gem"
 task :install => [:package] do
-  sh %{#{sudo} gem install #{install_home} pkg/#{NAME}-#{GEM_VERSION} --no-update-sources}
+  sh %{#{sudo} gem install #{install_home} pkg/#{GEM_NAME}-#{GEM_VERSION} --no-update-sources}
 end
 
 namespace :jruby do
-  task :install do
-    sh %{#{sudo} jruby -S gem install #{install_home} pkg/#{NAME}-#{GEM_VERSION}.gem --no-rdoc --no-ri}
+
+  desc "Run :package and install the resulting .gem with jruby"
+  task :install => :package do
+    sh %{#{sudo} jruby -S gem install #{install_home} pkg/#{GEM_NAME}-#{GEM_VERSION}.gem --no-rdoc --no-ri}
   end
+
 end
-
-
-##############################################################################
-# Release
-##############################################################################
-RUBY_FORGE_PROJECT = NAME
-
-PKG_NAME      = NAME
-PKG_BUILD     = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
-PKG_VERSION   = GEM_VERSION + PKG_BUILD
-PKG_FILE_NAME = "#{PKG_NAME}-#{PKG_VERSION}"
-
-RELEASE_NAME  = "REL #{PKG_VERSION}"
-
-# FIXME: hey, someone take care of me
-RUBY_FORGE_USER    = ""
-
-require "extlib/tasks/release"
