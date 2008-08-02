@@ -17,7 +17,7 @@ include FileUtils
 
 gems = %w[
   merb-action-args merb-assets merb-gen merb-haml
-  merb-builder merb-mailer merb-parts merb-cache merb-freezer merb-slices
+  merb-builder merb-mailer merb-parts merb-cache merb-freezer merb-slices merb-jquery
 ]
 
 merb_more_spec = Gem::Specification.new do |s|
@@ -128,12 +128,8 @@ RUBY_FORGE_PROJECT = "merb"
 GROUP_NAME    = "merb"
 PKG_BUILD     = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
 PKG_VERSION   = GEM_VERSION + PKG_BUILD
-# PKG_FILE_NAME = "#{PKG_NAME}-#{PKG_VERSION}"
 
 RELEASE_NAME  = "REL #{PKG_VERSION}"
-
-# FIXME: hey, someone take care of me
-RUBY_FORGE_USER    = ""
 
 namespace :release do
   desc "Publish Merb More release files to RubyForge."
@@ -143,12 +139,18 @@ namespace :release do
 
     packages = %w( gem tgz zip ).collect{ |ext| "pkg/merb-more-#{PKG_VERSION}.#{ext}" }
 
-    rubyforge = RubyForge.new
-    rubyforge.login
-    rubyforge.add_release(GROUP_NAME, "merb-more", "REL #{PKG_VERSION}", *packages)
+    begin
+      sh %{rubyforge login}
+      sh %{rubyforge add_release #{RUBY_FORGE_PROJECT} merb-more #{Merb::MORE_VERSION} #{packages.join(' ')}}
+      sh %{rubyforge add_file #{RUBY_FORGE_PROJECT} merb-more #{Merb::MORE_VERSION} #{packages.join(' ')}}
+    rescue Exception => e
+      puts
+      puts "Release failed: #{e.message}"
+      puts
+      puts "Set PKG_BUILD environment variable if you do a subrelease (0.9.4.2008_08_02 when version is 0.9.4)"
+    end
   end
 
-  
   desc "Publish Merb More gem to RubyForge, one by one."
   task :merb_more_gems => [ :build_gems ] do
     gems.each do |gem|
@@ -156,7 +158,7 @@ namespace :release do
     end
   end
 
-  
+
   desc "Publish Merb release files to RubyForge."
   task :merb => [ :package ] do
     require 'rubyforge'
@@ -164,8 +166,16 @@ namespace :release do
 
     packages = %w( gem tgz zip ).collect{ |ext| "pkg/merb-#{PKG_VERSION}.#{ext}" }
 
-    rubyforge = RubyForge.new
-    rubyforge.login
-    rubyforge.add_release(GROUP_NAME, "merb", "REL #{PKG_VERSION}", *packages)
+    begin
+      sh %{rubyforge login}
+      sh %{rubyforge add_release #{RUBY_FORGE_PROJECT} merb #{Merb::VERSION} #{packages.join(' ')}}
+      sh %{rubyforge add_file #{RUBY_FORGE_PROJECT} merb #{Merb::VERSION} #{packages.join(' ')}}
+    rescue Exception => e
+      puts
+      puts "Release failed: #{e.message}"
+      puts
+      puts "Set PKG_BUILD environment variable if you do a subrelease (0.9.4.2008_08_02 when version is 0.9.4)"
+    end
   end
 end
+
