@@ -38,9 +38,13 @@ module Merb::Generators
     def class_name
       self.name.camel_case
     end
+
+    def migration_name
+      self.name.snake_case
+    end
     
     def file_name
-      "#{version}_#{self.name.snake_case}"
+      "#{version}_#{migration_name}"
     end
     
     def version

@@ -258,6 +258,8 @@ module Merb
       def slice_files_from_search_path
         search_paths = Array(Merb::Plugins.config[:merb_slices][:search_path] || [Merb.root / "slices"])
         search_paths.inject([]) do |files, path|
+          # handle both Pathname and String
+          path = path.to_s
           if File.file?(path) && File.extname(path) == ".rb"
             files << path
           elsif path.include?("*")
@@ -288,6 +290,8 @@ module Merb
       # @param glob_pattern<String> A glob path with pattern
       # @return <Array> Valid slice file paths.
       def glob_search_path(glob_pattern)
+        # handle both Pathname and String
+        glob_pattern = glob_pattern.to_s
         Dir[glob_pattern].inject([]) do |files, libfile|
           basename = File.basename(libfile, '.rb')
           files << libfile if File.basename(File.dirname(File.dirname(libfile))) == basename
