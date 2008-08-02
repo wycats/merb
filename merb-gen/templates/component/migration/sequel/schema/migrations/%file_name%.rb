@@ -2,7 +2,7 @@
 # http://sequel.rubyforge.org/
 # http://code.google.com/p/ruby-sequel/wiki/Migrations
 
-class <%= class_name %>Migration < Sequel::Migration
+class <%= class_name %> < Sequel::Migration
 
   def up
 <% if model -%>

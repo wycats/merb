@@ -18,17 +18,17 @@ module Merb::Generators
     
     template :migration_activerecord, :orm => :activerecord do
       source('activerecord/schema/migrations/%file_name%.rb')
-      destination("schema/migrations/#{file_name}.rb")
+      destination("#{destination_directory}/#{file_name}.rb")
     end
     
     template :migration_datamapper, :orm => :datamapper do
       source('datamapper/schema/migrations/%file_name%.rb')
-      destination("schema/migrations/#{file_name}.rb")
+     destination("#{destination_directory}/#{file_name}.rb")
     end
     
     template :migration_sequel, :orm => :sequel do
       source('sequel/schema/migrations/%file_name%.rb')
-      destination("schema/migrations/#{file_name}.rb")
+      destination("#{destination_directory}/#{file_name}.rb")
     end
     
     def table_name
@@ -36,7 +36,7 @@ module Merb::Generators
     end
     
     def class_name
-      self.name.camel_case
+      "#{self.name.camel_case}Migration"
     end
 
     def migration_name
@@ -44,7 +44,7 @@ module Merb::Generators
     end
     
     def file_name
-      "#{version}_#{migration_name}"
+      "#{version}_#{migration_name}_migration"
     end
     
     def version

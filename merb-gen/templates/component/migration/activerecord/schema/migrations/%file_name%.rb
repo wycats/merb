@@ -1,4 +1,4 @@
-class <%= class_name %>Migration < ActiveRecord::Migration
+class <%= class_name %> < ActiveRecord::Migration
   def self.up
 <% if model -%>
     create_table :<%= table_name %> do |t|
