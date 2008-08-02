@@ -23,3 +23,10 @@ require path / "resource"
 require path / "freezer"
 
 Templater::Discovery.discover!("merb-gen")
+
+# Require all generators that plugins have added to merb, after the app has loaded.
+Merb::BootLoader.after_app_loads do
+  Merb.generators.each do |file|
+    require file
+  end
+end
