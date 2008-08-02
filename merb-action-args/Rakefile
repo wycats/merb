@@ -1,26 +1,40 @@
 require 'rubygems'
 require 'rake/gempackagetask'
+require "extlib"
 require 'merb-core/tasks/merb_rake_helper'
 
-NAME = "merb-action-args"
-GEM_VERSION = Merb::MORE_VERSION rescue "0.9.4"
+##############################################################################
+# Package && release
+##############################################################################
+RUBY_FORGE_PROJECT  = "merb"
+PROJECT_URL         = "http://merbivore.com"
+PROJECT_SUMMARY     = "Merb plugin that provides support for ActionArgs"
+PROJECT_DESCRIPTION = PROJECT_SUMMARY
+
 AUTHOR = "Yehuda Katz"
-EMAIL = "ykatz@engineyard.com"
-HOMEPAGE = "http://merbivore.com/"
-SUMMARY = "Merb plugin that provides support for ActionArgs"
+EMAIL  = "ykatz@engineyard.com"
+
+GEM_NAME    = "merb-action-args"
+PKG_BUILD   = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
+GEM_VERSION = (Merb::MORE_VERSION rescue "0.9.4") + PKG_BUILD
+
+RELEASE_NAME    = "REL #{GEM_VERSION}"
+
+require "extlib/tasks/release"
+
 
 spec = Gem::Specification.new do |s|
   s.rubyforge_project = 'merb'
-  s.name = NAME
+  s.name = GEM_NAME
   s.version = GEM_VERSION
   s.platform = Gem::Platform::RUBY
   s.has_rdoc = true
   s.extra_rdoc_files = ["README", "LICENSE", 'TODO']
-  s.summary = SUMMARY
-  s.description = s.summary
+  s.summary = PROJECT_SUMMARY
+  s.description = PROJECT_DESCRIPTION
   s.author = AUTHOR
   s.email = EMAIL
-  s.homepage = HOMEPAGE
+  s.homepage = PROJECT_URL
   s.add_dependency('merb-core', '>= 0.9.4')
   s.add_dependency('ruby2ruby', '>= 1.1.9')
   s.add_dependency('ParseTree', '>= 2.2')
@@ -32,30 +46,14 @@ Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
 
+desc "Install the gem"
 task :install => [:package] do
-  sh %{#{sudo} gem install #{install_home} pkg/#{NAME}-#{GEM_VERSION} --no-update-sources}
+  sh %{#{sudo} gem install #{install_home} pkg/#{GEM_NAME}-#{GEM_VERSION} --no-update-sources}
 end
 
 namespace :jruby do
   desc "Run :package and install the resulting .gem with jruby"
   task :install => :package do
-    sh %{#{sudo} jruby -S gem install #{install_home} pkg/#{NAME}-#{GEM_VERSION}.gem --no-rdoc --no-ri}
+    sh %{#{sudo} jruby -S gem install #{install_home} pkg/#{GEM_NAME}-#{GEM_VERSION}.gem --no-rdoc --no-ri}
   end
 end
-
-##############################################################################
-# Release
-##############################################################################
-RUBY_FORGE_PROJECT = NAME
-
-PKG_NAME      = NAME
-PKG_BUILD     = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
-PKG_VERSION   = GEM_VERSION + PKG_BUILD
-PKG_FILE_NAME = "#{PKG_NAME}-#{PKG_VERSION}"
-
-RELEASE_NAME  = "REL #{PKG_VERSION}"
-
-# FIXME: hey, someone take care of me
-RUBY_FORGE_USER    = ""
-
-require "extlib/tasks/release"
