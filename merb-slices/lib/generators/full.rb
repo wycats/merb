@@ -1,9 +1,9 @@
 module Merb::Generators
   
-  class VeryThinSliceGenerator < ApplicationGenerator
+  class FullSliceGenerator < ApplicationGenerator
 
     def self.source_root
-      File.join(super, 'slice', 'very_thin')
+      File.join(File.dirname(__FILE__), '..', '..', 'templates', 'full')
     end
     
     glob!
@@ -19,6 +19,7 @@ module Merb::Generators
     end
     
     alias_method :underscored_name, :base_name
+    alias_method :underscored_base_name, :base_name
     
     def destination_root
       File.join(@destination_root, base_name)
@@ -26,6 +27,6 @@ module Merb::Generators
     
   end
   
-  add_private :very_thin_slice, VeryThinSliceGenerator
+  add_private :full_slice, FullSliceGenerator
   
 end

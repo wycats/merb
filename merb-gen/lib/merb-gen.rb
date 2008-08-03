@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'merb-core'
 require 'sha1'
-gem 'templater', '>= 0.1.2'
+gem 'templater', '>= 0.1.4'
 require 'templater'
 
 path = File.join(File.dirname(__FILE__), "merb-gen")
@@ -11,10 +11,6 @@ require path / "merb"
 require path / "merb" / "merb_full"
 require path / "merb" / "merb_flat"
 require path / "merb" / "merb_very_flat"
-require path / "slice"
-require path / "slice" / "full"
-require path / "slice" / "thin"
-require path / "slice" / "very_thin"
 require path / "merb_plugin"
 require path / "controller"
 require path / "helper"
@@ -26,12 +22,11 @@ require path / "resource_controller"
 require path / "resource"
 require path / "freezer"
 
+Templater::Discovery.discover!("merb-gen")
+
 # Require all generators that plugins have added to merb, after the app has loaded.
 Merb::BootLoader.after_app_loads do
-  # TODO: remove this if statement once generator hooks are added to merb-core proper
-  if Merb.respond_to?(:generators)
-    Merb.generators.each do |file|
-      require file
-    end
+  Merb.generators.each do |file|
+    require file
   end
 end

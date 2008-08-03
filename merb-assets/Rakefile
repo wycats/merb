@@ -2,6 +2,7 @@ require 'rubygems'
 require 'rake/gempackagetask'
 require "extlib"
 require 'merb-core/tasks/merb_rake_helper'
+require "spec/rake/spectask"
 
 ##############################################################################
 # Package && release
@@ -57,7 +58,8 @@ namespace :jruby do
 
 end
 
-desc "Run specs"
-task :spec do
-  sh %{spec -r spec/spec_helper.rb spec/*_spec.rb}
+desc "Run all specs"
+Spec::Rake::SpecTask.new("specs") do |t|
+  t.spec_opts = ["--format", "specdoc", "--colour"]
+  t.spec_files = Dir["spec/**/*_spec.rb"].sort
 end
