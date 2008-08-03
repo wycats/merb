@@ -47,7 +47,6 @@ else
   require 'merb-core'
 end
 
-require 'rubigen'
 require 'merb-core/tasks/merb'
 include FileUtils
 
