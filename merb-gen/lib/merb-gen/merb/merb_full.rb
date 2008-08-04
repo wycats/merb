@@ -20,6 +20,10 @@ module Merb::Generators
     
     first_argument :name, :required => true, :desc => "Application name"
     
+    invoke :layout do |generator|
+      generator.new(destination_root, options, 'application')
+    end
+    
     def app_name
       self.name.snake_case
     end
