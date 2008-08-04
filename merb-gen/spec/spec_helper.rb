@@ -123,10 +123,27 @@ shared_examples_for "chunky generator" do
       @generator.full_class_name.should == "Test::Monkey::ProjectPictures"
     end
   end
+  
+  describe "#base_path" do
+    it "should be blank for no namespaces" do
+      @generator.name = "project_pictures"
+      @generator.base_path.should == ""
+    end
+    
+    it "should snakify and join namespace for double colon separated chunk" do
+      @generator.name = "Test::Monkey::ProjectPictures"
+      @generator.base_path.should == "test/monkey"
+    end
+    
+    it "should leave slashes but only use the namespace part" do
+      @generator.name = "test/monkey/project_pictures"
+      @generator.base_path.should == "test/monkey"
+    end
+  end
 
 end
 
-class Invoke
+class InvokeMatcher
   def initialize(expected)
     @expected = expected
   end
@@ -159,5 +176,29 @@ class Invoke
 end
 
 def invoke(expected)
-  Invoke.new(expected)
+  InvokeMatcher.new(expected)
+end
+
+class CreateMatcher
+  def initialize(expected)
+    @expected = expected
+  end
+
+  def matches?(actual)
+    @actual = actual
+    # Satisfy expectation here. Return false or raise an error if it's not met.
+    @actual.actions.map{|t| t.destination }.include?(@expected)
+  end
+
+  def failure_message
+    "expected #{@actual.inspect} to create #{@expected.inspect}, but it didn't"
+  end
+
+  def negative_failure_message
+    "expected #{@actual.inspect} not to create #{@expected.inspect}, but it did"
+  end
+end
+
+def create(expected)
+  CreateMatcher.new(expected)
 end
