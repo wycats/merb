@@ -21,6 +21,7 @@ require path / "model"
 require path / "resource_controller"
 require path / "resource"
 require path / "freezer"
+require path / "layout"
 
 Templater::Discovery.discover!("merb-gen")
 
