@@ -16,12 +16,12 @@ module Merb::Generators
     
     template :helper do
       source('app/helpers/%file_name%_helper.rb')
-      destination("app/helpers/#{file_name}_helper.rb")
+      destination("app/helpers", base_path, "#{file_name}_helper.rb")
     end
     
     template :helper_spec, :testing_framework => :rspec do
       source('spec/helpers/%file_name%_helper_spec.rb')
-      destination("spec/helpers/#{file_name}_helper_spec.rb")
+      destination("spec/helpers", base_path, "#{file_name}_helper_spec.rb")
     end
     
   end
