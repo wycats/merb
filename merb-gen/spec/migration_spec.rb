@@ -10,7 +10,7 @@ describe Merb::Generators::MigrationGenerator do
   
     it "should convert the name to snake case and prepend the version number" do
       @generator.name = 'SomeMoreStuff'
-      @generator.file_name.should == '001_some_more_stuff'
+      @generator.file_name.should == '001_some_more_stuff_migration'
     end
   
   end
@@ -19,7 +19,7 @@ describe Merb::Generators::MigrationGenerator do
   
     it "should convert the name to camel case" do
       @generator.name = 'some_more_stuff'
-      @generator.class_name.should == 'SomeMoreStuff'
+      @generator.class_name.should == 'SomeMoreStuffMigration'
     end
   
   end
