@@ -26,11 +26,11 @@ module Merb::Generators
       destination("app/parts/views/#{file_name}_part/index.html.erb")
     end
     
-    def controller_modules
+    def modules
       chunks[0..-2]
     end
     
-    def controller_class_name
+    def class_name
       chunks.last
     end
     
@@ -39,7 +39,7 @@ module Merb::Generators
     end
     
     def file_name
-      controller_class_name.snake_case
+      class_name.snake_case
     end
     
     protected

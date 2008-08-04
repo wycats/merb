@@ -6,37 +6,37 @@ describe Merb::Generators::ResourceControllerGenerator do
     @generator = Merb::Generators::ResourceControllerGenerator.new('/tmp', {}, 'Stuff')
   end
   
-  describe "#controller_class_name" do
+  describe "#class_name" do
     it "should camelize the name" do
       @generator.name = "project_pictures"
-      @generator.controller_class_name.should == "ProjectPictures"
+      @generator.class_name.should == "ProjectPictures"
     end
     
     it "should split off the last double colon separated chunk" do
       @generator.name = "Test::Monkey::ProjectPictures"
-      @generator.controller_class_name.should == "ProjectPictures"
+      @generator.class_name.should == "ProjectPictures"
     end
     
     it "should split off the last slash separated chunk" do
       @generator.name = "test/monkey/project_pictures"
-      @generator.controller_class_name.should == "ProjectPictures"
+      @generator.class_name.should == "ProjectPictures"
     end
   end
   
-  describe "#controller_modules" do
+  describe "#modules" do
     it "should be empty if no modules are passed to the name" do
       @generator.name = "project_pictures"
-      @generator.controller_modules.should == []
+      @generator.modules.should == []
     end
     
     it "should split off all but the last double colon separated chunks" do
       @generator.name = "Test::Monkey::ProjectPictures"
-      @generator.controller_modules.should == ["Test", "Monkey"]
+      @generator.modules.should == ["Test", "Monkey"]
     end
     
     it "should split off all but the last slash separated chunk" do
       @generator.name = "test/monkey/project_pictures"
-      @generator.controller_modules.should == ["Test", "Monkey"]
+      @generator.modules.should == ["Test", "Monkey"]
     end
   end
   

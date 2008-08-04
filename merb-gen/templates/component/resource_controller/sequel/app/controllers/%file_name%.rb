@@ -1,5 +1,5 @@
-<% with_modules(controller_modules) do -%>
-class <%= controller_class_name %> < Application
+<% with_modules(modules) do -%>
+class <%= class_name %> < Application
   # provides :xml, :yaml, :js
 
   def index
@@ -22,7 +22,7 @@ class <%= controller_class_name %> < Application
   def create
     @<%= singular_model %> = <%= model_class_name %>.new(params[:<%= singular_model %>])
     if @<%= singular_model %>.save
-      redirect url(:<%= (controller_modules.collect{|m| m.downcase} << singular_model).join("_") %>, @<%= singular_model %>)
+      redirect url(:<%= (modules.collect{|m| m.downcase} << singular_model).join("_") %>, @<%= singular_model %>)
     else
       render :new
     end
@@ -39,7 +39,7 @@ class <%= controller_class_name %> < Application
     @<%= singular_model %> = <%= model_class_name %>[params[:id]]
     raise NotFound unless @<%= singular_model %>
     if @<%= singular_model %>.update(params[:<%= singular_model %>])
-      redirect url(:<%= (controller_modules.collect{|m| m.downcase} << singular_model).join("_") %>, @<%= singular_model %>)
+      redirect url(:<%= (modules.collect{|m| m.downcase} << singular_model).join("_") %>, @<%= singular_model %>)
     else
       raise BadRequest
     end
@@ -49,7 +49,7 @@ class <%= controller_class_name %> < Application
     @<%= singular_model %> = <%= model_class_name %>[params[:id]]
     raise NotFound unless @<%= singular_model %>
     if @<%= singular_model %>.destroy
-      redirect url(:<%= (controller_modules.collect{|m| m.downcase} << singular_model).join("_") %>s)
+      redirect url(:<%= (modules.collect{|m| m.downcase} << singular_model).join("_") %>s)
     else
       raise BadRequest
     end

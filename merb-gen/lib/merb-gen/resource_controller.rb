@@ -40,28 +40,28 @@ module Merb::Generators
     
     end
     
-    def controller_modules
+    def modules
       chunks[0..-2]
     end
     
-    def controller_class_name
+    def class_name
       chunks.last
     end
     
     def test_class_name
-      controller_class_name + "Test"
+      class_name + "Test"
     end
     
     def file_name
-      controller_class_name.snake_case
+      class_name.snake_case
     end
     
     def model_class_name
-      controller_class_name.singularize
+      class_name.singularize
     end
     
     def plural_model
-      controller_class_name.snake_case
+      class_name.snake_case
     end
     
     def singular_model
