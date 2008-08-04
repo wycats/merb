@@ -50,6 +50,44 @@ module Merb
       end
     end
     
+    class NamedGenerator < ComponentGenerator
+      
+      def class_name
+        name.camel_case
+      end
+
+      def test_class_name
+        class_name + "Test"
+      end
+
+      def file_name
+        class_name.snake_case
+      end
+      
+    end
+    
+    class ChunkyGenerator < NamedGenerator
+      
+      def modules
+        chunks[0..-2]
+      end
+
+      def class_name
+        chunks.last
+      end
+
+      def full_class_name
+        chunks.join('::')
+      end
+
+      protected
+
+      def chunks
+        name.gsub('/', '::').split('::').map { |c| c.camel_case }
+      end
+      
+    end
+    
   end  
   
 end

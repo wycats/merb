@@ -1,6 +1,6 @@
 module Merb::Generators
   
-  class ModelGenerator < ComponentGenerator
+  class ModelGenerator < NamedGenerator
 
     def self.source_root
       File.join(super, 'model')
@@ -38,18 +38,6 @@ module Merb::Generators
     template :test_unit, :testing_framework => :test_unit do
       source('test_unit/test/models/%file_name%_test.rb')
       destination('test/models/' + file_name + '_test.rb')
-    end
-    
-    def class_name
-      self.name.camel_case
-    end
-    
-    def test_class_name
-      self.class_name + "Test"
-    end
-    
-    def file_name
-      self.name.snake_case
     end
     
     def attributes?

@@ -1,6 +1,6 @@
 module Merb::Generators
   
-  class HelperGenerator < ComponentGenerator
+  class HelperGenerator < ChunkyGenerator
 
     def self.source_root
       File.join(super, 'helper')
@@ -22,28 +22,6 @@ module Merb::Generators
     template :helper_spec, :testing_framework => :rspec do
       source('spec/helpers/%file_name%_helper_spec.rb')
       destination("spec/helpers/#{file_name}_helper_spec.rb")
-    end
-    
-    def helper_modules
-      chunks[0..-2]
-    end
-    
-    def helper_class_name
-      chunks.last
-    end
-    
-    def full_class_name
-      chunks.join('::')
-    end
-    
-    def file_name
-      helper_class_name.snake_case
-    end
-    
-    protected
-    
-    def chunks
-      name.gsub('/', '::').split('::').map { |c| c.camel_case }
     end
     
   end

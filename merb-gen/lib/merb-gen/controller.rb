@@ -1,6 +1,6 @@
 module Merb::Generators
   
-  class ControllerGenerator < ComponentGenerator
+  class ControllerGenerator < ChunkyGenerator
 
     def self.source_root
       File.join(super, 'controller')
@@ -34,32 +34,6 @@ module Merb::Generators
     template :controller_test_unit, :testing_framework => :test_unit do
       source('test/controllers/%file_name%_test.rb')
       destination("test/controllers/#{file_name}_test.rb")
-    end
-    
-    def modules
-      chunks[0..-2]
-    end
-    
-    def class_name
-      chunks.last
-    end
-    
-    def full_class_name
-      chunks.join('::')
-    end
-    
-    def test_class_name
-      class_name + "Test"
-    end
-    
-    def file_name
-      class_name.snake_case
-    end
-    
-    protected
-    
-    def chunks
-      name.gsub('/', '::').split('::').map { |c| c.camel_case }
     end
     
   end

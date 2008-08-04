@@ -1,6 +1,6 @@
 module Merb::Generators
   
-  class ResourceControllerGenerator < ComponentGenerator
+  class ResourceControllerGenerator < ChunkyGenerator
 
     def self.source_root
       File.join(super, 'resource_controller')
@@ -40,22 +40,6 @@ module Merb::Generators
     
     end
     
-    def modules
-      chunks[0..-2]
-    end
-    
-    def class_name
-      chunks.last
-    end
-    
-    def test_class_name
-      class_name + "Test"
-    end
-    
-    def file_name
-      class_name.snake_case
-    end
-    
     def model_class_name
       class_name.singularize
     end
@@ -76,12 +60,6 @@ module Merb::Generators
     # TODO: implement this for Datamapper so that we get the model properties
     def properties
       []
-    end
-    
-    protected
-    
-    def chunks
-      name.gsub('/', '::').split('::').map { |c| c.camel_case }
     end
     
   end
