@@ -1,6 +1,6 @@
 module Merb::Generators
   
-  class PartControllerGenerator < ChunkyGenerator
+  class PartControllerGenerator < NamespacedGenerator
 
     def self.source_root
       File.join(super, 'part_controller')

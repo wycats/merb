@@ -66,7 +66,7 @@ module Merb
       
     end
     
-    class ChunkyGenerator < NamedGenerator
+    class NamespacedGenerator < NamedGenerator
       
       def modules
         chunks[0..-2]
