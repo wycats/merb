@@ -4,24 +4,24 @@ require 'sha1'
 gem 'templater', '>= 0.1.4'
 require 'templater'
 
-path = File.join(File.dirname(__FILE__), "merb-gen")
+path = File.join(File.dirname(__FILE__))
 
-require path / "generator"
-require path / "merb"
-require path / "merb" / "merb_full"
-require path / "merb" / "merb_flat"
-require path / "merb" / "merb_very_flat"
-require path / "merb_plugin"
-require path / "controller"
-require path / "helper"
-require path / "part_controller"
-require path / "migration"
-require path / "session_migration"
-require path / "model"
-require path / "resource_controller"
-require path / "resource"
-require path / "freezer"
-require path / "layout"
+require path / "merb-gen" / "generator"
+require path / "generators" / "merb"
+require path / "generators" / "merb" / "merb_full"
+require path / "generators" / "merb" / "merb_flat"
+require path / "generators" / "merb" / "merb_very_flat"
+require path / "generators" / "merb_plugin"
+require path / "generators" / "controller"
+require path / "generators" / "helper"
+require path / "generators" / "part_controller"
+require path / "generators" / "migration"
+require path / "generators" / "session_migration"
+require path / "generators" / "model"
+require path / "generators" / "resource_controller"
+require path / "generators" / "resource"
+require path / "generators" / "freezer"
+require path / "generators" / "layout"
 
 Templater::Discovery.discover!("merb-gen")
 
