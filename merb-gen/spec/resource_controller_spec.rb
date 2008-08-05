@@ -29,4 +29,74 @@ describe Merb::Generators::ResourceControllerGenerator do
     end
   end
   
+  it "should create a controller" do
+    @generator.should create('/tmp/app/controllers/stuff.rb')
+  end
+  
+  it "should create views" do
+    @generator.should create('/tmp/app/views/stuff/index.html.erb')
+    @generator.should create('/tmp/app/views/stuff/new.html.erb')
+    @generator.should create('/tmp/app/views/stuff/edit.html.erb')
+    @generator.should create('/tmp/app/views/stuff/show.html.erb')
+  end
+  
+  it "should create a helper" do
+    @generator.should create('/tmp/app/helpers/stuff_helper.rb')
+  end
+  
+  describe "with rspec" do
+    
+    it "should create a controller spec"
+
+    it "should create a helper spec" do
+      @generator.should create('/tmp/spec/helpers/stuff_helper_spec.rb')
+    end
+    
+  end
+  
+  describe "with test_unit" do
+    
+    it "should create a controller test"
+    
+  end
+  
+  describe "with a namespace" do
+    
+    before(:each) do
+      @generator = Merb::Generators::ResourceControllerGenerator.new('/tmp', {}, 'John::Monkey::Stuff')
+    end
+    
+    it "should create a controller" do
+      @generator.should create('/tmp/app/controllers/john/monkey/stuff.rb')
+    end
+
+    it "should create views" do
+      @generator.should create('/tmp/app/views/john/monkey/stuff/index.html.erb')
+      @generator.should create('/tmp/app/views/john/monkey/stuff/new.html.erb')
+      @generator.should create('/tmp/app/views/john/monkey/stuff/edit.html.erb')
+      @generator.should create('/tmp/app/views/john/monkey/stuff/show.html.erb')
+    end
+
+    it "should create a helper" do
+      @generator.should create('/tmp/app/helpers/john/monkey/stuff_helper.rb')
+    end
+
+    describe "with rspec" do
+
+      it "should create a controller spec"
+
+      it "should create a helper spec" do
+        @generator.should create('/tmp/spec/helpers/john/monkey/stuff_helper_spec.rb')
+      end
+
+    end
+
+    describe "with test_unit" do
+
+      it "should create a controller test"
+
+    end
+    
+  end
+  
 end

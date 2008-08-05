@@ -28,13 +28,13 @@ module Merb::Generators
     
       template "controller_#{orm}".to_sym, :orm => orm do
         source("#{orm}/app/controllers/%file_name%.rb")
-        destination("app/controllers/#{file_name}.rb")
+        destination("app/controllers", base_path, "#{file_name}.rb")
       end
     
       [:index, :show, :edit, :new].each do |view|
         template "view_#{view}_#{orm}".to_sym, :orm => orm do
           source("#{orm}/app/views/%file_name%/#{view}.html.erb")
-          destination("app/views/#{file_name}/#{view}.html.erb")
+          destination("app/views", base_path, "#{file_name}/#{view}.html.erb")
         end
       end
     
