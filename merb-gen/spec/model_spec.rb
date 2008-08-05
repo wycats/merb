@@ -8,72 +8,59 @@ describe Merb::Generators::ModelGenerator do
     }.should raise_error(::Templater::TooFewArgumentsError)
   end
   
-  it "should default to the rspec testing framework" do
-    @generator = Merb::Generators::ModelGenerator.new('/tmp', {}, 'User')
-    @generator.testing_framework.should == :rspec
-  end
-  
-  it "should have the model and spec actions by default" do
-    pending "this doesn't really work with fs generators"
-    @generator = Merb::Generators::ModelGenerator.new('/tmp', {}, 'User')
-    @generator.templates.map{|t| t.name}.should == [:model, :spec]
-  end
-  
-  it "should have the model and test_unit templates if test_unit is specified as testing framework" do
-    pending "this doesn't really work with fs generators"
-    @generator = Merb::Generators::ModelGenerator.new('/tmp', { :testing_framework => :test_unit }, 'User')
-    @generator.templates.map{|t| t.name}.should == [:model, :test_unit]
-  end
-  
-  it "should have the model and spec templates if spec is specified as testing framework" do
-    pending "this doesn't really work with fs generators"    
-    @generator = Merb::Generators::ModelGenerator.new('/tmp', { :testing_framework => :rspec }, 'User')
-    @generator.templates.map{|t| t.name}.should == [:model, :spec]
-  end
-  
-end
-
-describe Merb::Generators::ModelGenerator do
-  
   before do
-    @generator = Merb::Generators::ModelGenerator.new('/tmp', {}, 'SomeMoreStuff')
+    @generator = Merb::Generators::ModelGenerator.new('/tmp', {}, 'Stuff')
   end
   
-  it_should_behave_like "named generator"
-
-  describe '#attributes_for_accessor' do
+  it_should_behave_like "chunky generator"
   
-    it "should convert the name to camel case" do
-      @generator = Merb::Generators::ModelGenerator.new('/tmp', {}, 'SomeMoreStuff', 'test:object', 'arg:object', 'blah:object')
-      @generator.attributes_for_accessor.should == ':arg, :blah, :test'
-    end  
-  
+  it "should create a model" do
+    @generator.should create('/tmp/app/models/stuff.rb')
   end
   
-  describe '#invocations' do
+  describe "with rspec" do
+    
+    it "should create a model spec" do
+      @generator.should create('/tmp/spec/models/stuff_spec.rb')
+    end
+    
+  end
   
+  describe "with test_unit" do
+    
+    it "should create a model test" do
+      @generator = Merb::Generators::ModelGenerator.new('/tmp', { :testing_framework => :test_unit }, 'Stuff')
+      @generator.should create('/tmp/test/models/stuff_test.rb')
+    end
+    
+  end
+  
+  describe "with a namespace" do
+    
     before(:each) do
-      @generator.attributes = { 'test' => 'string', 'blah' => 'integer' }
-      @invocation = @generator.invocations.first
-    end
-  
-    it "should invoke a migration" do
-      @invocation.should be_kind_of(Merb::Generators::MigrationGenerator)
+      @generator = Merb::Generators::ModelGenerator.new('/tmp', {}, 'John::Monkey::Stuff')
     end
     
-    it "should have the same name as the model" do
-      @invocation.name.should == "SomeMoreStuff"
+    it "should create a model" do
+      @generator.should create('/tmp/app/models/john/monkey/stuff.rb')
     end
-    
-    it "should have the same attributes" do
-      @invocation.attributes['test'].should == 'string'
-      @invocation.attributes['blah'].should == 'integer'
+
+    describe "with rspec" do
+
+      it "should create a model spec" do
+        @generator.should create('/tmp/spec/models/john/monkey/stuff_spec.rb')
+      end
+
     end
-    
-    it "should set the options 'model' to true" do
-      @invocation.options[:model].should be_true
+
+    describe "with test_unit" do
+
+      it "should create a model test" do
+        @generator = Merb::Generators::ModelGenerator.new('/tmp', { :testing_framework => :test_unit }, 'John::Monkey::Stuff')
+        @generator.should create('/tmp/test/models/john/monkey/stuff_test.rb')
+      end
+
     end
-  
   end
   
 end

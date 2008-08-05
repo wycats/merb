@@ -1,6 +1,6 @@
 module Merb::Generators
   
-  class ModelGenerator < NamedGenerator
+  class ModelGenerator < ChunkyGenerator
 
     def self.source_root
       File.join(super, 'model')
@@ -18,26 +18,26 @@ module Merb::Generators
     second_argument :attributes, :as => :hash, :default => {}, :desc => "space separated model properties in form of name:type. Example: state:string"
     
     invoke :migration do |generator|
-      generator.new(destination_root, options.merge(:model => true), name, attributes)
+      generator.new(destination_root, options.merge(:model => true), file_name, attributes)
     end
     
     [:none, :activerecord, :sequel, :datamapper].each do |orm|
     
       template "model_#{orm}".to_sym, :orm => orm do
         source("#{orm}/app/models/%file_name%.rb")
-        destination("app/models/#{file_name}.rb")
+        destination("app/models", base_path, "#{file_name}.rb")
       end
     
     end
     
     template :spec, :testing_framework => :rspec do
       source('rspec/spec/models/%file_name%_spec.rb')
-      destination('spec/models/' + file_name + '_spec.rb')
+      destination("spec/models", base_path, "#{file_name}_spec.rb")
     end
     
     template :test_unit, :testing_framework => :test_unit do
       source('test_unit/test/models/%file_name%_test.rb')
-      destination('test/models/' + file_name + '_test.rb')
+      destination("test/models", base_path, "#{file_name}_test.rb")
     end
     
     def attributes?
