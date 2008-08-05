@@ -18,12 +18,12 @@ module Merb::Generators
     
     template :controller do
       source('app/parts/%file_name%_part.rb')
-      destination("app/parts/#{file_name}_part.rb")
+      destination("app/parts", base_path, "#{file_name}_part.rb")
     end
     
     template :index do
       source('app/parts/views/%file_name%_part/index.html.erb')
-      destination("app/parts/views/#{file_name}_part/index.html.erb")
+      destination("app/parts/views", base_path, "#{file_name}_part/index.html.erb")
     end
     
   end
