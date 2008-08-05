@@ -26,7 +26,7 @@ namespace :merb do
 
     cd 'merb'
 
-    %w[extlib core more plugins].each do |r|
+    %w[core more plugins].each do |r|
       if File.exists?("merb-#{r}")
         puts "\nmerb-#{r} repos exists! Updating instead of cloning..."
         cd "merb-#{r}"
@@ -38,6 +38,18 @@ namespace :merb do
         puts "\nCloning merb-#{r} repos..."
         sh "git clone git://github.com/wycats/merb-#{r}.git"
       end
+    end
+
+    if File.exists?("extlib")
+      puts "\nextlib repos exists! Updating instead of cloning..."
+      cd "extlib"
+      sh 'git fetch'
+      sh 'git checkout master'
+      sh 'git rebase origin/master'
+      cd '..'
+    else
+      puts "\nCloning extlib repos..."
+      sh "git clone git://github.com/sam/extlib.git"
     end
 
     # bring us back to the parent dir so any chained tasks will work
@@ -56,7 +68,7 @@ namespace :merb do
     task :wipe do
       windows = (PLATFORM =~ /win32|cygwin/) rescue nil
       sudo = windows ? "" : 'sudo'
-      %w[ merb merb-extlib merb-core merb-more merb-action-args merb-assets merb-builder merb-cache merb-freezer merb-gen merb-haml merb-mailer merb-parts merb_activerecord merb_helpers merb_sequel merb_param_protection merb_test_unit merb_stories].each do |gem|
+      %w[ merb extlib merb-core merb-more merb-action-args merb-assets merb-builder merb-cache merb-freezer merb-gen merb-haml merb-mailer merb-parts merb_activerecord merb_helpers merb_sequel merb_param_protection merb_test_unit merb_stories].each do |gem|
         sh "#{sudo} gem uninstall #{gem} --all --ignore-dependencies --executables; true"
       end
     end
@@ -71,15 +83,13 @@ namespace :merb do
 
     # Usage: sake merb:install:all
     desc 'Install merb-core, merb-more, and merb-plugins'
-    task :all => ['merb:check_outside_merb_dir', 'merb:install:core', 'merb:install:more', 'merb:install:plugins']
+    task :all => ['merb:check_outside_merb_dir', 'merb:install:extlib', 'merb:install:core', 'merb:install:more', 'merb:install:plugins']
 
     # Usage: sake merb:install:core
-    desc 'Install merb-core and merb-extlib'
+    desc 'Install merb-core and extlib'
     task :core do
-      puts "\nInstalling merb-more and merb-extlib..."
-      %w[extlib core].each do |repos|
-        sh "cd merb/merb-#{repos} && rake install && cd ../.."
-      end
+      puts "\nInstalling merb-core and extlib..."
+      sh "cd merb/merb-core && rake install && cd ../.."
     end
 
     # Usage: sake merb:install:more
@@ -96,6 +106,13 @@ namespace :merb do
       sh "cd merb/merb-plugins && rake install && cd ../.."
     end
 
+    # Usage: sake merb:install:extlib
+    desc 'Install extlib'
+    task :extlib do
+      puts "\nInstalling extlib..."
+      sh "cd merb/extlib && rake install && cd ../.."
+    end
+
   end
 
   namespace :sake do
@@ -110,7 +127,7 @@ namespace :merb do
     desc 'Remove all merb:* sake tasks. Including this one.'
     task :uninstall do
       puts "\nUninstalling merb-dev sake tasks..."
-      sh 'sake -u merb:check_outside_merb_dir merb:gems:wipe merb:clone merb:gems:refresh merb:install merb:install:all merb:install:core merb:install:more merb:install:plugins merb:sake:refresh merb:update merb:sake:uninstall'
+      sh 'sake -u merb:check_outside_merb_dir merb:gems:wipe merb:clone merb:gems:refresh merb:install merb:install:all merb:install:core merb:install:more merb:install:plugins merb:install:extlib merb:sake:refresh merb:update merb:sake:uninstall'
     end
 
   end
