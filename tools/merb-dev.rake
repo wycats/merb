@@ -83,14 +83,13 @@ namespace :merb do
 
     # Usage: sake merb:install:all
     desc 'Install merb-core, merb-more, and merb-plugins'
-    task :all => ['merb:check_outside_merb_dir', 'merb:install:core', 'merb:install:more', 'merb:install:plugins', 'merb:install:extlib']
+    task :all => ['merb:check_outside_merb_dir', 'merb:install:extlib', 'merb:install:core', 'merb:install:more', 'merb:install:plugins']
 
     # Usage: sake merb:install:core
     desc 'Install merb-core and extlib'
     task :core do
       puts "\nInstalling merb-core and extlib..."
       sh "cd merb/merb-core && rake install && cd ../.."
-      sh "cd merb/extlib && rake install && cd ../.."
     end
 
     # Usage: sake merb:install:more
