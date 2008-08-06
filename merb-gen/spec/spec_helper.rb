@@ -83,6 +83,11 @@ shared_examples_for "chunky generator" do
       @generator.file_name.should == "project_pictures"
     end
     
+    it "should preserve dashes" do
+      @generator.name = "project-pictures"
+      @generator.file_name.should == "project-pictures"
+    end
+    
     it "should split off the last double colon separated chunk and snakify it" do
       @generator.name = "Test::Monkey::ProjectPictures"
       @generator.file_name.should == "project_pictures"
@@ -91,6 +96,19 @@ shared_examples_for "chunky generator" do
     it "should split off the last slash separated chunk and snakify it" do
       @generator.name = "test/monkey/project_pictures"
       @generator.file_name.should == "project_pictures"
+    end
+    
+  end
+  
+  describe "#symbol_name" do
+    it "should snakify the name and replace dashes with underscores" do
+      @generator.name = "project-pictures"
+      @generator.symbol_name.should == "project_pictures"
+    end
+    
+    it "should split off the last slash separated chunk, snakify it and replace dashes with underscores" do
+      @generator.name = "test/monkey/project-pictures"
+      @generator.symbol_name.should == "project_pictures"
     end
   end
   

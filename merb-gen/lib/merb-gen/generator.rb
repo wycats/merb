@@ -75,6 +75,10 @@ module Merb
       def class_name
         chunks.last
       end
+      
+      def symbol_name
+        file_name.gsub('-', '_')
+      end
 
       def full_class_name
         chunks.join('::')
