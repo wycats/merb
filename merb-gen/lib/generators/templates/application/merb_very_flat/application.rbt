@@ -7,7 +7,7 @@ Merb::Config.use { |c|
 }
 
 Merb::Router.prepare do |r|
-  r.match('/').to(:controller => '<%= app_name %>', :action =>'index')
+  r.match('/').to(:controller => '<%= base_name %>', :action =>'index')
 end
 
 class <%= class_name %> < Merb::Controller

@@ -15,11 +15,7 @@ module Merb::Generators
     
     template :application do
       source('application.rbt')
-      destination("#{app_name}.rb")
-    end
-    
-    def app_name
-      self.name.snake_case
+      destination("#{base_name}.rb")
     end
     
     def class_name

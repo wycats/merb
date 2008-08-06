@@ -15,13 +15,9 @@ module Merb::Generators
     first_argument :name, :required => true, :desc => "Application name"
     
     glob!
-
-    def app_name
-      self.name.snake_case
-    end
     
     def destination_root
-      File.join(@destination_root, app_name)
+      File.join(@destination_root, base_name)
     end
     
   end
