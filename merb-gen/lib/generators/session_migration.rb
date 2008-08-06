@@ -1,9 +1,9 @@
 module Merb::Generators
   
-  class SessionMigrationGenerator < ComponentGenerator
+  class SessionMigrationGenerator < Generator
 
     def self.source_root
-      File.join(super, 'session_migration')
+      File.join(super, 'component', 'session_migration')
     end
     
     desc <<-DESC

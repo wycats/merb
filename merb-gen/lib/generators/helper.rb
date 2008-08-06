@@ -3,7 +3,7 @@ module Merb::Generators
   class HelperGenerator < NamespacedGenerator
 
     def self.source_root
-      File.join(super, 'helper')
+      File.join(super, 'component', 'helper')
     end
     
     desc <<-DESC

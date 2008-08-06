@@ -37,20 +37,8 @@ module Merb
         File.join(File.dirname(__FILE__), '..', 'generators', 'templates')
       end
     end
-    
-    class ApplicationGenerator < Generator
-      def self.source_root
-        File.join(super, 'application')
-      end
-    end    
-    
-    class ComponentGenerator < Generator
-      def self.source_root
-        File.join(super, 'component')
-      end
-    end
-    
-    class NamedGenerator < ComponentGenerator
+
+    class NamedGenerator < Generator
       
       def class_name
         name.camel_case
@@ -63,7 +51,11 @@ module Merb
       def file_name
         class_name.snake_case
       end
-      
+
+      def symbol_name
+        file_name.gsub('-', '_')
+      end
+
     end
     
     class NamespacedGenerator < NamedGenerator
@@ -74,10 +66,6 @@ module Merb
 
       def class_name
         chunks.last
-      end
-      
-      def symbol_name
-        file_name.gsub('-', '_')
       end
 
       def full_class_name

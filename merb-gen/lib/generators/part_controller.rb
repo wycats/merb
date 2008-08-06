@@ -3,7 +3,7 @@ module Merb::Generators
   class PartControllerGenerator < NamespacedGenerator
 
     def self.source_root
-      File.join(super, 'part_controller')
+      File.join(super, 'component', 'part_controller')
     end
     
     desc <<-DESC

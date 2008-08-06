@@ -13,12 +13,31 @@ end
 shared_examples_for "named generator" do
 
   describe '#file_name' do
-  
+
     it "should convert the name to snake case" do
       @generator.name = 'SomeMoreStuff'
       @generator.file_name.should == 'some_more_stuff'
     end
-  
+
+    it "should preserve dashes" do
+      @generator.name = "project-pictures"
+      @generator.file_name.should == "project-pictures"
+    end
+
+  end
+
+  describe "#symbol_name" do
+
+    it "should snakify the name" do
+      @generator.name = "ProjectPictures"
+      @generator.symbol_name.should == "project_pictures"
+    end
+    
+    it "should replace dashes with underscores" do
+      @generator.name = "project-pictures"
+      @generator.symbol_name.should == "project_pictures"
+    end
+
   end
 
   describe '#class_name' do

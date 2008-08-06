@@ -1,9 +1,9 @@
 module Merb::Generators
   
-  class MerbPluginGenerator < ApplicationGenerator
+  class MerbPluginGenerator < Generator
 
     def self.source_root
-      File.join(super, 'merb_plugin')
+      File.join(super, 'application', 'merb_plugin')
     end
     
     option :testing_framework, :default => :rspec, :desc => 'Testing framework to use (one of: spec, test_unit)'
