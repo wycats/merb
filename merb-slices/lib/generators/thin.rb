@@ -3,7 +3,7 @@ module Merb::Generators
   class ThinSliceGenerator < NamedGenerator
 
     def self.source_root
-      File.join(File.dirname(__FILE__), '..', '..', 'templates', 'thin')
+      File.join(File.dirname(__FILE__), 'templates', 'thin')
     end
     
     glob!
