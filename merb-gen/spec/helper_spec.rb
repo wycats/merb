@@ -6,7 +6,7 @@ describe Merb::Generators::HelperGenerator do
     @generator = Merb::Generators::HelperGenerator.new('/tmp', {}, 'Stuff')
   end
   
-  it_should_behave_like "chunky generator"
+  it_should_behave_like "namespaced generator"
   
   it "should create a helper" do
     @generator.should create('/tmp/app/helpers/stuff_helper.rb')

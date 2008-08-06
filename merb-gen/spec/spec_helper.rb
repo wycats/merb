@@ -60,7 +60,7 @@ shared_examples_for "named generator" do
 
 end
 
-shared_examples_for "chunky generator" do
+shared_examples_for "namespaced generator" do
 
   describe "#class_name" do
     it "should camelize the name" do
