@@ -1,6 +1,6 @@
 module Merb::Generators
   
-  class SliceGenerator < ApplicationGenerator
+  class SliceGenerator < Generator
     
     option :thin, :as => :boolean, :desc => 'Generates a thin slice'
     option :very_thin, :as => :boolean, :desc => 'Generates an even thinner slice'

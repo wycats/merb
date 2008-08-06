@@ -1,6 +1,6 @@
 module Merb::Generators
   
-  class FullSliceGenerator < ApplicationGenerator
+  class FullSliceGenerator < NamedGenerator
 
     def self.source_root
       File.join(File.dirname(__FILE__), '..', '..', 'templates', 'full')

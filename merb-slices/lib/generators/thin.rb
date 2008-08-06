@@ -1,6 +1,6 @@
 module Merb::Generators
   
-  class ThinSliceGenerator < ApplicationGenerator
+  class ThinSliceGenerator < NamedGenerator
 
     def self.source_root
       File.join(File.dirname(__FILE__), '..', '..', 'templates', 'thin')
