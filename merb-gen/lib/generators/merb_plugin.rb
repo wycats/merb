@@ -1,6 +1,6 @@
 module Merb::Generators
   
-  class MerbPluginGenerator < Generator
+  class MerbPluginGenerator < NamedGenerator
 
     def self.source_root
       File.join(super, 'application', 'merb_plugin')
