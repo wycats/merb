@@ -131,7 +131,7 @@ instead/in addition to the ones supplied (if any) in
 host-app/public/slices/<%= base_name %>.
 
 In any case don't edit those files directly as they may be clobbered any time
-rake <%= base_name %>:install is run.
+rake <%= symbol_name %>:install is run.
 
 ------------------------------------------------------------------------------
 
