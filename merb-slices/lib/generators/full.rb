@@ -18,7 +18,6 @@ module Merb::Generators
       self.name.snake_case
     end
     
-    alias_method :underscored_name, :base_name
     alias_method :underscored_base_name, :base_name
     
     def destination_root

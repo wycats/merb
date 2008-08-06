@@ -1,5 +1,5 @@
 namespace :slices do
-  namespace :<%= underscored_name %> do 
+  namespace :<%= symbol_name %> do 
     
     # add your own <%= base_name %> tasks here
 

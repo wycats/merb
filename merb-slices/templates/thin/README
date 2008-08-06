@@ -25,7 +25,7 @@ A thin slice for the Merb framework.
 |   `-- application.rb
 `-- views [8]
     |-- layout
-    |   `-- <%= underscored_name %>.html.erb [9]
+    |   `-- <%= base_name %>.html.erb [9]
     `-- main
         `-- index.html.erb
 
@@ -37,8 +37,8 @@ A thin slice for the Merb framework.
 5. The main slice file - contains all slice setup logic/config.
 6. Public assets you (optionally) install using rake slices:my_slice:install
 7. Stubs of classes/views/files for the end-user to override - usually these 
-   mimic the files in app/ and/or public/; use rake slices:<%= underscored_name %>:stubs to
-   get started with the override stubs. Also, slices:<%= underscored_name %>:patch will
+   mimic the files in app/ and/or public/; use rake slices:<%= base_name %>:stubs to
+   get started with the override stubs. Also, slices:<%= base_name %>:patch will
    copy over views to override in addition to the files found in /stubs.
 8. A thin slice stores its views seperately.
 9. The default layout, as specified in Merb::Slices::config[:my_slice][:layout]
@@ -47,7 +47,7 @@ A thin slice for the Merb framework.
    
 To see all available tasks for <%= module_name %> run:
 
-rake -T slices:<%= underscored_name %>
+rake -T slices:<%= base_name %>
 
 ------------------------------------------------------------------------------
 
@@ -67,7 +67,7 @@ Merb::Plugins.config[:merb_slices] = { :queue => ["<%= module_name %>", ...] }
 
 Merb::BootLoader.before_app_loads do
   
-  Merb::Slices::config[:<%= underscored_name %>][:option] = value
+  Merb::Slices::config[:<%= symbol_name %>][:option] = value
   
 end
 
@@ -91,7 +91,7 @@ r.slice(:<%= module_name %>)
 
 Normally you should also run the following rake task:
 
-rake slices:<%= underscored_name %>:install
+rake slices:<%= symbol_name %>:install
 
 ------------------------------------------------------------------------------
 

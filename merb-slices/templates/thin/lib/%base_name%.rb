@@ -10,7 +10,7 @@ if defined?(Merb::Plugins)
   
   # Slice configuration - set this in a before_app_loads callback.
   # By default a Slice uses its own layout.
-  Merb::Slices::config[:<%= underscored_name %>][:layout] ||= :<%= underscored_name %>
+  Merb::Slices::config[:<%= symbol_name %>][:layout] ||= :<%= symbol_name %>
   
   # All Slice code is expected to be namespaced inside a module
   module <%= module_name %>
@@ -44,7 +44,7 @@ if defined?(Merb::Plugins)
     #  router behaviour is a valid namespace, so you can attach
     #  routes at any level of your router setup.
     #
-    # @note prefix your named routes with :<%= underscored_name %>_
+    # @note prefix your named routes with :<%= symbol_name %>_
     #   to avoid potential conflicts with global named routes.
     def self.setup_router(scope)
     end

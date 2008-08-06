@@ -18,8 +18,6 @@ module Merb::Generators
       self.name.snake_case
     end
     
-    alias_method :underscored_name, :base_name
-    
     def destination_root
       File.join(@destination_root, base_name)
     end

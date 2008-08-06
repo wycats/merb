@@ -1,5 +1,5 @@
 namespace :slices do
-  namespace :<%= underscored_name %> do
+  namespace :<%= symbol_name %> do
   
     desc "Install <%= module_name %>"
     task :install => [:preflight, :setup_directories, :copy_assets, :migrate]

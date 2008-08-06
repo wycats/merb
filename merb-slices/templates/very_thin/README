@@ -27,7 +27,7 @@ A very thin slice for the Merb framework.
 
 To see all available tasks for <%= module_name %> run:
 
-rake -T slices:<%= underscored_name %>
+rake -T slices:<%= symbol_name %>
 
 ------------------------------------------------------------------------------
 
@@ -47,7 +47,7 @@ Merb::Plugins.config[:merb_slices] = { :queue => ["<%= module_name %>", ...] }
 
 Merb::BootLoader.before_app_loads do
   
-  Merb::Slices::config[:<%= underscored_name %>][:option] = value
+  Merb::Slices::config[:<%= symbol_name %>][:option] = value
   
 end
 
@@ -71,7 +71,7 @@ r.slice(:<%= module_name %>)
 
 Normally you should also run the following rake task:
 
-rake slices:<%= underscored_name %>:install
+rake slices:<%= symbol_name %>:install
 
 ------------------------------------------------------------------------------
 

@@ -13,9 +13,9 @@ if defined?(Merb::Plugins)
   # the main application layout or no layout at all if needed.
   # 
   # Configuration options:
-  # :layout - the layout to use; defaults to :<%= underscored_name %>
+  # :layout - the layout to use; defaults to :<%= base_name %>
   # :mirror - which path component types to use on copy operations; defaults to all
-  Merb::Slices::config[:<%= underscored_name %>][:layout] ||= :<%= underscored_name %>
+  Merb::Slices::config[:<%= symbol_name %>][:layout] ||= :<%= symbol_name %>
   
   # All Slice code is expected to be namespaced inside a module
   module <%= module_name %>
@@ -49,11 +49,11 @@ if defined?(Merb::Plugins)
     #  router behaviour is a valid namespace, so you can attach
     #  routes at any level of your router setup.
     #
-    # @note prefix your named routes with :<%= underscored_name %>_
+    # @note prefix your named routes with :<%= symbol_name %>_
     #   to avoid potential conflicts with global named routes.
     def self.setup_router(scope)
       # example of a named route
-      scope.match('/index.:format').to(:controller => 'main', :action => 'index').name(:<%= underscored_name %>_index)
+      scope.match('/index.:format').to(:controller => 'main', :action => 'index').name(:<%= symbol_name %>_index)
     end
     
   end

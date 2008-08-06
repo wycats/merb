@@ -27,7 +27,7 @@ describe "<%= module_name %> (module)" do
   end
   
   it "should have an :identifier_sym property" do
-    <%= module_name %>.identifier_sym.should == :<%= underscored_name %>
+    <%= module_name %>.identifier_sym.should == :<%= symbol_name %>
   end
   
   it "should have a :root property" do
@@ -47,12 +47,12 @@ describe "<%= module_name %> (module)" do
   
   it "should have :routes and :named_routes properties" do
     <%= module_name %>.routes.should_not be_empty
-    <%= module_name %>.named_routes[:<%= underscored_name %>_index].should be_kind_of(Merb::Router::Route)
+    <%= module_name %>.named_routes[:<%= base_name %>_index].should be_kind_of(Merb::Router::Route)
   end
 
   it "should have an url helper method for slice-specific routes" do
     <%= module_name %>.url(:controller => 'main', :action => 'show', :format => 'html').should == "/<%= base_name %>/main/show.html"
-    <%= module_name %>.url(:<%= underscored_name %>_index, :format => 'html').should == "/<%= base_name %>/index.html"
+    <%= module_name %>.url(:<%= symbol_name %>_index, :format => 'html').should == "/<%= base_name %>/index.html"
   end
   
   it "should have a config property (Hash)" do
@@ -66,7 +66,7 @@ describe "<%= module_name %> (module)" do
   end
   
   it "should have a :layout config option set" do
-    <%= module_name %>.config[:layout].should == :<%= underscored_name %>
+    <%= module_name %>.config[:layout].should == :<%= symbol_name %>
   end
   
   it "should have a dir_for method" do
