@@ -12,11 +12,15 @@ module Merb
       end
 
       def class_name
-        chunks.last
+        chunks.last.gsub('-', '_').camel_case
+      end
+      
+      def file_name
+        chunks.last.snake_case
       end
 
       def full_class_name
-        chunks.join('::')
+        (modules + [class_name]).join('::')
       end
       
       def base_path

@@ -46,6 +46,11 @@ shared_examples_for "named generator" do
       @generator.name = 'some_more_stuff'
       @generator.class_name.should == 'SomeMoreStuff'
     end
+    
+    it "should convert a name with dashes to camel case" do
+      @generator.name = 'some-more-stuff'
+      @generator.class_name.should == 'SomeMoreStuff'
+    end
   
   end
   
@@ -76,6 +81,11 @@ shared_examples_for "namespaced generator" do
     it "should split off the last slash separated chunk" do
       @generator.name = "test/monkey/project_pictures"
       @generator.class_name.should == "ProjectPictures"
+    end
+    
+    it "should convert a name with dashes to camel case" do
+      @generator.name = 'some-more-stuff'
+      @generator.class_name.should == 'SomeMoreStuff'
     end
   end
   
@@ -151,6 +161,11 @@ shared_examples_for "namespaced generator" do
   describe "#full_class_name" do
     it "should camelize the name" do
       @generator.name = "project_pictures"
+      @generator.full_class_name.should == "ProjectPictures"
+    end
+    
+    it "should camelize a name with dashes" do
+      @generator.name = "project-pictures"
       @generator.full_class_name.should == "ProjectPictures"
     end
     

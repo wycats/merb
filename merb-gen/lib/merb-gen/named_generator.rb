@@ -8,7 +8,7 @@ module Merb
       first_argument :name, :required => true
       
       def class_name
-        name.camel_case
+        name.gsub('-', '_').camel_case
       end
 
       def test_class_name
@@ -16,7 +16,7 @@ module Merb
       end
 
       def file_name
-        class_name.snake_case
+        name.snake_case
       end
 
       def symbol_name
