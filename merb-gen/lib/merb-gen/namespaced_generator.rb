@@ -15,9 +15,13 @@ module Merb
         chunks.last.gsub('-', '_').camel_case
       end
       
+      alias_method :module_name, :class_name
+      
       def file_name
         chunks.last.snake_case
       end
+      
+      alias_method :base_name, :file_name
 
       def full_class_name
         (modules + [class_name]).join('::')

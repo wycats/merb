@@ -10,6 +10,8 @@ module Merb
       def class_name
         name.gsub('-', '_').camel_case
       end
+      
+      alias_method :module_name, :class_name
 
       def test_class_name
         class_name + "Test"
@@ -18,6 +20,8 @@ module Merb
       def file_name
         name.snake_case
       end
+      
+      alias_method :base_name, :file_name
 
       def symbol_name
         file_name.gsub('-', '_')
