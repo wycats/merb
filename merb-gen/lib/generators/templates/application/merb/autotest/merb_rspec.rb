@@ -49,7 +49,7 @@ class Autotest::MerbRspec < Autotest
     end
 
     # Any change to a helper will cause its spec to be run
-    add_mapping %r%^app/helpers/(.*)_helper(s)?\.rb% do |_, m|
+    add_mapping %r%^app/helpers/((.*)_helper(s)?)\.rb% do |_, m|
       spec_for(m[1], 'helper')
     end
 
