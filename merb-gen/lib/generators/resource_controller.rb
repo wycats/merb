@@ -25,7 +25,7 @@ module Merb::Generators
     end
     
     # add controller and view templates for each of the four big ORM's
-    [:none, :sequel, :datamapper].each do |orm|
+    [:none, :datamapper].each do |orm|
     
       template "controller_#{orm}".to_sym, :orm => orm do
         source("#{orm}/app/controllers/%file_name%.rb")

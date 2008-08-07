@@ -21,11 +21,6 @@ module Merb::Generators
      destination("#{destination_directory}/#{file_name}.rb")
     end
     
-    template :migration_sequel, :orm => :sequel do
-      source('sequel/schema/migrations/%file_name%.rb')
-      destination("#{destination_directory}/#{file_name}.rb")
-    end
-    
     def table_name
       self.name.snake_case.pluralize
     end
