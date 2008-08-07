@@ -21,13 +21,9 @@ module Merb::Generators
       generator.new(destination_root, options.merge(:model => true), file_name, attributes)
     end
     
-    [:none, :datamapper].each do |orm|
-    
-      template "model_#{orm}".to_sym, :orm => orm do
-        source("#{orm}/app/models/%file_name%.rb")
-        destination("app/models", base_path, "#{file_name}.rb")
-      end
-    
+    template :model_none, :orm => :none do
+      source("none/app/models/%file_name%.rb")
+      destination("app/models", base_path, "#{file_name}.rb")
     end
     
     template :spec, :testing_framework => :rspec do

@@ -25,20 +25,18 @@ module Merb::Generators
     end
     
     # add controller and view templates for each of the four big ORM's
-    [:none, :datamapper].each do |orm|
+
     
-      template "controller_#{orm}".to_sym, :orm => orm do
-        source("#{orm}/app/controllers/%file_name%.rb")
-        destination("app/controllers", base_path, "#{file_name}.rb")
+    template :controller_none, :orm => :none do
+      source("none/app/controllers/%file_name%.rb")
+      destination("app/controllers", base_path, "#{file_name}.rb")
+    end
+  
+    [:index, :show, :edit, :new].each do |view|
+      template "view_#{view}_none".to_sym, :orm => :none do
+        source("none/app/views/%file_name%/#{view}.html.erb")
+        destination("app/views", base_path, "#{file_name}/#{view}.html.erb")
       end
-    
-      [:index, :show, :edit, :new].each do |view|
-        template "view_#{view}_#{orm}".to_sym, :orm => orm do
-          source("#{orm}/app/views/%file_name%/#{view}.html.erb")
-          destination("app/views", base_path, "#{file_name}/#{view}.html.erb")
-        end
-      end
-    
     end
     
     def model_class_name
