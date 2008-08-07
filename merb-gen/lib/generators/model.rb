@@ -22,17 +22,17 @@ module Merb::Generators
     end
     
     template :model_none, :orm => :none do
-      source("none/app/models/%file_name%.rb")
+      source("app/models/%file_name%.rb")
       destination("app/models", base_path, "#{file_name}.rb")
     end
     
     template :spec, :testing_framework => :rspec do
-      source('rspec/spec/models/%file_name%_spec.rb')
+      source('spec/models/%file_name%_spec.rb')
       destination("spec/models", base_path, "#{file_name}_spec.rb")
     end
     
     template :test_unit, :testing_framework => :test_unit do
-      source('test_unit/test/models/%file_name%_test.rb')
+      source('test/models/%file_name%_test.rb')
       destination("test/models", base_path, "#{file_name}_test.rb")
     end
     

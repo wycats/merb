@@ -28,15 +28,25 @@ module Merb::Generators
 
     
     template :controller_none, :orm => :none do
-      source("none/app/controllers/%file_name%.rb")
+      source("app/controllers/%file_name%.rb")
       destination("app/controllers", base_path, "#{file_name}.rb")
     end
   
     [:index, :show, :edit, :new].each do |view|
       template "view_#{view}_none".to_sym, :orm => :none do
-        source("none/app/views/%file_name%/#{view}.html.erb")
+        source("app/views/%file_name%/#{view}.html.erb")
         destination("app/views", base_path, "#{file_name}/#{view}.html.erb")
       end
+    end
+    
+    template :controller_spec, :testing_framework => :rspec, :orm => :none do
+      source('spec/controllers/%file_name%_spec.rb')
+      destination("spec/controllers", base_path, "#{file_name}_spec.rb")
+    end
+    
+    template :controller_test_unit, :testing_framework => :test_unit, :orm => :none do
+      source('test/controllers/%file_name%_test.rb')
+      destination("test/controllers", base_path, "#{file_name}_test.rb")
     end
     
     def model_class_name
