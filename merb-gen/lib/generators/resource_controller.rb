@@ -12,6 +12,7 @@ module Merb::Generators
     
     option :testing_framework, :desc => 'Testing framework to use (one of: spec, test_unit)'
     option :orm, :desc => 'Object-Relation Mapper to use (one of: none, activerecord, datamapper, sequel)'
+    option :template_engine, :default => :erb, :desc => 'Template Engine to use (one of: erb, haml, markaby, etc...)'
     
     first_argument :name, :required => true,
                           :desc     => "model name"
@@ -24,7 +25,7 @@ module Merb::Generators
     end
     
     # add controller and view templates for each of the four big ORM's
-    [:none, :activerecord, :sequel, :datamapper].each do |orm|
+    [:none, :sequel, :datamapper].each do |orm|
     
       template "controller_#{orm}".to_sym, :orm => orm do
         source("#{orm}/app/controllers/%file_name%.rb")

@@ -12,11 +12,6 @@ module Merb::Generators
     
     option :orm, :desc => 'Object-Relation Mapper to use (one of: none, activerecord, datamapper, sequel)'
     
-    template :session_migration_activerecord, :orm => :activerecord do
-      source('activerecord/schema/migrations/%version%_sessions.rb')
-      destination("schema/migrations/#{version}_sessions.rb")
-    end
-    
     template :session_migration_sequel, :orm => :sequel do
       source('sequel/schema/migrations/%version%_sessions.rb')
       destination("schema/migrations/#{version}_sessions.rb")

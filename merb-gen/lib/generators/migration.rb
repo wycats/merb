@@ -16,11 +16,6 @@ module Merb::Generators
     first_argument :name, :required => true
     second_argument :attributes, :as => :hash, :default => {}
     
-    template :migration_activerecord, :orm => :activerecord do
-      source('activerecord/schema/migrations/%file_name%.rb')
-      destination("#{destination_directory}/#{file_name}.rb")
-    end
-    
     template :migration_datamapper, :orm => :datamapper do
       source('datamapper/schema/migrations/%file_name%.rb')
      destination("#{destination_directory}/#{file_name}.rb")
