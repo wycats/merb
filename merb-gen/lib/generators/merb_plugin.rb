@@ -1,9 +1,9 @@
 module Merb::Generators
   
-  class MerbPluginGenerator < ApplicationGenerator
+  class MerbPluginGenerator < NamedGenerator
 
     def self.source_root
-      File.join(super, 'merb_plugin')
+      File.join(super, 'application', 'merb_plugin')
     end
     
     option :testing_framework, :default => :rspec, :desc => 'Testing framework to use (one of: spec, test_unit)'
@@ -17,10 +17,6 @@ module Merb::Generators
     glob!
     
     first_argument :name, :required => true, :desc => "Plugin name"
-    
-    def base_name
-      self.name.snake_case
-    end
     
     def destination_root
       File.join(@destination_root, base_name)

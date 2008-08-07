@@ -38,64 +38,6 @@ module Merb
       end
     end
     
-    class ApplicationGenerator < Generator
-      def self.source_root
-        File.join(super, 'application')
-      end
-    end    
-    
-    class ComponentGenerator < Generator
-      def self.source_root
-        File.join(super, 'component')
-      end
-    end
-    
-    class NamedGenerator < ComponentGenerator
-      
-      def class_name
-        name.camel_case
-      end
-
-      def test_class_name
-        class_name + "Test"
-      end
-
-      def file_name
-        class_name.snake_case
-      end
-      
-    end
-    
-    class ChunkyGenerator < NamedGenerator
-      
-      def modules
-        chunks[0..-2]
-      end
-
-      def class_name
-        chunks.last
-      end
-
-      def full_class_name
-        chunks.join('::')
-      end
-      
-      def base_path
-        File.join(*snake_cased_chunks[0..-2])
-      end
-
-      protected
-
-      def snake_cased_chunks
-        chunks.map { |c| c.snake_case }
-      end
-
-      def chunks
-        name.gsub('/', '::').split('::').map { |c| c.camel_case }
-      end
-      
-    end
-    
   end  
   
 end

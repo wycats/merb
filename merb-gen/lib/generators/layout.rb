@@ -3,7 +3,7 @@ module Merb::Generators
   class LayoutGenerator < NamedGenerator
 
     def self.source_root
-      File.join(super, 'layout')
+      File.join(super, 'component', 'layout')
     end
     
     desc <<-DESC

@@ -6,7 +6,7 @@ describe Merb::Generators::ResourceControllerGenerator do
     @generator = Merb::Generators::ResourceControllerGenerator.new('/tmp', {}, 'Stuff')
   end
   
-  it_should_behave_like "chunky generator"
+  it_should_behave_like "namespaced generator"
   
   describe "#model_class_name" do
     it "should camel case and singularize the controller name" do

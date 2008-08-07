@@ -1,9 +1,9 @@
 module Merb::Generators
   
-  class MerbVeryFlatGenerator < ApplicationGenerator
+  class MerbVeryFlatGenerator < NamedGenerator
 
     def self.source_root
-      File.join(super, 'merb_very_flat')
+      File.join(super, 'application', 'merb_very_flat')
     end
     
     desc <<-DESC
@@ -15,11 +15,7 @@ module Merb::Generators
     
     template :application do
       source('application.rbt')
-      destination("#{app_name}.rb")
-    end
-    
-    def app_name
-      self.name.snake_case
+      destination("#{base_name}.rb")
     end
     
     def class_name

@@ -1,6 +1,6 @@
 module Merb::Generators
   
-  class ResourceGenerator < ComponentGenerator
+  class ResourceGenerator < Generator
     
     desc <<-DESC
       Generates a new resource.

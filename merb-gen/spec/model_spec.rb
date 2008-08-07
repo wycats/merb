@@ -12,7 +12,7 @@ describe Merb::Generators::ModelGenerator do
     @generator = Merb::Generators::ModelGenerator.new('/tmp', {}, 'Stuff')
   end
   
-  it_should_behave_like "chunky generator"
+  it_should_behave_like "namespaced generator"
   
   it "should create a model" do
     @generator.should create('/tmp/app/models/stuff.rb')

@@ -6,7 +6,7 @@ describe Merb::Generators::ControllerGenerator do
     @generator = Merb::Generators::ControllerGenerator.new('/tmp', {}, 'Stuff')
   end
   
-  it_should_behave_like "chunky generator"
+  it_should_behave_like "namespaced generator"
   
   it "should create a controller" do
     @generator.should create('/tmp/app/controllers/stuff.rb')

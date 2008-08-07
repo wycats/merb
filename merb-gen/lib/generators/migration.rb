@@ -1,9 +1,9 @@
 module Merb::Generators
   
-  class MigrationGenerator < ComponentGenerator
+  class MigrationGenerator < Generator
 
     def self.source_root
-      File.join(super, 'migration')
+      File.join(super, 'component', 'migration')
     end
     
     desc <<-DESC

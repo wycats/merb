@@ -1,9 +1,9 @@
 module Merb::Generators
   
-  class ModelGenerator < ChunkyGenerator
+  class ModelGenerator < NamespacedGenerator
 
     def self.source_root
-      File.join(super, 'model')
+      File.join(super, 'component', 'model')
     end
     
     desc <<-DESC

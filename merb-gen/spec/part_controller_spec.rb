@@ -6,7 +6,7 @@ describe Merb::Generators::PartControllerGenerator do
     @generator = Merb::Generators::PartControllerGenerator.new('/tmp', {}, 'Stuff')
   end
   
-  it_should_behave_like "chunky generator"
+  it_should_behave_like "namespaced generator"
   
   it "should create a controller" do
     @generator.should create('/tmp/app/parts/stuff_part.rb')

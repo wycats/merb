@@ -7,6 +7,8 @@ require 'templater'
 path = File.join(File.dirname(__FILE__))
 
 require path / "merb-gen" / "generator"
+require path / "merb-gen" / "named_generator"
+require path / "merb-gen" / "namespaced_generator"
 require path / "merb-gen" / "spec_helper"
 require path / "generators" / "merb"
 require path / "generators" / "merb" / "merb_full"

@@ -1,9 +1,9 @@
 module Merb::Generators
   
-  class MerbFullGenerator < ApplicationGenerator
+  class MerbFullGenerator < NamedGenerator
 
     def self.source_root
-      File.join(super, 'merb')
+      File.join(super, 'application', 'merb')
     end
     
     option :testing_framework, :default => :rspec, 
@@ -24,12 +24,8 @@ module Merb::Generators
       generator.new(destination_root, options, 'application')
     end
     
-    def app_name
-      self.name.snake_case
-    end
-    
     def destination_root
-      File.join(@destination_root, app_name)
+      File.join(@destination_root, base_name)
     end
     
   end

@@ -1,9 +1,9 @@
 module Merb::Generators
   
-  class FreezerGenerator < ComponentGenerator
+  class FreezerGenerator < Generator
 
     def self.source_root
-      File.join(super, 'freezer')
+      File.join(super, 'component', 'freezer')
     end
     
     desc <<-DESC
