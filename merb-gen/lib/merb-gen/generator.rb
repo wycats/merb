@@ -19,7 +19,9 @@ module Merb
       end
     
       # Inside a template, wraps a block of code properly in modules, keeping the indentation correct
-      # TODO: spec me
+      # 
+      # @param modules<Array[#to_s]> an array of modules to use for nesting
+      # @option indent<Integer> number of integers to indent the modules by
       def with_modules(modules, options={}, &block)
         indent = options[:indent] || 0
         text = capture(&block)
@@ -33,6 +35,11 @@ module Merb
         end
       end
       
+      # Returns a string of num times '..', useful for example in tests for namespaced generators
+      # to find the spec_helper higher up in the directory structure.
+      #
+      # @param num<Integer> number of directories up
+      # @return <String> concatenated string 
       def go_up(num)
         (["'..'"] * num).join(', ')
       end
