@@ -2,7 +2,7 @@ module Merb::Generators
   class MailerGenerator < ComponentGenerator
  
     def self.source_root
-      File.dirname(__FILE__) / '..' / '..' / 'templates' / 'mailer'
+      File.dirname(__FILE__) / 'templates' / 'mailer'
     end
     
     desc <<-DESC
