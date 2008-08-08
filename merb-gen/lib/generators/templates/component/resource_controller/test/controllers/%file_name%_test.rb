@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), "..", "test_helper")
+require File.join(File.dirname(__FILE__), <%= go_up(modules.size + 1) %>, "test_helper")
 
 # Re-raise errors caught by the controller.
 class <%= full_class_name %>; def rescue_action(e) raise e end; end

@@ -17,10 +17,6 @@ module Merb::Generators
     first_argument :name, :required => true, :desc => "model name"
     second_argument :attributes, :as => :hash, :default => {}, :desc => "space separated model properties in form of name:type. Example: state:string"
     
-    invoke :migration do |generator|
-      generator.new(destination_root, options.merge(:model => true), file_name, attributes)
-    end
-    
     template :model_none, :orm => :none do
       source("app/models/%file_name%.rb")
       destination("app/models", base_path, "#{file_name}.rb")
