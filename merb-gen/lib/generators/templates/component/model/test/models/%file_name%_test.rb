@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '..', 'test_helper' )
+require File.join(File.dirname(__FILE__), <%= go_up(modules.size + 1) %>, 'test_helper' )
 
 class <%= test_class_name %> < Test::Unit::TestCase
 

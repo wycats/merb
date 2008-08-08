@@ -32,6 +32,10 @@ module Merb
           concat(("  " * (indent + modules.size - i - 1)) + "end # #{mod}\n", block.binding)
         end
       end
+      
+      def go_up(num)
+        (["'..'"] * num).join(', ')
+      end
     
       def self.source_root
         File.join(File.dirname(__FILE__), '..', 'generators', 'templates')
