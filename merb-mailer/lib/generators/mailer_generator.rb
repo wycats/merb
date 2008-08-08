@@ -1,8 +1,8 @@
 module Merb::Generators
-  class MailerGenerator < ComponentGenerator
+  class MailerGenerator < NamespacedGenerator
  
     def self.source_root
-      File.dirname(__FILE__) / '..' / '..' / 'templates' / 'mailer'
+      File.dirname(__FILE__) / 'templates' / 'mailer'
     end
     
     desc <<-DESC
@@ -26,40 +26,6 @@ module Merb::Generators
     template :controller_spec, :testing_framework => :rspec do
       source('spec/mailers/%file_name%_mailer_spec.rb')
       destination("spec/mailers", base_path, "#{file_name}_mailer_spec.rb")
-    end
-    
-    def modules
-      chunks[0..-2]
-    end
-    
-    def class_name
-      chunks.last
-    end
-    
-    def full_class_name
-      chunks.join('::')
-    end
-    
-    def test_class_name
-      class_name + "Test"
-    end
-    
-    def file_name
-      class_name.snake_case
-    end
-    
-    def base_path
-      File.join(*snake_cased_chunks[0..-2])
-    end
-    
-    protected
-    
-    def snake_cased_chunks
-      chunks.map { |c| c.snake_case }
-    end
-    
-    def chunks
-      name.gsub('/', '::').split('::').map { |c| c.camel_case }
     end
  
   end
