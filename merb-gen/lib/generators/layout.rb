@@ -11,7 +11,7 @@ module Merb::Generators
     DESC
     
     #option :testing_framework, :desc => 'Testing framework to use (one of: rspec, test_unit)'
-    option :template_engine, :default => :erb, :desc => 'Specify what template engine should be used (one of: erb, haml...)'
+    option :template_engine, :desc => 'Specify what template engine should be used (one of: erb, haml...)'
     
     first_argument :name, :required => true, :desc => "layout name"
     

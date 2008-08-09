@@ -12,7 +12,7 @@ module Merb::Generators
     
     option :testing_framework, :desc => 'Testing framework to use (one of: spec, test_unit)'
     option :orm, :desc => 'Object-Relation Mapper to use (one of: none, activerecord, datamapper, sequel)'
-    option :template_engine, :default => :erb, :desc => 'Template Engine to use (one of: erb, haml, markaby, etc...)'
+    option :template_engine, :desc => 'Template Engine to use (one of: erb, haml, markaby, etc...)'
     
     first_argument :name, :required => true,
                           :desc     => "model name"
