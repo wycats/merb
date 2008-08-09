@@ -11,6 +11,7 @@ module Merb::Generators
     DESC
     
     option :testing_framework, :desc => 'Testing framework to use (one of: spec, test_unit)'
+    option :template_engine, :default => :erb, :desc => 'Template engine to use (one of: erb, haml, markaby, etc...)'
     
     first_argument :name, :required => true, :desc => "controller name"
     
@@ -21,7 +22,7 @@ module Merb::Generators
       destination("app/controllers", base_path, "#{file_name}.rb")
     end
     
-    template :index do
+    template :index_erb, :template_engine => :erb do
       source('app/views/%file_name%/index.html.erb')
       destination("app/views", base_path, "#{file_name}/index.html.erb")
     end
