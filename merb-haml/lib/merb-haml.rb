@@ -17,4 +17,10 @@ if defined?(Merb::Plugins)
       self
     end
   end
+  
+  generators = File.join(File.dirname(__FILE__), 'generators')
+  Merb.add_generators generators / "resource_controller"
+  Merb.add_generators generators / "controller"
+  Merb.add_generators generators / "layout"
+  
 end
