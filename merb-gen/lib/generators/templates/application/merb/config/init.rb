@@ -92,6 +92,17 @@ end
 <%= "# " unless testing_framework == :test_unit %>use_test :test_unit
 <%= "# " unless testing_framework == :rspec %>use_test :rspec
 
+
+#
+# ==== Choose which template engine to use by default
+#
+
+# Merb can generate views for different template engines, choose your favourite as the default.
+
+<%= "# " unless template_engine == :erb %>use_template_engine :erb
+<%= "# " unless template_engine == :haml %>use_template_engine :haml
+
+
 #
 # ==== Set up your basic configuration
 #
