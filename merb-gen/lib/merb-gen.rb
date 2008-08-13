@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'merb-core'
 require 'sha1'
-gem 'templater', '>= 0.1.4'
+gem 'templater', '>= 0.1.5'
 require 'templater'
 
 path = File.join(File.dirname(__FILE__))
