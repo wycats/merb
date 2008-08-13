@@ -5,9 +5,10 @@ require 'rubygems'
 require 'spec'
 require 'merb-core'
 require 'merb-gen'
+require 'templater/spec/helpers'
 
 Spec::Runner.configure do |config|
-  config.include Merb::Test::GeneratorHelper
+  config.include Templater::Spec::Helpers
 end
 
 shared_examples_for "named generator" do
