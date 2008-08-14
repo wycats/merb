@@ -11,7 +11,7 @@ module Merb::Generators
     DESC
     
     option :testing_framework, :desc => 'Testing framework to use (one of: spec, test_unit)'
-    option :template_engine, :default => :erb, :desc => 'Template engine to use (one of: erb, haml, markaby, etc...)'
+    option :template_engine, :desc => 'Template engine to use (one of: erb, haml, markaby, etc...)'
     
     first_argument :name, :required => true, :desc => "controller name"
     

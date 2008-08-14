@@ -10,6 +10,8 @@ module Merb::Generators
                                :desc => 'Testing framework to use (one of: spec, test_unit).'                               
     option :orm, :default => :none, 
                  :desc => 'Object-Relation Mapper to use (one of: none, activerecord, datamapper, sequel).'
+    option :template_engine, :default => :erb,
+                :desc => 'Template engine to prefer for this application (one of: erb, haml).'
     
     desc <<-DESC
       This generates a Merb application with Ruby on Rails like structure.
