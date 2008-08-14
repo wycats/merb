@@ -231,7 +231,8 @@ module Merb
         begin
           local_opts = opts.merge(:format => fmt)
           local_opts.merge!(:layout => false) if opts_hash[fmt].is_a?(String)
-      
+
+          clear_content
           value = render opts_hash[fmt], local_opts
           @mail.send(meth,value) unless value.nil? || value.empty?
         rescue Merb::ControllerExceptions::TemplateNotFound => e
