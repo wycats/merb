@@ -10,7 +10,7 @@ module Merb::Generators
       Generates a new controller.
     DESC
     
-    option :testing_framework, :desc => 'Testing framework to use (one of: spec, test_unit)'
+    option :testing_framework, :desc => 'Testing framework to use (one of: rspec, test_unit)'
     option :template_engine, :desc => 'Template engine to use (one of: erb, haml, markaby, etc...)'
     
     first_argument :name, :required => true, :desc => "controller name"

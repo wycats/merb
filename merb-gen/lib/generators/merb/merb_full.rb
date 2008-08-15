@@ -7,7 +7,7 @@ module Merb::Generators
     end
     
     option :testing_framework, :default => :rspec, 
-                               :desc => 'Testing framework to use (one of: spec, test_unit).'                               
+                               :desc => 'Testing framework to use (one of: rspec, test_unit).'                               
     option :orm, :default => :none, 
                  :desc => 'Object-Relation Mapper to use (one of: none, activerecord, datamapper, sequel).'
     option :template_engine, :default => :erb,

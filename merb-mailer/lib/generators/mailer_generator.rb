@@ -9,7 +9,7 @@ module Merb::Generators
       Generates a mailer
     DESC
     
-    option :testing_framework, :desc => 'Testing framework to use (one of: spec, test_unit)'
+    option :testing_framework, :desc => 'Testing framework to use (one of: rspec, test_unit)'
     
     first_argument :name, :required => true, :desc => "mailer name"
     

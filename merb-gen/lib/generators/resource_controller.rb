@@ -10,7 +10,7 @@ module Merb::Generators
       Generates a new resource controller.
     DESC
     
-    option :testing_framework, :desc => 'Testing framework to use (one of: spec, test_unit)'
+    option :testing_framework, :desc => 'Testing framework to use (one of: rspec, test_unit)'
     option :orm, :desc => 'Object-Relation Mapper to use (one of: none, activerecord, datamapper, sequel)'
     option :template_engine, :desc => 'Template Engine to use (one of: erb, haml, markaby, etc...)'
     

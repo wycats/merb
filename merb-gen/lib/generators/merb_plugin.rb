@@ -6,7 +6,7 @@ module Merb::Generators
       File.join(super, 'application', 'merb_plugin')
     end
     
-    option :testing_framework, :default => :rspec, :desc => 'Testing framework to use (one of: spec, test_unit)'
+    option :testing_framework, :default => :rspec, :desc => 'Testing framework to use (one of: rspec, test_unit)'
     option :orm, :default => :none, :desc => 'Object-Relation Mapper to use (one of: none, activerecord, datamapper, sequel)'
     option :bin, :as => :boolean # TODO: explain this
     

@@ -11,7 +11,7 @@ module Merb::Generators
       of the application uses.
     DESC
     
-    option :testing_framework, :desc => 'Testing framework to use (one of: spec, test_unit)'
+    option :testing_framework, :desc => 'Testing framework to use (one of: rspec, test_unit)'
     option :orm, :desc => 'Object-Relation Mapper to use (one of: none, activerecord, datamapper, sequel)'
     
     first_argument :name, :required => true, :desc => "model name"
