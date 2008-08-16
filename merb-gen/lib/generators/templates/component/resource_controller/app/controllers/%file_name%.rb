@@ -1,42 +1,42 @@
 <% with_modules(modules) do -%>
 class <%= class_name %> < Application
   
-  # GET /<%= symbol_name %>
+  # GET /<%= resource_path %>
   def index
     render
   end
 
-  # GET /<%= symbol_name %>/:id
+  # GET /<%= resource_path %>/:id
   def show
     render
   end
 
-  # GET /<%= symbol_name %>/new
+  # GET /<%= resource_path %>/new
   def new
     render
   end
 
-  # GET /<%= symbol_name %>/:id/edit
+  # GET /<%= resource_path %>/:id/edit
   def edit
     render
   end
 
-  # GET /<%= symbol_name %>/:id/delete
+  # GET /<%= resource_path %>/:id/delete
   def delete
     render
   end
 
-  # POST /<%= symbol_name %>
+  # POST /<%= resource_path %>
   def create
     render
   end
 
-  # PUT /<%= symbol_name %>/:id
+  # PUT /<%= resource_path %>/:id
   def update
     render
   end
 
-  # DELETE /<%= symbol_name %>/:id
+  # DELETE /<%= resource_path %>/:id
   def destroy
     render
   end

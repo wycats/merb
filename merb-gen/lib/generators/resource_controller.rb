@@ -61,6 +61,10 @@ module Merb::Generators
       plural_model.singularize
     end
     
+    def resource_path
+      chunks.map{ |c| c.snake_case }.join('/')
+    end
+    
     # TODO: fix this for Datamapper, so that it returns the primary keys for the model
     def params_for_get
       "params[:id]"

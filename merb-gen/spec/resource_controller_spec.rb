@@ -29,6 +29,13 @@ describe Merb::Generators::ResourceControllerGenerator do
     end
   end
   
+  describe "#resource_path" do
+    it "should snake case and slash separate the full controller name" do
+      @generator.name = "Monkey::BlahWorld::ProjectPictures"
+      @generator.singular_model == "monkey/blah_world/project_picture"
+    end
+  end
+  
   it "should create a controller" do
     @generator.should create('/tmp/app/controllers/stuff.rb')
   end
