@@ -47,7 +47,7 @@ describe "<%= module_name %> (module)" do
   
   it "should have :routes and :named_routes properties" do
     <%= module_name %>.routes.should_not be_empty
-    <%= module_name %>.named_routes[:<%= base_name %>_index].should be_kind_of(Merb::Router::Route)
+    <%= module_name %>.named_routes[:<%= symbol_name %>_index].should be_kind_of(Merb::Router::Route)
   end
 
   it "should have an url helper method for slice-specific routes" do
