@@ -18,7 +18,6 @@ module Merb::Generators
     common_template :javascript,  File.join('public/javascripts/master.js')
     common_template :stylesheet,  File.join('public/stylesheets/master.css')
     
-    common_template :rakefile,    File.join('Rakefile')
     common_template :license,     File.join('LICENSE')
     
     common_template :merbtasks,   File.join('lib', '%base_name%', 'merbtasks.rb')

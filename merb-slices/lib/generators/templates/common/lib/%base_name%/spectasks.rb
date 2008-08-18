@@ -1,6 +1,3 @@
-require 'spec/rake/spectask'
-require 'merb-core/test/tasks/spectasks'
-
 namespace :slices do
   namespace :<%= symbol_name %> do
       
