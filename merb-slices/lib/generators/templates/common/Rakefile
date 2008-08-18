@@ -1,0 +1,46 @@
+require 'rubygems'
+require 'rake/gempackagetask'
+require 'merb-core/version'
+require 'merb-core/tasks/merb_rake_helper'
+
+NAME = "<%= base_name %>"
+AUTHOR = "Your Name"
+EMAIL = "Your Email"
+HOMEPAGE = "http://merbivore.com/"
+SUMMARY = "Merb Slice that provides ..."
+GEM_VERSION = "<%= Merb::VERSION %>"
+
+spec = Gem::Specification.new do |s|
+  s.rubyforge_project = 'merb'
+  s.name = NAME
+  s.version = GEM_VERSION
+  s.platform = Gem::Platform::RUBY
+  s.has_rdoc = true
+  s.extra_rdoc_files = ["README", "LICENSE", 'TODO']
+  s.summary = SUMMARY
+  s.description = s.summary
+  s.author = AUTHOR
+  s.email = EMAIL
+  s.homepage = HOMEPAGE
+  s.add_dependency('merb-slices', '>= <%= Merb::VERSION %>')
+  s.require_path = 'lib'
+  s.files = %w(LICENSE README Rakefile TODO application.rb) + Dir.glob("{lib,spec,app,public,stubs,views}/**/*")
+end
+
+Rake::GemPackageTask.new(spec) do |pkg|
+  pkg.gem_spec = spec
+end
+
+desc "Install <%= module_name %> as a gem"
+task :install => [:package] do
+  sh %{#{sudo} gem install pkg/#{NAME}-#{GEM_VERSION} --no-update-sources}
+end
+
+namespace :jruby do
+
+  desc "Run :package and install the resulting .gem with jruby"
+  task :install => :package do
+    sh %{#{sudo} jruby -S gem install #{install_home} pkg/#{NAME}-#{GEM_VERSION}.gem --no-rdoc --no-ri}
+  end
+  
+end
