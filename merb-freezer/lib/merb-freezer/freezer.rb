@@ -53,7 +53,7 @@ class Freezer
     def initialize(component, update=false, mode=nil)
       @component = Freezer.components.keys.include?(component) ? "merb-" + component : component
       @update    = update
-      if (mode.nil? && framework_component?) || component.match(/^git:\/\//) || mode == 'submodules'
+      if (mode.nil? && framework_component?) || component_git_url? || mode == 'submodules'
         @mode = 'submodules'
       else
         @mode = 'rubygems'
@@ -70,6 +70,21 @@ class Freezer
     # Returns true if the gem is part of the Merb components
     def framework_component?
       Freezer.components.keys.include?(@component.gsub("merb-", ""))
+    end
+
+    def component_git_url?
+      return true if @component.split(":").first == "git"
+      return true if @component[-4..-1] == ".git"
+      false
+    end
+
+    def component_name
+      @component = File.basename(@component)
+      if @component[-4..-1] == ".git"
+        @component[0..-5]
+      else
+        @component
+      end
     end
 
 end

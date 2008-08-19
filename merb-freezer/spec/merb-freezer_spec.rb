@@ -63,5 +63,16 @@ describe "merb-freezer" do
     File.exists?('gems').should be_true
     Dir['gems/gems/googlecharts-1.*'].join(' ').include?('gems/gems/googlecharts-').should be_true
   end
-  
+
+  it "should check if it's a git url correctly" do
+    Freezer.new('googlecharts.git').should be_component_git_url
+    Freezer.new('git://googlecharts').should be_component_git_url
+    Freezer.new('googlecharts').should_not be_component_git_url
+  end
+
+  it "should extract component name properly" do
+    Freezer.new('googlecharts.git').component_name.should == "googlecharts"
+    Freezer.new('git://moo/googlecharts').component_name.should == "googlecharts"
+    Freezer.new('~/moo/googlecharts').component_name.should == "googlecharts"
+  end
 end
