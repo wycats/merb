@@ -5,8 +5,12 @@ require 'rubygems/dependency_installer'
 module FreezerMode
   
   def sudo
-    windows = (PLATFORM =~ /win32|cygwin/) rescue nil
-    sudo = windows ? "" : "sudo"
+    ENV['MERB_SUDO'] ||= "sudo"
+    sudo = windows? ? "" : ENV['MERB_SUDO']
+  end
+
+  def windows?
+    (PLATFORM =~ /win32|cygwin/) rescue nil
   end
 
   def gitmodules
