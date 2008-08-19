@@ -17,7 +17,7 @@ module FreezerMode
   #
   def submodules_freeze
     # Ensure that required git commands are available
-    %w(git-pull git-submodule).each do |bin|
+    %w(git).each do |bin|
       next if in_path?(bin)
       $stderr.puts "ERROR: #{bin} must be avaible in PATH - you might want to freeze using MODE=rubygems"
       exit 1
@@ -27,22 +27,22 @@ module FreezerMode
     create_freezer_dir(freezer_dir)
 
     if managed?(@component)
-      puts "#{@component} seems to be already managed by git-submodule."
+      puts "#{@component} seems to be already managed by git submodule."
       if @update
         puts "Trying to update #{@component} ..."
-        `cd #{freezer_dir}/#{@component} && git-pull`
+        `cd #{freezer_dir}/#{@component} && git pull`
       else
         puts "you might want to call this rake task using UPDATE=true if you wish to update the frozen gems using this task"
       end
     else
       puts "Creating submodule for #{@component} ..."
       if framework_component?
-        `cd #{Dir.pwd} & git-submodule --quiet add #{Freezer.components[@component.gsub("merb-", '')]} #{File.basename(freezer_dir)}/#{@component}`
+        `cd #{Dir.pwd} & git submodule --quiet add #{Freezer.components[@component.gsub("merb-", '')]} #{File.basename(freezer_dir)}/#{@component}`
       else
-        `cd #{Dir.pwd} & git-submodule --quiet add #{@component} gems/submodules/#{@component.match(/.*\/(.*)\..{3}$/)[1]}`
+        `cd #{Dir.pwd} & git submodule --quiet add #{@component} gems/submodules/#{@component.match(/.*\/(.*)\..{3}$/)[1]}`
       end
       if $?.success?
-        `git-submodule init`
+        `git submodule init`
       else
         # Should this instead be a raise?
         $stderr.puts("ERROR: unable to create submodule for #{@component} - you might want to freeze using MODE=rubygems (make sure the current project has a git repository)")
