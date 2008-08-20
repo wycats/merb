@@ -17,6 +17,8 @@ module Merb::Generators
       source('application.rbt')
       destination("#{base_name}.rb")
     end
+
+    file :spec_helper, 'spec/spec_helper.rb', 'spec/spec_helper.rb'
     
     def class_name
       self.name.camel_case
