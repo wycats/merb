@@ -27,13 +27,11 @@ if File.directory?(framework)
     end
   end
   require "merb-core/core_ext/kernel"
-  require "merb-core/core_ext/rubygems"
 else
   # load from the gems folder
   gem = Dir["./gems/gems/merb-core-*"].last
   if gem
     require gem + "/lib/merb-core/core_ext/kernel"
-    require gem + "/lib/merb-core/core_ext/rubygems"
   
     Gem.clear_paths
     Gem.path.unshift(__DIR__+"/gems")
