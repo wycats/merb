@@ -87,7 +87,7 @@ namespace :merb do
 
     # Usage: sake merb:install:core
     desc 'Install merb-core and extlib'
-    task :core do
+    task :core => [ 'merb:check_outside_merb_dir', 'merb:install:extlib' ] do
       puts "\nInstalling merb-core and extlib..."
       sh "cd merb/merb-core && rake install && cd ../.."
     end
