@@ -1,4 +1,25 @@
 namespace :merb do
+  
+  desc "list all Merb's dependencies (requires you have all gems installed)"
+  task :list_dependencies do
+    # you need to have all the dependencies installed to list them
+      
+      specs = {}
+      elements = %w[ merb extlib merb-core merb-more merb-action-args merb-assets merb-builder merb-cache merb-freezer merb-gen merb-haml merb-mailer merb-parts merb_activerecord merb_helpers merb_sequel merb_param_protection merb_test_unit merb_stories]
+      
+      elements.each do |name|
+        dependency = Gem::Dependency.new name, nil
+        
+        Gem.source_index.search(dependency).each do |spec|
+          specs[spec.full_name] = spec
+        end
+      end
+      
+      deps = specs.values.sort.map do |spec| spec.dependencies.map{|d| "#{d.name}" } end.flatten.uniq
+      print "Recursive dependencies: \n"
+      deps.each{|dep| print "  #{dep}\n"}
+          
+  end
 
   task :check_outside_merb_dir do
     require 'fileutils'
