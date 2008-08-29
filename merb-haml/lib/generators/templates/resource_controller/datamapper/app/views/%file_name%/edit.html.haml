@@ -6,7 +6,7 @@
     app/views/<%= file_name %>/edit.html.erb
 = error_messages_for :<%= singular_model %>
 
-- form_for(@<%= singular_model %>, :action => url(:<%= singular_model %>, @<%= singular_model %>)) do
+= form_for(@<%= singular_model %>, :action => url(:<%= singular_model %>, @<%= singular_model %>)) do
 <% for property in properties.select{|p| !p.key?} -%>
   %p
     %b
@@ -15,7 +15,7 @@
     = <%= field_from_type(property.type) %> :<%= property.getter %>
 <% end -%>
   %p
-    = submit_button "Update"
+    = submit "Update"
 
 = link_to 'Show', url(:<%= singular_model %>, @<%= singular_model %>)
 |
