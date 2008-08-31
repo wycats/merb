@@ -188,7 +188,12 @@ module Merb
       def config
         @config ||= begin
           empty_hash = Hash.new { |h,k| h[k] = {} }
-          File.exists?(Merb.root / "config" / "slices.yml") ? YAML.load(File.read(Merb.root / "config" / "slices.yml")) || empty_hash : empty_hash
+          if File.exists?(Merb.root / "config" / "slices.yml")
+            require "yaml"
+            YAML.load(File.read(Merb.root / "config" / "slices.yml")) || empty_hash
+          else
+            empty_hash
+          end
         end
       end
     

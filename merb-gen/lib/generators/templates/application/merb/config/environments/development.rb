@@ -5,4 +5,5 @@ Merb::Config.use { |c|
   c[:reload_time] = 0.5
   c[:log_auto_flush ] = true
   c[:ignore_tampered_cookies] = true
+  c[:log_level] = :debug
 }

@@ -17,7 +17,7 @@ GEM_EMAIL  = "mattaimonetti@gmail.com"
 
 GEM_NAME    = "merb-freezer"
 PKG_BUILD   = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
-GEM_VERSION = (Merb::MORE_VERSION rescue "0.9.5") + PKG_BUILD
+GEM_VERSION = (Merb::MORE_VERSION rescue "0.9.6") + PKG_BUILD
 
 RELEASE_NAME    = "REL #{GEM_VERSION}"
 
