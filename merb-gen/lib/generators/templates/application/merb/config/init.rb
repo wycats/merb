@@ -127,8 +127,9 @@ Merb::Config.use do |c|
   c[:session_secret_key]  = '<%= SHA1.new(rand(100000000000).to_s).to_s %>'
   
   # There are various options here, by default Merb comes with 'cookie', 
-  # 'memory' or 'memcached'.  You can of course use your favorite ORM 
-  # instead: 'datamapper', 'sequel' or 'activerecord'.
+  # 'memory', 'memcache' or 'container'.  
+  # You can of course use your favorite ORM instead: 
+  # 'datamapper', 'sequel' or 'activerecord'.
   c[:session_store] = 'cookie'
 end
 
