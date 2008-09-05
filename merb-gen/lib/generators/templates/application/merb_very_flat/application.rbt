@@ -1,3 +1,5 @@
+$KCODE = 'UTF8'
+
 # run very flat apps with merb -I <app file>.
 
 Merb::Config.use { |c|

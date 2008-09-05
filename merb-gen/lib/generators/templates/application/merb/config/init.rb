@@ -1,3 +1,5 @@
+$KCODE = 'UTF8'
+
 #
 # ==== Structure of Merb initializer
 #
