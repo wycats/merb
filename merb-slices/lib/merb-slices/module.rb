@@ -217,7 +217,8 @@ module Merb
       # 
       # @param <#to_s> The slice module to check for.
       def exists?(module_name)
-        slice_names.include?(module_name.to_s) && Object.const_defined?(module_name.to_s)
+        const_name = module_name.to_s.camel_case
+        slice_names.include?(const_name) && Object.const_defined?(const_name)
       end
     
       # A lookup for finding a Slice module's path
