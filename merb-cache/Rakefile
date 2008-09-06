@@ -45,14 +45,14 @@ end
 
 desc "Install the gem"
 task :install => [:package] do
-  sh %{#{sudo} gem install #{install_home} pkg/#{GEM_NAME}-#{GEM_VERSION} --no-update-sources}
+  sh install_command(GEM_NAME, GEM_VERSION)
 end
 
 namespace :jruby do
 
   desc "Run :package and install the resulting .gem with jruby"
   task :install => :package do
-    sh %{#{sudo} jruby -S gem install #{install_home} pkg/#{GEM_NAME}-#{GEM_VERSION}.gem --no-rdoc --no-ri}
+    sh jinstall_command(GEM_NAME, GEM_VERSION)
   end
 
 end
