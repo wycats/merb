@@ -39,7 +39,7 @@ spec = Gem::Specification.new do |s|
   s.executables = %w( merb-gen )
 
   s.add_dependency "merb-core", ">= 0.9.6"
-  s.add_dependency "templater", ">= 0.1.5"
+  s.add_dependency "templater", ">= 0.2.0"
 
   s.require_path = 'lib'
   s.autorequire = GEM_NAME
