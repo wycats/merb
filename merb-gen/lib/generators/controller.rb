@@ -17,24 +17,24 @@ module Merb::Generators
     
     invoke :helper
     
-    template :controller do
-      source('app/controllers/%file_name%.rb')
-      destination("app/controllers", base_path, "#{file_name}.rb")
+    template :controller do |template|
+      template.source = 'app/controllers/%file_name%.rb'
+      template.destination = "app/controllers" / base_path / "#{file_name}.rb"
     end
     
-    template :index_erb, :template_engine => :erb do
-      source('app/views/%file_name%/index.html.erb')
-      destination("app/views", base_path, "#{file_name}/index.html.erb")
+    template :index_erb, :template_engine => :erb do |template|
+      template.source = 'app/views/%file_name%/index.html.erb'
+      template.destination = "app/views" / base_path / "#{file_name}/index.html.erb"
     end
     
-    template :controller_spec, :testing_framework => :rspec do
-      source('spec/controllers/%file_name%_spec.rb')
-      destination("spec/controllers", base_path, "#{file_name}_spec.rb")
+    template :controller_spec, :testing_framework => :rspec do |template|
+      template.source = 'spec/controllers/%file_name%_spec.rb'
+      template.destination = "spec/controllers" / base_path / "#{file_name}_spec.rb"
     end
     
-    template :controller_test_unit, :testing_framework => :test_unit do
-      source('test/controllers/%file_name%_test.rb')
-      destination("test/controllers", base_path, "#{file_name}_test.rb")
+    template :controller_test_unit, :testing_framework => :test_unit do |template|
+      template.source = 'test/controllers/%file_name%_test.rb'
+      template.destination = "test/controllers" / base_path / "#{file_name}_test.rb"
     end
     
   end

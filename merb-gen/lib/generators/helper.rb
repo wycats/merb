@@ -14,14 +14,14 @@ module Merb::Generators
     
     first_argument :name, :required => true, :desc => "helper name"
     
-    template :helper do
-      source('app/helpers/%file_name%_helper.rb')
-      destination("app/helpers", base_path, "#{file_name}_helper.rb")
+    template :helper do |template|
+      template.source = 'app/helpers/%file_name%_helper.rb'
+      template.destination = "app/helpers" / base_path / "#{file_name}_helper.rb"
     end
     
-    template :helper_spec, :testing_framework => :rspec do
-      source('spec/helpers/%file_name%_helper_spec.rb')
-      destination("spec/helpers", base_path, "#{file_name}_helper_spec.rb")
+    template :helper_spec, :testing_framework => :rspec do |template|
+      template.source = 'spec/helpers/%file_name%_helper_spec.rb'
+      template.destination = "spec/helpers" / base_path / "#{file_name}_helper_spec.rb"
     end
     
   end

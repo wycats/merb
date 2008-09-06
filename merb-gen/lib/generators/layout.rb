@@ -15,9 +15,9 @@ module Merb::Generators
     
     first_argument :name, :required => true, :desc => "layout name"
     
-    template :layout_erb, :template_engine => :erb do
-      source('app/views/layout/%file_name%.html.erb')
-      destination("app/views/layout/#{file_name}.html.erb")
+    template :layout_erb, :template_engine => :erb do |template|
+      template.source = 'app/views/layout/%file_name%.html.erb'
+      template.destination = "app/views/layout/#{file_name}.html.erb"
     end
     
   end

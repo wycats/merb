@@ -17,19 +17,19 @@ module Merb::Generators
     first_argument :name, :required => true, :desc => "model name"
     second_argument :attributes, :as => :hash, :default => {}, :desc => "space separated model properties in form of name:type. Example: state:string"
     
-    template :model_none, :orm => :none do
-      source("app/models/%file_name%.rb")
-      destination("app/models", base_path, "#{file_name}.rb")
+    template :model_none, :orm => :none do |template|
+      template.source = "app/models/%file_name%.rb"
+      template.destination = "app/models" / base_path / "#{file_name}.rb"
     end
     
-    template :spec, :testing_framework => :rspec do
-      source('spec/models/%file_name%_spec.rb')
-      destination("spec/models", base_path, "#{file_name}_spec.rb")
+    template :spec, :testing_framework => :rspec do |template|
+      template.source = 'spec/models/%file_name%_spec.rb'
+      template.destination = "spec/models" / base_path / "#{file_name}_spec.rb"
     end
     
-    template :test_unit, :testing_framework => :test_unit do
-      source('test/models/%file_name%_test.rb')
-      destination("test/models", base_path, "#{file_name}_test.rb")
+    template :test_unit, :testing_framework => :test_unit do |template|
+      template.source = 'test/models/%file_name%_test.rb'
+      template.destination = "test/models" / base_path / "#{file_name}_test.rb"
     end
     
     def attributes?

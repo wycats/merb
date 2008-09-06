@@ -16,14 +16,14 @@ module Merb::Generators
       generator.new(destination_root, options, "#{full_class_name}Part")
     end
     
-    template :controller do
-      source('app/parts/%file_name%_part.rb')
-      destination("app/parts", base_path, "#{file_name}_part.rb")
+    template :controller do |template|
+      template.source = 'app/parts/%file_name%_part.rb'
+      template.destination = "app/parts" / base_path / "#{file_name}_part.rb"
     end
     
-    template :index do
-      source('app/parts/views/%file_name%_part/index.html.erb')
-      destination("app/parts/views", base_path, "#{file_name}_part/index.html.erb")
+    template :index do |template|
+      template.source = 'app/parts/views/%file_name%_part/index.html.erb'
+      template.destination = "app/parts/views" / base_path / "#{file_name}_part/index.html.erb"
     end
     
   end

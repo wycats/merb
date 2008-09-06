@@ -13,9 +13,9 @@ module Merb::Generators
     
     first_argument :name, :required => true, :desc => "Application name"
     
-    template :application do
-      source('application.rbt')
-      destination("#{base_name}.rb")
+    template :application do |template|
+      template.source = 'application.rbt'
+      template.destination = "#{base_name}.rb"
     end
 
     file :spec_helper, 'spec/spec_helper.rb', 'spec/spec_helper.rb'

@@ -27,26 +27,26 @@ module Merb::Generators
     # add controller and view templates for each of the four big ORM's
 
     
-    template :controller_none, :orm => :none do
-      source("app/controllers/%file_name%.rb")
-      destination("app/controllers", base_path, "#{file_name}.rb")
+    template :controller_none, :orm => :none do |template|
+      template.source = "app/controllers/%file_name%.rb"
+      template.destination = "app/controllers" / base_path / "#{file_name}.rb"
     end
   
     [:index, :show, :edit, :new].each do |view|
-      template "view_#{view}_none".to_sym, :orm => :none do
-        source("app/views/%file_name%/#{view}.html.erb")
-        destination("app/views", base_path, "#{file_name}/#{view}.html.erb")
+      template "view_#{view}_none".to_sym, :orm => :none do |template|
+        template.source = "app/views/%file_name%/#{view}.html.erb"
+        template.destination = "app/views" / base_path / "#{file_name}/#{view}.html.erb"
       end
     end
     
-    template :controller_spec, :testing_framework => :rspec, :orm => :none do
-      source('spec/controllers/%file_name%_spec.rb')
-      destination("spec/controllers", base_path, "#{file_name}_spec.rb")
+    template :controller_spec, :testing_framework => :rspec, :orm => :none do |template|
+      template.source = 'spec/controllers/%file_name%_spec.rb'
+      template.destination = "spec/controllers" / base_path / "#{file_name}_spec.rb"
     end
     
-    template :controller_test_unit, :testing_framework => :test_unit, :orm => :none do
-      source('test/controllers/%file_name%_test.rb')
-      destination("test/controllers", base_path, "#{file_name}_test.rb")
+    template :controller_test_unit, :testing_framework => :test_unit, :orm => :none do |template|
+      template.source = 'test/controllers/%file_name%_test.rb'
+      template.destination = "test/controllers" / base_path / "#{file_name}_test.rb"
     end
     
     def model_class_name

@@ -27,13 +27,13 @@ describe Merb::Generators::Generator do
     before do
       @class = Class.new(Merb::Generators::Generator)
       path = File.expand_path('fixtures', File.dirname(__FILE__))
-      @class.template(:no_modules) do
-        source path / "templates" / "no_modules.test"
-        destination path / "results" / "no_modules.test"
+      @class.template(:no_modules) do |template|
+        template.source = path / "templates" / "no_modules.test"
+        template.destination = path / "results" / "no_modules.test"
       end
-      @class.template(:some_modules) do
-        source path / "templates" / "some_modules.test"
-        destination path / "results" / "some_modules.test"
+      @class.template(:some_modules) do |template|
+        template.source = path / "templates" / "some_modules.test"
+        template.destination = path / "results" / "some_modules.test"
       end
       @generator = @class.new('/tmp', {})
     end
