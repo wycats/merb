@@ -13,19 +13,19 @@ module Merb::Generators
     
     first_argument :name, :required => true, :desc => "mailer name"
     
-    template :mailer do
-      source('app/mailers/%file_name%_mailer.rb')
-      destination("app/mailers", base_path, "#{file_name}_mailer.rb")
+    template :mailer do |t|
+      t.source = 'app/mailers/%file_name%_mailer.rb'
+      t.destination = File.join("app/mailers", base_path, "#{file_name}_mailer.rb")
     end
     
-    template :notify_on_event do
-      source('app/mailers/views/%file_name%_mailer/notify_on_event.text.erb')
-      destination("app/mailers/views", base_path, "#{file_name}_mailer/notify_on_event.text.erb")
+    template :notify_on_event do |t|
+      t.source = 'app/mailers/views/%file_name%_mailer/notify_on_event.text.erb'
+      t.destination = File.join("app/mailers/views", base_path, "#{file_name}_mailer/notify_on_event.text.erb")
     end
     
-    template :controller_spec, :testing_framework => :rspec do
-      source('spec/mailers/%file_name%_mailer_spec.rb')
-      destination("spec/mailers", base_path, "#{file_name}_mailer_spec.rb")
+    template :controller_spec, :testing_framework => :rspec do |t|
+      t.source = 'spec/mailers/%file_name%_mailer_spec.rb'
+      t.destination = File.join("spec/mailers", base_path, "#{file_name}_mailer_spec.rb")
     end
  
   end
