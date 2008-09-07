@@ -35,8 +35,6 @@ $KCODE = 'UTF8'
 # Remember that bundling of dependencies as gems with your application
 # makes it independent of the environment it runs in and is a very
 # good, encouraged practice to follow.
-Gem.clear_paths
-Gem.path.unshift(Merb.root / "gems")
 
 # If you want modules and classes from libraries organized like
 # merbapp/lib/magicwand/lib/magicwand.rb to autoload,

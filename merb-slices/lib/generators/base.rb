@@ -19,10 +19,11 @@ module Merb::Generators
   
   class BaseSliceGenerator < NamedGenerator
     
-    def self.common_template(name, source)
+    def self.common_template(name, template_source)
+      common_base_dir = File.expand_path(File.dirname(__FILE__))
       template name do 
-        source File.dirname(__FILE__), 'templates', 'common', source
-        destination source
+        source common_base_dir, 'templates', 'common', template_source
+        destination template_source
       end
     end
     

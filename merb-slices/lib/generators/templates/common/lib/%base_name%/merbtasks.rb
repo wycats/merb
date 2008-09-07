@@ -52,13 +52,10 @@ namespace :slices do
 
     namespace :freeze do
       
-      desc "Freezes <%= module_name %> by installing the gem into application/gems using merb-freezer"
+      desc "Freezes <%= module_name %> by installing the gem into application/gems"
       task :gem do
-        begin
-          Object.const_get(:Freezer).freeze(ENV["GEM"] || "<%= base_name %>", ENV["UPDATE"], ENV["MODE"] || 'rubygems')
-        rescue NameError
-          puts "! dependency 'merb-freezer' missing"
-        end
+        ENV["GEM"] ||= "<%= base_name %>"
+        Rake::Task['slices:install_as_gem'].invoke
       end
       
       desc "Freezes <%= module_name %> by copying all files from <%= base_name %>/app to your application"

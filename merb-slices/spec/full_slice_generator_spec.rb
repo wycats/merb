@@ -2,8 +2,6 @@ require File.dirname(__FILE__) + '/spec_helper'
 
 describe Merb::Generators::FullSliceGenerator do
   
-  include Merb::Test::GeneratorHelper
-  
   describe "templates" do
     
     before do

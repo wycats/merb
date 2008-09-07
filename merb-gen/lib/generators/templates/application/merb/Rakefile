@@ -1,6 +1,25 @@
 require 'rubygems'
-Gem.clear_paths
-Gem.path.unshift(File.join(File.dirname(__FILE__), "gems"))
+
+# Figure out the merb root - defaults to the current directory.
+__DIR__ = ENV['MERB_ROOT'] || Dir.getwd
+
+# Piggyback on the merb-core rubygem for initial setup scripts.
+# Requiring it doesn't affect the local gem version of merb-core
+# we might effectively want to load here after. 
+if merb_core_dir = Dir[File.join(__DIR__, 'gems', 'gems', 'merb-core-*')].last
+  require File.join(merb_core_dir, 'lib', 'merb-core', 'script')
+else
+  require 'merb-core/script'
+end
+
+# Include some script helper methods.
+include Merb::ScriptHelpers
+
+# Now setup local gems to be incorporated into the normal loaded gems.
+setup_local_gems!(__DIR__)
+
+# When running rake tasks, you can disable local gems using NO_FROZEN:
+# rake NO_FROZEN=true -T # see all rake tasks, loaded from system gems.
 
 require 'rake'
 require 'rake/rdoctask'
@@ -8,44 +27,8 @@ require 'rake/testtask'
 require 'spec/rake/spectask'
 require 'fileutils'
 
-##
-# requires frozen merb-core (from /framework)
-# adds the other components to the load path
-def require_frozen_framework
-  framework = File.join(File.dirname(__FILE__), "framework")
-  if File.directory?(framework)
-    puts "Running from frozen framework"
-    core = File.join(framework,"merb-core")
-    if File.directory?(core)
-      puts "using merb-core from #{core}"
-      $:.unshift File.join(core,"lib")
-      require 'merb-core'
-    end
-    more = File.join(framework,"merb-more")
-    if File.directory?(more)
-      Dir.new(more).select {|d| d =~ /merb-/}.each do |d|
-        $:.unshift File.join(more,d,'lib')
-      end
-    end
-    plugins = File.join(framework,"merb-plugins")
-    if File.directory?(plugins)
-      Dir.new(plugins).select {|d| d =~ /merb_/}.each do |d|
-        $:.unshift File.join(plugins,d,'lib')
-      end
-    end
-    require "merb-core/core_ext/kernel"
-    require "merb-core/core_ext/rubygems"
-  else
-    p "merb doesn't seem to be frozen in /framework"
-    require 'merb-core'
-  end
-end
-
-if ENV['FROZEN']
-  require_frozen_framework
-else
-  require 'merb-core'
-end
+# Require the *real* merb-core, which is the local version for a frozen setup.
+require "merb-core"
 
 require 'merb-core/tasks/merb'
 include FileUtils
@@ -62,7 +45,6 @@ Merb::Plugins.rakefiles.each { |r| require r }
 tasks_path = File.join(File.dirname(__FILE__), "lib", "tasks")
 rake_files = Dir["#{tasks_path}/*.rake"]
 rake_files.each{|rake_file| load rake_file }
-
 
 desc "start runner environment"
 task :merb_env do
