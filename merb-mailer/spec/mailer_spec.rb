@@ -40,7 +40,7 @@ describe "a merb mailer" do
   
   it "should be able to accept attachments" do
     setup_test_mailer
-    @m.attach File.open("README")
+    @m.attach File.open("README.textile")
     @m.deliver!
     delivery = TestMailer.deliveries.last
     delivery.instance_variable_get("@attachments").size.should == 1
@@ -48,7 +48,7 @@ describe "a merb mailer" do
   
   it "should be able to accept multiple attachments" do
     setup_test_mailer
-    @m.attach [[File.open("README")], [File.open("LICENSE")]]
+    @m.attach [[File.open("README.textile")], [File.open("LICENSE")]]
     @m.deliver!
     delivery = TestMailer.deliveries.last
     delivery.instance_variable_get("@attachments").size.should == 2    
@@ -56,7 +56,7 @@ describe "a merb mailer" do
 
   it "should be able to accept custom options for attachments" do
     setup_test_mailer
-    @m.attach File.open("README"), 'readme', 'text/plain', 'Content-ID: <readme.txt>'
+    @m.attach File.open("README.textile"), 'readme', 'text/plain', 'Content-ID: <readme.txt>'
     @m.deliver!
     delivery = TestMailer.deliveries.last
     attachments = delivery.instance_variable_get("@attachments")
@@ -68,7 +68,7 @@ describe "a merb mailer" do
 
   it "should be able to accept custom options for multiple attachments" do
     setup_test_mailer
-    @m.attach [[File.open("README"), 'readme', 'text/plain', 'Content-ID: <readme.txt>'],
+    @m.attach [[File.open("README.textile"), 'readme', 'text/plain', 'Content-ID: <readme.txt>'],
                [File.open("LICENSE"), 'license', 'text/plain', 'Content-ID: <license.txt>']]
     @m.deliver!
     delivery = TestMailer.deliveries.last
