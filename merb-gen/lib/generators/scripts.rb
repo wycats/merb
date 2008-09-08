@@ -11,15 +11,15 @@ module Merb::Generators
     DESC
     
     # Install a script/merb script for local execution (for frozen apps).
-    file :script_merb do
-      source(bin_merb_location)
-      destination('script/merb')
+    file :script_merb do |f|
+      f.source = bin_merb_location
+      f.destination = 'script/merb'
     end
     
     # Install a script/merb-gen script for local execution (for frozen apps).
-    file :script_merb_gen do
-      source(bin_merb_gen_location)
-      destination('script/merb-gen')
+    file :script_merb_gen do |f|
+      f.source = bin_merb_gen_location
+      f.destination = 'script/merb-gen'
     end
      
     protected

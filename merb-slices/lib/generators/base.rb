@@ -21,9 +21,9 @@ module Merb::Generators
     
     def self.common_template(name, template_source)
       common_base_dir = File.expand_path(File.dirname(__FILE__))
-      template name do 
-        source common_base_dir, 'templates', 'common', template_source
-        destination template_source
+      template name do |t|
+        t.source = File.join(common_base_dir, 'templates', 'common', template_source)
+        t.destination = template_source
       end
     end
     
