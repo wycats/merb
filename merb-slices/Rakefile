@@ -17,7 +17,7 @@ GEM_EMAIL  = "info@fabien.be"
 
 GEM_NAME    = "merb-slices"
 PKG_BUILD   = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
-GEM_VERSION = (Merb::MORE_VERSION rescue "0.9.6") + PKG_BUILD
+GEM_VERSION = (Merb::MORE_VERSION rescue "0.9.7") + PKG_BUILD
 
 RELEASE_NAME    = "REL #{GEM_VERSION}"
 
@@ -35,7 +35,7 @@ spec = Gem::Specification.new do |s|
   s.author = GEM_AUTHOR
   s.email = GEM_EMAIL
   s.homepage = PROJECT_URL
-  s.add_dependency('merb-core', '>= 0.9.6')
+  s.add_dependency('merb-core', '>= 0.9.7')
   s.require_path = 'lib'
   s.files = %w(LICENSE README Rakefile Generators TODO) + Dir.glob("{lib,spec}/**/*")
 end
