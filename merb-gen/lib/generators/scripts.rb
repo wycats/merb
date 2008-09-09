@@ -46,6 +46,4 @@ module Merb::Generators
   
   add :scripts, ScriptsGenerator
   
-  puts ScriptsGenerator
-  
 end
