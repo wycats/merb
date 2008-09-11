@@ -88,7 +88,7 @@ module Merb
     # Send any methods that are missing back up to the web controller
     # Patched to set partial locals on the web controller
     def method_missing(sym, *args, &blk)
-      @web_controller.instance_variable_set(:@_merb_partial_locals, @_merb_partial_locals)
+      @web_controller.instance_variable_set(:@_merb_partial_locals, @_merb_partial_locals) if @_merb_partial_locals
       @web_controller.send(sym, *args, &blk)
     end
   end

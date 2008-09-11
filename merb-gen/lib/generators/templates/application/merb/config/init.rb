@@ -43,21 +43,37 @@ $KCODE = 'UTF8'
 
 # ==== Dependencies
 
-# These are some examples of how you might specify dependencies.
-# Dependency loading is delayed to a later Merb app
-# boot stage, but it may be important when
-# another part of your configuration relies on libraries specified
-# here.
+# These are a few, but not all, of the standard merb-more dependencies:
 #
-# dependencies "RedCloth", "merb_helpers"
-# OR
-# dependency "RedCloth", "> 3.0"
-# OR
-# dependencies "RedCloth" => "> 3.0", "ruby-aes-cext" => "= 1.0"
-Merb::BootLoader.after_app_loads do
-  # Add dependencies here that must load after the application loads:
+# dependency "merb-action-args"   # Provides support for querystring arguments to be passed in to controller actions
+# dependency "merb-assets"        # Provides link_to, asset_path, auto_link, image_tag methods (and lots more)
+# dependency "merb-cache"         # Provides your application with caching functions 
+# dependency "merb-haml"          # Adds rake tasks and the haml generators to your merb app
+# dependency "merb-jquery"        # Provides a #jquery method to insert jQuery code in to a content block
+# dependency "merb-mailer"        # Integrates mail support via Merb Mailer
 
-  # dependency "magic_admin" # this gem uses the app's model classes
+# These are a few, but not all, of the merb-plugin dependencies:
+#
+# dependency "merb_helpers"           # Provides the form, date/time, and other helpers
+# dependency "merb_param_protection"  # Lets you have better control over your query string params and param logging
+# dependency "merb_stories"           # Provides rspec helper methods for your application
+
+# Miscellaneous dependencies:
+#
+# Specify more than one dependency at a time with the #dependencies method:
+# dependencies "RedCloth", "BlueCloth"
+
+# Specify a specific version of a dependency
+# dependency "RedCloth", "> 3.0"
+
+# Specify more than one dependency at a time as well as the version:
+# dependencies "RedCloth" => "> 3.0", "BlueCloth" => "= 1.0.0"
+
+# You can also add in dependencies after your application loads.
+Merb::BootLoader.after_app_loads do
+  # For example, the magic_admin gem uses the app's model classes. This requires that the models be 
+  # loaded already. So, we can put the magic_admin dependency here:
+  # dependency "magic_admin"
 end
 
 #
