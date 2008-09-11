@@ -42,7 +42,6 @@ spec = Gem::Specification.new do |s|
   s.add_dependency "templater", ">= 0.2.0"
 
   s.require_path = 'lib'
-  s.autorequire = GEM_NAME
   s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,bin,spec}/**/*")
 end
 
