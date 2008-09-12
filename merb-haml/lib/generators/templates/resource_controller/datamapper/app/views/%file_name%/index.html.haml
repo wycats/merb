@@ -20,7 +20,5 @@
         = link_to 'Show', url(:<%= singular_model %>, <%= singular_model %>)
       %td
         = link_to 'Edit', url(:edit_<%= singular_model %>,  <%= singular_model %>)
-      %td
-        = delete_button :<%= singular_model %>, <%= singular_model %>
 
 = link_to 'New', url(:new_<%= singular_model %>)
