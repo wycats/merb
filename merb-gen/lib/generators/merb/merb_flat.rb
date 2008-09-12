@@ -16,6 +16,8 @@ module Merb::Generators
     
     glob!
     
+    empty_directory :gems, 'gems'
+    
     def destination_root
       File.join(@destination_root, base_name)
     end

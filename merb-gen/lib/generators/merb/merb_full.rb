@@ -20,6 +20,8 @@ module Merb::Generators
     
     glob!
     
+    empty_directory :gems, 'gems'
+        
     first_argument :name, :required => true, :desc => "Application name"
     
     invoke :layout do |generator|
