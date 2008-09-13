@@ -281,7 +281,7 @@ class Merb < Thor
                    "--sources"   => :optional,
                    "--install"   => :boolean
     def dm_core
-      refresh_from_source 'extlib', 'merb-core'
+      refresh_from_source 'extlib', 'dm-core'
     end
     
     desc 'dm_more', 'Update dm-more from git HEAD'
@@ -289,7 +289,7 @@ class Merb < Thor
                    "--sources"   => :optional,
                    "--install"   => :boolean
     def dm_more
-      refresh_from_source 'extlib', 'merb-core'
+      refresh_from_source 'extlib', 'dm-more'
     end
     
     private
