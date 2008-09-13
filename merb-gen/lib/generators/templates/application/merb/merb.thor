@@ -185,13 +185,13 @@ class Merb < Thor
     desc 'dm_core', 'Install dm-core from rubygems'
     method_options "--merb-root" => :optional
     def dm_core
-      refresh_from_gems 'extlib', 'merb-core'
+      refresh_from_gems 'extlib', 'dm-core'
     end
     
     desc 'dm_more', 'Install dm-more from rubygems'
     method_options "--merb-root" => :optional
     def dm_more
-      refresh_from_gems 'extlib', 'merb-core'
+      refresh_from_gems 'extlib', 'dm-core', 'dm-more'
     end
     
     # Pull from RubyForge and install.
@@ -289,7 +289,7 @@ class Merb < Thor
                    "--sources"   => :optional,
                    "--install"   => :boolean
     def dm_more
-      refresh_from_source 'extlib', 'dm-more'
+      refresh_from_source 'extlib', 'dm-core', 'dm-more'
     end
     
     private
