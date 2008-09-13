@@ -83,9 +83,8 @@ module MerbThorHelper
 
 require 'rubygems'
 
-if local_gem_dir = File.join(File.dirname(__FILE__), '..', 'gems')
-  $BUNDLE = true
-  Gem.clear_paths; Gem.path.unshift(local_gem_dir)
+if File.directory?(gems_dir = File.join(File.dirname(__FILE__), '..', 'gems'))
+  $BUNDLE = true; Gem.clear_paths; Gem.path.unshift(gems_dir)
 end
 
 version = "#{Gem::Requirement.default}"
