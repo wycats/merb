@@ -17,7 +17,7 @@ GEM_EMAIL  = "jonas.nicklas@gmail.com"
 
 GEM_NAME    = "merb-gen"
 PKG_BUILD   = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
-GEM_VERSION = (Merb::MORE_VERSION rescue "0.9.7") + PKG_BUILD
+GEM_VERSION = (Merb::MORE_VERSION rescue "0.9.8") + PKG_BUILD
 
 RELEASE_NAME    = "REL #{GEM_VERSION}"
 
@@ -38,7 +38,7 @@ spec = Gem::Specification.new do |s|
   s.bindir = "bin"
   s.executables = %w( merb-gen )
 
-  s.add_dependency "merb-core", ">= 0.9.7"
+  s.add_dependency "merb-core", ">= 0.9.8"
   s.add_dependency "templater", ">= 0.2.0"
 
   s.require_path = 'lib'

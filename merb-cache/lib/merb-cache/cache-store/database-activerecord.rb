@@ -4,11 +4,13 @@ module Merb::Cache::DatabaseStore::ActiveRecord
   # The cache model migration
   class CacheMigration < ActiveRecord::Migration
     def self.up
-      create_table (Merb::Controller._cache.config[:table_name]), :primary_key => :ckey do |t|
-        t.column    :ckey, :string
-        t.column    :data, :text
-        t.datetime  :expire, :default => nil
+      create_table Merb::Controller._cache.config[:table_name], :id => false do |t|
+        t.string   :ckey
+        t.text     :data
+        t.datetime :expire, :default => nil
       end
+
+      add_index Merb::Controller._cache.config[:table_name], :ckey, :unique => true
     end
 
     def self.down
