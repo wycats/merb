@@ -106,6 +106,7 @@ end
 # - pulling a specific UUID/Tag (gitspec hash) with clone/update
 # - a 'deploy' task (in addition to 'redeploy' ?)
 # - eventually take a --orm option for the 'merb-stack' type of tasks
+# - integrate with minigems
 
 class Merb < Thor
   
@@ -185,13 +186,13 @@ class Merb < Thor
     desc 'dm_core', 'Install dm-core from rubygems'
     method_options "--merb-root" => :optional
     def dm_core
-      refresh_from_gems 'extlib', 'merb-core'
+      refresh_from_gems 'extlib', 'dm-core'
     end
     
     desc 'dm_more', 'Install dm-more from rubygems'
     method_options "--merb-root" => :optional
     def dm_more
-      refresh_from_gems 'extlib', 'merb-core'
+      refresh_from_gems 'extlib', 'dm-core', 'dm-more'
     end
     
     # Pull from RubyForge and install.
@@ -289,7 +290,7 @@ class Merb < Thor
                    "--sources"   => :optional,
                    "--install"   => :boolean
     def dm_more
-      refresh_from_source 'extlib', 'dm-more'
+      refresh_from_source 'extlib', 'dm-core', 'dm-more'
     end
     
     private
@@ -725,19 +726,21 @@ class Merb < Thor
           Dir[File.join(gem_src_dir, '**', 'pkg', '*.gem')].each do |subgem_pkg|
             FileUtils.cp(subgem_pkg, gem_pkg_dir)
           end
-    
+            
           # Finally generate the main package and install it; subgems 
           # (dependencies) are local to the main package.
           FileUtils.cd(gem_src_dir) do 
             system("#{rake} package")
-            if package = Dir[File.join(gem_pkg_dir, "#{gem_name}-*.gem")].last
-              FileUtils.cd(File.dirname(package)) do
-                install_gem(File.basename(package), options.dup)
-                return 
+            FileUtils.cd(gem_pkg_dir) do              
+              if package = Dir[File.join(gem_pkg_dir, "#{gem_name}-*.gem")].last
+                # If the (meta) gem has it's own package, install it.
+                install_gem(File.basename(package), options.dup)               
+              else
+                # Otherwise install each package seperately.
+                Dir["*.gem"].each { |gem| install_gem(gem, options.dup) }
               end
-            else
-              raise Merb::GemInstallError, "No package found for #{gem_name}"
             end
+            return
           end
         end
       end
