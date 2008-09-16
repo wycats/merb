@@ -519,6 +519,10 @@ class Merb < Thor
     # If a local ./gems dir is found, or --merb-root is given
     # the gems will be uninstalled locally from that directory.
     #
+    # The --all option indicates that all versions of the gem should be 
+    # uninstalled. If --version isn't set, and multiple versions are
+    # available, you will be prompted to pick one - or all.
+    #
     # Examples:
     #
     # thor merb:gems:uninstall merb-core
