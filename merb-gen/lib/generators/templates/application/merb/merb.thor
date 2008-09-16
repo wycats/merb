@@ -107,6 +107,7 @@ end
 # - a 'deploy' task (in addition to 'redeploy' ?)
 # - eventually take a --orm option for the 'merb-stack' type of tasks
 # - integrate with minigems
+# - add merb:gems:refresh to refresh all gems (from specifications)
 
 class Merb < Thor
   
@@ -822,6 +823,23 @@ class Merb < Thor
       Merb.install_gem('rspec', :cache => true, :install_dir => gem_dir)
       ensure_local_bin_for('thor', 'rake', 'rspec')
     end
+    
+    # Get the latest merb.thor and install it into the working dir.
+    
+    desc 'update', 'Fetch the latest merb.thor and install it locally'
+    def update
+      require 'open-uri'
+      url = 'http://merbivore.com/merb.thor'
+      remote_file = open(url)
+      File.open(File.join(working_dir, 'merb.thor'), 'w') do |f| 
+        f.write(remote_file.read)
+      end
+      puts "Installed the latest merb.thor"
+    rescue OpenURI::HTTPError
+      puts "Error opening #{url}"
+    rescue => e
+      puts "An error occurred (#{e.message})" 
+    end    
 
   end
   
