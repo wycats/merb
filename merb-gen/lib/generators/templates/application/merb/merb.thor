@@ -756,11 +756,7 @@ class Merb < Thor
       if options[:version] && !options[:version].is_a?(Gem::Requirement)
         options[:version] = Gem::Requirement.new ["= #{version}"]
       end
-      begin
-        Gem::Uninstaller.new(gem, options).uninstall
-      rescue => e
-        raise GemUninstallError, "Failed to uninstall #{gem}"
-      end
+      Gem::Uninstaller.new(gem, options).uninstall
     end
     
     # Will prepend sudo on a suitable platform.
