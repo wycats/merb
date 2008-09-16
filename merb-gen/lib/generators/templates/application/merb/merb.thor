@@ -408,7 +408,7 @@ class Merb < Thor
         else
           FileUtils.cd(source_dir) do
             puts "\nCloning #{repository_name} repository from #{repository_url}..."
-            system("git clone --depth=1 #{repository_url} ")
+            system("git clone --depth 1 #{repository_url} ")
           end
         end
       else
