@@ -636,6 +636,9 @@ class Merb < Thor
       else
         version = options.delete(:version)
         Gem.configuration.update_sources = false
+        
+        update_source_index(options[:install_dir]) if options[:install_dir]
+        
         installer = Gem::DependencyInstaller.new(options.merge(:user_install => false))
         exception = nil
         begin
@@ -666,6 +669,9 @@ class Merb < Thor
     def install_gem_from_cache(gem, options = {})
       version = options.delete(:version)
       Gem.configuration.update_sources = false
+      
+      update_source_index(options[:install_dir]) if options[:install_dir]
+      
       installer = Gem::DependencyInstaller.new(options.merge(:user_install => false))
       exception = nil
       begin
@@ -754,8 +760,11 @@ class Merb < Thor
     # Uninstall a gem.
     def uninstall_gem(gem, options = {})
       if options[:version] && !options[:version].is_a?(Gem::Requirement)
-        options[:version] = Gem::Requirement.new ["= #{version}"]
+        options[:version] = Gem::Requirement.new ["= #{options[:version]}"]
       end
+      
+      update_source_index(options[:install_dir]) if options[:install_dir]
+      
       Gem::Uninstaller.new(gem, options).uninstall
     end
     
@@ -788,6 +797,10 @@ class Merb < Thor
       if spec && File.exists?(gem_file = "#{spec.installation_path}/cache/#{spec.full_name}.gem")
         gem_file
       end
+    end
+    
+    def update_source_index(dir)
+      Gem.source_index.load_gems_in(File.join(dir, 'specifications'))
     end
     
   end
