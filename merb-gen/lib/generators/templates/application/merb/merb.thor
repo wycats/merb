@@ -526,7 +526,6 @@ class Merb < Thor
     # thor merb:gems:uninstall merb-core --version 0.9.7
     # thor merb:gems:uninstall merb-core --merb-root ./path/to/your/app
     
-    desc 'install GEM_NAME', 'Install a gem from rubygems'
     desc 'uninstall GEM_NAME', 'Uninstall a gem'
     method_options "--version"   => :optional, 
                    "--merb-root" => :optional,
