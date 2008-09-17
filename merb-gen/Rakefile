@@ -63,10 +63,9 @@ namespace :jruby do
 
 end
 
-file_list = FileList['spec/**/*_spec.rb']
 
 desc "Run all examples"
 Spec::Rake::SpecTask.new('spec') do |t|
   t.spec_opts  = ["-cfs"]
-  t.spec_files = file_list
+  t.spec_files = FileList['spec/**/*_spec.rb']
 end
