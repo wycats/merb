@@ -13,9 +13,7 @@ describe Merb::Generators::MerbFlatGenerator do
     it "should create a number of views"
     
     it "should render templates successfully" do
-      lambda { @generator.render! }.should_not raise_error
+      @generator.render!
     end
-    
   end
-  
 end
