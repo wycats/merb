@@ -669,9 +669,6 @@ class Merb < Thor
     def install_gem_from_cache(gem, options = {})
       version = options.delete(:version)
       Gem.configuration.update_sources = false
-      
-      update_source_index(options[:install_dir]) if options[:install_dir]
-      
       installer = Gem::DependencyInstaller.new(options.merge(:user_install => false))
       exception = nil
       begin
