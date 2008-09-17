@@ -179,3 +179,13 @@ namespace :release do
   end
 end
 
+desc "Run spec examples for Merb More gems, one by one."
+task :spec do
+  gems.each do |gem|
+    Dir.chdir(gem){ sh "rake spec" }
+  end
+end
+
+desc 'Default: run spec examples for all the gems.'
+task :default => 'spec'
+
