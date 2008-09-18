@@ -26,6 +26,12 @@ def setup_test_mailer klass = TestMailer
 end
 
 describe "a merb mailer" do
+
+  before(:each) do
+    TestMailer.deliveries.clear
+    TestSMTPMailer.deliveries.clear
+    TestSendmailMailer.deliveries.clear
+  end
   
   it "should be able to send test emails" do
     setup_test_mailer
@@ -34,7 +40,7 @@ describe "a merb mailer" do
     delivery = TestMailer.deliveries.last
     delivery.to.should include("test@test.com")
     delivery.from.should include("foo@bar.com")
-    delivery.subject.should include("=?utf-8?Q?Test_Subject=?=")
+    delivery.subject.first.should include("=?utf-8?Q?Test_Subject?=")
     delivery.body.should include("Test")
   end
   
