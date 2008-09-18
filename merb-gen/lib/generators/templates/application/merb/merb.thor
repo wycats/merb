@@ -164,7 +164,7 @@ class Merb < Thor
     # thor merb:edge:core --merb-root ./path/to/your/app
     # thor merb:edge:core --sources ./path/to/sources.yml
 
-    desc 'core', 'Install extlib and merb-core from git HEAD'
+    desc 'core', 'Install extlib and merb-core from rubygems'
     method_options "--merb-root" => :optional
     def core
       refresh_from_gems 'extlib', 'merb-core'
@@ -606,8 +606,14 @@ class Merb < Thor
 
   class << self
 
-    # Default Git repositories - pass source_config option
-    # to load a yaml configuration file.
+    # Default Git repositories - pass source_config option to load a yaml 
+    # configuration file - defaults to ~/.merb/git-sources.yml 
+    # which need to create yourself if desired. 
+    #
+    # Example of contents:
+    #
+    # merb-core: git://github.com/myfork/merb-core.git
+    # merb-more: git://github.com/myfork/merb-more.git
     def repos(source_config = nil)
       @_repos ||= begin
         repositories = {
@@ -620,6 +626,7 @@ class Merb < Thor
           'thor'          => "git://github.com/wycats/thor.git"
           }
       end
+      source_config ||= File.join(ENV["HOME"] || ENV["APPDATA"], '.merb', 'git-sources.yml')
       if source_config && File.exists?(source_config)
         @_repos.merge(YAML.load(File.read(source_config)))
       else
