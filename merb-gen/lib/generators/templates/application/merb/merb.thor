@@ -108,6 +108,7 @@ end
 # - eventually take a --orm option for the 'merb-stack' type of tasks
 # - integrate with minigems
 # - add merb:gems:refresh to refresh all gems (from specifications)
+# - merb:gems:uninstall should remove local bin/ entries
 
 class Merb < Thor
 
@@ -468,7 +469,8 @@ class Merb < Thor
     desc 'install GEM_NAME', 'Install a gem from rubygems'
     method_options "--version"   => :optional,
                    "--merb-root" => :optional,
-                   "--cache"     => :boolean
+                   "--cache"     => :boolean,
+                   "--binaries"  => :boolean
     def install(name)
       puts "Installing #{name}..."
       opts = {}
@@ -476,6 +478,7 @@ class Merb < Thor
       opts[:cache] = options[:cache] if gem_dir
       opts[:install_dir] = gem_dir   if gem_dir
       Merb.install_gem(name, opts)
+      ensure_local_bin_for(name) if options[:binaries]
     rescue => e
       puts "Failed to install #{name} (#{e.message})"
     end
@@ -498,7 +501,8 @@ class Merb < Thor
 
     desc 'update GEM_NAME', 'Update a gem from rubygems'
     method_options "--merb-root" => :optional,
-                   "--cache"     => :boolean
+                   "--cache"     => :boolean,
+                   "--binaries"  => :boolean
     def update(name)
       puts "Updating #{name}..."
       opts = {}
@@ -511,6 +515,7 @@ class Merb < Thor
         opts[:cache] = options[:cache]
       end
       Merb.install_gem(name, opts)
+      ensure_local_bin_for(name) if options[:binaries]
     rescue => e
       puts "Failed to update #{name} (#{e.message})"
     end
