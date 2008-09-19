@@ -81,7 +81,11 @@ module MerbThorHelper
 # this file is here to facilitate running it.
 #
 
-require 'rubygems'
+begin 
+  require 'minigems'
+rescue LoadError 
+  require 'rubygems'
+end
 
 if File.directory?(gems_dir = File.join(File.dirname(__FILE__), '..', 'gems'))
   $BUNDLE = true; Gem.clear_paths; Gem.path.unshift(gems_dir)
@@ -106,7 +110,6 @@ end
 # - pulling a specific UUID/Tag (gitspec hash) with clone/update
 # - a 'deploy' task (in addition to 'redeploy' ?)
 # - eventually take a --orm option for the 'merb-stack' type of tasks
-# - integrate with minigems
 # - add merb:gems:refresh to refresh all gems (from specifications)
 # - merb:gems:uninstall should remove local bin/ entries
 
