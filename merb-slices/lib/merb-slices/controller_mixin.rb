@@ -86,12 +86,17 @@ module Merb
           def slice; self.class.slice; end
           
           # Generate a url - takes the slice's :path_prefix into account.
-          def slice_url(name, rparams={})
-            self.slice.url(name, rparams, { 
-              :controller => controller_name,
-              :action => action_name,
-              :format => params[:format]
-            })
+          def slice_url(slice, name, *args)
+            unless name.is_a?(Symbol)
+              args.unshift(name)
+              name = :default
+            end
+            
+            full_name = Merb::Slices.named_routes[slice][name].name
+            
+            uri = Merb::Router.generate(full_name, args, params)
+            uri = Merb::Config[:path_prefix] + uri if Merb::Config[:path_prefix]
+            uri
           end
 
           private

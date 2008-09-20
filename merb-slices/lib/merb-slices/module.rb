@@ -3,7 +3,11 @@ module Merb
     
     VERSION = "0.9.4"
     
+    @named_routes = {}
+    
     class << self
+      
+      attr_accessor :named_routes
     
       # Retrieve a slice module by name 
       #

@@ -49,7 +49,7 @@ module Merb
           Merb.logger.info!("Mounting slice #{slice_module} at /#{options[:path]}")
           
           # setup routes - capture the slice's routes for easy reference
-          slice_module.routes, slice_module.named_routes = Merb::Router.capture do
+          slice_module.named_routes = capture do
             self.namespace(namespace.to_sym, options.except(:default_routes, :prepend_routes, :append_routes)) do |ns|
               options[:prepend_routes].call(ns) if options[:prepend_routes].respond_to?(:call)
               slice_module.setup_router(ns)     # setup the routes from the slice itself
@@ -57,6 +57,8 @@ module Merb
               ns.default_routes(options[:params] || {}) if options[:default_routes]
             end
           end
+          
+          Merb::Slices.named_routes[slice_module.to_s.snake_case.to_sym] = slice_module.named_routes
         else 
           Merb.logger.info!("Skipped adding slice #{slice_module} to router...")
         end

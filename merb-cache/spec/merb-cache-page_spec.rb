@@ -1,3 +1,5 @@
+require File.join(File.dirname(__FILE__), "spec_helper")
+
 describe "merb-cache-page" do
 
   it "should cache page (action5)" do
