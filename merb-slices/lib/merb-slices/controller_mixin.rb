@@ -34,7 +34,7 @@ module Merb
               self.send(:extend, Merb::Slices::ControllerMixin::MixinMethods)
             end
             # Reference this controller's slice module
-            self.class_inheritable_accessor :slice
+            self.class_inheritable_accessor :slice, :instance_writer => false
             self.slice = slice_mod
             # Setup template roots
             if options[:templates_for]
@@ -86,17 +86,38 @@ module Merb
           def slice; self.class.slice; end
           
           # Generate a url - takes the slice's :path_prefix into account.
-          def slice_url(slice, name, *args)
-            unless name.is_a?(Symbol)
-              args.unshift(name)
-              name = :default
+          #
+          # @param *args<Array[Symbol,Hash]> 
+          #   There are several possibilities regarding arguments:
+          #   - when passing a Hash only, the :default route of the current 
+          #     slice will be used
+          #   - when a single Symbol is passed, it's used as the route name,
+          #     while the slice itself will be the current one
+          #   - when two Symbols are passed, the first will be the slice name,
+          #     the second will be the route name
+          #   - a Hash with additional params can optionally be passed
+          # 
+          # @return <String> A uri based on the requested slice.
+          #
+          # @example slice_url(:controller => 'foo', :action => 'bar')
+          # @example slice_url(:awesome, :format => 'html')
+          # @example slice_url(:forum, :posts, :format => 'xml')          
+          def slice_url(*args)
+            opts = args.last.is_a?(Hash) ? args.pop : {}
+            slice_name, route_name = if args[0].is_a?(Symbol) && args[1].is_a?(Symbol)
+              [args.shift, args.shift] # other slice identifier, route name
+            elsif args[0].is_a?(Symbol)
+              [slice.identifier_sym, args.shift] # self, route name
+            else
+              [slice.identifier_sym, :default] # self, default route
+            end
+
+            unless route = Merb::Slices.named_routes[slice_name][route_name]
+              raise Merb::Router::GenerationError, "Named route not found: #{route_name}"
             end
             
-            full_name = Merb::Slices.named_routes[slice][name].name
-            
-            uri = Merb::Router.generate(full_name, args, params)
-            uri = Merb::Config[:path_prefix] + uri if Merb::Config[:path_prefix]
-            uri
+            args.push(opts)
+            route.generate(args, params)
           end
 
           private

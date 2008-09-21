@@ -53,7 +53,7 @@ if defined?(Merb::Plugins)
     #   to avoid potential conflicts with global named routes.
     def self.setup_router(scope)
       # example of a named route
-      scope.match('/index.:format').to(:controller => 'main', :action => 'index').name(:<%= symbol_name %>_index)
+      scope.match('/index(.:format)').to(:controller => 'main', :action => 'index').name(:index)
     end
     
   end

@@ -38,6 +38,8 @@ spec = Gem::Specification.new do |s|
   s.add_dependency('merb-core', '>= 0.9.8')
   s.require_path = 'lib'
   s.files = %w(LICENSE README Rakefile Generators TODO) + Dir.glob("{lib,spec}/**/*")
+  s.bindir = "bin"
+  s.executables = %w( slice )
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|
@@ -58,11 +60,8 @@ namespace :jruby do
 
 end
 
-desc "Run all examples"
-Spec::Rake::SpecTask.new('spec') do |t|
-  t.spec_opts  = ["-cfs"]
-  t.spec_files = FileList['spec/**/*_spec.rb']
+desc "Run all specs"
+Spec::Rake::SpecTask.new("specs") do |t|
+  t.spec_opts = ["--format", "specdoc", "--colour"]
+  t.spec_files = Dir["spec/**/*_spec.rb"].sort
 end
-
-desc 'Default: run spec examples.'
-task :default => 'spec'

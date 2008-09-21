@@ -1,14 +1,10 @@
 module Merb
   module Slices
     
-    VERSION = "0.9.4"
-    
-    @named_routes = {}
+    VERSION = "0.9.8"
     
     class << self
       
-      attr_accessor :named_routes
-    
       # Retrieve a slice module by name 
       #
       # @param <#to_s> The slice module to check for.
@@ -184,6 +180,12 @@ module Merb
       # Stop watching search paths to dynamically load/unload slices at runtime
       def stop_dynamic_loader!
         DynamicLoader.stop
+      end
+      
+      # @return <Hash[Hash]> 
+      #   A Hash mapping between slice identifiers and non-prefixed named routes.
+      def named_routes
+        @named_routes ||= {}
       end
       
       # @return <Hash>

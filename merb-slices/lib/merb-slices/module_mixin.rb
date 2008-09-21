@@ -2,10 +2,12 @@ module Merb
   module Slices
     module ModuleMixin
       
+      # See bin/slice for this - used by ModuleMixin#push_app_path
+      $SLICE_MODULE ||= false
+      
       def self.extended(slice_module)
         slice_module.meta_class.module_eval do
           attr_accessor :identifier, :identifier_sym, :root, :file
-          attr_accessor :routes, :named_routes
           attr_accessor :description, :version, :author
         end
       end
@@ -33,7 +35,12 @@ module Merb
       
       # Check if there have been any routes setup.
       def routed?
-        self.routes && !self.routes.empty?
+        self.named_routes && !self.named_routes.empty?
+      end
+      
+      # Whether we're in an application or running from the slice dir itself.
+      def standalone?
+        Merb.root == self.root
       end
       
       # Return a value suitable for routes/urls.
@@ -56,6 +63,11 @@ module Merb
       # @return <Hash> The configuration for this slice.
       def config
         Merb::Slices::config[self.identifier_sym] ||= {}
+      end
+      
+      # @return <Hash> The named routes for this slice.
+      def named_routes
+        Merb::Slices.named_routes[self.identifier_sym] ||= {}
       end
       
       # Load slice and it's classes located in the slice-level load paths.
@@ -210,8 +222,13 @@ module Merb
       # @param path<String> The full path
       # @param file_glob<String>
       #   A glob that will be used to autoload files under the path. Defaults to "**/*.rb".
+      #
+      # @note The :public path is adapted when the slice is run from bin/slice.
       def push_app_path(type, path, file_glob = "**/*.rb")
         enforce!(type => Symbol)
+        if type == :public && standalone? && $SLICE_MODULE
+          path.gsub!(/\/slices\/#{self.identifier}$/, '')
+        end
         app_paths[type] = [path, file_glob]
       end
     
