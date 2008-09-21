@@ -39,8 +39,8 @@ if defined?(Merb::Plugins)
       # Remove a single file and the classes loaded by it from ObjectSpace.
       #
       # @param file<String> The file to load.
-      def remove_file(file)
-        Merb::BootLoader::LoadClasses.remove_file file
+      def remove_classes_in_file(file)
+        Merb::BootLoader::LoadClasses.remove_classes_in_file file
       end
         
       # Load classes from given paths - using path/glob pattern.

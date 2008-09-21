@@ -74,7 +74,7 @@ module Merb
       # @param slice_module<#to_s> The Slice module to unregister.
       def unregister(slice_module)
         if (slice = self[slice_module]) && self.paths.delete(module_name = slice.name)
-          slice.loadable_files.each { |file| Merb::Slices::Loader.remove_file file }
+          slice.loadable_files.each { |file| Merb::Slices::Loader.remove_classes_in_file file }
           Object.send(:remove_const, module_name)
           unless Object.const_defined?(module_name)
             Merb.logger.info!("Unregistered slice #{module_name}")
