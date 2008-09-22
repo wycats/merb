@@ -1,3 +1,5 @@
+require File.join(File.dirname(__FILE__), "spec_helper")
+
 describe "merb-cache-action" do
 
   it "should cache action (action3)" do

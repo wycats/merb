@@ -50,16 +50,17 @@ task :install => [:package] do
 end
 
 namespace :jruby do
-
   desc "Run :package and install the resulting .gem with jruby"
   task :install => :package do
     sh jinstall_command(GEM_NAME, GEM_VERSION)
   end
-
 end
 
-desc "Run all specs"
-Spec::Rake::SpecTask.new("specs") do |t|
-  t.spec_opts = ["--format", "specdoc", "--colour"]
-  t.spec_files = Dir["spec/**/*_spec.rb"].sort
+desc "Run all examples"
+Spec::Rake::SpecTask.new('spec') do |t|
+  t.spec_opts  = ["-cfs"]
+  t.spec_files = FileList['spec/**/*_spec.rb']
 end
+
+desc 'Default: run spec examples.'
+task :default => 'spec'

@@ -1,3 +1,4 @@
+require File.join(File.dirname(__FILE__), "spec_helper")
 # TODO
 # more specs for fragment caching:
 # cache_get, cache_set, cached?, cache, expire

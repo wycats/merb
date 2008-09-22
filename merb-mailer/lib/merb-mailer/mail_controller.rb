@@ -69,7 +69,7 @@ module Merb
     self._mailer_klass  = Merb::Mailer
 
     attr_accessor :params, :mailer, :mail
-    attr_reader   :session, :base_controller
+    attr_reader   :base_controller
 
     cattr_accessor :_subclasses
     self._subclasses = Set.new
@@ -115,8 +115,11 @@ module Merb
     def initialize(params = {}, controller = nil)
       @params = params
       @base_controller = controller
-      @session = (controller && controller.session) || {}
       super
+    end
+
+    def session
+      self.base_controller.request.session rescue {}
     end
 
     # Sets the template root to the default mailer view directory.

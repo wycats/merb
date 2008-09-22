@@ -36,22 +36,8 @@ module Merb
           request.route
         end
 
-        def url(name, rparams={})
-          Merb::Router.generate(name, rparams,
-            { :controller => @web_controller.controller_name,
-              :action => @web_controller.action_name,
-              :format => params[:format]
-            }
-          )
-        end
-        
-        private 
-        # This method is here to overwrite the one in the general_controller mixin
-        # The method ensures that when a url is generated with a hash, it contains a controller
-        def get_controller_for_url_generation(opts)
-           controller = opts[:controller] || @web_controller.params[:controller]
-           raise "No Controller Specified for url()" unless controller
-           controller
+        def url(name, *args)
+          @web_controller.url(name, *args)
         end
         
       end

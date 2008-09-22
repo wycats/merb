@@ -1,10 +1,10 @@
 module Merb
   module Slices
     
-    VERSION = "0.9.4"
+    VERSION = "0.9.8"
     
     class << self
-    
+      
       # Retrieve a slice module by name 
       #
       # @param <#to_s> The slice module to check for.
@@ -74,7 +74,7 @@ module Merb
       # @param slice_module<#to_s> The Slice module to unregister.
       def unregister(slice_module)
         if (slice = self[slice_module]) && self.paths.delete(module_name = slice.name)
-          slice.loadable_files.each { |file| Merb::Slices::Loader.remove_file file }
+          slice.loadable_files.each { |file| Merb::Slices::Loader.remove_classes_in_file file }
           Object.send(:remove_const, module_name)
           unless Object.const_defined?(module_name)
             Merb.logger.info!("Unregistered slice #{module_name}")
@@ -180,6 +180,12 @@ module Merb
       # Stop watching search paths to dynamically load/unload slices at runtime
       def stop_dynamic_loader!
         DynamicLoader.stop
+      end
+      
+      # @return <Hash[Hash]> 
+      #   A Hash mapping between slice identifiers and non-prefixed named routes.
+      def named_routes
+        @named_routes ||= {}
       end
       
       # @return <Hash>

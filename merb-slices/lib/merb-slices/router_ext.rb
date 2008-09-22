@@ -41,16 +41,16 @@ module Merb
         if Merb::Slices.exists?(slice_module)
           options = { :path => options } if options.is_a?(String)
           slice_module = Object.full_const_get(slice_module.to_s.camel_case) if slice_module.class.in?(String, Symbol)
-          namespace = options[:namespace] || slice_module.to_s.snake_case
+          namespace = options[:namespace] || slice_module.identifier_sym
           options[:path] ||= slice_module[:path_prefix] || options[:namespace] || slice_module.identifier
           options[:default_routes] = true unless options.key?(:default_routes)
           options[:prepend_routes] = block if block_given?
           slice_module[:path_prefix] = options[:path]
           Merb.logger.info!("Mounting slice #{slice_module} at /#{options[:path]}")
-          
+                   
           # setup routes - capture the slice's routes for easy reference
-          slice_module.routes, slice_module.named_routes = Merb::Router.capture do
-            self.namespace(namespace.to_sym, options.except(:default_routes, :prepend_routes, :append_routes)) do |ns|
+          self.namespace(namespace.to_sym, options.except(:default_routes, :prepend_routes, :append_routes)) do |ns|
+            Merb::Slices.named_routes[slice_module.identifier_sym] = ns.capture do
               options[:prepend_routes].call(ns) if options[:prepend_routes].respond_to?(:call)
               slice_module.setup_router(ns)     # setup the routes from the slice itself
               options[:append_routes].call(ns)  if options[:append_routes].respond_to?(:call)

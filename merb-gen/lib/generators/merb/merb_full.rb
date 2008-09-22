@@ -17,6 +17,11 @@ module Merb::Generators
       This generates a Merb application with Ruby on Rails like structure.
       Generator lets you configure your ORM and testing framework of choice.
     DESC
+
+    template :gitignore do |template|
+      template.source = 'dotgitignore'
+      template.destination = ".gitignore"
+    end
     
     glob!
     

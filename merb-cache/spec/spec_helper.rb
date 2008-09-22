@@ -79,6 +79,16 @@ FileUtils.mkdir_p(Merb::Plugins.config[:merb_cache][:cache_directory])
 Merb.start :environment => "test", :adapter => "runner"
 
 require "merb-core/test"
+
+CACHE = CacheController.new(Merb::Test::RequestHelper::FakeRequest.new)
+CACHE.expire_all
+
 Spec::Runner.configure do |config|
-  config.include Merb::Test::RequestHelper  
+  config.include Merb::Test::RequestHelper
+  config.before(:each) do
+    Merb::Router.prepare do |r|
+      r.default_routes
+      r.match("/").to(:controller => "cache_controller", :action =>"index")
+    end
+  end
 end
