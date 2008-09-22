@@ -620,6 +620,9 @@ class Merb < Thor
           'thor'          => "git://github.com/wycats/thor.git"
           }
       end
+      source_config ||= File.join(ENV["HOME"] || ENV["APPDATA"], '.merb', 'git-sources.yml')
+      # it should work with ~/.merb as well
+      source_config = File.expand_path(source_config)
       if source_config && File.exists?(source_config)
         @_repos.merge(YAML.load(File.read(source_config)))
       else
