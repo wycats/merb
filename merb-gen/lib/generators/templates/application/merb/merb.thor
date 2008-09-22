@@ -434,6 +434,7 @@ class Merb < Thor
         next unless File.directory?(repo) && File.exists?(File.join(repo, '.git'))
         FileUtils.cd(repo) do
           puts "Refreshing #{File.basename(repo)}"
+          system %{git fetch}
           branch = `git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1) /'`[/\* (.+)/, 1]
           system %{git rebase #{branch}}
         end
