@@ -22,6 +22,10 @@ class Main < Merb::Controller
     part(TodoPart => :part_with_params, :my_param => "my_value")
   end
   
+  def part_with_arrays_in_params
+    part(TodoPart => :part_with_params, :my_param => ['my_first_value', 'my_second_value'])
+  end
+
   def part_within_view
     render
   end

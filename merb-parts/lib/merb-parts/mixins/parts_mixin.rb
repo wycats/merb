@@ -29,8 +29,8 @@ module Merb
       klasses, opts = opts.partition do |k,v| 
         k.respond_to?(:ancestors) && k.ancestors.include?(Merb::PartController)
       end       
-        
-      opts = Hash[*(opts.flatten)]
+
+      opts = opts.empty? ? {} : Hash[*(opts.first)]
       
       res = klasses.inject([]) do |memo,(klass,action)|
         memo << klass.new(self, opts)._dispatch(action)

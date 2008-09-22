@@ -46,6 +46,11 @@ describe "A Merb PartController" do
     controller = dispatch_to(Main, :part_with_params)
     controller.body.should match( /my_param = my_value/)
   end
+
+  it "should provide arrays from params when calling a part" do
+    controller = dispatch_to(Main, :part_with_arrays_in_params)
+    controller.body.should match(/my_param = my_first_value, my_second_value/)
+  end
   
   it "should render from inside a view" do
     controller = dispatch_to(Main, :part_within_view)
