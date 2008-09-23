@@ -230,6 +230,7 @@ class Merb < Thor
     edge.options = options
     edge.core
     edge.more
+    edge.custom
   end
 
   class Edge < Thor
@@ -296,6 +297,24 @@ class Merb < Thor
                    "--install"   => :boolean
     def dm_more
       refresh_from_source 'extlib', 'dm-core', 'dm-more'
+    end
+
+    desc 'custom', 'Update all the custom repos from git HEAD'
+    method_options "--merb-root" => :optional,
+                   "--sources"   => :optional,
+                   "--install"   => :boolean
+    def custom
+      custom_repos = Hash.new
+      Merb.repos.each do |name, repo|
+        unless Merb.default_repos.keys.include?(name)
+          custom_repos[name] = repo
+        end
+      end
+      
+      
+      
+      
+      refresh_from_source *custom_repos.keys
     end
 
     private
@@ -614,8 +633,21 @@ class Merb < Thor
   end
 
   class << self
+    
+    # Default Git repositories
+    def default_repos
+      @_default_repos ||= { 
+        'merb-core'     => "git://github.com/wycats/merb-core.git",
+        'merb-more'     => "git://github.com/wycats/merb-more.git",
+        'merb-plugins'  => "git://github.com/wycats/merb-plugins.git",
+        'extlib'        => "git://github.com/sam/extlib.git",
+        'dm-core'       => "git://github.com/sam/dm-core.git",
+        'dm-more'       => "git://github.com/sam/dm-more.git",
+        'thor'          => "git://github.com/wycats/thor.git" 
+      }
+    end
 
-    # Default Git repositories - pass source_config option to load a yaml 
+    # Git repository sources - pass source_config option to load a yaml 
     # configuration file - defaults to ~/.merb/git-sources.yml 
     # which need to create yourself if desired. 
     #
@@ -624,24 +656,12 @@ class Merb < Thor
     # merb-core: git://github.com/myfork/merb-core.git
     # merb-more: git://github.com/myfork/merb-more.git
     def repos(source_config = nil)
-      @_repos ||= begin
-        repositories = {
-          'merb-core'     => "git://github.com/wycats/merb-core.git",
-          'merb-more'     => "git://github.com/wycats/merb-more.git",
-          'merb-plugins'  => "git://github.com/wycats/merb-plugins.git",
-          'extlib'        => "git://github.com/sam/extlib.git",
-          'dm-core'       => "git://github.com/sam/dm-core.git",
-          'dm-more'       => "git://github.com/sam/dm-more.git",
-          'thor'          => "git://github.com/wycats/thor.git"
-          }
-      end
       source_config ||= File.join(ENV["HOME"] || ENV["APPDATA"], '.merb', 'git-sources.yml')
-      # it should work with ~/.merb as well
       source_config = File.expand_path(source_config)
       if source_config && File.exists?(source_config)
-        @_repos.merge(YAML.load(File.read(source_config)))
+        default_repos.merge(YAML.load(File.read(source_config)))
       else
-        @_repos
+        default_repos
       end
     end
 
