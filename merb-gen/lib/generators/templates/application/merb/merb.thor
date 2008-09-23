@@ -639,16 +639,19 @@ class Merb < Thor
     end
 
     # Git repository sources - pass source_config option to load a yaml 
-    # configuration file - defaults to ~/.merb/git-sources.yml 
-    # which need to create yourself if desired. 
+    # configuration file - defaults to ./config/git-sources.yml and
+    # ~/.merb/git-sources.yml - which need to create yourself if desired. 
     #
     # Example of contents:
     #
     # merb-core: git://github.com/myfork/merb-core.git
     # merb-more: git://github.com/myfork/merb-more.git
     def repos(source_config = nil)
-      source_config ||= File.join(ENV["HOME"] || ENV["APPDATA"], '.merb', 'git-sources.yml')
-      source_config = File.expand_path(source_config)
+      source_config ||= begin
+        local_config = File.join(Dir.pwd, 'config', 'git-sources.yml')
+        user_config  = File.join(ENV["HOME"] || ENV["APPDATA"], '.merb', 'git-sources.yml')
+        File.exists?(local_config) ? local_config : user_config
+      end
       if source_config && File.exists?(source_config)
         default_repos.merge(YAML.load(File.read(source_config)))
       else
