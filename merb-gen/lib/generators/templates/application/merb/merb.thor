@@ -304,17 +304,8 @@ class Merb < Thor
                    "--sources"   => :optional,
                    "--install"   => :boolean
     def custom
-      custom_repos = Hash.new
-      Merb.repos.each do |name, repo|
-        unless Merb.default_repos.keys.include?(name)
-          custom_repos[name] = repo
-        end
-      end
-      
-      
-      
-      
-      refresh_from_source *custom_repos.keys
+      custom_repos = Merb.repos.keys - Merb.default_repos.keys
+      refresh_from_source *custom_repos
     end
 
     private
