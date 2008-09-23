@@ -5,7 +5,7 @@ if defined?(Merb::Plugins)
   Merb::Plugins.add_rakefiles(File.join(File.dirname(__FILE__) / "merb-haml" / "merbtasks"))
 
   Merb::BootLoader.after_app_loads do
-    if File.directory?(Merb.dir_for(:stylesheet) / "sass")
+    if File.directory?(Merb::Config[:sass][:template_location] || Merb.dir_for(:stylesheet) / "sass")
       require "sass/plugin" 
       Sass::Plugin.options = Merb::Config[:sass] if Merb::Config[:sass]
     end
@@ -22,5 +22,4 @@ if defined?(Merb::Plugins)
   Merb.add_generators generators / "resource_controller"
   Merb.add_generators generators / "controller"
   Merb.add_generators generators / "layout"
-  
 end
