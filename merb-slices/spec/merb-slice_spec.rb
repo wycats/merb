@@ -64,6 +64,7 @@ describe "The Merb::Router::Behavior methods" do
   
   it "should add a slice's routes and provide access to the namespace through a block using #add_slice" do
     Merb::Router.named_routes[:full_test_slice_default].inspect.should == '/full/:controller(/:action(/:id))(.:format)'
+    Merb::Router.named_routes[:full_test_slice_home].inspect.should == '/full'
     Merb::Router.named_routes[:full_test_slice_index].inspect.should == '/full/index(.:format)'
     Merb::Router.named_routes[:full_test_slice_dashboard].inspect.should == '/full/dashboard'
     
