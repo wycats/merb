@@ -53,6 +53,11 @@ describe "Accessing Assets" do
     image_tag('charts', :path => '/dynamic/').should ==
       "<img src=\"/dynamic/charts\" />"
   end
+  
+  it "should create image tag with a random query string" do
+    result = image_tag('foo.gif', :reload => true)
+    result.should match(%r{<img src="/images/foo.gif\?\d+" />})
+  end
 
 end
 

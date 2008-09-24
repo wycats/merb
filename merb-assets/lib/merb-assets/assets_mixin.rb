@@ -113,6 +113,8 @@ module Merb
           end
         opts[:src] ||= opts.delete(:path) + img
       end
+      random = opts.delete(:reload) || Merb::Config[:reload_templates]
+      opts[:src] += random_query_string if random
       %{<img #{ opts.to_xml_attributes } />}
     end
 
