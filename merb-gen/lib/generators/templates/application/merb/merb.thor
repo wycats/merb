@@ -107,7 +107,6 @@ TEXT
 end
 
 # TODO
-# - a task to figure out an app's dependencies
 # - pulling a specific UUID/Tag (gitspec hash) with clone/update
 # - a 'deploy' task (in addition to 'redeploy' ?)
 # - eventually take a --orm option for the 'merb-stack' type of tasks
