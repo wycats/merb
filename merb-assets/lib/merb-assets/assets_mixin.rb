@@ -427,6 +427,8 @@ module Merb
     def js_include_tag(*scripts)
       options = scripts.last.is_a?(Hash) ? scripts.pop : {}
       return nil if scripts.empty?
+      
+      reload = options[:reload] || Merb::Config[:reload_templates]
 
       if (bundle_name = options[:bundle]) && Merb::Assets.bundle? && scripts.size > 1
         bundler = Merb::Assets::JavascriptAssetBundler.new(bundle_name, *scripts)
@@ -437,8 +439,10 @@ module Merb
       tags = ""
 
       for script in scripts
+        src = asset_path(:javascript, script)
+        src += random_query_string if reload
         attrs = {
-          :src => asset_path(:javascript, script),
+          :src => src,
           :type => "text/javascript"
         }
         tags << %Q{<script #{attrs.to_xml_attributes}></script>}
@@ -486,6 +490,8 @@ module Merb
       options = stylesheets.last.is_a?(Hash) ? stylesheets.pop : {}
       return nil if stylesheets.empty?
 
+      reload = options[:reload] || Merb::Config[:reload_templates]
+
       if (bundle_name = options[:bundle]) && Merb::Assets.bundle? && stylesheets.size > 1
         bundler = Merb::Assets::StylesheetAssetBundler.new(bundle_name, *stylesheets)
         bundled_asset = bundler.bundle!
@@ -495,8 +501,10 @@ module Merb
       tags = ""
 
       for stylesheet in stylesheets
+        href = asset_path(:stylesheet, stylesheet)
+        href += random_query_string if reload
         attrs = {
-          :href => asset_path(:stylesheet, stylesheet),
+          :href => href,
           :type => "text/css",
           :rel => "Stylesheet",
           :charset => options[:charset] || 'utf-8',
@@ -629,6 +637,10 @@ module Merb
         extracted << (includes + [include_options]) unless includes.empty?
         extracted
       end
+    end
+    
+    def random_query_string
+      Time.now.strftime("?%m%d%H%M%S#{rand(99)}")
     end
     
   end

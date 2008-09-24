@@ -182,7 +182,19 @@ describe "External JavaScript and Stylesheets" do
     result.should match(%r{/stylesheets/style.css})
     result.should match(%r{/stylesheets/layout.css})
   end
+   
+  it "should create a js include tag with a random query string" do
+    Merb::Config[:reload_templates] = true
+    result = js_include_tag('jquery.js')
+    result.should match(%r{/javascripts/jquery.js\?\d+})
+    Merb::Config[:reload_templates] = false
+  end
 
+  it "should create a css include tag with a random query string" do
+    result = css_include_tag('style.css', :reload => true)
+    result.should match(%r{/stylesheets/style.css\?\d+})
+  end
+  
   it "should create a css include tag with the specified media" do
     css_include_tag('style', :media => :print).should match(%r{media="print"})
   end
