@@ -141,7 +141,7 @@ class Merb < Thor
                    "--system"    => :boolean
     def list
       partitioned = { :local => [], :system => [] }
-      extract_dependencies.each do |dependency|
+      (core_dependencies + extract_dependencies).each do |dependency|
         if gem_dir && !(versions = find_dependency_versions(dependency)).empty?
           partitioned[:local]  << "#{dependency} [#{versions.join(', ')}]"
         else
@@ -170,7 +170,7 @@ class Merb < Thor
     method_options "--merb-root" => :optional,
                    "--force"     => :boolean
     def configure
-      entries = extract_dependencies.map { |d| d.to_s }
+      entries = (core_dependencies + extract_dependencies).map { |d| d.to_s }
       FileUtils.mkdir_p(config_dir) unless File.directory?(config_dir)
       config = YAML.dump(entries) 
       if File.exists?(config_file) && !options[:force]
@@ -210,6 +210,23 @@ class Merb < Thor
     
     def config_file
       @_config_file ||= File.join(config_dir, 'dependencies.yml')
+    end
+    
+    # Find the latest merb-core and gather its dependencies.
+    def core_dependencies
+      @_core_dependencies ||= begin
+        if gem_dir
+          Gem.clear_paths; Gem.path.unshift(gem_dir)
+        end
+        deps = []
+        merb_core = Gem::Dependency.new('merb-core', '>= 0.9.8')
+        if gemspec = Gem.source_index.search(merb_core).last
+          deps << Gem::Dependency.new('merb-core', gemspec.version)
+          deps += gemspec.dependencies
+        end
+        Gem.clear_paths
+        deps
+      end
     end
     
     # Find local gems and return matched version numbers.
