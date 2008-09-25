@@ -61,6 +61,7 @@ module GemManagement
       installer.installed_gems.each do |spec|
         puts "Successfully installed #{spec.full_name}"
       end
+      return !installer.installed_gems.empty?
     end
   end
 
@@ -428,7 +429,8 @@ class Merb < Thor
         gems = Gems.new
         gems.options = options
         dependencies.each do |dependency|
-          gems.install(dependency.name, dependency.version_requirements.to_s)
+          v = dependency.version_requirements
+          gems.install_gem(dependency.name, :version => v, :cache => options[:cache])
         end
         # if options[:binaries] is set this is already taken care of - skip it
         ensure_bin_wrapper_for_core_components unless options[:binaries]
@@ -594,7 +596,7 @@ class Merb < Thor
     def refresh_from_gems(*components)
       gems = Gems.new
       gems.options = options
-      components.all? { |name| gems.install(name) }
+      components.all? { |name| gems.install_gem(name) }
     end
 
   end
@@ -873,13 +875,9 @@ class Merb < Thor
                    "--merb-root" => :optional,
                    "--cache"     => :boolean,
                    "--binaries"  => :boolean
-    def install(name, version = nil)
+    def install(name)
       puts "Installing #{name}..."
-      opts = {}
-      opts[:version] = version || options[:version]
-      opts[:cache] = options[:cache] if gem_dir
-      opts[:install_dir] = gem_dir   if gem_dir
-      Merb.install_gem(name, opts)
+      install_gem(name, :version => options[:version], :cache => options[:cache])
       ensure_bin_wrapper_for(name) if options[:binaries]
     rescue => e
       puts "Failed to install #{name} (#{e.message})"
@@ -907,19 +905,16 @@ class Merb < Thor
                    "--binaries"  => :boolean
     def update(name)
       puts "Updating #{name}..."
-      opts = {}
-      if gem_dir
-        if gemspec_path = Dir[File.join(gem_dir, 'specifications', "#{name}-*.gemspec")].last
-          gemspec = Gem::Specification.load(gemspec_path)
-          opts[:version] = Gem::Requirement.new [">#{gemspec.version}"]
-        end
-        opts[:install_dir] = gem_dir
-        opts[:cache] = options[:cache]
+      version = nil
+      if gem_dir && (gemspec_path = Dir[File.join(gem_dir, 'specifications', "#{name}-*.gemspec")].last)
+        gemspec = Gem::Specification.load(gemspec_path)
+        version = Gem::Requirement.new [">#{gemspec.version}"]
       end
-      Merb.install_gem(name, opts)
-      ensure_bin_wrapper_for(name) if options[:binaries]
-    rescue => e
-      puts "Failed to update #{name} (#{e.message})"
+      if install_gem(name, :version => version, :cache => options[:cache])
+        ensure_bin_wrapper_for(name) if options[:binaries]
+      elsif gemspec
+        puts "current version is: #{gemspec.version}"
+      end
     end
 
     # Uninstall a gem - ignores dependencies.
@@ -942,12 +937,9 @@ class Merb < Thor
     method_options "--version"   => :optional,
                    "--merb-root" => :optional,
                    "--all" => :boolean
-    def uninstall(name, version = nil)
+    def uninstall(name)
       puts "Uninstalling #{name}..."
-      opts = { :ignore => true, :executables => true, :all => options[:all] }
-      opts[:version] = version || options[:version]
-      opts[:install_dir] = gem_dir if gem_dir
-      Merb.uninstall_gem(name, opts.merge(options))
+      uninstall_gem(name, :version => options[:version], :all => options[:all])
     rescue => e
       puts "Failed to uninstall #{name} (#{e.message})"
     end
@@ -966,9 +958,7 @@ class Merb < Thor
     method_options "--merb-root" => :optional
     def wipe(name)
       puts "Wiping #{name}..."
-      opts = { :ignore => true, :all => true, :executables => true }
-      opts[:install_dir] = gem_dir if gem_dir
-      Merb.uninstall_gem(name, opts)
+      uninstall_gem(name, :all => true, :executables => true)
     rescue => e
       puts "Failed to wipe #{name} (#{e.message})"
     end
@@ -993,9 +983,9 @@ class Merb < Thor
         gem_names = []
         local_gemspecs.each do |spec|
           gem_names << spec.name unless gem_names.include?(spec.name)
-          uninstall(spec.name, spec.version)
+          uninstall_gem(spec.name, :version => spec.version)
         end
-        gem_names.each { |name| install(name) }
+        gem_names.each { |name| install_gem(name) }
         # if options[:binaries] is set this is already taken care of - skip it
         ensure_bin_wrapper_for_core_components unless options[:binaries]
       else
@@ -1022,7 +1012,7 @@ class Merb < Thor
               # Copy the gem to a temporary file, because otherwise RubyGems/FileUtils
               # will complain about copying identical files (same source/destination).
               FileUtils.cp(gem_file, gem_file_copy)
-              Merb.install_gem(gem_file_copy, :install_dir => gem_dir)
+              install_gem(gem_file_copy, :install_dir => gem_dir)
               File.delete(gem_file_copy)
             end
           end
@@ -1035,6 +1025,21 @@ class Merb < Thor
       else
         puts "No application local gems directory found"
       end
+    end
+    
+    # Install gem with some default options.
+    def install_gem(name, opts = {})
+      defaults = {}
+      defaults[:cache] = false unless gem_dir
+      defaults[:install_dir] = gem_dir if gem_dir
+      Merb.install_gem(name, defaults.merge(opts))
+    end
+    
+    # Uninstall gem with some default options.
+    def uninstall_gem(name, opts = {})
+      defaults = { :ignore => true, :executables => true }
+      defaults[:install_dir] = gem_dir if gem_dir
+      Merb.uninstall_gem(name, defaults.merge(opts))
     end
     
     protected
