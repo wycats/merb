@@ -27,12 +27,6 @@ require 'rubygems/dependency'
 
 module GemManagement
   
-  class SourcePathMissing < Exception
-  end
-
-  class GemPathMissing < Exception
-  end
-
   # Install a gem - looks remotely and local gem cache;
   # won't process rdoc or ri options.
   def install_gem(gem, options = {})
@@ -97,8 +91,12 @@ module GemManagement
 
   # Install a gem from source - builds and packages it first then installs.
   def install_gem_from_src(gem_src_dir, options = {})
-    raise SourcePathMissing unless File.directory?(gem_src_dir)
-    raise GemPathMissing if options[:install_dir] && !File.directory?(options[:install_dir])
+    if !File.directory?(gem_src_dir)
+      raise "Missing rubygem source path: #{gem_src_dir}"
+    end
+    if options[:install_dir] && !File.directory?(options[:install_dir])
+      raise "Missing rubygems path: #{options[:install_dir]}"
+    end
 
     gem_name = File.basename(gem_src_dir)
     gem_pkg_dir = File.expand_path(File.join(gem_src_dir, 'pkg'))
@@ -750,10 +748,6 @@ class Merb < Thor
       opts = {}
       opts[:install_dir] = gem_dir if gem_dir
       Merb.install_gem_from_src(gem_src_dir, opts)
-    rescue Merb::SourcePathMissing
-      puts "Missing rubygem source path: #{gem_src_dir}"
-    rescue Merb::GemPathMissing
-      puts "Missing rubygems path: #{gem_dir}"
     rescue => e
       puts "Failed to install #{name} (#{e.message})"
     end
