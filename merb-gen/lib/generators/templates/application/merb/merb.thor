@@ -291,7 +291,45 @@ module MerbThorHelper
       end
     end
   end
-
+  
+  def config_dir
+    @_config_dir ||= File.join(working_dir, 'config')
+  end
+  
+  def config_file
+    @_config_file ||= File.join(config_dir, 'dependencies.yml')
+  end
+  
+  # Find the latest merb-core and gather its dependencies.
+  # We check for 0.9.8 as a minimum release version.
+  def core_dependencies
+    @_core_dependencies ||= begin
+      if gem_dir
+        Gem.clear_paths; Gem.path.unshift(gem_dir)
+      end
+      deps = []
+      merb_core = Gem::Dependency.new('merb-core', '>= 0.9.8')
+      if gemspec = Gem.source_index.search(merb_core).last
+        deps << Gem::Dependency.new('merb-core', gemspec.version)
+        deps += gemspec.dependencies
+      end
+      Gem.clear_paths
+      deps
+    end
+  end
+  
+  # Find local gems and return matched version numbers.
+  def find_dependency_versions(dependency)
+    versions = []
+    specs = Dir[File.join(gem_dir, 'specifications', "#{dependency.name}-*.gemspec")]
+    unless specs.empty?
+      specs.inject(versions) do |versions, gemspec_path|
+        versions << gemspec_path[/-([\d\.]+)\.gemspec$/, 1]
+      end
+    end
+    versions.sort.reverse
+  end
+  
   # Helper to create dir unless it exists.
   def create_if_missing(path)
     FileUtils.mkdir(path) unless File.exists?(path)
@@ -415,58 +453,20 @@ class Merb < Thor
     def configure
       entries = (core_dependencies + extract_dependencies).map { |d| d.to_s }
       FileUtils.mkdir_p(config_dir) unless File.directory?(config_dir)
-      config = YAML.dump(entries) 
+      config = YAML.dump(entries)
+      puts "#{config}\n"
       if File.exists?(config_file) && !options[:force]
         puts "File already exists! Use --force to overwrite."
       else
         File.open(config_file, 'w') { |f| f.write config }
         puts "Written #{config_file}:"
       end
-      puts config
     rescue  
       puts "Failed to write to #{config_file}"  
     end
     
     protected
-    
-    def config_dir
-      @_config_dir ||= File.join(working_dir, 'config')
-    end
-    
-    def config_file
-      @_config_file ||= File.join(config_dir, 'dependencies.yml')
-    end
-    
-    # Find the latest merb-core and gather its dependencies.
-    # We check for 0.9.8 as a minimum release version.
-    def core_dependencies
-      @_core_dependencies ||= begin
-        if gem_dir
-          Gem.clear_paths; Gem.path.unshift(gem_dir)
-        end
-        deps = []
-        merb_core = Gem::Dependency.new('merb-core', '>= 0.9.8')
-        if gemspec = Gem.source_index.search(merb_core).last
-          deps << Gem::Dependency.new('merb-core', gemspec.version)
-          deps += gemspec.dependencies
-        end
-        Gem.clear_paths
-        deps
-      end
-    end
-    
-    # Find local gems and return matched version numbers.
-    def find_dependency_versions(dependency)
-      versions = []
-      specs = Dir[File.join(gem_dir, 'specifications', "#{dependency.name}-*.gemspec")]
-      unless specs.empty?
-        specs.inject(versions) do |versions, gemspec_path|
-          versions << gemspec_path[/-([\d\.]+)\.gemspec$/, 1]
-        end
-      end
-      versions.sort.reverse
-    end
-    
+        
     # Extract the runtime dependencies by starting the application in runner mode.
     def extract_dependencies
       FileUtils.cd(working_dir) do
