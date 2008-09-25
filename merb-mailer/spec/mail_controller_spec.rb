@@ -1,7 +1,8 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
 Spec::Runner.configure do |config|
-  config.include Merb::Test::RequestHelper  
+  config.include Merb::Test::RequestHelper
+  config.include Merb::Test::ControllerHelper
 end
 
 class Merb::Mailer
@@ -48,19 +49,32 @@ class TestMailController < Merb::MailController
   def ninth
     render_mail
   end
-  
+
   def tenth
     render_mail
   end
   
+  def generates_relative_url
+    render_mail
+  end
+
+  def generates_absolute_url
+    render_mail
+  end
 end
 
+
+Merb::Router.prepare do
+  match("/subprojects/:subproject").
+    to(:controller => "test_controller", :action => "whatever").
+    name(:merb_subproject)
+end
+
+
 class TestController < Merb::Controller
-  
   def one
     send_mail TestMailController, :ninth, {:from => "foo@bar.com", :to => "foo@bar.com"}, {:x => "ONE_CONTROLLER"}
   end
-  
 end
 
 describe "A Merb Mail controller" do
@@ -138,37 +152,20 @@ describe "A Merb Mail controller" do
     Merb.logger.should_receive(:error).once
     deliver :tenth
   end
-  
-end
 
-# describe "Merb::MailController with url generation" do
-#   
-#   it_should_behave_like "class with general url generation"
-#   it_should_behave_like "non routeable controller with url mixin"
-#   
-#   def new_url_controller(route, params = {:action => 'show', :controller => 'Test'})
-#     request = OpenStruct.new
-#     request.route = route
-#     request.params = params
-#     response = OpenStruct.new
-#     response.read = ""
-#     
-#     @controller = Merb::Controller.build(request, response)
-#     TestMailController.new(params, @controller)
-#   end
-#   
-#   it "should raise an error if no controller is specified and the base controller is not set" do
-#     c = new_url_controller(@default_route, {})    
-#     lambda do
-#       the_url = c.url(:action => "bar")
-#     end.should raise_error
-#   end
-#   
-#   it "should use the base controller when it is set to generate a url when no :controller option is specified" do
-#     c = new_url_controller(@defualt_route, :controller => "foo")
-#     lambda do
-#       the_url = c.url(:action => "bar")
-#       the_url.should == "/foo/bar"
-#     end.should_not raise_error    
-#   end
-# end
+  it "delegates relative url generation to base controller" do
+    controller = TestController.new(fake_request)
+    TestMailController.new({ :subproject => "core" }, controller).
+      dispatch_and_deliver :generates_relative_url, :from => "foo@bar.com", :to => "foo@bar.com"
+    
+    Merb::Mailer.deliveries.last.text.should == "TEXT\n/subprojects/core\nENDTEXT"
+  end
+
+  it "delegates relative url generation to base controller" do
+    controller = TestController.new(fake_request)
+    TestMailController.new({ :subproject => "extlib" }, controller).
+      dispatch_and_deliver :generates_absolute_url, :from => "foo@bar.com", :to => "foo@bar.com"
+    
+    Merb::Mailer.deliveries.last.text.should == "TEXT\nhttp://merbivore.com/subprojects/extlib\nENDTEXT"
+  end
+end
