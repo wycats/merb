@@ -50,10 +50,10 @@ describe "The Merb::Router::Behavior methods" do
   
   before :all do
     Merb::Router.prepare do 
-      add_slice(:FullTestSlice, :path => 'full') do |scope|
+      add_slice(:FullTestSlice, :path_prefix => 'full') do |scope|
         scope.match('/dashboard').to(:controller => 'main', :action => 'index').name(:dashboard)
       end
-      add_slice(:thin_test_slice, 'thin')
+      add_slice(:thin_test_slice, 'thin') # shortcut for :path => 'thin'
       slice(:very_thin_test_slice, :name_prefix => 'awesome', :params => { :foo => 'bar' })
     end    
   end
