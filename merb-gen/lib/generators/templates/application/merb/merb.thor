@@ -19,6 +19,8 @@ require 'yaml'
 # Thor itself). Therefore, the code below is copied here. Should you work on
 # this code, be sure to edit the original code to keep them in sync.
 #
+# You can find the original here: merb-core/tasks/gem_management.rb
+#
 ##############################################################################
 
 require 'rubygems/dependency_installer'
@@ -136,7 +138,8 @@ module GemManagement
         FileUtils.mkdir_p(gem_pkg_dir) unless File.directory?(gem_pkg_dir)
         # Copy any subgems to the main gem pkg dir.
         Dir[File.join(gem_src_dir, '**', 'pkg', '*.gem')].each do |subgem_pkg|
-          FileUtils.cp(subgem_pkg, gem_pkg_dir)
+          dest = File.join(gem_pkg_dir, File.basename(subgem_pkg))
+          FileUtils.copy_entry(subgem_pkg, dest, false, false, true)
         end
 
         # Finally generate the main package and install it; subgems
@@ -184,12 +187,10 @@ module GemManagement
         if gemspec_path = Dir[File.join(gem_dir, 'specifications', "#{gem}-*.gemspec")].last
           spec = Gem::Specification.load(gemspec_path)
           spec.executables.each do |exec|
-            if File.exists?(executable = File.join(gem_dir, 'bin', exec))
-              local_executable = File.join(bin_dir, exec)
-              puts "Adding local executable #{local_executable}"
-              File.open(local_executable, 'w', 0755) do |f|
-                f.write(executable_wrapper(spec, exec))
-              end
+            executable = File.join(bin_dir, exec)
+            puts "Writing executable wrapper #{executable}"
+            File.open(executable, 'w', 0755) do |f|
+              f.write(executable_wrapper(spec, exec))
             end
           end
         end
@@ -207,7 +208,6 @@ module GemManagement
 #
 # The application '#{spec.name}' is installed as part of a gem, and
 # this file is here to facilitate running it.
-#
 
 begin 
   require 'minigems'
@@ -215,7 +215,7 @@ rescue LoadError
   require 'rubygems'
 end
 
-if File.directory?(gems_dir = File.join(File.dirname(__FILE__), '..', 'gems'))
+if File.directory?(gems_dir = File.join(Dir.pwd, 'gems'))
   $BUNDLE = true; Gem.clear_paths; Gem.path.unshift(gems_dir)
 end
 
