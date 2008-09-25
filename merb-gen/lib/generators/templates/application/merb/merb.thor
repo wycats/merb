@@ -7,53 +7,179 @@ require 'thor'
 require 'fileutils'
 require 'yaml'
 
-module MerbThorHelper
+# TODO
+# - pulling a specific UUID/Tag (gitspec hash) with clone/update
+# - a 'deploy' task (in addition to 'redeploy' ?)
+# - eventually take a --orm option for the 'merb-stack' type of tasks
+# - add merb:gems:refresh to refresh all gems (from specifications)
+# - merb:gems:uninstall should remove local bin/ entries
 
-  private
+##############################################################################
+#
+# GemManagement
+#
+# The following code is also used by Merb core, but we can't rely on it as a
+# dependency, since merb.thor should be completely selfcontained (except for
+# Thor itself). Therefore, the code below is copied here. Should you work on
+# this code, be sure to edit the original code to keep them in sync.
+#
+##############################################################################
 
-  # The current working directory, or Merb app root (--merb-root option).
-  def working_dir
-    @_working_dir ||= File.expand_path(options['merb-root'] || Dir.pwd)
+module GemManagement
+  
+  class SourcePathMissing < Exception
   end
 
-  # We should have a ./src dir for local and system-wide management.
-  def source_dir
-    @_source_dir  ||= File.join(working_dir, 'src')
-    create_if_missing(@_source_dir)
-    @_source_dir
+  class GemPathMissing < Exception
   end
 
-  # If a local ./gems dir is found, it means we are in a Merb app.
-  def application?
-    gem_dir
-  end
+  # Install a gem - looks remotely and local gem cache;
+  # won't process rdoc or ri options.
+  def install_gem(gem, options = {})
+    from_cache = (options.key?(:cache) && options.delete(:cache))
+    if from_cache
+      install_gem_from_cache(gem, options)
+    else
+      version = options.delete(:version)
+      Gem.configuration.update_sources = false
 
-  # If a local ./gems dir is found, return it.
-  def gem_dir
-    if File.directory?(dir = File.join(working_dir, 'gems'))
-      dir
-    end
-  end
+      update_source_index(options[:install_dir]) if options[:install_dir]
 
-  # If we're in a Merb app, we can have a ./bin directory;
-  # create it if it's not there.
-  def bin_dir
-    @_bin_dir ||= begin
-      if gem_dir
-        dir = File.join(working_dir, 'bin')
-        create_if_missing(dir)
-        dir
+      installer = Gem::DependencyInstaller.new(options.merge(:user_install => false))
+      exception = nil
+      begin
+        installer.install gem, version
+      rescue Gem::InstallError => e
+        exception = e
+      rescue Gem::GemNotFoundException => e
+        if from_cache && gem_file = find_gem_in_cache(gem, version)
+          puts "Located #{gem} in gem cache..."
+          installer.install gem_file
+        else
+          exception = e
+        end
+      rescue => e
+        exception = e
+      end
+      if installer.installed_gems.empty? && exception
+        puts "Failed to install gem '#{gem} (#{version})' (#{exception.message})"
+      end
+      installer.installed_gems.each do |spec|
+        puts "Successfully installed #{spec.full_name}"
       end
     end
   end
 
-  # Helper to create dir unless it exists.
-  def create_if_missing(path)
-    FileUtils.mkdir(path) unless File.exists?(path)
+  # Install a gem - looks in the system's gem cache instead of remotely;
+  # won't process rdoc or ri options.
+  def install_gem_from_cache(gem, options = {})
+    version = options.delete(:version)
+    Gem.configuration.update_sources = false
+    installer = Gem::DependencyInstaller.new(options.merge(:user_install => false))
+    exception = nil
+    begin
+      if gem_file = find_gem_in_cache(gem, version)
+        puts "Located #{gem} in gem cache..."
+        installer.install gem_file
+      else
+        raise Gem::InstallError, "Unknown gem #{gem}"
+      end
+    rescue Gem::InstallError => e
+      exception = e
+    end
+    if installer.installed_gems.empty? && exception
+      puts "Failed to install gem '#{gem}' (#{e.message})"
+    end
+    installer.installed_gems.each do |spec|
+      puts "Successfully installed #{spec.full_name}"
+    end
   end
 
+  # Install a gem from source - builds and packages it first then installs.
+  def install_gem_from_src(gem_src_dir, options = {})
+    raise SourcePathMissing unless File.directory?(gem_src_dir)
+    raise GemPathMissing if options[:install_dir] && !File.directory?(options[:install_dir])
+
+    gem_name = File.basename(gem_src_dir)
+    gem_pkg_dir = File.expand_path(File.join(gem_src_dir, 'pkg'))
+
+    # We need to use local bin executables if available.
+    thor = which('thor')
+    rake = which('rake')
+
+    # Handle pure Thor installation instead of Rake
+    if File.exists?(File.join(gem_src_dir, 'Thorfile'))
+      # Remove any existing packages.
+      FileUtils.rm_rf(gem_pkg_dir) if File.directory?(gem_pkg_dir)
+      # Create the package.
+      FileUtils.cd(gem_src_dir) { system("#{thor} :package") }
+      # Install the package using rubygems.
+      if package = Dir[File.join(gem_pkg_dir, "#{gem_name}-*.gem")].last
+        FileUtils.cd(File.dirname(package)) do
+          install_gem(File.basename(package), options.dup)
+          return
+        end
+      else
+        raise Gem::InstallError, "No package found for #{gem_name}"
+      end
+    # Handle standard installation through Rake
+    else
+      # Clean and regenerate any subgems for meta gems.
+      Dir[File.join(gem_src_dir, '*', 'Rakefile')].each do |rakefile|
+        FileUtils.cd(File.dirname(rakefile)) { system("#{rake} clobber_package; #{rake} package") }
+      end
+
+      # Handle the main gem install.
+      if File.exists?(File.join(gem_src_dir, 'Rakefile'))
+        # Remove any existing packages.
+        FileUtils.cd(gem_src_dir) { system("#{rake} clobber_package") }
+        # Create the main gem pkg dir if it doesn't exist.
+        FileUtils.mkdir_p(gem_pkg_dir) unless File.directory?(gem_pkg_dir)
+        # Copy any subgems to the main gem pkg dir.
+        Dir[File.join(gem_src_dir, '**', 'pkg', '*.gem')].each do |subgem_pkg|
+          FileUtils.cp(subgem_pkg, gem_pkg_dir)
+        end
+
+        # Finally generate the main package and install it; subgems
+        # (dependencies) are local to the main package.
+        FileUtils.cd(gem_src_dir) do
+          system("#{rake} package")
+          FileUtils.cd(gem_pkg_dir) do
+            if package = Dir[File.join(gem_pkg_dir, "#{gem_name}-*.gem")].last
+              # If the (meta) gem has it's own package, install it.
+              install_gem(File.basename(package), options.dup)
+            else
+              # Otherwise install each package seperately.
+              Dir["*.gem"].each { |gem| install_gem(gem, options.dup) }
+            end
+          end
+          return
+        end
+      end
+    end
+    raise Gem::InstallError, "No Rakefile found for #{gem_name}"
+  end
+
+  # Uninstall a gem.
+  def uninstall_gem(gem, options = {})
+    if options[:version] && !options[:version].is_a?(Gem::Requirement)
+      options[:version] = Gem::Requirement.new ["= #{options[:version]}"]
+    end
+    update_source_index(options[:install_dir]) if options[:install_dir]
+    Gem::Uninstaller.new(gem, options).uninstall
+  end
+
+  # Use the local bin/* executables if available.
+  def which(executable)
+    if File.executable?(exec = File.join(Dir.pwd, 'bin', executable))
+      exec
+    else
+      executable
+    end
+  end
+  
   # Create a modified executable wrapper in the app's ./bin directory.
-  def ensure_local_bin_for(*gems)
+  def ensure_local_bin_for(gem_dir, bin_dir, *gems)
     if bin_dir && File.directory?(bin_dir)
       gems.each do |gem|
         if gemspec_path = Dir[File.join(gem_dir, 'specifications', "#{gem}-*.gemspec")].last
@@ -104,27 +230,121 @@ load '#{bin_file_name}'
 TEXT
   end
 
+  private
+
+  def find_gem_in_cache(gem, version)
+    spec = if version
+      version = Gem::Requirement.new ["= #{version}"] unless version.is_a?(Gem::Requirement)
+      Gem.source_index.find_name(gem, version).first
+    else
+      Gem.source_index.find_name(gem).sort_by { |g| g.version }.last
+    end
+    if spec && File.exists?(gem_file = "#{spec.installation_path}/cache/#{spec.full_name}.gem")
+      gem_file
+    end
+  end
+
+  def update_source_index(dir)
+    Gem.source_index.load_gems_in(File.join(dir, 'specifications'))
+  end
+  
 end
 
-# TODO
-# - pulling a specific UUID/Tag (gitspec hash) with clone/update
-# - a 'deploy' task (in addition to 'redeploy' ?)
-# - eventually take a --orm option for the 'merb-stack' type of tasks
-# - add merb:gems:refresh to refresh all gems (from specifications)
-# - merb:gems:uninstall should remove local bin/ entries
+##############################################################################
+
+module MerbThorHelper
+
+  private
+
+  # The current working directory, or Merb app root (--merb-root option).
+  def working_dir
+    @_working_dir ||= File.expand_path(options['merb-root'] || Dir.pwd)
+  end
+
+  # We should have a ./src dir for local and system-wide management.
+  def source_dir
+    @_source_dir  ||= File.join(working_dir, 'src')
+    create_if_missing(@_source_dir)
+    @_source_dir
+  end
+
+  # If a local ./gems dir is found, it means we are in a Merb app.
+  def application?
+    gem_dir
+  end
+
+  # If a local ./gems dir is found, return it.
+  def gem_dir
+    if File.directory?(dir = File.join(working_dir, 'gems'))
+      dir
+    end
+  end
+
+  # If we're in a Merb app, we can have a ./bin directory;
+  # create it if it's not there.
+  def bin_dir
+    @_bin_dir ||= begin
+      if gem_dir
+        dir = File.join(working_dir, 'bin')
+        create_if_missing(dir)
+        dir
+      end
+    end
+  end
+
+  # Helper to create dir unless it exists.
+  def create_if_missing(path)
+    FileUtils.mkdir(path) unless File.exists?(path)
+  end
+  
+  def ensure_local_bin_for(*gems)
+    Merb.ensure_local_bin_for(gem_dir, bin_dir, *gems)
+  end
+  
+  def ensure_local_bin_for_core_components
+    ensure_local_bin_for('merb-core', 'rake', 'rspec', 'thor', 'merb-gen')
+  end
+  
+end
+
+##############################################################################
 
 class Merb < Thor
-
-  class SourcePathMissing < Exception
+  
+  extend GemManagement
+  
+  # Default Git repositories
+  def self.default_repos
+    @_default_repos ||= { 
+      'merb-core'     => "git://github.com/wycats/merb-core.git",
+      'merb-more'     => "git://github.com/wycats/merb-more.git",
+      'merb-plugins'  => "git://github.com/wycats/merb-plugins.git",
+      'extlib'        => "git://github.com/sam/extlib.git",
+      'dm-core'       => "git://github.com/sam/dm-core.git",
+      'dm-more'       => "git://github.com/sam/dm-more.git",
+      'thor'          => "git://github.com/wycats/thor.git" 
+    }
   end
 
-  class GemPathMissing < Exception
-  end
-
-  class GemInstallError < Exception
-  end
-
-  class GemUninstallError < Exception
+  # Git repository sources - pass source_config option to load a yaml 
+  # configuration file - defaults to ./config/git-sources.yml and
+  # ~/.merb/git-sources.yml - which need to create yourself if desired. 
+  #
+  # Example of contents:
+  #
+  # merb-core: git://github.com/myfork/merb-core.git
+  # merb-more: git://github.com/myfork/merb-more.git
+  def self.repos(source_config = nil)
+    source_config ||= begin
+      local_config = File.join(Dir.pwd, 'config', 'git-sources.yml')
+      user_config  = File.join(ENV["HOME"] || ENV["APPDATA"], '.merb', 'git-sources.yml')
+      File.exists?(local_config) ? local_config : user_config
+    end
+    if source_config && File.exists?(source_config)
+      default_repos.merge(YAML.load(File.read(source_config)))
+    else
+      default_repos
+    end
   end
   
   class Dependencies < Thor
@@ -159,6 +379,29 @@ class Merb < Thor
       end
     end
     
+    # Install the gems listed in dependencies.yml from RubyForge (stable).
+    # Will also install local bin wrappers for known components.
+    
+    desc 'install', 'Install the gems listed in ./config/dependencies.yml'
+    method_options "--merb-root" => :optional,
+                   "--cache"     => :boolean,
+                   "--binaries"  => :boolean
+    def install
+      if File.exists?(config_file)
+        dependencies = parse_dependencies_yaml(File.read(config_file))
+        gems = Gems.new
+        gems.options = options
+        dependencies.each do |dependency|
+          gems.install(dependency.name, dependency.version_requirements.to_s)
+        end
+        # if options[:binaries] is set this is already taken care of - skip it
+        ensure_local_bin_for_core_components unless options[:binaries]
+      else
+        puts "No configuration file found at #{config_file}"
+        puts "Please run merb:dependencies:configure first."
+      end
+    end
+    
     # Retrieve all application dependencies and store them in a local
     # configuration file at ./config/dependencies.yml
     # 
@@ -183,24 +426,6 @@ class Merb < Thor
     rescue  
       puts "Failed to write to #{config_file}"  
     end
-    
-    # Install the gems listed in dependencies.yml from RubyForge (stable).
-    
-    desc 'install', 'Install the gems listed in ./config/dependencies.yml'
-    method_options "--merb-root" => :optional
-    def install
-      if File.exists?(config_file)
-        dependencies = parse_dependencies_yaml(File.read(config_file))
-        gems = Gems.new
-        gems.options = options
-        dependencies.each do |dependency|
-          gems.install(dependency.name, dependency.version_requirements.to_s)
-        end
-      else
-        puts "No configuration file found at #{config_file}"
-        puts "Please run merb:dependencies:configure first."
-      end
-    end    
     
     protected
     
@@ -756,7 +981,9 @@ class Merb < Thor
     # thor merb:gems:refresh --merb-root ./path/to/your/app
     
     desc 'refresh', 'Refresh all local gems by installing only the most recent versions'
-    method_options "--merb-root" => :optional
+    method_options "--merb-root" => :optional,
+                   "--cache"     => :boolean,
+                   "--binaries"  => :boolean
     def refresh
       if gem_dir
         gem_names = []
@@ -765,6 +992,8 @@ class Merb < Thor
           uninstall(spec.name, spec.version)
         end
         gem_names.each { |name| install(name) }
+        # if options[:binaries] is set this is already taken care of - skip it
+        ensure_local_bin_for_core_components unless options[:binaries]
       else
         puts "The refresh task only works with local gems"
       end      
@@ -794,6 +1023,11 @@ class Merb < Thor
             end
           end
         end
+        # Regenerate local bin wrappers with the proper Ruby shebang for
+        # the target platform - we're using Gem.ruby not 'env ruby';
+        # be sure to execute thor with the right Ruby binary:
+        # /path/to/exotic/ruby -S thor merb:gems:redeploy
+        ensure_local_bin_for_core_components
       else
         puts "No application local gems directory found"
       end
@@ -811,217 +1045,6 @@ class Merb < Thor
       else
         []
       end
-    end
-
-  end
-
-  class << self
-    
-    # Default Git repositories
-    def default_repos
-      @_default_repos ||= { 
-        'merb-core'     => "git://github.com/wycats/merb-core.git",
-        'merb-more'     => "git://github.com/wycats/merb-more.git",
-        'merb-plugins'  => "git://github.com/wycats/merb-plugins.git",
-        'extlib'        => "git://github.com/sam/extlib.git",
-        'dm-core'       => "git://github.com/sam/dm-core.git",
-        'dm-more'       => "git://github.com/sam/dm-more.git",
-        'thor'          => "git://github.com/wycats/thor.git" 
-      }
-    end
-
-    # Git repository sources - pass source_config option to load a yaml 
-    # configuration file - defaults to ./config/git-sources.yml and
-    # ~/.merb/git-sources.yml - which need to create yourself if desired. 
-    #
-    # Example of contents:
-    #
-    # merb-core: git://github.com/myfork/merb-core.git
-    # merb-more: git://github.com/myfork/merb-more.git
-    def repos(source_config = nil)
-      source_config ||= begin
-        local_config = File.join(Dir.pwd, 'config', 'git-sources.yml')
-        user_config  = File.join(ENV["HOME"] || ENV["APPDATA"], '.merb', 'git-sources.yml')
-        File.exists?(local_config) ? local_config : user_config
-      end
-      if source_config && File.exists?(source_config)
-        default_repos.merge(YAML.load(File.read(source_config)))
-      else
-        default_repos
-      end
-    end
-
-    # Install a gem - looks remotely and local gem cache;
-    # won't process rdoc or ri options.
-    def install_gem(gem, options = {})
-      from_cache = (options.key?(:cache) && options.delete(:cache))
-      if from_cache
-        install_gem_from_cache(gem, options)
-      else
-        version = options.delete(:version)
-        Gem.configuration.update_sources = false
-
-        update_source_index(options[:install_dir]) if options[:install_dir]
-
-        installer = Gem::DependencyInstaller.new(options.merge(:user_install => false))
-        exception = nil
-        begin
-          installer.install gem, version
-        rescue Gem::InstallError => e
-          exception = e
-        rescue Gem::GemNotFoundException => e
-          if from_cache && gem_file = find_gem_in_cache(gem, version)
-            puts "Located #{gem} in gem cache..."
-            installer.install gem_file
-          else
-            exception = e
-          end
-        rescue => e
-          exception = e
-        end
-        if installer.installed_gems.empty? && exception
-          puts "Failed to install gem '#{gem}' (#{exception.message})"
-        end
-        installer.installed_gems.each do |spec|
-          puts "Successfully installed #{spec.full_name}"
-        end
-      end
-    end
-
-    # Install a gem - looks in the system's gem cache instead of remotely;
-    # won't process rdoc or ri options.
-    def install_gem_from_cache(gem, options = {})
-      version = options.delete(:version)
-      Gem.configuration.update_sources = false
-      installer = Gem::DependencyInstaller.new(options.merge(:user_install => false))
-      exception = nil
-      begin
-        if gem_file = find_gem_in_cache(gem, version)
-          puts "Located #{gem} in gem cache..."
-          installer.install gem_file
-        else
-          raise Gem::InstallError, "Unknown gem #{gem}"
-        end
-      rescue Gem::InstallError => e
-        exception = e
-      end
-      if installer.installed_gems.empty? && exception
-        puts "Failed to install gem '#{gem}' (#{e.message})"
-      end
-      installer.installed_gems.each do |spec|
-        puts "Successfully installed #{spec.full_name}"
-      end
-    end
-
-    # Install a gem from source - builds and packages it first then installs it.
-    def install_gem_from_src(gem_src_dir, options = {})
-      raise SourcePathMissing unless File.directory?(gem_src_dir)
-      raise GemPathMissing if options[:install_dir] && !File.directory?(options[:install_dir])
-
-      gem_name = File.basename(gem_src_dir)
-      gem_pkg_dir = File.expand_path(File.join(gem_src_dir, 'pkg'))
-
-      # We need to use local bin executables if available.
-      thor = which('thor')
-      rake = which('rake')
-
-      # Handle pure Thor installation instead of Rake
-      if File.exists?(File.join(gem_src_dir, 'Thorfile'))
-        # Remove any existing packages.
-        FileUtils.rm_rf(gem_pkg_dir) if File.directory?(gem_pkg_dir)
-        # Create the package.
-        FileUtils.cd(gem_src_dir) { system("#{thor} :package") }
-        # Install the package using rubygems.
-        if package = Dir[File.join(gem_pkg_dir, "#{gem_name}-*.gem")].last
-          FileUtils.cd(File.dirname(package)) do
-            install_gem(File.basename(package), options.dup)
-            return
-          end
-        else
-          raise Merb::GemInstallError, "No package found for #{gem_name}"
-        end
-      # Handle standard installation through Rake
-      else
-        # Clean and regenerate any subgems for meta gems.
-        Dir[File.join(gem_src_dir, '*', 'Rakefile')].each do |rakefile|
-          FileUtils.cd(File.dirname(rakefile)) { system("#{rake} clobber_package; #{rake} package") }
-        end
-
-        # Handle the main gem install.
-        if File.exists?(File.join(gem_src_dir, 'Rakefile'))
-          # Remove any existing packages.
-          FileUtils.cd(gem_src_dir) { system("#{rake} clobber_package") }
-          # Create the main gem pkg dir if it doesn't exist.
-          FileUtils.mkdir_p(gem_pkg_dir) unless File.directory?(gem_pkg_dir)
-          # Copy any subgems to the main gem pkg dir.
-          Dir[File.join(gem_src_dir, '**', 'pkg', '*.gem')].each do |subgem_pkg|
-            FileUtils.cp(subgem_pkg, gem_pkg_dir)
-          end
-
-          # Finally generate the main package and install it; subgems
-          # (dependencies) are local to the main package.
-          FileUtils.cd(gem_src_dir) do
-            system("#{rake} package")
-            FileUtils.cd(gem_pkg_dir) do
-              if package = Dir[File.join(gem_pkg_dir, "#{gem_name}-*.gem")].last
-                # If the (meta) gem has it's own package, install it.
-                install_gem(File.basename(package), options.dup)
-              else
-                # Otherwise install each package seperately.
-                Dir["*.gem"].each { |gem| install_gem(gem, options.dup) }
-              end
-            end
-            return
-          end
-        end
-      end
-      raise Merb::GemInstallError, "No Rakefile found for #{gem_name}"
-    end
-
-    # Uninstall a gem.
-    def uninstall_gem(gem, options = {})
-      if options[:version] && !options[:version].is_a?(Gem::Requirement)
-        options[:version] = Gem::Requirement.new ["= #{options[:version]}"]
-      end
-
-      update_source_index(options[:install_dir]) if options[:install_dir]
-
-      Gem::Uninstaller.new(gem, options).uninstall
-    end
-
-    # Will prepend sudo on a suitable platform.
-    def sudo
-      @_sudo ||= begin
-        windows = PLATFORM =~ /win32|cygwin/ rescue nil
-        windows ? "" : "sudo "
-      end
-    end
-
-    # Use the local bin/* executables if available.
-    def which(executable)
-      if File.executable?(exec = File.join(Dir.pwd, 'bin', executable))
-        exec
-      else
-        executable
-      end
-    end
-
-    private
-
-    def find_gem_in_cache(gem, version)
-      spec = if version
-        version = Gem::Requirement.new ["= #{version}"] unless version.is_a?(Gem::Requirement)
-        Gem.source_index.find_name(gem, version).first
-      else
-        Gem.source_index.find_name(gem).sort_by { |g| g.version }.last
-      end
-      if spec && File.exists?(gem_file = "#{spec.installation_path}/cache/#{spec.full_name}.gem")
-        gem_file
-      end
-    end
-
-    def update_source_index(dir)
-      Gem.source_index.load_gems_in(File.join(dir, 'specifications'))
     end
 
   end
