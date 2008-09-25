@@ -585,17 +585,21 @@ class Merb < Thor
     alias :update :clone
 
     # Update all gem sources from git - based on the current branch.
-
+    # Optionally install the gems when --install is specified.
+    
     desc 'refresh', 'Pull fresh copies of all source gems'
+    method_options "--install" => :boolean
     def refresh
       repos = Dir["#{source_dir}/*"]
       repos.each do |repo|
         next unless File.directory?(repo) && File.exists?(File.join(repo, '.git'))
         FileUtils.cd(repo) do
-          puts "Refreshing #{File.basename(repo)}"
+          gem_name = File.basename(repo)
+          puts "Refreshing #{gem_name}"
           system %{git fetch}
           branch = `git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1) /'`[/\* (.+)/, 1]
           system %{git rebase #{branch}}
+          install(gem_name) if options[:install]
         end
       end
     end
@@ -703,15 +707,15 @@ class Merb < Thor
     method_options "--version"   => :optional,
                    "--merb-root" => :optional,
                    "--all" => :boolean
-    def uninstall(name)
+    def uninstall(name, version = nil)
       puts "Uninstalling #{name}..."
       opts = {}
       opts[:ignore] = true
       opts[:all] = options[:all]
       opts[:executables] = true
-      opts[:version] = options[:version]
+      opts[:version] = version || options[:version]
       opts[:install_dir] = gem_dir if gem_dir
-      Merb.uninstall_gem(name, opts)
+      Merb.uninstall_gem(name, opts.merge(options))
     rescue => e
       puts "Failed to uninstall #{name} (#{e.message})"
     end
@@ -739,7 +743,33 @@ class Merb < Thor
     rescue => e
       puts "Failed to wipe #{name} (#{e.message})"
     end
-
+    
+    # Refresh all local gems by uninstalling them and subsequently reinstall
+    # the latest versions from stable sources.
+    #
+    # A local ./gems dir is required, or --merb-root is given
+    # the gems will be uninstalled locally from that directory.
+    #
+    # Examples:
+    #
+    # thor merb:gems:refresh
+    # thor merb:gems:refresh --merb-root ./path/to/your/app
+    
+    desc 'refresh', 'Refresh all local gems by installing only the most recent versions'
+    method_options "--merb-root" => :optional
+    def refresh
+      if gem_dir
+        gem_names = []
+        local_gemspecs.each do |spec|
+          gem_names << spec.name unless gem_names.include?(spec.name)
+          uninstall(spec.name, spec.version)
+        end
+        gem_names.each { |name| install(name) }
+      else
+        puts "The refresh task only works with local gems"
+      end      
+    end
+    
     # This task should be executed as part of a deployment setup, where
     # the deployment system runs this after the app has been installed.
     # Usually triggered by Capistrano, God...
@@ -751,10 +781,9 @@ class Merb < Thor
     desc 'redeploy', 'Recreate any binary gems on the target deployment platform'
     def redeploy
       require 'tempfile' # for
-      if File.directory?(specs_dir = File.join(gem_dir, 'specifications')) &&
-        File.directory?(cache_dir = File.join(gem_dir, 'cache'))
-        Dir[File.join(specs_dir, '*.gemspec')].each do |gemspec_path|
-          unless (gemspec = Gem::Specification.load(gemspec_path)).extensions.empty?
+      if gem_dir && File.directory?(cache_dir = File.join(gem_dir, 'cache'))
+        local_gemspecs.each do |gemspec|
+          unless gemspec.extensions.empty?
             if File.exists?(gem_file = File.join(cache_dir, "#{gemspec.full_name}.gem"))
               gem_file_copy = File.join(Dir::tmpdir, File.basename(gem_file))
               # Copy the gem to a temporary file, because otherwise RubyGems/FileUtils
@@ -767,6 +796,20 @@ class Merb < Thor
         end
       else
         puts "No application local gems directory found"
+      end
+    end
+    
+    protected
+    
+    def local_gemspecs(directory = gem_dir)
+      if File.directory?(specs_dir = File.join(directory, 'specifications'))
+        Dir[File.join(specs_dir, '*.gemspec')].map do |gemspec_path|
+          gemspec = Gem::Specification.load(gemspec_path)
+          gemspec.loaded_from = gemspec_path
+          gemspec
+        end
+      else
+        []
       end
     end
 
