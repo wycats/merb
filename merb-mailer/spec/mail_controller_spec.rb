@@ -161,7 +161,7 @@ describe "A Merb Mail controller" do
     Merb::Mailer.deliveries.last.text.should == "TEXT\n/subprojects/core\nENDTEXT"
   end
 
-  it "delegates relative url generation to base controller" do
+  it "delegates absolute url generation to base controller" do
     controller = TestController.new(fake_request)
     TestMailController.new({ :subproject => "extlib" }, controller).
       dispatch_and_deliver :generates_absolute_url, :from => "foo@bar.com", :to => "foo@bar.com"
