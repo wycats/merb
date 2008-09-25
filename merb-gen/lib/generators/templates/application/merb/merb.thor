@@ -7,7 +7,6 @@ require 'yaml'
 # TODO
 # - pulling a specific UUID/Tag (gitspec hash) with clone/update
 # - a 'deploy' task (in addition to 'redeploy' ?)
-# - eventually take a --orm option for the 'merb-stack' type of tasks
 # - add merb:gems:refresh to refresh all gems (from specifications)
 # - merb:gems:uninstall should remove local bin/ entries
 
@@ -180,7 +179,7 @@ module GemManagement
   end
   
   # Create a modified executable wrapper in the specified bin directory.
-  def ensure_local_bin_for(gem_dir, bin_dir, *gems)
+  def ensure_bin_wrapper_for(gem_dir, bin_dir, *gems)
     if bin_dir && File.directory?(bin_dir)
       gems.each do |gem|
         if gemspec_path = Dir[File.join(gem_dir, 'specifications', "#{gem}-*.gemspec")].last
@@ -198,6 +197,8 @@ module GemManagement
       end
     end
   end
+
+  private
 
   def executable_wrapper(spec, bin_file_name)
     <<-TEXT
@@ -230,8 +231,6 @@ gem '#{spec.name}', version
 load '#{bin_file_name}'
 TEXT
   end
-
-  private
 
   def find_gem_in_cache(gem, version)
     spec = if version
@@ -336,12 +335,12 @@ module MerbThorHelper
     FileUtils.mkdir(path) unless File.exists?(path)
   end
   
-  def ensure_local_bin_for(*gems)
-    Merb.ensure_local_bin_for(gem_dir, bin_dir, *gems)
+  def ensure_bin_wrapper_for(*gems)
+    Merb.ensure_bin_wrapper_for(gem_dir, bin_dir, *gems)
   end
   
-  def ensure_local_bin_for_core_components
-    ensure_local_bin_for('merb-core', 'rake', 'rspec', 'thor', 'merb-gen')
+  def ensure_bin_wrapper_for_core_components
+    ensure_bin_wrapper_for('merb-core', 'rake', 'rspec', 'thor', 'merb-gen')
   end
   
 end
@@ -434,7 +433,7 @@ class Merb < Thor
           gems.install(dependency.name, dependency.version_requirements.to_s)
         end
         # if options[:binaries] is set this is already taken care of - skip it
-        ensure_local_bin_for_core_components unless options[:binaries]
+        ensure_bin_wrapper_for_core_components unless options[:binaries]
       else
         puts "No configuration file found at #{config_file}"
         puts "Please run merb:dependencies:configure first."
@@ -504,22 +503,40 @@ class Merb < Thor
 
   # Install a Merb stack from stable RubyForge gems. Optionally install a
   # suitable Rack adapter/server when setting --adapter to one of the
-  # following: mongrel, emongrel, thin or ebb.
+  # following: mongrel, emongrel, thin or ebb. Or with --orm, install a
+  # supported ORM: datamapper, activerecord or sequel 
 
   desc 'stable', 'Install extlib, merb-core and merb-more from rubygems'
   method_options "--merb-root" => :optional,
-                 "--adapter"   => :optional
+                 "--adapter"   => :optional,
+                 "--orm"       => :optional
   def stable
-    adapters = %w[mongrel emongrel thin ebb]
+    adapters = { 
+      'mongrel'       => ['mongrel'], 
+      'emongrel'      => ['emongrel'],
+      'thin'          => ['thin'], 
+      'ebb'           => ['ebb']
+    }
+    orms = {
+      'datamapper'    => ['dm-core'], 
+      'activerecord'  => ['activerecord'],
+      'sequel'        => ['sequel']
+    }
     stable = Stable.new
     stable.options = options
     if stable.core && stable.more
       puts "Installed extlib, merb-core and merb-more"
-      if options[:adapter] && adapters.include?(options[:adapter]) &&
-        stable.refresh_from_gems(options[:adapter])
+      if options[:adapter] && adapters[options[:adapter]]
+        stable.refresh_from_gems(*adapters[options[:adapter]])
         puts "Installed #{options[:adapter]}"
       elsif options[:adapter]
-        puts "Please specify one of the following adapters: #{adapters.join(' ')}"
+        puts "Please specify one of the following adapters: #{adapters.keys.join(' ')}"
+      end
+      if options[:orm] && orms[options[:orm]]
+        stable.refresh_from_gems(*orms[options[:orm]])
+        puts "Installed #{options[:orm]}"
+      elsif options[:orm]
+        puts "Please specify one of the following orms: #{orms.keys.join(' ')}"
       end
     end
   end
@@ -547,14 +564,14 @@ class Merb < Thor
     method_options "--merb-root" => :optional
     def core
       refresh_from_gems 'extlib', 'merb-core'
-      ensure_local_bin_for('merb-core', 'rake', 'rspec', 'thor')
+      ensure_bin_wrapper_for('merb-core', 'rake', 'rspec', 'thor')
     end
 
     desc 'more', 'Install merb-more from rubygems'
     method_options "--merb-root" => :optional
     def more
       refresh_from_gems 'merb-more'
-      ensure_local_bin_for('merb-gen')
+      ensure_bin_wrapper_for('merb-gen')
     end
 
     desc 'plugins', 'Install merb-plugins from rubygems'
@@ -638,7 +655,7 @@ class Merb < Thor
                    "--install"   => :boolean
     def core
       refresh_from_source 'thor', 'extlib', 'merb-core'
-      ensure_local_bin_for('merb-core', 'rake', 'rspec', 'thor')
+      ensure_bin_wrapper_for('merb-core', 'rake', 'rspec', 'thor')
     end
 
     desc 'more', 'Update merb-more from git HEAD'
@@ -647,7 +664,7 @@ class Merb < Thor
                    "--install"   => :boolean
     def more
       refresh_from_source 'merb-more'
-      ensure_local_bin_for('merb-gen')
+      ensure_bin_wrapper_for('merb-gen')
     end
 
     desc 'plugins', 'Update merb-plugins from git HEAD'
@@ -682,8 +699,6 @@ class Merb < Thor
       custom_repos = Merb.repos.keys - Merb.default_repos.keys
       refresh_from_source *custom_repos
     end
-
-    private
 
     # Pull from git and optionally install the resulting gems.
     def refresh_from_source(*components)
@@ -733,7 +748,7 @@ class Merb < Thor
       puts "Installing #{name}..."
       gem_src_dir = File.join(source_dir, name)
       opts = {}
-      opts[:install_dir] = gem_dir   if gem_dir
+      opts[:install_dir] = gem_dir if gem_dir
       Merb.install_gem_from_src(gem_src_dir, opts)
     rescue Merb::SourcePathMissing
       puts "Missing rubygem source path: #{gem_src_dir}"
@@ -871,7 +886,7 @@ class Merb < Thor
       opts[:cache] = options[:cache] if gem_dir
       opts[:install_dir] = gem_dir   if gem_dir
       Merb.install_gem(name, opts)
-      ensure_local_bin_for(name) if options[:binaries]
+      ensure_bin_wrapper_for(name) if options[:binaries]
     rescue => e
       puts "Failed to install #{name} (#{e.message})"
     end
@@ -908,7 +923,7 @@ class Merb < Thor
         opts[:cache] = options[:cache]
       end
       Merb.install_gem(name, opts)
-      ensure_local_bin_for(name) if options[:binaries]
+      ensure_bin_wrapper_for(name) if options[:binaries]
     rescue => e
       puts "Failed to update #{name} (#{e.message})"
     end
@@ -935,10 +950,7 @@ class Merb < Thor
                    "--all" => :boolean
     def uninstall(name, version = nil)
       puts "Uninstalling #{name}..."
-      opts = {}
-      opts[:ignore] = true
-      opts[:all] = options[:all]
-      opts[:executables] = true
+      opts = { :ignore => true, :executables => true, :all => options[:all] }
       opts[:version] = version || options[:version]
       opts[:install_dir] = gem_dir if gem_dir
       Merb.uninstall_gem(name, opts.merge(options))
@@ -960,10 +972,7 @@ class Merb < Thor
     method_options "--merb-root" => :optional
     def wipe(name)
       puts "Wiping #{name}..."
-      opts = {}
-      opts[:ignore] = true
-      opts[:all] = true
-      opts[:executables] = true
+      opts = { :ignore => true, :all => true, :executables => true }
       opts[:install_dir] = gem_dir if gem_dir
       Merb.uninstall_gem(name, opts)
     rescue => e
@@ -994,7 +1003,7 @@ class Merb < Thor
         end
         gem_names.each { |name| install(name) }
         # if options[:binaries] is set this is already taken care of - skip it
-        ensure_local_bin_for_core_components unless options[:binaries]
+        ensure_bin_wrapper_for_core_components unless options[:binaries]
       else
         puts "The refresh task only works with local gems"
       end      
@@ -1028,7 +1037,7 @@ class Merb < Thor
         # the target platform - we're using Gem.ruby not 'env ruby';
         # be sure to execute thor with the right Ruby binary:
         # /path/to/exotic/ruby -S thor merb:gems:redeploy
-        ensure_local_bin_for_core_components
+        ensure_bin_wrapper_for_core_components
       else
         puts "No application local gems directory found"
       end
@@ -1075,7 +1084,7 @@ class Merb < Thor
       Merb.install_gem('thor',  :cache => true, :install_dir => gem_dir)
       Merb.install_gem('rake',  :cache => true, :install_dir => gem_dir)
       Merb.install_gem('rspec', :cache => true, :install_dir => gem_dir)
-      ensure_local_bin_for('thor', 'rake', 'rspec')
+      ensure_bin_wrapper_for('thor', 'rake', 'rspec')
     end
 
     # Get the latest merb.thor and install it into the working dir.

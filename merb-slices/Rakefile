@@ -47,8 +47,10 @@ Rake::GemPackageTask.new(spec) do |pkg|
 end
 
 desc "Install the gem"
-task :install => [:package] do
-  sh install_command(GEM_NAME, GEM_VERSION)
+task :install do
+  Merb::GemHelper.install_gem_from_src(File.dirname(__FILE__))
+  
+  # sh install_command(GEM_NAME, GEM_VERSION)
 end
 
 namespace :jruby do
