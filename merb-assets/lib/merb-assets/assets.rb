@@ -169,8 +169,8 @@ module Merb
       # *files<String>:: Names of the files to bundle.
       def initialize(name, *files)
         @bundle_name = name == true ? :all : name
-        @bundle_filename = asset_path(self.class.asset_type, @bundle_name, true)
-        @files = files.map { |f| asset_path(self.class.asset_type, f, true) }
+        @bundle_filename = Merb.root / asset_path(self.class.asset_type, @bundle_name, true)
+        @files = files.map { |f| Merb.root / asset_path(self.class.asset_type, f, true) }
       end
       
       # Creates the new bundled file, executing all the callbacks.

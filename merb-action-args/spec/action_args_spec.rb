@@ -1,5 +1,13 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
+describe "ActionArgs" do
+  
+  it "should not accidently introduce any methods as controller actions" do
+    Merb::Controller.callable_actions.should be_empty
+  end
+  
+end
+
 describe Merb::AbstractController do
   
   it "should be able to accept Action Arguments" do

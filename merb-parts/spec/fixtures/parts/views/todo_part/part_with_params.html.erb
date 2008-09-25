@@ -1,3 +1,7 @@
 <% params.each do |param, value| %>
-  <%= param %> = <%= value %>
+  <% if value.is_a? Array %>
+    <%= param %> = <%= value.join(", ") %>
+  <% else %>
+    <%= param %> = <%= value %>
+  <% end %>
 <% end %>

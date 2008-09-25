@@ -2,6 +2,7 @@
 require 'rubygems'
 require 'rubygems/dependency_installer'
 require 'rubygems/uninstaller'
+require 'rubygems/dependency'
 require 'thor'
 require 'fileutils'
 require 'yaml'
@@ -106,7 +107,6 @@ TEXT
 end
 
 # TODO
-# - a task to figure out an app's dependencies
 # - pulling a specific UUID/Tag (gitspec hash) with clone/update
 # - a 'deploy' task (in addition to 'redeploy' ?)
 # - eventually take a --orm option for the 'merb-stack' type of tasks
@@ -126,6 +126,137 @@ class Merb < Thor
 
   class GemUninstallError < Exception
   end
+  
+  class Dependencies < Thor
+
+    include MerbThorHelper
+    
+    # List all dependencies by extracting them from the actual application; 
+    # will differentiate between locally available gems and system gems. 
+    # Local gems will be shown with the installed gem version numbers.
+    
+    desc 'list', 'List all application dependencies'
+    method_options "--merb-root" => :optional,
+                   "--local"     => :boolean,
+                   "--system"    => :boolean
+    def list
+      partitioned = { :local => [], :system => [] }
+      extract_dependencies.each do |dependency|
+        if gem_dir && !(versions = find_dependency_versions(dependency)).empty?
+          partitioned[:local]  << "#{dependency} [#{versions.join(', ')}]"
+        else
+          partitioned[:system] << "#{dependency}"
+        end
+      end
+      none = options[:system].nil? && options[:local].nil?
+      if (options[:system] || none) && !partitioned[:system].empty?
+        puts "System dependencies:"
+        partitioned[:system].each { |str| puts "- #{str}" }
+      end
+      if (options[:local] || none) && !partitioned[:local].empty?
+        puts "Local dependencies:"
+        partitioned[:local].each  { |str| puts "- #{str}" }
+      end
+    end
+    
+    # Retrieve all application dependencies and store them in a local
+    # configuration file at ./config/dependencies.yml
+    # 
+    # The format of this YAML file is as follows:
+    # - merb_helpers (>= 0, runtime)
+    # - merb-slices (> 0.9.4, runtime)
+    
+    desc 'configure', 'Retrieve and store dependencies in ./config/dependencies.yml'
+    method_options "--merb-root" => :optional,
+                   "--force"     => :boolean
+    def configure
+      entries = extract_dependencies.map { |d| d.to_s }
+      FileUtils.mkdir_p(config_dir) unless File.directory?(config_dir)
+      config = YAML.dump(entries) 
+      if File.exists?(config_file) && !options[:force]
+        puts "File already exists! Use --force to overwrite."
+      else
+        File.open(config_file, 'w') { |f| f.write config }
+        puts "Written #{config_file}:"
+      end
+      puts config
+    rescue  
+      puts "Failed to write to #{config_file}"  
+    end
+    
+    # Install the gems listed in dependencies.yml from RubyForge (stable).
+    
+    desc 'install', 'Install the gems listed in ./config/dependencies.yml'
+    method_options "--merb-root" => :optional
+    def install
+      if File.exists?(config_file)
+        dependencies = parse_dependencies_yaml(File.read(config_file))
+        gems = Gems.new
+        gems.options = options
+        dependencies.each do |dependency|
+          gems.install(dependency.name, dependency.version_requirements.to_s)
+        end
+      else
+        puts "No configuration file found at #{config_file}"
+        puts "Please run merb:dependencies:configure first."
+      end
+    end    
+    
+    protected
+    
+    def config_dir
+      @_config_dir ||= File.join(working_dir, 'config')
+    end
+    
+    def config_file
+      @_config_file ||= File.join(config_dir, 'dependencies.yml')
+    end
+    
+    # Find local gems and return matched version numbers.
+    def find_dependency_versions(dependency)
+      versions = []
+      specs = Dir[File.join(gem_dir, 'specifications', "#{dependency.name}-*.gemspec")]
+      unless specs.empty?
+        specs.inject(versions) do |versions, gemspec_path|
+          versions << gemspec_path[/-([\d\.]+)\.gemspec$/, 1]
+        end
+      end
+      versions.sort.reverse
+    end
+    
+    # Extract the runtime dependencies by starting the application in runner mode.
+    def extract_dependencies
+      FileUtils.cd(working_dir) do
+        cmd = ["require 'yaml';"]
+        cmd << "dependencies = Merb::BootLoader::Dependencies.dependencies"
+        cmd << "entries = dependencies.map { |d| d.to_s }"
+        cmd << "puts YAML.dump(entries)"
+        output = `merb -r "#{cmd.join("\n")}"`
+        if index = (lines = output.split(/\n/)).index('--- ')
+          yaml = lines.slice(index, lines.length - 1).join("\n")
+          return parse_dependencies_yaml(yaml)
+        end
+      end
+      return []
+    end
+    
+    # Parse the basic YAML config data, and process Gem::Dependency output.
+    # Formatting example: merb_helpers (>= 0.9.8, runtime)
+    def parse_dependencies_yaml(yaml)
+      dependencies = []
+      entries = YAML.load(yaml) rescue []
+      entries.each do |entry|
+        if matches = entry.match(/^(\S+) \(([^,]+)?, ([^\)]+)\)/)
+          name, version_req, type = matches.captures
+          dependencies << Gem::Dependency.new(name, version_req, type.to_sym)
+        else
+          puts "Invalid entry: #{entry}"
+        end
+      end
+      dependencies
+    end
+    
+  end  
 
   # Install a Merb stack from stable RubyForge gems. Optionally install a
   # suitable Rack adapter/server when setting --adapter to one of the
@@ -230,6 +361,7 @@ class Merb < Thor
     edge.options = options
     edge.core
     edge.more
+    edge.custom
   end
 
   class Edge < Thor
@@ -296,6 +428,15 @@ class Merb < Thor
                    "--install"   => :boolean
     def dm_more
       refresh_from_source 'extlib', 'dm-core', 'dm-more'
+    end
+
+    desc 'custom', 'Update all the custom repos from git HEAD'
+    method_options "--merb-root" => :optional,
+                   "--sources"   => :optional,
+                   "--install"   => :boolean
+    def custom
+      custom_repos = Merb.repos.keys - Merb.default_repos.keys
+      refresh_from_source *custom_repos
     end
 
     private
@@ -422,7 +563,7 @@ class Merb < Thor
 
     # Update a specific gem source directory from git. See #clone.
 
-    desc 'update REPOSITORY_URL', 'Update a git repository in ./src'
+    desc 'update REPOSITORY', 'Update a git repository in ./src'
     alias :update :clone
 
     # Update all gem sources from git - based on the current branch.
@@ -475,10 +616,10 @@ class Merb < Thor
                    "--merb-root" => :optional,
                    "--cache"     => :boolean,
                    "--binaries"  => :boolean
-    def install(name)
+    def install(name, version = nil)
       puts "Installing #{name}..."
       opts = {}
-      opts[:version] = options[:version]
+      opts[:version] = version || options[:version]
       opts[:cache] = options[:cache] if gem_dir
       opts[:install_dir] = gem_dir   if gem_dir
       Merb.install_gem(name, opts)
@@ -614,34 +755,38 @@ class Merb < Thor
   end
 
   class << self
+    
+    # Default Git repositories
+    def default_repos
+      @_default_repos ||= { 
+        'merb-core'     => "git://github.com/wycats/merb-core.git",
+        'merb-more'     => "git://github.com/wycats/merb-more.git",
+        'merb-plugins'  => "git://github.com/wycats/merb-plugins.git",
+        'extlib'        => "git://github.com/sam/extlib.git",
+        'dm-core'       => "git://github.com/sam/dm-core.git",
+        'dm-more'       => "git://github.com/sam/dm-more.git",
+        'thor'          => "git://github.com/wycats/thor.git" 
+      }
+    end
 
-    # Default Git repositories - pass source_config option to load a yaml 
-    # configuration file - defaults to ~/.merb/git-sources.yml 
-    # which need to create yourself if desired. 
+    # Git repository sources - pass source_config option to load a yaml 
+    # configuration file - defaults to ./config/git-sources.yml and
+    # ~/.merb/git-sources.yml - which need to create yourself if desired. 
     #
     # Example of contents:
     #
     # merb-core: git://github.com/myfork/merb-core.git
     # merb-more: git://github.com/myfork/merb-more.git
     def repos(source_config = nil)
-      @_repos ||= begin
-        repositories = {
-          'merb-core'     => "git://github.com/wycats/merb-core.git",
-          'merb-more'     => "git://github.com/wycats/merb-more.git",
-          'merb-plugins'  => "git://github.com/wycats/merb-plugins.git",
-          'extlib'        => "git://github.com/sam/extlib.git",
-          'dm-core'       => "git://github.com/sam/dm-core.git",
-          'dm-more'       => "git://github.com/sam/dm-more.git",
-          'thor'          => "git://github.com/wycats/thor.git"
-          }
+      source_config ||= begin
+        local_config = File.join(Dir.pwd, 'config', 'git-sources.yml')
+        user_config  = File.join(ENV["HOME"] || ENV["APPDATA"], '.merb', 'git-sources.yml')
+        File.exists?(local_config) ? local_config : user_config
       end
-      source_config ||= File.join(ENV["HOME"] || ENV["APPDATA"], '.merb', 'git-sources.yml')
-      # it should work with ~/.merb as well
-      source_config = File.expand_path(source_config)
       if source_config && File.exists?(source_config)
-        @_repos.merge(YAML.load(File.read(source_config)))
+        default_repos.merge(YAML.load(File.read(source_config)))
       else
-        @_repos
+        default_repos
       end
     end
 
