@@ -6,21 +6,21 @@ module Merb
   # * Create a MailController subclass with actions and templates.
   # * Call the MailController from another Controller via the send_mail method.
   #
-  # First, create a file in app/mailers that subclasses Merb::MailController. 
+  # First, create a file in app/mailers that subclasses Merb::MailController.
   # The actions in this controller will do nothing but render mail.
   #
   #   # app/mailers/article_mailer.rb
   #   class ArticleMailer < Merb::MailController
-  # 
+  #
   #     def notify
   #       @user = params[:user]
   #       render_mail
   #     end
-  # 
+  #
   #   end
   #
-  # You also can access the params hash for values passed with the 
-  # Controller.send_mail method. See also the documentation for 
+  # You also can access the params hash for values passed with the
+  # Controller.send_mail method. See also the documentation for
   # render_mail to see all the ways it can be called.
   #
   # Create a template in a subdirectory of app/mailers/views that corresponds
@@ -28,10 +28,10 @@ module Merb
   #
   #   # app/mailers/views/article_mailer/notify.text.erb
   #   Hey, <%= @user.name %>,
-  #   
+  #
   #   We're running a sale on dog bones!
   #
-  # Finally, call the Controller.send_mail method from a standard 
+  # Finally, call the Controller.send_mail method from a standard
   # Merb controller.
   #
   #   class Articles < Application
@@ -47,13 +47,13 @@ module Merb
   #       render
   #     end
   #
-  #   end  
+  #   end
   #
   # Note: If you don't pass a fourth argument to Controller.send_mail,
   # the controller's params will be sent to the MailController subclass
-  # as params. However, you can explicitly send a hash of objects that 
-  # will populate the params hash instead. In either case, you must 
-  # set instance variables in the MailController's actions if you 
+  # as params. However, you can explicitly send a hash of objects that
+  # will populate the params hash instead. In either case, you must
+  # set instance variables in the MailController's actions if you
   # want to use them in the MailController's views.
   #
   # The MailController class is very powerful. You can:
@@ -91,15 +91,15 @@ module Merb
     def _template_location(action, type = nil, controller = controller_name)
       "#{controller}/#{action}.#{type}"
     end
-    
-    # The location to look for a template and mime-type. This is overridden 
-    # from AbstractController, which defines a version of this that does not 
+
+    # The location to look for a template and mime-type. This is overridden
+    # from AbstractController, which defines a version of this that does not
     # involve mime-types.
     #
     # ==== Parameters
-    # template<String>:: 
+    # template<String>::
     #    The absolute path to a template - without mime and template extension.
-    #    The mime-type extension is optional - it will be appended from the 
+    #    The mime-type extension is optional - it will be appended from the
     #    current content type if it hasn't been added already.
     # type<~to_s>::
     #    The mime-type of the template that will be rendered. Defaults to nil.
@@ -126,7 +126,7 @@ module Merb
     #
     # ==== Parameters
     # klass<Class>::
-    #   The Merb::MailController inheriting from the base class.  
+    #   The Merb::MailController inheriting from the base class.
     def self.inherited(klass)
       super
       klass._template_root = Merb.dir_for(:mailer) / "views" unless self._template_root
@@ -172,7 +172,7 @@ module Merb
     # "foo", this is identical to render_mail :foo.
     #
     #   render_mail :foo
-    # 
+    #
     # checks for foo.html.ext and foo.text.ext and applies them as appropriate.
     #
     #   render_mail :action => {:html => :foo, :text => :bar}
@@ -213,13 +213,13 @@ module Merb
       @_missing_templates = false # used to make sure that at least one template was found
       # If the options are not a hash, normalize to an action hash
       options = {:action => {:html => options, :text => options}} if !options.is_a?(Hash)
-  
+
       # Take care of the options
       opts_hash = {}
       opts = options.dup
       actions = opts.delete(:action) if opts[:action].is_a?(Hash)
       templates = opts.delete(:template) if opts[:template].is_a?(Hash)
-  
+
       # Prepare the options hash for each format
       # We need to delete anything relating to the other format here
       # before we try to render the template.
@@ -228,7 +228,7 @@ module Merb
         opts_hash[fmt] ||= actions[fmt] if actions && actions[fmt]
         opts_hash[:template] = templates[fmt] if templates && templates[fmt]
       end
-        
+
       # Send the result to the mailer
       { :html => "rawhtml=", :text => "text="}.each do |fmt,meth|
         begin
@@ -252,14 +252,21 @@ module Merb
 
     # Mimic the behavior of absolute_url in AbstractController
     # but use @base_controller.request
-    def absolute_url(name, rparams={})
-      req = @base_controller.request
-      uri =  req.protocol + req.host + url(name, rparams)
+    def url(name, *args)
+      self.base_controller.request.generate_url(name, *args)
+    end
+
+    alias_method :relative_url, :url
+
+    # Mimic the behavior of absolute_url in AbstractController
+    # but use @base_controller.request
+    def absolute_url(name, *args)
+      self.base_controller.request.generate_absolute_url(name, *args)
     end
 
     # Attaches a file or multiple files to an email. You call this from a
     # method in your MailController (including a before filter).
-    # 
+    #
     # ==== Parameters
     # file_or_files<File, Array[File]>:: File(s) to attach.
     # filename<String>::
@@ -271,17 +278,17 @@ module Merb
     # ==== Examples
     #   attach File.open("foo")
     #   attach [File.open("foo"), File.open("bar")]
-    # 
+    #
     # If you are passing an array of files, you should use an array of the
     # allowed parameters:
-    # 
+    #
     #   attach [[File.open("foo"), "bar", "text/html"], [File.open("baz"),
     #     "bat", "text/css"]
-    # 
+    #
     #  which would attach two files ("foo" and "baz" in the filesystem) as
     # "bar" and "bat" respectively. It would also set the mime-type as
     # "text/html" and "text/css" respectively.
-    def attach( file_or_files, filename = file_or_files.is_a?(File) ? File.basename(file_or_files.path) : nil, 
+    def attach( file_or_files, filename = file_or_files.is_a?(File) ? File.basename(file_or_files.path) : nil,
       type = nil, headers = nil)
       @mailer.attach(file_or_files, filename, type, headers)
     end
@@ -305,7 +312,7 @@ module Merb
       @mailer         = self.class._mailer_klass.new(mail_params)
       @mail           = @mailer.mail
       @method         = method
-  
+
       # dispatch and render use params[:action], so set it
       self.action_name = method
 
