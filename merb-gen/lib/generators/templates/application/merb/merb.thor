@@ -363,6 +363,7 @@ class Merb < Thor
       'extlib'        => "git://github.com/sam/extlib.git",
       'dm-core'       => "git://github.com/sam/dm-core.git",
       'dm-more'       => "git://github.com/sam/dm-more.git",
+      'do'            => "git://github.com/sam/do.git",
       'thor'          => "git://github.com/wycats/thor.git" 
     }
   end
