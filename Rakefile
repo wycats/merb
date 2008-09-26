@@ -157,10 +157,9 @@ namespace :release do
   desc "Publish Merb More gem to RubyForge, one by one."
   task :merb_more_gems => [ :build_gems ] do
     gems.each do |gem|
-      Dir.chdir(gem){ sh "rake release" }
+      Dir.chdir(gem){ sh "#{Gem.ruby} -S rake release" }
     end
   end
-
 
   desc "Publish Merb release files to RubyForge."
   task :merb => [ :package ] do
