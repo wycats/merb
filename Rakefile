@@ -63,41 +63,45 @@ Rake::GemPackageTask.new(merb_spec) do |package|
   package.gem_spec = merb_spec
 end
 
-gem_home = ENV['GEM_HOME'] ? "GEM_HOME=#{ENV['GEM_HOME']}" : ""
-desc "Install it all"
-task :install => [:install_gems, :package] do
-  sh %{#{sudo} gem install #{install_home} --local pkg/merb-more-#{Merb::MORE_VERSION}.gem  --no-update-sources}
-  sh %{#{sudo} gem install #{install_home} --local pkg/merb-#{Merb::MORE_VERSION}.gem --no-update-sources}
+desc "Install all gems"
+task :install do
+  Merb::RakeHelper.install('merb-more', :version => Merb::MORE_VERSION)
+  Merb::RakeHelper.install_package("pkg/merb-#{Merb::MORE_VERSION}.gem")
+end
+
+desc "Uninstall all gems"
+task :uninstall => :uninstall_gems do
+  Merb::RakeHelper.uninstall('merb-more', :version => Merb::MORE_VERSION)
+  Merb::RakeHelper.uninstall('merb', :version => Merb::MORE_VERSION)
 end
 
 desc "Build the merb-more gems"
 task :build_gems do
   gems.each do |dir|
-    Dir.chdir(dir){ sh "rake package" }
+    Dir.chdir(dir) { sh "#{Gem.ruby} -S rake package" }
   end
 end
 
 desc "Install the merb-more sub-gems"
 task :install_gems do
   gems.each do |dir|
-    Dir.chdir(dir){ sh "rake install" }
+    Dir.chdir(dir) { sh "#{Gem.ruby} -S rake install" }
   end
 end
 
 desc "Uninstall the merb-more sub-gems"
 task :uninstall_gems do
-  gems.each do |sub_gem|
-    sh %{#{sudo} gem uninstall #{sub_gem}}
+  gems.each do |dir|
+    Dir.chdir(dir) { sh "#{Gem.ruby} -S rake uninstall" }
   end
 end
 
 desc "Clobber the merb-more sub-gems"
 task :clobber_gems do
-  gems.each do |gem|
-    Dir.chdir(gem){ sh "rake clobber" }
+  gems.each do |dir|
+    Dir.chdir(dir) { sh "#{Gem.ruby} -S rake clobber" }
   end
 end
-
 
 task :package => ["lib/merb-more.rb"]
 desc "Create merb-more.rb"
@@ -121,7 +125,6 @@ task :bundle => [:package, :build_gems] do
     sh %{cp #{gem}/pkg/#{gem}-#{Merb::MORE_VERSION}.gem bundle/}
   end
 end
-
 
 RUBY_FORGE_PROJECT = "merb"
 
