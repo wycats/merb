@@ -54,6 +54,13 @@ task :uninstall do
   Merb::RakeHelper.uninstall(GEM_NAME, :version => GEM_VERSION)
 end
 
+desc "Create a gemspec file"
+task :gemspec do
+  File.open("#{GEM_NAME}.gemspec", "w") do |file|
+    file.puts spec.to_ruby
+  end
+end
+
 desc "Run all examples"
 Spec::Rake::SpecTask.new('spec') do |t|
   t.spec_opts  = ["-cfs"]
