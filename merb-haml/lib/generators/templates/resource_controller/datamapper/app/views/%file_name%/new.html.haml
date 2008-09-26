@@ -6,7 +6,7 @@
 
 = error_messages_for :<%= singular_model %>
 
-= form_for(@<%= singular_model %>, :action => url(:<%= plural_model %>) ) do |f|
+= form_for(@<%= singular_model %>, :action => url(:<%= plural_model %>) ) do
 <% for property in properties.select{|p| !p.key?} -%>
   %p
     %b

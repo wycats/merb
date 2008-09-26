@@ -3,7 +3,7 @@ require 'rake/gempackagetask'
 require 'merb-core/version'
 require 'merb-core/tasks/merb_rake_helper'
 
-NAME = "very-thin-test-slice"
+GEM_NAME = "very-thin-test-slice"
 AUTHOR = "Your Name"
 EMAIL = "Your Email"
 HOMEPAGE = "http://merbivore.com/"
@@ -12,7 +12,7 @@ GEM_VERSION = "0.9.8"
 
 spec = Gem::Specification.new do |s|
   s.rubyforge_project = 'merb'
-  s.name = NAME
+  s.name = GEM_NAME
   s.version = GEM_VERSION
   s.platform = Gem::Platform::RUBY
   s.has_rdoc = true
@@ -31,16 +31,12 @@ Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
 
-desc "Install VeryThinTestSlice as a gem"
-task :install => [:package] do
-  sh %{#{sudo} gem install pkg/#{NAME}-#{GEM_VERSION} --no-update-sources}
+desc "Install the gem"
+task :install do
+  Merb::RakeHelper.install(GEM_NAME, :version => GEM_VERSION)
 end
 
-namespace :jruby do
-
-  desc "Run :package and install the resulting .gem with jruby"
-  task :install => :package do
-    sh %{#{sudo} jruby -S gem install #{install_home} pkg/#{NAME}-#{GEM_VERSION}.gem --no-rdoc --no-ri}
-  end
-  
+desc "Uninstall the gem"
+task :uninstall do
+  Merb::RakeHelper.uninstall(GEM_NAME, :version => GEM_VERSION)
 end

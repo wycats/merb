@@ -52,10 +52,10 @@ if defined?(Merb::Plugins)
     # @note prefix your named routes with :<%= symbol_name %>_
     #   to avoid potential conflicts with global named routes.
     def self.setup_router(scope)
-      # example where the slice is mounted at /<%= base_name %>
-      scope.match.to(:controller => 'main', :action => 'index').name(:home)
       # example of a named route
       scope.match('/index(.:format)').to(:controller => 'main', :action => 'index').name(:index)
+      # the slice is mounted at /<%= base_name %> - note that it comes before default_routes
+      scope.match.to(:controller => 'main', :action => 'index').name(:home)
     end
     
   end
