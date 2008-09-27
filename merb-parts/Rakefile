@@ -67,5 +67,5 @@ Spec::Rake::SpecTask.new('spec') do |t|
   t.spec_files = FileList['spec/**/*_spec.rb']
 end
 
-desc 'Default: run spec examples.'
+desc 'Default: run spec examples'
 task :default => 'spec'

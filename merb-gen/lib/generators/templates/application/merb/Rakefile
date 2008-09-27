@@ -26,7 +26,7 @@ task :merb_env do
   Merb.start_environment(:environment => init_env, :adapter => 'runner')
 end
 
-desc 'Default: run spec examples.'
+desc 'Default: run spec examples'
 task :default => 'spec'
 
 ##############################################################################
