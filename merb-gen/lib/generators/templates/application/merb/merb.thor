@@ -119,7 +119,7 @@ module GemManagement
       if package = Dir[File.join(gem_pkg_dir, "#{gem_name}-*.gem")].last
         FileUtils.cd(File.dirname(package)) do
           install_gem(File.basename(package), options.dup)
-          return
+          return true
         end
       else
         raise Gem::InstallError, "No package found for #{gem_name}"
@@ -158,7 +158,7 @@ module GemManagement
               Dir["*.gem"].each { |gem| install_gem(gem, options.dup) }
             end
           end
-          return
+          return true
         end
       end
     end
@@ -256,6 +256,8 @@ end
 ##############################################################################
 
 module MerbThorHelper
+
+  DO_ADAPTERS = %w[mysql postgres sqlite]
 
   private
 
@@ -370,7 +372,8 @@ class Merb < Thor
       'dm-core'       => "git://github.com/sam/dm-core.git",
       'dm-more'       => "git://github.com/sam/dm-more.git",
       'do'            => "git://github.com/sam/do.git",
-      'thor'          => "git://github.com/wycats/thor.git" 
+      'thor'          => "git://github.com/wycats/thor.git",
+      'minigems'      => "git://github.com/fabien/minigems.git"
     }
   end
 
@@ -602,7 +605,25 @@ class Merb < Thor
     def dm_more
       refresh_from_gems 'extlib', 'dm-core', 'dm-more'
     end
-
+    
+    desc 'do [ADAPTER]', 'Install data_objects and optional adapter'
+    method_options "--merb-root" => :optional
+    def do(adapter = nil)
+      refresh_from_gems 'data_objects'
+      if adapter && DO_ADAPTERS.include?(adapter)
+        refresh_from_gems "do_#{adapter}"
+      elsif adapter
+        puts "Unknown DO adapter '#{adapter}'"
+      end
+    end
+    
+    desc 'minigems', 'Install minigems (system-wide)'
+    def minigems
+      if Merb.install_gem('minigems')
+        system("#{Gem.ruby} -S minigem install")
+      end
+    end
+    
     # Pull from RubyForge and install.
     def refresh_from_gems(*components)
       gems = Gems.new
@@ -701,6 +722,22 @@ class Merb < Thor
     def dm_more
       refresh_from_source 'extlib', 'dm-core', 'dm-more'
     end
+    
+    desc 'do [ADAPTER]', 'Install data_objects and optional adapter'
+    method_options "--merb-root" => :optional,
+                   "--sources"   => :optional,
+                   "--install"   => :boolean
+    def do(adapter = nil)
+      source = Source.new
+      source.options = options
+      source.clone('do')
+      source.install('do/data_objects')
+      if adapter && DO_ADAPTERS.include?(adapter)
+        source.install("do/do_#{adapter}")
+      elsif adapter
+        puts "Unknown DO adapter '#{adapter}'"
+      end
+    end
 
     desc 'custom', 'Update all the custom repos from git HEAD'
     method_options "--merb-root" => :optional,
@@ -709,6 +746,18 @@ class Merb < Thor
     def custom
       custom_repos = Merb.repos.keys - Merb.default_repos.keys
       refresh_from_source *custom_repos
+    end
+
+    desc 'minigems', 'Install minigems from git HEAD (system-wide)'
+    method_options "--merb-root" => :optional,
+                   "--sources"   => :optional
+    def minigems
+      source = Source.new
+      source.options = options
+      source.clone('minigems')
+      if Merb.install_gem_from_src(File.join(source_dir, 'minigems'))
+        system("#{Gem.ruby} -S minigem install")
+      end
     end
 
     # Pull from git and optionally install the resulting gems.
