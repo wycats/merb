@@ -1,9 +1,8 @@
 require 'rubygems'
 require 'rake/gempackagetask'
-require 'rubygems/specification'
-require 'date'
-require 'merb-core/version'
-require 'merb-core/tasks/merb_rake_helper'
+
+require 'merb-core'
+require 'merb-core/tasks/merb'
 
 GEM_NAME = "<%= base_name %>"
 GEM_VERSION = "0.0.1"

@@ -21,10 +21,13 @@ tasks_path = File.join(File.dirname(__FILE__), "lib", "tasks")
 rake_files = Dir["#{tasks_path}/*.rake"]
 rake_files.each{|rake_file| load rake_file }
 
-desc "start runner environment"
+desc "Start runner environment"
 task :merb_env do
   Merb.start_environment(:environment => init_env, :adapter => 'runner')
 end
+
+desc 'Default: run spec examples.'
+task :default => 'spec'
 
 ##############################################################################
 # ADD YOUR CUSTOM TASKS IN /lib/tasks
