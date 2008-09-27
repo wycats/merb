@@ -338,6 +338,12 @@ module MerbThorHelper
     FileUtils.mkdir(path) unless File.exists?(path)
   end
   
+  def neutralise_sudo_for(dir)
+    if ENV['SUDO_UID'] && ENV['SUDO_GID']
+      FileUtils.chown_R(ENV['SUDO_UID'], ENV['SUDO_GID'], dir)
+    end
+  end
+  
   def ensure_bin_wrapper_for(*gems)
     Merb.ensure_bin_wrapper_for(gem_dir, bin_dir, *gems)
   end
@@ -786,11 +792,11 @@ class Merb < Thor
           puts "\n#{repository_name} repository exists, updating or branching instead of cloning..."
           FileUtils.cd(local_repo_path) do
 
-            # to avoid conflicts we need to set a remote branch for non official repos
+            # To avoid conflicts we need to set a remote branch for non official repos
             existing_repos  = `git remote -v`.split("\n").map{|branch| branch.split(/\s+/)}
             origin_repo_url = existing_repos.detect{ |r| r.first == "origin" }.last
 
-            # pull from the original repository - no branching needed
+            # Pull from the original repository - no branching needed
             if repository_url == origin_repo_url
               puts "Pulling from #{repository_url}"
               system %{
@@ -798,12 +804,12 @@ class Merb < Thor
                 git checkout master
                 git rebase origin/master
               }
-            # update and switch to a branch for a particular github fork
+            # Update and switch to a branch for a particular github fork
             elsif existing_repos.map{ |r| r.last }.include?(repository_url)
               puts "Switching to remote branch: #{fork_name}"
               `git checkout -b #{fork_name} #{fork_name}/master`
               `git rebase #{fork_name}/master`
-            # create a new remote branch for a particular github fork
+            # Create a new remote branch for a particular github fork
             else
               puts "Add a new remote branch: #{fork_name}"
               `git remote add -f #{fork_name} #{repository_url}`
@@ -816,6 +822,11 @@ class Merb < Thor
             system("git clone --depth 1 #{repository_url} ")
           end
         end
+        
+        # We don't want to have our source directory under sudo permissions
+        # even if clone (with --install) is called with sudo. Maybe there's
+        # a better way, but this works.
+        neutralise_sudo_for(local_repo_path)
       else
         puts "No valid repository url given"
       end
@@ -843,6 +854,7 @@ class Merb < Thor
           system %{git rebase #{branch}}
           install(gem_name) if options[:install]
         end
+        neutralise_sudo_for(repo)
       end
     end
 
