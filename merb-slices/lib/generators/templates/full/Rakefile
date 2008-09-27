@@ -1,8 +1,9 @@
 require 'rubygems'
 require 'rake/gempackagetask'
 require 'spec/rake/spectask'
-require 'merb-core/version'
-require 'merb-core/tasks/merb_rake_helper'
+
+require 'merb-core'
+require 'merb-core/tasks/merb'
 require 'merb-core/test/tasks/spectasks'
 
 GEM_NAME = "<%= base_name %>"

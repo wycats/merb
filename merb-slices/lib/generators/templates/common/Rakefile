@@ -1,7 +1,8 @@
 require 'rubygems'
 require 'rake/gempackagetask'
-require 'merb-core/version'
-require 'merb-core/tasks/merb_rake_helper'
+
+require 'merb-core'
+require 'merb-core/tasks/merb'
 
 GEM_NAME = "<%= base_name %>"
 AUTHOR = "Your Name"

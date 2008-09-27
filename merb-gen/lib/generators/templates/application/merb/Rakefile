@@ -1,12 +1,11 @@
 require 'rubygems'
-require 'rake'
 require 'rake/rdoctask'
 require 'rake/testtask'
 require 'spec/rake/spectask'
-require 'fileutils'
 
-require "merb-core"
+require 'merb-core'
 require 'merb-core/tasks/merb'
+
 include FileUtils
 
 # Load the basic runtime dependencies; this will include 
