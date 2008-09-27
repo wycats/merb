@@ -142,5 +142,21 @@ describe "A slice" do
   it "should keep a list of path component types to use when copying files" do
     (FullTestSlice.mirrored_components & FullTestSlice.slice_paths.keys).length.should == FullTestSlice.mirrored_components.length
   end
+  
+  it "should have a slice_url helper method for slice-specific routes" do
+    controller = dispatch_to(FullTestSlice::Main, 'index')
+    
+    url = controller.url(:full_test_slice_default, :controller => 'main', :action => 'show', :format => 'html')
+    url.should == "/full-test-slice/main/show.html"
+    controller.slice_url(:controller => 'main', :action => 'show', :format => 'html').should == url
+    
+    url = controller.url(:full_test_slice_index, :format => 'html')
+    url.should == "/full-test-slice/index.html"
+    controller.slice_url(:index, :format => 'html').should == url
+    
+    url = controller.url(:full_test_slice_home)
+    url.should == "/full-test-slice"
+    controller.slice_url(:home).should == url
+  end
     
 end

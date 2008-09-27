@@ -46,6 +46,10 @@ describe "<%= module_name %>::Main (controller)" do
     url = controller.url(:<%= symbol_name %>_index, :format => 'html')
     url.should == "/<%= base_name %>/index.html"
     controller.slice_url(:index, :format => 'html').should == url
+    
+    url = controller.url(:<%= symbol_name %>_home)
+    url.should == "/<%= base_name %>"
+    controller.slice_url(:home).should == url
   end
   
   it "should have helper methods for dealing with public paths" do
