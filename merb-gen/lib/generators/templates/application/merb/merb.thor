@@ -257,7 +257,7 @@ end
 
 module MerbThorHelper
 
-  DO_ADAPTERS = %w[mysql postgres sqlite]
+  DO_ADAPTERS = %w[mysql postgres sqlite3]
 
   private
 
@@ -606,14 +606,16 @@ class Merb < Thor
       refresh_from_gems 'extlib', 'dm-core', 'dm-more'
     end
     
-    desc 'do [ADAPTER]', 'Install data_objects and optional adapter'
+    desc 'do [ADAPTER, ...]', 'Install data_objects and optional adapter'
     method_options "--merb-root" => :optional
-    def do(adapter = nil)
+    def do(*adapters)
       refresh_from_gems 'data_objects'
-      if adapter && DO_ADAPTERS.include?(adapter)
-        refresh_from_gems "do_#{adapter}"
-      elsif adapter
-        puts "Unknown DO adapter '#{adapter}'"
+      adapters.each do |adapter|
+        if adapter && DO_ADAPTERS.include?(adapter)
+          refresh_from_gems "do_#{adapter}"
+        elsif adapter
+          puts "Unknown DO adapter '#{adapter}'"
+        end
       end
     end
     
@@ -723,19 +725,21 @@ class Merb < Thor
       refresh_from_source 'extlib', 'dm-core', 'dm-more'
     end
     
-    desc 'do [ADAPTER]', 'Install data_objects and optional adapter'
+    desc 'do [ADAPTER, ...]', 'Install data_objects and optional adapter'
     method_options "--merb-root" => :optional,
                    "--sources"   => :optional,
                    "--install"   => :boolean
-    def do(adapter = nil)
+    def do(*adapters)
       source = Source.new
       source.options = options
       source.clone('do')
       source.install('do/data_objects')
-      if adapter && DO_ADAPTERS.include?(adapter)
-        source.install("do/do_#{adapter}")
-      elsif adapter
-        puts "Unknown DO adapter '#{adapter}'"
+      adapters.each do |adapter|
+        if adapter && DO_ADAPTERS.include?(adapter)
+          source.install("do/do_#{adapter}")
+        elsif adapter
+          puts "Unknown DO adapter '#{adapter}'"
+        end
       end
     end
 
