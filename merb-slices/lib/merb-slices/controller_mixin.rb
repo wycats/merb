@@ -111,8 +111,9 @@ module Merb
             else
               [slice.identifier_sym, :default] # self, default route
             end
-
-            unless route = Merb::Slices.named_routes[slice_name][route_name]
+            
+            routes = Merb::Slices.named_routes[slice_name]
+            unless routes && route = routes[route_name]
               raise Merb::Router::GenerationError, "Named route not found: #{route_name}"
             end
             
