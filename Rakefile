@@ -65,7 +65,7 @@ Rake::GemPackageTask.new(merb_spec) do |package|
 end
 
 desc "Install all gems"
-task :install do
+task :install => :install_gems do
   Merb::RakeHelper.install('merb-more', :version => Merb::MORE_VERSION)
   Merb::RakeHelper.install_package("pkg/merb-#{Merb::MORE_VERSION}.gem")
 end
