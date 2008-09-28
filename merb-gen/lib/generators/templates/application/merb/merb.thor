@@ -1094,11 +1094,6 @@ class Merb < Thor
             end
           end
         end
-        # Regenerate local bin wrappers with the proper Ruby shebang for
-        # the target platform - we're using Gem.ruby not 'env ruby';
-        # be sure to execute thor with the right Ruby binary:
-        # /path/to/exotic/ruby -S thor merb:gems:redeploy
-        ensure_bin_wrapper_for_core_components
       else
         puts "No application local gems directory found"
       end
