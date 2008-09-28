@@ -208,7 +208,7 @@ describe "text_field" do
 
   it "should provide an additional label tag if the :label option is passed in" do
     r = @c.render :basic
-    r.should match(/<label.*>LABEL<\/label>/)
+    r.should match(/<label>LABEL<\/label>/)
   end
 
   it "should update an existing :class with a new class" do
