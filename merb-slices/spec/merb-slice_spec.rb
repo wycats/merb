@@ -87,8 +87,15 @@ describe "The Merb::Router::Behavior methods" do
     Merb::Router.named_routes[:awesome_default].params[:foo].should == '"bar"'
   end
   
-  # it "should have setup routes correctly for recognition" do
-  #   route_to("/main/index").should have_route(:controller => "home", :action => "index")
-  # end
+  it "enable url() and slice_url() respectively" do
+    controller = dispatch_to(FullTestSlice::Main, 'index')
+    controller.url(:full_test_slice_index, :format => 'html').should == '/full/index.html'
+    controller.slice_url(:full_test_slice, :index, :format => 'html').should == '/full/index.html'
+    controller.slice_url(:index, :format => 'html').should == '/full/index.html'
+    
+    controller.url(:full_test_slice_dashboard).should == '/full/dashboard'
+    controller.slice_url(:full_test_slice, :dashboard).should == '/full/dashboard'
+    controller.slice_url(:dashboard).should == '/full/dashboard'
+  end
   
 end
