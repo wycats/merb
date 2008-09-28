@@ -45,7 +45,7 @@ Rake::GemPackageTask.new(spec) do |pkg|
 end
 
 desc "Install the gem"
-task :install => [:package] do
+task :install do
   Merb::RakeHelper.install(GEM_NAME, :version => GEM_VERSION)
 end
 
@@ -54,11 +54,21 @@ task :uninstall do
   Merb::RakeHelper.uninstall(GEM_NAME, :version => GEM_VERSION)
 end
 
-desc "Run all specs"
-Spec::Rake::SpecTask.new("spec") do |t|
-  t.spec_opts = ["--format", "specdoc", "--colour"]
-  t.spec_files = Dir["spec/**/*_spec.rb"].sort
+desc "Create a gemspec file"
+task :gemspec do
+  File.open("#{GEM_NAME}.gemspec", "w") do |file|
+    file.puts spec.to_ruby
+  end
 end
+
+desc "Run all examples"
+Spec::Rake::SpecTask.new('spec') do |t|
+  t.spec_opts  = ["-cfs"]
+  t.spec_files = FileList['spec/**/*_spec.rb']
+end
+
+desc 'Default: run spec examples'
+task :default => 'spec'
 
 ##############################################################################
 # memcached
@@ -85,6 +95,3 @@ namespace :memcached do
     end
   end
 end
-
-desc 'Default: run spec examples'
-task :default => 'spec'
