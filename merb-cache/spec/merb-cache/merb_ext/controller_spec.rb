@@ -232,20 +232,26 @@ describe Merb::Cache::CacheMixin do
     it "should pass the template argument to the partial method" do
       new_controller = MyController.new(fake_request)
       new_controller.should_receive(:partial).with(:foo, {})
+      new_controller.stub!(:concat)
+
       new_controller.fetch_partial(:foo)
     end
 
     it "should pass the options to the partial method " do
       new_controller = MyController.new(fake_request)
       new_controller.should_receive(:partial).with(:foo, :bar => :baz)
+      new_controller.stub!(:concat)
+
       new_controller.fetch_partial(:foo, :bar => :baz)
     end
 
     it "should contain only alpha-numeric characters in the template key" do
       new_controller = MyController.new(fake_request)
       new_controller.stub!(:partial)
+      new_controller.stub!(:concat)
+
       @dummy.should_receive(:fetch).and_return do |template_key, opts, conditions, block|
-        template_key.should =~ /^\w+$/
+        template_key.should =~ /^(?:[a-zA-Z0-9_\/\.-])+/
       end
 
       new_controller.fetch_partial('path/to/foo')
@@ -255,8 +261,10 @@ describe Merb::Cache::CacheMixin do
   describe "#fetch_fragment" do
     it "should include the filename that defines the fragment proc in the fragment key" do
       new_controller = MyController.new(fake_request)
+      new_controller.stub!(:concat)
+
       @dummy.should_receive(:fetch).and_return do |fragment_key, opts, conditions, block|
-        fragment_key.should include(Merb::Template.template_name(__FILE__))
+        fragment_key.should include(__FILE__)
       end
 
       new_controller.fetch_fragment {}
@@ -264,6 +272,8 @@ describe Merb::Cache::CacheMixin do
 
     it "should include the line number that defines the fragment proc in the fragment key" do
       new_controller = MyController.new(fake_request)
+      new_controller.stub!(:concat)
+
       @dummy.should_receive(:fetch).and_return do |fragment_key, opts, conditions, block|
         fragment_key.should =~ %r{[\d+]}
       end
