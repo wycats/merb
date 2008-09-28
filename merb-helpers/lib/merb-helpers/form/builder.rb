@@ -284,7 +284,7 @@ module Merb::Helpers::Form::Builder
       end
       if contents
         if contents.is_a?(Hash)
-          attrs = attrs.merge(contents)
+          attrs = contents
           contents = attrs.delete(:title)
         end
         for_attr = attrs[:id] ? {:for => attrs[:id]} : {}

@@ -220,6 +220,11 @@ describe "text_field" do
     r = @c.render :disabled
     r.should match_tag(:input, :type => "text", :disabled => "disabled")
   end
+
+  it "should provide an additional label tag if the :label option is passed in as a hash" do
+    r = @c.render :label
+    r.should match(/<label class="cool">LABEL<\/label>/)
+  end
   
 end
 
