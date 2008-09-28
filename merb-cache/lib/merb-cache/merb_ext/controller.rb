@@ -58,19 +58,19 @@ module Merb::Cache::CacheMixin
       template_id = "_#{File.basename(template_id)}"
     end
 
-    unused, template_path = _template_for(template_id, opts.delete(:format) || content_type, kontroller, template_path)
+    unused, template_key = _template_for(template_id, opts.delete(:format) || content_type, kontroller, template_path)
 
-    template_key = Merb::Template.template_name(template_path)
+    fetch_proc = lambda { partial(template, opts) }
 
-    Merb::Cache[_lookup_store(conditions)].fetch(template_key, opts, conditions) { partial(template, opts) }
+    concat(Merb::Cache[_lookup_store(conditions)].fetch(template_key, opts, conditions, &fetch_proc), fetch_proc.binding)
   end
 
   def fetch_fragment(opts = {}, conditions = {}, &proc)
     file, line = proc.to_s.scan(%r{^#<Proc:0x\w+@(.+):(\d+)>$}).first
 
-    fragment_key = "#{Merb::Template.template_name(file)}[#{line}]"
+    fragment_key = "#{file}[#{line}]"
 
-    Merb::Cache[_lookup_store(conditions)].fetch(fragment_key, opts, conditions) { yield }
+    concat(Merb::Cache[_lookup_store(conditions)].fetch(fragment_key, opts, conditions) { capture(&proc) }, proc.binding)
   end
 
   def _cache_before(conditions = {})
