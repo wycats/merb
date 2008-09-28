@@ -15,17 +15,20 @@ use different stores for production, staging and development
 environment if you need to).
 
 # create a fundamental memcache store named :memcached for localhost
-Merb::Cache.setup(:memcached, Merb::Cache::MemcachedStore, {
-  :namespace => "my_app",
-  :servers => ["127.0.0.1:11211"]
-}
+
+Merb::Cache.setup do
+  register(:memcached, MemcachedStore, :namespace => "my_app", :servers => ["127.0.0.1:11211"])
+end
 
 # a default FileStore
-Merb::Cache.setup(Merb::Cache::FileStore)
+Merb::Cache.setup do
+  register(FileStore)
+end
 
 # another FileStore
-Merb::Cache.setup(:tmp_cache, Merb::Cache::FileStore, :dir => "/tmp")
-
+Merb::Cache.setup do
+  register(:tmp_cache, FileStore, :dir => "/tmp")
+end
 
 Now lets see how we can use stores in the application:
 
@@ -72,21 +75,21 @@ Merb::Cache[:default, :memcached].write_all("foo", "bar", {:baz => :bay}, :expir
 
 Setting up strategy stores is very similar to fundamental stores:
 
-# wraps the :memcached store we setup earlier
-Merb::Cache.setup(:zipped, Merb::Cache::GzipStore[:memcached])
+Merb::Cache.setup do
 
-# wrap a strategy store
-Merb::Cache.setup(:sha_and_zip, Merb::Cache::SHA1Store[:zipped])
+  # wraps the :memcached store we setup earlier
+  register(:zipped, GzipStore[:memcached])
 
-# you can even use unnamed fundamental stores
-Merb::Cache.setup(:zipped_images, Merb::Cache::GzipStore[Merb::Cache::FileStore],
-                  :dir => Merb.root / "public" / "images")
+  # wrap a strategy store
+  register(:sha_and_zip, SHA1Store[:zipped])
 
-# or a combination or strategy & fundamental stores
-module Merb::Cache #makes things a bit shorter
+  # you can even use unnamed fundamental stores
+  register(:zipped_images, GzipStore[FileStore],
+            :dir => Merb.root / "public" / "images")
 
-  setup(:secured, SHA1Store[GzipStore[FileStore], FileStore],
-        :dir => Merb.root / "private")
+  # or a combination or strategy & fundamental stores
+  register(:secured, SHA1Store[GzipStore[FileStore], FileStore],
+            :dir => Merb.root / "private")
 end
 
 
@@ -99,19 +102,22 @@ First, let’s setup our page & action stores:
 
 config/environments/development.rb
  
-  # the order that stores are setup is important 
-  # faster stores should be setup first 
+  Merb::Cache.setup do
  
-  # page cache to the public dir 
-  Merb::Cache.setup(:page_store, Merb::Cache::PageStore[FileStore], 
-                    :dir => Merb.root / "public") 
+    # the order that stores are setup is important 
+    # faster stores should be setup first 
  
-  # action cache to memcache 
-  Merb::Cache.setup(:action_store, Merb::Cache::ActionStore[:sha_and_zip]) 
+    # page cache to the public dir
+    register(:page_store, PageStore[FileStore], 
+                      :dir => Merb.root / "public") 
  
-  # sets up the ordering of stores when attempting to read/write cache entries 
-  Merb::Cache.setup(:default, Merb::Cache::AdhocStore[:page_store, :action_store]) 
-
+    # action cache to memcache 
+    register(:action_store, ActionStore[:sha_and_zip]) 
+ 
+    # sets up the ordering of stores when attempting to read/write cache entries 
+    register(:default, AdhocStore[:page_store, :action_store])
+  
+  end
 
 And now in our controller:
 class Tags < Merb::Controller 
