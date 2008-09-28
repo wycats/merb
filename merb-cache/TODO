@@ -1,2 +1,0 @@
-capture_#{engine} and concat_#{engine} are required for cache()
-implement other cache store ?

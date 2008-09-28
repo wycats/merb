@@ -12,8 +12,8 @@ PROJECT_URL         = "http://merbivore.com"
 PROJECT_SUMMARY     = "Merb plugin that provides caching (page, action, fragment, object)"
 PROJECT_DESCRIPTION = PROJECT_SUMMARY
 
-GEM_AUTHOR = "Alex Boussinet"
-GEM_EMAIL  = "alex.boussinet@gmail.com"
+GEM_AUTHOR = "Ben Burkert"
+GEM_EMAIL  = "ben@benburkert.com"
 
 GEM_NAME    = "merb-cache"
 PKG_BUILD   = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
@@ -45,26 +45,49 @@ Rake::GemPackageTask.new(spec) do |pkg|
 end
 
 desc "Install the gem"
-task :install do
-  Merb::RakeHelper.install(GEM_NAME, :version => GEM_VERSION)
+task :install => [:package] do
+  sh install_command(GEM_NAME, GEM_VERSION)
 end
 
-desc "Uninstall the gem"
-task :uninstall do
-  Merb::RakeHelper.uninstall(GEM_NAME, :version => GEM_VERSION)
-end
+namespace :jruby do
 
-desc "Create a gemspec file"
-task :gemspec do
-  File.open("#{GEM_NAME}.gemspec", "w") do |file|
-    file.puts spec.to_ruby
+  desc "Run :package and install the resulting .gem with jruby"
+  task :install => :package do
+    sh jinstall_command(GEM_NAME, GEM_VERSION)
   end
+
 end
 
-desc "Run all examples"
-Spec::Rake::SpecTask.new('spec') do |t|
-  t.spec_opts  = ["-cfs"]
-  t.spec_files = FileList['spec/**/*_spec.rb']
+desc "Run all specs"
+Spec::Rake::SpecTask.new("spec") do |t|
+  t.spec_opts = ["--format", "specdoc", "--colour"]
+  t.spec_files = Dir["spec/**/*_spec.rb"].sort
+end
+
+##############################################################################
+# memcached
+##############################################################################
+MEMCACHED_PORTS = 43042..43043
+
+namespace :memcached do
+  desc "Start the memcached instances for specs"
+  task :start do
+    log = "/tmp/memcached.log"
+    system ">#{log}"
+
+    verbosity = (ENV['DEBUG'] ? "-vv" : "")
+
+    (MEMCACHED_PORTS).each do |port|
+      system "memcached #{verbosity} -p #{port} >> #{log} 2>&1 &"
+    end
+  end
+
+  desc "Kill the memcached instances"
+  task :kill do
+    `ps awx`.split("\n").grep(/#{MEMCACHED_PORTS.to_a.join('|')}/).map do |process| 
+      system("kill -9 #{process.to_i}") rescue nil
+    end
+  end
 end
 
 desc 'Default: run spec examples'

@@ -1,94 +1,82 @@
 $TESTING=true
-$:.unshift File.join(File.dirname(__FILE__), '..', 'lib')
-require "rubygems"
-require "merb-core"
+$:.push File.join(File.dirname(__FILE__), '..', 'lib')
 
-require "merb-cache"
-require File.dirname(__FILE__) / "controller"
+# Deps
+require 'rubygems'
+require 'merb-core'
+require 'merb-action-args'
+require File.join(File.dirname(__FILE__), '..', 'lib', 'merb-cache')
 
-require "merb-haml"
-
-def set_database_adapter(adapter)
-  config_file = File.dirname(__FILE__) / "config/database.yml"
-  config = IO.read(config_file)
-  config.gsub!(/:adapter:\s+.*$/, ":adapter: #{adapter}")
-  File.open(config_file, "w+") do |c| c.write(config) end
-end
-
-def use_cache_store(store, orm = nil)
-  Merb::Plugins.config[:merb_cache] = {
-    :store => store,
-    :cache_directory => File.dirname(__FILE__) / "tmp/cache",
-    :cache_html_directory => File.dirname(__FILE__) / "tmp/html",
-    :no_tracking => false
-  }
-  FileUtils.rm_rf(Dir.glob(File.dirname(__FILE__) / "/tmp"))
-  case store
-  when "dummy"
-  when "file"
-  when "memory"
-  when "memcache"
-    require "memcache"
-  when "database"
-    case orm
-    when "datamapper"
-      Merb.environment = "test"
-      Merb.logger = Merb::Logger.new("log/merb_test.log")
-      set_database_adapter("sqlite3")
-      require "merb_datamapper"
-    when "activerecord"
-      Merb.logger = Merb::Logger.new("log/merb_test.log")
-      set_database_adapter("sqlite3")
-      require "merb_activerecord"
-    when "sequel"
-      set_database_adapter("sqlite")
-      require "merb_sequel"
-    else
-      raise "Unknown orm: #{orm}"
-    end
-  else
-    raise "Unknown cache store: #{store}"
-  end
-end
-
-store = "file"
-case ENV["STORE"] || store
-when "file"
-  use_cache_store "file"
-when "memory"
-  use_cache_store "memory"
-when "memcache"
-  use_cache_store "memcache"
-when "datamapper"
-  use_cache_store "database", "datamapper"
-when "sequel"
-  use_cache_store "database", "sequel"
-when "activerecord"
-  use_cache_store "database", "activerecord"
-when "dummy"
-  use_cache_store "dummy"
-else
-  puts "Invalid cache store: #{ENV["store"]}"
-  exit
-end
-
-require "fileutils"
-FileUtils.mkdir_p(Merb::Plugins.config[:merb_cache][:cache_html_directory])
-FileUtils.mkdir_p(Merb::Plugins.config[:merb_cache][:cache_directory])
+# We want logging!
+Merb.logger = Merb::Logger.new(File.join(File.dirname(__FILE__), '..', 'log', 'merb_test.log'))
 
 Merb.start :environment => "test", :adapter => "runner"
 
 require "merb-core/test"
-
-CACHE = CacheController.new(Merb::Test::RequestHelper::FakeRequest.new)
-CACHE.expire_all
-
 Spec::Runner.configure do |config|
-  config.include Merb::Test::RequestHelper
-  config.before(:each) do
-    Merb::Router.prepare do |r|
-      r.default_routes
-      r.match("/").to(:controller => "cache_controller", :action =>"index")
+  config.include Merb::Test::Helpers
+  #config.include Merb::Test::ControllerHelper
+  config.include Merb::Test::RouteHelper
+end
+
+class DummyStore < Merb::Cache::AbstractStore
+  cattr_accessor :vault
+  attr_accessor  :options
+  
+  def initialize(config = {})
+    super(config)
+    @options = config
+    @@vault = {}
+  end
+
+  def writable?(*args)
+    true
+  end
+
+  def read(key, parameters = {})
+        
+    if @@vault.keys.include?(key)
+      @@vault[key].find {|data, timestamp, conditions, params| params == parameters}
     end
+  end
+
+  def data(key, parameters = {})
+    read(key, parameters)[0] if read(key, parameters)
+  end
+
+  def time(key, parameters = {})
+    read(key, parameters)[1] if read(key, parameters)
+  end
+
+  def conditions(key, parameters = {})
+    read(key, parameters)[2] if read(key, parameters)
+  end
+
+  def write(key, data = nil, parameters = {}, conditions = {})
+    (@@vault[key] ||= []) << [data, Time.now, conditions, parameters]
+    true
+  end
+
+  def fetch(key, parameters = {}, conditions = {}, &blk)
+    @@vault[[key, parameters]] ||= blk.call
+  end
+
+  def exists?(key, parameters = {})
+    @@vault.has_key? [key, parameters]
+  end
+
+  def delete(key, parameters = {})
+    @@vault.delete([key, parameters]) unless @@vault[[key, parameters]].nil?
+  end
+
+  def delete_all
+    @@vault = {}
+  end
+end
+
+#TODO change this to a work queue per class called in an after aspect
+class Merb::Controller
+  def run_later
+    yield
   end
 end
