@@ -66,10 +66,14 @@ module Merb::Cache::CacheMixin
   end
 
   def fetch_fragment(opts = {}, conditions = {}, &proc)
-    file, line = proc.to_s.scan(%r{^#<Proc:0x\w+@(.+):(\d+)>$}).first
-
-    fragment_key = "#{file}[#{line}]"
-
+    
+    if opts[:cache_key].blank?
+      file, line = proc.to_s.scan(%r{^#<Proc:0x\w+@(.+):(\d+)>$}).first
+      fragment_key = "#{file}[#{line}]"
+    else
+      fragment_key = opts.delete(:cache_key)
+    end
+      
     concat(Merb::Cache[_lookup_store(conditions)].fetch(fragment_key, opts, conditions) { capture(&proc) }, proc.binding)
   end
 
