@@ -86,11 +86,11 @@ module Merb
       type = nil, headers = nil)
       if file_or_files.is_a?(Array)
         file_or_files.each do |v|
-	  if v.length < 2
-	    v << v.first.is_a?(File) ? File.basename(v.first.path) : nil
-	  end
-	  @mail.add_attachment_as *v
-	end
+      	  if v.length < 2
+      	    v << v.first.is_a?(File) ? File.basename(v.first.path) : nil
+      	  end
+      	  @mail.add_attachment_as *v
+      	end
       else
         raise ArgumentError, "You did not pass in a file. Instead, you sent a #{file_or_files.class}" if !file_or_files.is_a?(File)
         @mail.add_attachment_as(file_or_files, filename, type, headers)
@@ -100,7 +100,7 @@ module Merb
     # ==== Parameters
     # o<Hash{~to_s => Object}>:: Configuration commands to send to MailFactory.
     def initialize(o={})
-      self.config = {:sendmail_path => '/usr/sbin/sendmail'} if config.nil?
+      self.config = { :sendmail_path => '/usr/sbin/sendmail' } if config.nil?
       o[:rawhtml] = o.delete(:html)
       m = MailFactory.new()
       o.each { |k,v| m.send "#{k}=", v }

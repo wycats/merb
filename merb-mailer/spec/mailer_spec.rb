@@ -40,7 +40,7 @@ describe "a merb mailer" do
     delivery = TestMailer.deliveries.last
     delivery.to.should include("test@test.com")
     delivery.from.should include("foo@bar.com")
-    delivery.subject.first.should include("=?utf-8?Q?Test_Subject?=")
+    delivery.subject.first.should include("=?utf-8?Q?Test_Subject=?=")
     delivery.body.should include("Test")
   end
   

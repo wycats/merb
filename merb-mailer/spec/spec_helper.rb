@@ -5,7 +5,7 @@ require "merb-core"
 require "merb-mailer"
 
 Merb::Config.use do |c|
-  c[:session_store]      = :memory
+  c[:session_store] = :memory
 end
 
 
