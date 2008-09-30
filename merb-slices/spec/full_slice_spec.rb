@@ -155,7 +155,7 @@ describe "A slice" do
     controller.slice_url(:index, :format => 'html').should == url
     
     url = controller.url(:full_test_slice_home)
-    url.should == "/full-test-slice"
+    url.should == "/full-test-slice/"
     controller.slice_url(:home).should == url
   end
     

@@ -25,13 +25,9 @@ if File.exists?(slice_file = File.join(__DIR__, 'lib', "#{slice_name}.rb"))
       slice_id = slice_name.gsub('-', '_').to_sym
       slice_routes = Merb::Slices.named_routes[slice_id] || {}
     
-      # Setup a / root path matching route - then try several defaults
-      route = Merb::Router.routes.find { |r| r.conditions[:path].blank? }
-      route = slice_routes[:home]  unless route
-      route = slice_routes[:index] unless route
-      if route && route.conditions[:path].blank?
-        route.conditions[:path] = '/'
-      elsif route
+      # Setup a / root path matching route - try several defaults
+      route = slice_routes[:home] || slice_routes[:index]
+      if route
         params = route.params.inject({}) do |hsh,(k,v)|
           hsh[k] = v.gsub("\"", '') if k == :controller || k == :action
           hsh

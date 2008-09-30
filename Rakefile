@@ -185,7 +185,7 @@ end
 desc "Run spec examples for Merb More gems, one by one."
 task :spec do
   gems.each do |gem|
-    Dir.chdir(gem){ sh "rake spec" }
+    Dir.chdir(gem) { sh "#{Gem.ruby} -S rake spec" }
   end
 end
 
