@@ -19,7 +19,7 @@ module Merb::Generators
     DESC
 
     template :gitignore do |template|
-      template.source = 'dotgitignore'
+      template.source = File.join(common_templates_dir, 'dotgitignore')
       template.destination = ".gitignore"
     end
     
@@ -35,6 +35,11 @@ module Merb::Generators
     
     def destination_root
       File.join(@destination_root, base_name)
+    end
+    
+    def common_templates_dir
+      File.expand_path(File.join(File.dirname(__FILE__), '..', 
+                      'templates', 'application', 'common'))
     end
     
   end
