@@ -1,5 +1,4 @@
 #!/usr/bin/env ruby
-$KCODE = 'UTF8'
 
 __DIR__ = Dir.pwd
 
