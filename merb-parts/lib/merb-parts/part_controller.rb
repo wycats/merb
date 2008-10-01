@@ -72,6 +72,25 @@ module Merb
       super
       @content_type = @web_controller.content_type
     end
+    
+    # ==== Parameters
+    # name<~to_sym, Hash>:: The name of the URL to generate.
+    # rparams<Hash>:: Parameters for the route generation.
+    #
+    # ==== Returns
+    # String:: The generated URL.
+    #
+    # ==== Alternatives
+    # If a hash is used as the first argument, a default route will be
+    # generated based on it and rparams.
+    # ====
+    # TODO: Update this documentation
+    def url(name, *args)
+      args << params
+      Merb::Router.url(name, *args)
+    end
+
+    alias_method :relative_url, :url
 
     # ==== Parameters
     # action<~to_s>:: An action to dispatch to. Defaults to :to_s.
