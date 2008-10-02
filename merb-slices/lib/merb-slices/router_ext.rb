@@ -15,7 +15,7 @@ module Merb
       # @yield A new Behavior instance is yielded in the block for nested routes.
       # @yieldparam ns<Behavior> The namespace behavior object.
       #
-      # @example r.all_slices('BlogSlice' => 'blog', 'ForumSlice' => { :path => 'forum' })
+      # @example all_slices('BlogSlice' => 'blog', 'ForumSlice' => { :path => 'forum' })
       #
       # @note The block is yielded for each slice individually.
       def all_slices(config = {}, &block)

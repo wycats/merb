@@ -55,19 +55,19 @@ file: config/router.rb
 
 # example: /<%= base_name %>/:controller/:action/:id
 
-r.add_slice(:<%= module_name %>)
+add_slice(:<%= module_name %>)
 
 # example: /foo/:controller/:action/:id
 
-r.add_slice(:<%= module_name %>, 'foo') # same as :path => 'foo'
+add_slice(:<%= module_name %>, 'foo') # same as :path => 'foo'
 
 # example: /:lang/:controller/:action/:id (with :a param set)
 
-r.add_slice(:<%= module_name %>, :path => ':lang', :params => { :a => 'b' })
+add_slice(:<%= module_name %>, :path => ':lang', :params => { :a => 'b' })
 
 # example: /:controller/:action/:id
 
-r.slice(:<%= module_name %>)
+slice(:<%= module_name %>)
 
 Normally you should also run the following rake task:
 
