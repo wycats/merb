@@ -23,7 +23,20 @@ module Merb::Generators
       template.destination = ".gitignore"
     end
 
-    glob!
+    directory :test_dir do |directory|
+      test_dir    = testing_framework == :rspec ? "spec" : "test"
+      
+      directory.source      = File.join(source_root, test_dir)
+      directory.destination = test_dir
+    end    
+
+    file :rakefile,  "Rakefile"
+    file :merb_thor, "merb.thor"
+    
+    glob! "app"
+    glob! "autotest"
+    glob! "config"
+    glob! "public"
 
     empty_directory :gems, 'gems'
 
@@ -41,7 +54,6 @@ module Merb::Generators
       File.expand_path(File.join(File.dirname(__FILE__), '..',
                       'templates', 'application', 'common'))
     end
-
   end
 
   add_private :app_full, MerbFullGenerator
