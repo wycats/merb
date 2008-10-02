@@ -34,6 +34,7 @@ module Merb::Generators
     end    
 
     file     :readme,      "README.txt"
+    file     :rakefile,    "Rakefile"    
     template :application, "application.rb"
     
     glob! "config"
