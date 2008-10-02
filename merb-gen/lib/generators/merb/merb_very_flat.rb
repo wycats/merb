@@ -32,14 +32,14 @@ module Merb::Generators
     end
 
     directory :test_dir do |directory|
-      test_dir    = testing_framework == :rspec ? "spec" : "test"
+      dir    = testing_framework == :rspec ? "spec" : "test"
       
-      directory.source      = File.join(source_root, test_dir)
-      directory.destination = test_dir
+      directory.source      = dir
+      directory.destination = dir
     end    
     
     def class_name
-      self.name.camel_case
+      self.name.gsub("-", "_").camel_case
     end
 
     def common_templates_dir

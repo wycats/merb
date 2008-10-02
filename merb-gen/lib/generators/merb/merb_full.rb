@@ -24,10 +24,10 @@ module Merb::Generators
     end
 
     directory :test_dir do |directory|
-      test_dir    = testing_framework == :rspec ? "spec" : "test"
+      dir    = testing_framework == :rspec ? "spec" : "test"
       
-      directory.source      = File.join(source_root, test_dir)
-      directory.destination = test_dir
+      directory.source      = File.join(source_root, dir)
+      directory.destination = dir
     end    
 
     file :rakefile,  "Rakefile"
