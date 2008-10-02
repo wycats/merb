@@ -1,4 +1,3 @@
-$TESTING=true
 require 'rubygems'
 require "merb-core"
 require File.join( File.dirname(__FILE__), "..", "lib", "merb-parts" )

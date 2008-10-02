@@ -1,4 +1,3 @@
-$TESTING=true
 require "rubygems"
 require "spec"
 require "merb-core"
