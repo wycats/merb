@@ -48,6 +48,9 @@ module Merb
           slice_module[:path_prefix] = options[:path]
           Merb.logger.info!("Mounting slice #{slice_module} at /#{options[:path]}")
           
+          # reset the inherited controller prefix - especially for 'slice' entries (see below)
+          @options[:controller_prefix] = nil if options.delete(:reset_controller_prefix)
+          
           # setup routes - capture the slice's routes for easy reference
           self.namespace(namespace, options.except(:default_routes, :prepend_routes, :append_routes, :path_prefix)) do |ns|
             Merb::Slices.named_routes[slice_module.identifier_sym] = ns.capture do
@@ -65,9 +68,9 @@ module Merb
       
       # Insert a slice directly into the current router context.
       #
-      # This will still setup a namespace, but doesn't set a path prefix. 
+      # This will still setup a namespace, but doesn't set a path prefix. Only for special cases.
       def slice(slice_module, options = {}, &block)
-        add_slice(slice_module, options.merge(:path => ''), &block)
+        add_slice(slice_module, options.merge(:path => '', :reset_controller_prefix => true), &block)
       end
       
     end
