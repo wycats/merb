@@ -33,13 +33,17 @@ module Merb::Generators
       directory.destination = test_dir
     end    
 
-    file :readme,      "README.txt"
-    file :application, "application.rb"
+    file     :readme,      "README.txt"
+    template :application, "application.rb"
     
     glob! "config"
     glob! "views"
 
     empty_directory :gems, 'gems'
+
+    def class_name
+      self.name.camel_case
+    end
     
     def destination_root
       File.join(@destination_root, base_name)
