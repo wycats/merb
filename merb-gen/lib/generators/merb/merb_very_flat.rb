@@ -5,6 +5,12 @@ module Merb::Generators
     def self.source_root
       File.join(super, 'application', 'merb_very_flat')
     end
+
+    option :testing_framework, :default => :rspec,
+                               :desc => 'Testing framework to use (one of: rspec, test_unit).'
+    option :orm, :default => :none,
+                 :desc => 'Object-Relation Mapper to use (one of: none, activerecord, datamapper, sequel).'
+    
     
     desc <<-DESC
       This generates a very flat merb application: the whole application
@@ -18,14 +24,27 @@ module Merb::Generators
       template.destination = "#{base_name}.rb"
     end
 
-    file :spec_helper, 'spec/spec_helper.rb', 'spec/spec_helper.rb'
+    template :gitignore do |template|
+      template.source = File.join(common_templates_dir, 'dotgitignore')
+      template.destination = ".gitignore"
+    end
+
+    directory :test_dir do |directory|
+      test_dir    = testing_framework == :rspec ? "spec" : "test"
+      
+      directory.source      = File.join(source_root, test_dir)
+      directory.destination = test_dir
+    end    
     
     def class_name
       self.name.camel_case
     end
-    
+
+    def common_templates_dir
+      File.expand_path(File.join(File.dirname(__FILE__), '..',
+                      'templates', 'application', 'common'))
+    end
   end
   
   add_private :app_very_flat, MerbVeryFlatGenerator
-  
 end
