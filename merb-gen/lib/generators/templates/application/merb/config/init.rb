@@ -45,6 +45,7 @@
 #
 # dependency "merb-action-args"   # Provides support for querystring arguments to be passed in to controller actions
 # dependency "merb-assets"        # Provides link_to, asset_path, auto_link, image_tag methods (and lots more)
+# dependency "merb-helpers"       # Provides the form, date/time, and other helpers
 # dependency "merb-cache"         # Provides your application with caching functions 
 # dependency "merb-haml"          # Adds rake tasks and the haml generators to your merb app
 # dependency "merb-jquery"        # Provides a #jquery method to insert jQuery code in to a content block
@@ -52,7 +53,6 @@
 
 # These are a few, but not all, of the merb-plugin dependencies:
 #
-# dependency "merb_helpers"           # Provides the form, date/time, and other helpers
 # dependency "merb_param_protection"  # Lets you have better control over your query string params and param logging
 # dependency "merb_stories"           # Provides rspec helper methods for your application
 
