@@ -132,7 +132,6 @@ end
 # See http://wiki.merbivore.com/pages/merb-core-boot-process
 # if you want to know more.
 Merb::Config.use do |c|
-
   # Sets up a custom session id key which is used for the session persistence
   # cookie name.  If not specified, defaults to '_session_id'.
   # c[:session_id_key] = '_session_id'
