@@ -45,7 +45,9 @@ module Merb::Generators
     end
     
     def current_migration_nr
-      current_migration_number = Dir["#{destination_directory}/*"].map{|f| File.basename(f).match(/^(\d+)/)[0].to_i  }.max.to_i
+      current_migration_number = Dir["#{destination_directory}/*"].map do |f|
+        File.basename(f).match(/^(\d+)/)[0].to_i
+      end.max.to_i
     end
     
   end
