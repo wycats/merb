@@ -34,7 +34,8 @@ module Merb::Generators
     
     def version
       # TODO: handle ActiveRecord timestamped migrations
-      format("%03d", current_migration_nr + 1)
+      n = options[:delete] ? current_migration_nr : current_migration_nr + 1
+      format("%03d", n)
     end
 
     protected
