@@ -125,15 +125,12 @@ describe Merb::Cache::AdhocStore do
       adhoc.fetch(:foo).should be_true
     end
 
-    it "should return nil if none of the stores are fetchable" do
-      unfetchable, fetchable = mock(:unfetchable_store), mock(:fetchable_store)
-      unfetchable.should_receive(:fetch).and_return nil
-      fetchable.should_receive(:fetch).and_return true
-
+    it "should return the value of the block if none of the stores are fetchable" do
       adhoc = Merb::Cache::AdhocStore.new
-      adhoc.stores = [unfetchable, fetchable]
-      adhoc.should_receive(:read).and_return nil
-      adhoc.fetch(:foo).should be_true
+      adhoc.fetch(:foo) {
+        'foo'
+
+      }.should == 'foo'
     end
 
     it "should stop calling fetch after the first non-nil result" do

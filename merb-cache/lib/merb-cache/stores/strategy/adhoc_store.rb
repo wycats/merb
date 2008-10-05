@@ -40,9 +40,12 @@ module Merb::Cache
     end
 
     # tries to read the data from the store.  If that fails, it calls
-    # the block parameter and persists the result.
+    # the block parameter and persists the result.  If it cannot be fetched,
+    # the block call is returned.
     def fetch(key, parameters = {}, conditions = {}, &blk)
-      read(key, parameters) || @stores.capture_first {|s| s.fetch(key, parameters, conditions, &blk)}
+      read(key, parameters) ||
+        @stores.capture_first {|s| s.fetch(key, parameters, conditions, &blk)} ||
+        blk.call
     end
 
     # returns true/false/nil based on if data identified by the key & parameters

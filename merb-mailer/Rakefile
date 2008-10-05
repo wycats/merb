@@ -38,7 +38,7 @@ spec = Gem::Specification.new do |s|
   s.add_dependency('merb-core', '>= 0.9.8')
   s.add_dependency('mailfactory', '>= 1.2.3')
   s.require_path = 'lib'
-  s.files = %w(LICENSE README.textile Rakefile TODO) + Dir.glob("{lib,spec}/**/*")
+  s.files = %w(LICENSE README.textile Rakefile TODO Generators) + Dir.glob("{lib,spec}/**/*")
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|
