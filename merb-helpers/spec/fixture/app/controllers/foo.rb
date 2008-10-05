@@ -8,6 +8,10 @@ class Foo < Application
     render
   end
 
+  def renders_tag
+    render
+  end
+
   def raise_conflict
     raise Conflict
   end
