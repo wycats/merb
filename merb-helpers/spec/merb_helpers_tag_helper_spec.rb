@@ -39,7 +39,7 @@ describe Merb::Helpers::Tag do
       (doc/"div.discography"/"ul.albums"/"li.first").size.should == 1
 
       (doc/"#tit").size.should == 1
-      puts (doc/"#tit").first.inner_html.should == "Trust in Trance 2"
+      (doc/"#tit").first.inner_html.should == "Trust in Trance 2"
     end
   end
 end
