@@ -374,26 +374,26 @@ module Merb::Helpers::Form
     current_form_context.button(contents, attrs)
   end
   
-  # # Generates a HTML delete button.
-  # #
-  # # ==== Parameters
-  # # name<Symbol>:: Model or Resource
-  # # url<String>:: URL to send the request to
-  # # attrs<Hash>:: HTML attributes
-  # # contents<String>:: HTML contained within the button tag
-  # # attrs<Hash>:: HTML attributes
-  # #
-  # # ==== Returns
-  # # String:: HTML
-  # #
-  # # ==== Example
-  # #   <%= delete_button :article, url(:article, @article), "Delete article now", :class => 'delete-btn' %>
-  # def delete_button(name, url, contents="Delete", attrs = {})
-  #   tag :form, :class => 'delete-btn', :action => url, :method => :post do
-  #     tag :input, :type => :hidden, :name => "_method", :value => "DELETE" <<
-  #     tag(:input, attrs.merge(:type => :submit))
-  #   end
-  # end
+  # Generates a HTML delete button.
+  #
+  # ==== Parameters
+  # name<Symbol>:: Model or Resource
+  # url<String>:: URL to send the request to
+  # attrs<Hash>:: HTML attributes
+  # contents<String>:: HTML contained within the button tag
+  # attrs<Hash>:: HTML attributes
+  #
+  # ==== Returns
+  # String:: HTML
+  #
+  # ==== Example
+  #   <%= delete_button :article, url(:article, @article), "Delete article now", :class => 'delete-btn' %>
+  def delete_button(name, url, contents="Delete", attrs = {})
+    tag :form, :class => 'delete-btn', :action => url, :method => :post do
+      tag(:input, :type => :hidden, :name => "_method", :value => "DELETE") <<
+      tag(:input, (contents || 'Delete'), attrs.merge(:type => :submit))
+    end
+  end
 
   # Generates a HTML submit button.
   #
