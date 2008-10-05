@@ -1,5 +1,5 @@
 #
-# ==== Standalone <%= module_name %> configuration
+# ==== Standalone FullTestSlice configuration
 # 
 # This configuration/environment file is only loaded by bin/slice, which can be 
 # used during development of the slice. It has no effect on this slice being
@@ -28,7 +28,7 @@ Merb::Config.use do |c|
   # c[:session_id_key] = '_session_id'
   
   # The session_secret_key is only required for the cookie session store.
-  c[:session_secret_key]  = '<%= SHA1.new(rand(100000000000).to_s).to_s %>'
+  c[:session_secret_key]  = '780af855b5f47a1033726be3fabad8113a3d34a4'
   
   # There are various options here, by default Merb comes with 'cookie', 
   # 'memory', 'memcache' or 'container'.  
