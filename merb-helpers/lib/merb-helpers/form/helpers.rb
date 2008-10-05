@@ -376,10 +376,11 @@ module Merb::Helpers::Form
   
   # Generates a HTML delete button.
   #
+  # If an object is passed as first parameter, Merb will try to use the resource url for the object
+  # If the object doesn't have a resource view, pass a url
+  #
   # ==== Parameters
-  # name<Symbol>:: Model or Resource
-  # url<String>:: URL to send the request to
-  # attrs<Hash>:: HTML attributes
+  # object_or_url<Object> or <String>:: Object to delete or URL to send the request to
   # contents<String>:: HTML contained within the button tag
   # attrs<Hash>:: HTML attributes
   #
@@ -387,8 +388,11 @@ module Merb::Helpers::Form
   # String:: HTML
   #
   # ==== Example
-  #   <%= delete_button :article, url(:article, @article), "Delete article now", :class => 'delete-btn' %>
-  def delete_button(name, url, contents="Delete", attrs = {})
+  #   <%= delete_button @article, "Delete article now", :class => 'delete-btn' %>
+  #   <%= delete_button url(:article, @article)%>
+  #
+  def delete_button(object_or_url, contents="Delete", attrs = {})
+    url = object_or_url.is_a?(String) ? object_or_url : url(object_or_url.class.to_s.snake_case.to_sym, object_or_url)
     tag :form, :class => 'delete-btn', :action => url, :method => :post do
       tag(:input, :type => :hidden, :name => "_method", :value => "DELETE") <<
       tag(:input, (contents || 'Delete'), attrs.merge(:type => :submit))

@@ -104,6 +104,10 @@ class FakeModel
   def nothing
     nil
   end
+  
+  def to_s
+    'fake_model'
+  end
 end
 
 class FakeModel2 < FakeModel
