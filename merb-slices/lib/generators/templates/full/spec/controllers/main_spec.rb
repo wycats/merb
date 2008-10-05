@@ -57,6 +57,10 @@ describe "<%= module_name %>::Main (controller)" do
     controller.public_path_for(:image).should == "/slices/<%= base_name %>/images"
     controller.public_path_for(:javascript).should == "/slices/<%= base_name %>/javascripts"
     controller.public_path_for(:stylesheet).should == "/slices/<%= base_name %>/stylesheets"
+    
+    controller.image_path.should == "/slices/<%= base_name %>/images"
+    controller.javascript_path.should == "/slices/<%= base_name %>/javascripts"
+    controller.stylesheet_path.should == "/slices/<%= base_name %>/stylesheets"
   end
   
   it "should have a slice-specific _template_root" do
