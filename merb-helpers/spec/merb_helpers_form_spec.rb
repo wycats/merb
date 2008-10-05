@@ -1,5 +1,43 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
+# Quick rundown of how these specs work
+# please read before hacking on this plugin
+# 
+# helpers must be tested through then entire stack
+# what that means is that each spec must 
+# send a request to a controller and render a template
+#
+# Start by creating a spec controller subclassing SpecController
+# which itself is a subclass of Merb::Controller
+# specs_controller.rb (available at spec/ficture/app/controllers/specs_controller.rb)
+# defines SpecController and that's where you should define your own spec controller
+# if you're hacking on the helpers, you might want to look at the specs controller
+#
+# To test your helper, start by initializing a controller
+# 
+#    @controller = CustomHelperSpecs.new(Merb::Request.new({}))
+#
+# Note that we are sending a real request to the controller, feel free to use the request as needed
+#
+# You might need to access real objects in your views
+# you can do that by setting them up in the controller
+#
+#    @obj = FakeModel.new # FaKeModel is defined in spec_helper.rb check it out!
+#    @controller.instance_variable_set(:@obj, @obj)
+# 
+# To test a helper, you need to render a view:
+#
+#    result = @controller.render :view_name
+#
+# Of course, you need to create a view:
+#    spec/fixtures/app/views/custom_helper_specs/view_name.html.erb
+# in the view, call the helper you want to test
+#
+# You can now test the helper in the view:
+#    result.should match_tag(:form, :method => "post")
+#
+
+
 Merb::Plugins.config[:helpers] = {
   :default_builder => Merb::Helpers::Form::Builder::FormWithErrors
 }
@@ -1184,43 +1222,36 @@ end
 describe 'delete_button' do
 
   before :each do
-    @c = DeleteButtonSpecs.new({})
-    @obj = mock 'a model'
-    @obj.stub!(:object_id).and_return("1")
-    
-    Merb::Router.prepare do |r|
-      r.resources :objs
-      r.resources :foos
-    end
-    def url(sym, obj)
-      "/objs/#{obj.object_id}"
-    end
+    @controller = DeleteButtonSpecs.new(Merb::Request.new({}))
+    @controller.instance_variable_set(:@obj, FakeModel.new)
+  end
+  
+  it "should have a default submit button text" do
+    result = @controller.render :simple_delete # <%= delete_button @obj %>
+    result.should match(/<input type=\"submit\">Delete<\/input>/)
   end
 
-  # it 'should return a button inside of a form for the object' do
-  #   result = delete_button(:obj, url(:obj, @obj), "Delete moi!")
-  #   result.should match_tag(:form, :action => "/objs/#{@obj.object_id}", :method => "post")
-  #   result.should match_tag(:input, :type => "hidden", :value => "delete", :name => "_method")
-  #   result.should match_tag(:input, :type => "submit", :value => "Delete moi!")
-  # end
+  it 'should return a button inside of a form for the object' do
+    result = @controller.render :simple_delete # <%= delete_button @obj %>
+    result.should match_tag(:form, :action => "/fake_models/fake_model", :method => "post")
+    result.should match_tag(:input, :type => "hidden", :value => "DELETE", :name => "_method")
+  end
 
-  # it 'should allow you to modify the label' do
-  #   delete_button(:obj, @obj, 'Remove').should match(/<button.*>Remove<\/button>/)
-  # end
-  # 
-  # it 'should allow you to omit the ivar reference if its name is the same as the attribute' do
-  #   delete_button(:obj).should == delete_button(:obj, @obj)
-  # end
-  # 
-  # it "should allow you to use a local variable as is common in a .each loop" do
-  #   foo = @obj
-  #   delete_button(:foo, foo).should == delete_button(:obj)
-  # end
-  # 
-  # it 'should allow you to modify the action so you can use routes with multiple params' do
-  #   result = delete_button('/objs/2/subobjs/1')
-  #   result.should match_tag(:form, :action => "/objs/2/subobjs/1", :method => "post")
-  # end
+  it 'should allow you to modify the label' do
+    result = @controller.render :delete_with_label # <%= delete_button(@obj, "Delete moi!") %>
+    result.should match(/<input type=\"submit\">Delete moi!<\/input>/)
+  end
+  
+  it "should allow you to pass some extra params like a class" do
+    result = @controller.render :delete_with_extra_params
+    result.should match(/<input type=\"submit\" class=\"custom-class\">Delete<\/input>/)
+  end
+  
+  it "should allow to pass an explicit url as a string" do
+    result = @controller.render :delete_with_explicit_url # <%= delete_button('/test/custom_url') %>
+    result.should match_tag(:form, :action => "/test/custom_url", :method => "post")
+  end
+  
 end
 
 # describe "control_value" do

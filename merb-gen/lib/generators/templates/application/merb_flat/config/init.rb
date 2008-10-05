@@ -126,7 +126,7 @@ end
 Merb::Config.use { |c|
   c[:environment]         = 'production',
   c[:framework]           = {},
-  c[:log_level]           = 'debug',
+  c[:log_level]           = :debug,
   c[:use_mutex]           = false,
   c[:session_store]       = 'cookie',
   c[:session_id_key]      = '_session_id',

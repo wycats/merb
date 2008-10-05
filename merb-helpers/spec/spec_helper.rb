@@ -4,6 +4,11 @@ require "merb-core"
 require File.join(File.dirname(__FILE__),"..",'lib',"merb-helpers")
 require "date"
 
+# Please read merb_helpers_form_spec.rb
+# for more info on how to test helpers
+# full stack specs are required
+
+
 default_options = {:environment => 'test', :adapter => 'runner'}.merge({:merb_root => File.dirname(__FILE__) / 'fixture'})
 options = default_options.merge($START_OPTIONS || {})
 Merb.start_environment(options)
@@ -98,6 +103,10 @@ class FakeModel
   
   def nothing
     nil
+  end
+  
+  def to_s
+    'fake_model'
   end
 end
 
