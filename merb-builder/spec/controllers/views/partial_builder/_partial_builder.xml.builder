@@ -1,1 +1,1 @@
-xml.hello 'World'
+xml.hello world

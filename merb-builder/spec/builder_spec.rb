@@ -12,7 +12,7 @@ describe "Builder" do
     c.body.should == @xml.target!
   end
   
-  it "should be able to render partial Builder templates" do
+  it "should be able to render partial Builder templates and use locals" do
     c = dispatch_to(PartialBuilder, :index, :format => "xml")
     @xml.hello "World"
     c.body.should == @xml.target!
