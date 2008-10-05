@@ -28,6 +28,7 @@ describe Merb::Helpers::Tag do
       doc = Hpricot(response.body)
       (doc/"div.psy").size.should == 1
       (doc/"div#bands").size.should == 1
+      (doc/"div[@invalid_attr='at least in html']").size.should == 1
     end    
 
     it 'handles nesting of tags/blocks' do
