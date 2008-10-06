@@ -1,6 +1,10 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
 describe "Numeric helpers" do
+
+  before :each do
+    @controller = NumericExtSpecs.new(Merb::Request.new({}))
+  end
   
   describe "with_delimiter" do
     
@@ -50,6 +54,8 @@ describe "Numeric helpers" do
        @number.to_currency.should == "$1,234,567,890.50"
        @number.to_currency.should == @number.to_currency(:us)
        @number.to_currency.should == @number.to_currency(:default)
+       result = @controller.render :to_concurrency_default
+       result.should == "$1,234,567,890.50"
      end
      
      it "should use the precision settings of the format" do
