@@ -17,7 +17,7 @@ EMAIL  = "ykatz@engineyard.com"
 
 GEM_NAME    = "merb-action-args"
 PKG_BUILD   = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
-GEM_VERSION = (Merb::MORE_VERSION rescue "0.9.8") + PKG_BUILD
+GEM_VERSION = (Merb::MORE_VERSION rescue "0.9.9") + PKG_BUILD
 
 RELEASE_NAME = "REL #{GEM_VERSION}"
 
@@ -35,7 +35,7 @@ spec = Gem::Specification.new do |s|
   s.author = AUTHOR
   s.email = EMAIL
   s.homepage = PROJECT_URL
-  s.add_dependency('merb-core', '>= 0.9.8')
+  s.add_dependency('merb-core', '>= 0.9.9')
   s.add_dependency('ruby2ruby', '>= 1.1.9')
   s.add_dependency('ParseTree', '>= 2.2')
   s.require_path = 'lib'
