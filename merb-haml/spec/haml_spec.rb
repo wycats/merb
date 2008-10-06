@@ -6,7 +6,7 @@ describe "HAML" do
     c.body.should == ::Haml::Engine.new("#foo\n  %p Hello").render
   end
 
-  it "should be able to render HAML templates" do
+  it "should be able to render HAML templates with locals" do
     c = dispatch_to(PartialHaml, :index)
     c.body.should == ::Haml::Engine.new("#foo\n  %p Partial").render
   end
