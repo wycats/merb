@@ -46,6 +46,14 @@ numeric helpers
 
 Numeric helpers extend numeric instances, in lay terms: numbers.
 
+* +minutes_to_hours+ converts a +numeric+ value representing minutes into a string representing an hour value
+
+    315.minutes_to_hours # => "05:15"
+
+* +two_digits+ formats a +number+ into a two digit string. Basically it prepends an integer to a 2 digits string.
+
+    3.two_digits # => "03"
+
 * +with_delimiter+, this method formats a number with grouped thousands 
 
     12345678.with_delimiter # => "12,345,678"
