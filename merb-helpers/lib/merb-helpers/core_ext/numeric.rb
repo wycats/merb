@@ -244,7 +244,7 @@ class Numeric
     #---
     # @private
     def self.two_digits(number)
-      number.to_s.map{|t| t.length == 1 ? '0'+t : t }.to_s
+      (0..9).include?(number) ? "0#{number}" : number.to_s
     end
 
     # Converts a +numeric+ value representing minutes into a string representing an hour value
