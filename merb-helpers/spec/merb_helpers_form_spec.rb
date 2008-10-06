@@ -9,9 +9,9 @@ require File.dirname(__FILE__) + '/spec_helper'
 #
 # Start by creating a spec controller subclassing SpecController
 # which itself is a subclass of Merb::Controller
-# specs_controller.rb (available at spec/ficture/app/controllers/specs_controller.rb)
-# defines SpecController and that's where you should define your own spec controller
-# if you're hacking on the helpers, you might want to look at the specs controller
+# specs_controller.rb (available at spec/fixture/app/controllers/specs_controller.rb)
+# defines SpecController.
+# Create a new controller in the spec/fixture/app/controllers/ if you are adding a new helper
 #
 # To test your helper, start by initializing a controller
 # 
@@ -30,7 +30,7 @@ require File.dirname(__FILE__) + '/spec_helper'
 #    result = @controller.render :view_name
 #
 # Of course, you need to create a view:
-#    spec/fixtures/app/views/custom_helper_specs/view_name.html.erb
+#    spec/fixture/app/views/custom_helper_specs/view_name.html.erb
 # in the view, call the helper you want to test
 #
 # You can now test the helper in the view:
