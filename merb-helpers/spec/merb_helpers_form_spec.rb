@@ -22,7 +22,7 @@ require File.dirname(__FILE__) + '/spec_helper'
 # You might need to access real objects in your views
 # you can do that by setting them up in the controller
 #
-#    @obj = FakeModel.new # FaKeModel is defined in spec_helper.rb check it out!
+#    @obj = FakeModel.new # FaKeModel is defined in spec/fixture/models/first_generic_fake_model.rb check it out!
 #    @controller.instance_variable_set(:@obj, @obj)
 # 
 # To test a helper, you need to render a view:

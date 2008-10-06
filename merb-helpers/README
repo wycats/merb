@@ -15,6 +15,32 @@ dependency "merb-helpers"
 
 # TODO: describe date_time_helpers, form_helpers, tag_helpers
 
+
+form_helpers
+------------
+
+* +delete_button+. If you want to delete an object, you should call the delete method on the object's controller.
+You should not use a simple link to your action, instead you should make a DELETE request.
+To help you doing that, you can use the delete_button method as follows:
+
+    <%= delete_button(@comment) %>
+
+The delete_button helper has many options, first thing, you can pass an object or an url:
+
+    <%= delete_button(url(:comment, @comment)) %>
+
+This helper creates a form with a submit button. 
+You can pass many arguments to the delete_button helper. The first thing you might want to do is to change the
+default button text. 
+
+    <%= delete_button(@comment), "Remove this comment by #{@comment.author.name}" %>
+
+You can also pass the usual helper params to specify a class to use for instance:
+
+    <%= delete_button(@comment, nil, :class => 'custom-class') %>
+    
+See usage in specs: spec/fixture/app/views/delete_button_specs
+
 numeric helpers
 ---------------
 

@@ -7,6 +7,7 @@ require "date"
 # Please read merb_helpers_form_spec.rb
 # for more info on how to test helpers
 # full stack specs are required
+# use the app in spec/fixture to test helpers
 
 
 default_options = {:environment => 'test', :adapter => 'runner'}.merge({:merb_root => File.dirname(__FILE__) / 'fixture'})
