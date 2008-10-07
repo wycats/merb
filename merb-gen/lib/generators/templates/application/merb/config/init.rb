@@ -150,22 +150,22 @@ end
 # ==== Tune your inflector
 
 # To fine tune your inflector use the word, singular_word and plural_word
-# methods of English::Inflect module metaclass.
+# methods of Extlib::Inflection module metaclass.
 #
 # Here we define erratum/errata exception case:
 #
-# English::Inflect.word "erratum", "errata"
+# Extlib::Inflection.word "erratum", "errata"
 #
 # In case singular and plural forms are the same omit
 # second argument on call:
 #
-# English::Inflect.word 'information'
+# Extlib::Inflection.word 'information'
 #
 # You can also define general, singularization and pluralization
 # rules:
 #
 # Once the following rule is defined:
-# English::Inflect.rule 'y', 'ies'
+# Extlib::Inflection.rule 'y', 'ies'
 #
 # You can see the following results:
 # irb> "fly".plural
@@ -175,14 +175,14 @@ end
 #
 # Example for singularization rule:
 #
-# English::Inflect.singular_rule 'o', 'oes'
+# Extlib::Inflection.singular_rule 'o', 'oes'
 #
 # Works like this:
 # irb> "heroes".singular
 # => hero
 #
 # Example of pluralization rule:
-# English::Inflect.singular_rule 'fe', 'ves'
+# Extlib::Inflection.singular_rule 'fe', 'ves'
 #
 # And the result is:
 # irb> "wife".plural

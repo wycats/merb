@@ -5,7 +5,7 @@ class <%= class_name %> < Merb::Controller
   end
 
   def index
-    "Hello"
+    "Hello, I am flat Merb application. I only have one single file for the application, single file for configs and routes, and a directory for views."
   end
 
   def foo
