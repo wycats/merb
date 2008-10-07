@@ -48,14 +48,11 @@ task :gemspec do
     file.puts spec.to_ruby
   end
 end
-
 <% if testing_framework.to_sym == :rspec %>
 require 'spec/rake/spectask'
 require 'merb-core/test/tasks/spectasks'
 desc 'Default: run spec examples'
 task :default => 'spec'
-<% end %>
-
-<% if testing_framework.to_sym == :test_unit %>
+<% elsif testing_framework.to_sym == :test_unit %>
 require 'rake/testtask'
 <% end %>
