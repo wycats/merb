@@ -48,7 +48,7 @@ describe "<%= module_name %>::Main (controller)" do
     controller.slice_url(:index, :format => 'html').should == url
     
     url = controller.url(:<%= symbol_name %>_home)
-    url.should == "/<%= base_name %>"
+    url.should == "/<%= base_name %>/"
     controller.slice_url(:home).should == url
   end
   

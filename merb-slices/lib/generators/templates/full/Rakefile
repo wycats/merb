@@ -1,10 +1,8 @@
 require 'rubygems'
 require 'rake/gempackagetask'
-require 'spec/rake/spectask'
 
 require 'merb-core'
 require 'merb-core/tasks/merb'
-require 'merb-core/test/tasks/spectasks'
 
 GEM_NAME = "<%= base_name %>"
 AUTHOR = "Your Name"
@@ -51,17 +49,13 @@ task :gemspec do
   end
 end
 
-desc "Run all examples (or a specific spec with TASK=xxxx)"
-Spec::Rake::SpecTask.new('spec') do |t|
-  t.spec_opts  = ["-cfs"]
-  t.spec_files = begin
-    if ENV["TASK"] 
-      ENV["TASK"].split(',').map { |task| "spec/**/#{task}_spec.rb" }
-    else
-      FileList['spec/**/*_spec.rb']
-    end
-  end
-end
-
+<% if testing_framework.to_sym == :rspec %>
+require 'spec/rake/spectask'
+require 'merb-core/test/tasks/spectasks'
 desc 'Default: run spec examples'
 task :default => 'spec'
+<% end %>
+
+<% if testing_framework.to_sym == :test_unit %>
+require 'rake/testtask'
+<% end %>

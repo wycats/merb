@@ -19,6 +19,9 @@ module Merb::Generators
   
   class BaseSliceGenerator < NamedGenerator
     
+    option :testing_framework, :default => :rspec,
+                               :desc => 'Testing framework to use (one of: rspec, test_unit).'
+    
     def self.common_template(name, template_source)
       common_base_dir = File.expand_path(File.dirname(__FILE__))
       template name do |t|
