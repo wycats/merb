@@ -5,26 +5,34 @@ describe "relative_date" do
   
   before :each do
     Time.stub!(:now).and_return(Time.utc(2007, 6, 1, 11))
+    @controller = RelativeDateSpecs.new(Merb::Request.new({}))
   end
 
   it "Should show today" do
     relative_date(Time.now.utc).should == "today"
+    result = @controller.render :relative_today
+    result.should == "today"
   end
 
   it "Should show yesterday" do
     relative_date(1.day.ago.utc).should == 'yesterday'
+    result = @controller.render :relative_yesterday
+    result.should == "yesterday"
   end
 
   it "Should show tomorrow" do
     relative_date(1.day.from_now.utc).should == 'tomorrow'
+    @controller.render(:relative_tomorrow).should == 'tomorrow'
   end
 
   it "Should show date with year" do
     relative_date(Time.utc(2005, 11, 15)).should == 'Nov 15th, 2005'
+    @controller.render(:relative_date_with_year).should == 'Nov 15th, 2005'
   end
 
   it "Should show date" do
     relative_date(Time.utc(2007, 11, 15)).should == 'Nov 15th'
+    @controller.render(:relative_date_without_year).should == 'Nov 15th'
   end
 end
 
@@ -33,14 +41,17 @@ describe "relative_date_span" do
   
   before :each do
     Time.stub!(:now).and_return(Time.utc(2007, 6, 1, 11))
+    @controller = RelativeDateSpan.new(Merb::Request.new({}))
   end
 
   it "Should show date span on the same day" do
     relative_date_span([Time.utc(2007, 11, 15), Time.utc(2007, 11, 15)]).should == 'Nov 15th'
+    @controller.render(:date_span_on_same_day).should == 'Nov 15th'
   end
 
   it "Should show date span on the same day on different year" do
     relative_date_span([Time.utc(2006, 11, 15), Time.utc(2006, 11, 15)]).should == 'Nov 15th, 2006'
+    @controller.render(:date_span_on_same_day_on_different_year).should == 'Nov 15th, 2006'
   end
 
   it "Should show date span on the same month" do
