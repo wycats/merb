@@ -59,6 +59,11 @@ module Merb::Generators
       template.destination = ".gitignore"
     end
 
+    template :htaccess do |template|
+      template.source = 'public/dothtaccess'
+      template.destination = 'public/.htaccess'
+    end
+
     directory :test_dir do |directory|
       dir    = testing_framework == :rspec ? "spec" : "test"
 
