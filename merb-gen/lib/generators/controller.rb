@@ -36,9 +36,11 @@ module Merb::Generators
       template.source = 'test/controllers/%file_name%_test.rb'
       template.destination = "test/controllers" / base_path / "#{file_name}_test.rb"
     end
-    
+
+    def after_generation
+      STDOUT.puts "\n\nDon't forget to add request/controller tests first."
+    end
   end
   
   add :controller, ControllerGenerator
-  
 end
