@@ -19,6 +19,14 @@ describe Merb::Generators::MerbFullGenerator do
     it "should have an exceptions controller" do
       @generator.should create('/tmp/testing/app/controllers/exceptions.rb')
     end
+
+    it "should have a gitignore file" do
+      @generator.should create('/tmp/testing/.gitignore')
+    end
+    
+    it "should have an htaccess file" do
+      @generator.should create('/tmp/testing/public/.htaccess')
+    end
     
     it "should create a number of views"
     
