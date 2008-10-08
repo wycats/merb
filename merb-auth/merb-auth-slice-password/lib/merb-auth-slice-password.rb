@@ -23,7 +23,7 @@ if defined?(Merb::Plugins)
     
     # Slice metadata
     self.description = "MerbAuthSlicePassword is a merb slice that provides basic password based logins"
-    self.version = "0.0.1"
+    self.version = "0.9.9"
     self.author = "Daniel Neighman"
     
     # Stub classes loaded hook - runs before LoadClasses BootLoader
@@ -59,8 +59,8 @@ if defined?(Merb::Plugins)
     def self.setup_router(scope)
       # example of a named route
       # scope.match('/index.:format').to(:controller => 'main', :action => 'index').name(:mauth_password_slice_index)
-      scope.match("/login", :method => :put).to(:controller => "sessions", :action => "update").name(:"merb-auth_perform_login")
-      scope.match("/logout").to(:controller => "sessions", :action => "destroy").name(:"merb-auth_logout")
+      scope.match("/login", :method => :put).to(:controller => "sessions", :action => "update").name(:perform_login)
+      scope.match("/logout").to(:controller => "sessions", :action => "destroy").name(:logout)
     end
     
   end
@@ -78,8 +78,7 @@ if defined?(Merb::Plugins)
   #
   # Or just call setup_default_structure! to setup a basic Merb MVC structure.
   MerbAuthSlicePassword.setup_default_structure!
-  
-  MaPS = MerbAuthSlicePassword
+
   # Add dependencies for other MerbAuthSlicePassword classes below. Example:
   # dependency "mauth_password_slice/other"
   
