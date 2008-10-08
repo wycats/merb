@@ -1,8 +1,8 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
 describe "relative_date" do
-  include Merb::Helpers::DateAndTime  
-  
+  include Merb::Helpers::DateAndTime
+
   before :each do
     Time.stub!(:now).and_return(Time.utc(2007, 6, 1, 11))
     @controller = RelativeDateSpecs.new(Merb::Request.new({}))
@@ -37,8 +37,8 @@ describe "relative_date" do
 end
 
 describe "relative_date_span" do
-  include Merb::Helpers::DateAndTime  
-  
+  include Merb::Helpers::DateAndTime
+
   before :each do
     Time.stub!(:now).and_return(Time.utc(2007, 6, 1, 11))
     @controller = RelativeDateSpan.new(Merb::Request.new({}))
@@ -81,8 +81,8 @@ describe "relative_date_span" do
 end
 
 describe "relative_time_span" do
-  include Merb::Helpers::DateAndTime  
-  
+  include Merb::Helpers::DateAndTime
+
   before :each do
     Time.stub!(:now).and_return(Time.utc(2007, 6, 1, 11))
   end
@@ -122,8 +122,8 @@ describe "relative_time_span" do
 end
 
 describe "time_lost_in_words" do
-  include Merb::Helpers::DateAndTime  
-  
+  include Merb::Helpers::DateAndTime
+
   it "Should show seconds" do
     time_lost_in_words(Time.now, Time.now, true).should == "less than 5 seconds"
   end
@@ -170,8 +170,8 @@ describe "time_lost_in_words" do
 end
 
 describe "prettier_time" do
-  include Merb::Helpers::DateAndTime  
-  
+  include Merb::Helpers::DateAndTime
+
   # prettier time"
   it "Should not show leading zero in hour" do
     prettier_time(Time.utc(2007, 11, 15, 14, 0)).should == '2:00 PM'
@@ -187,11 +187,11 @@ describe "prettier_time" do
 end
 
 shared_examples_for "Date, DateTime, Time formatting" do
-  
+
   before(:each) do
     Date.reset_formats
   end
-  
+
   it "should list the available formats" do
     Date.formats.should be_an_instance_of(Hash)
     Date.formats.keys.length.should > 1
@@ -200,7 +200,7 @@ shared_examples_for "Date, DateTime, Time formatting" do
   it "should support to be db formatted" do
     @date.formatted(:db).should =~ /^2007-11-02 \d{2}:\d{2}:\d{2}$/
   end
-  
+
   it "should support to be time formatted" do
     @date.formatted(:time).should == "00:00"
   end
@@ -208,15 +208,15 @@ shared_examples_for "Date, DateTime, Time formatting" do
   it "should support to be short formatted" do
     @date.formatted(:short).should == "02 Nov 00:00"
   end
-  
+
   it "should support to be date formatted" do
     @date.formatted(:date).should == "2007-11-02"
   end
-  
+
   it "should support to be long formatted" do
     @date.formatted(:long).should == "November 02, 2007 00:00"
   end
-  
+
   it "should support a new date format" do
     @date.formatted(:matt).should == @date.to_s
     Date.add_format(:matt, "%H:%M:%S %Y-%m-%d")
@@ -252,17 +252,17 @@ describe "Date" do
   it "Should return itself when to_date is called" do
     @date.to_date.should == @date
   end
-  
+
   it_should_behave_like "Date, DateTime, Time formatting"
-  
+
 end
 
 describe "DateTime" do
-  
+
   before(:each) do
     @date = DateTime.new(2007, 11, 02)
   end
-  
+
   it_should_behave_like "Date, DateTime, Time formatting"
-    
+
 end
