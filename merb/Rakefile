@@ -1,0 +1,44 @@
+require 'rubygems'
+require 'rake/gempackagetask'
+require 'rubygems/specification'
+require 'date'
+require 'merb-core/version'
+require 'merb-core/tasks/merb_rake_helper'
+
+NAME = "merb"
+GEM_VERSION = Merb::MORE_VERSION
+AUTHOR = "Engine Yard"
+EMAIL = "merb@engineyard.com"
+HOMEPAGE = "http://merbivore.com/"
+SUMMARY = "(merb-core + merb-more) == all of Merb"
+
+merb_spec = Gem::Specification.new do |s|
+  s.rubyforge_project = 'merb'
+  s.name         = NAME
+  s.version      = GEM_VERSION
+  s.platform     = Gem::Platform::RUBY
+  s.author       = AUTHOR
+  s.email        = EMAIL
+  s.homepage     = HOMEPAGE
+  s.summary      = SUMMARY
+  s.description  = SUMMARY
+  s.files        = %w(LICENSE README Rakefile) + Dir.glob("{lib,spec}/**/*")
+  s.add_dependency "merb-core", "= #{Merb::VERSION}"
+  s.add_dependency "merb-more", "= #{Merb::MORE_VERSION}"
+end
+
+Rake::GemPackageTask.new(spec) do |pkg|
+  pkg.gem_spec = spec
+end
+
+desc "install the plugin locally"
+task :install => [:package] do
+  sh %{#{sudo} #{Gem.ruby} -S gem install #{install_home} pkg/#{NAME}-#{GEM_VERSION}}
+end
+
+desc "create a gemspec file"
+task :make_spec do
+  File.open("#{NAME}.gemspec", "w") do |file|
+    file.puts spec.to_ruby
+  end
+end
