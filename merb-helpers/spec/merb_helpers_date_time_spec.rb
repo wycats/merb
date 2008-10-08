@@ -41,7 +41,7 @@ describe "relative_date_span" do
 
   before :each do
     Time.stub!(:now).and_return(Time.utc(2007, 6, 1, 11))
-    @controller = RelativeDateSpan.new(Merb::Request.new({}))
+    @controller = RelativeDateSpanSpecs.new(Merb::Request.new({}))
   end
 
   it "Should show date span on the same day" do
