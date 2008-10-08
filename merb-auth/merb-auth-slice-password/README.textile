@@ -1,4 +1,4 @@
-MerbAuthPasswordSlice ==================
+MerbAuthSlicePassword ==================
 
 A slice for the Merb framework that uses the merb-auth-core authentication
 framework.  This provides basic form based login as well as basic auth login.
@@ -36,11 +36,11 @@ or nil / false if not found
 |       `-- layout
 |           `-- mauth_password_slice.html.erb
 |-- lib
-|   |-- merb-auth_password_slice
+|   |-- merb-auth-slice-password
 |   |   |-- merbtasks.rb
 |   |   |-- slicetasks.rb
 |   |   `-- spectasks.rb
-|   `-- merb-auth_password_slice.rb
+|   `-- merb-auth-slice-password.rb
 |-- public
 |   |-- javascripts
 |   |   `-- master.js
@@ -74,7 +74,7 @@ or nil / false if not found
    copy over views to override in addition to the files found in /stubs.
    
 
-To see all available tasks for MerbAuthPasswordSlice run:
+To see all available tasks for MerbAuthSlicePassword run:
 
 rake -T slices:mauth_password_slice
 
@@ -86,13 +86,13 @@ file: config/init.rb
 
 # add the slice as a regular dependency
 
-dependency 'merb-auth_password_slice'
+dependency 'merb-auth-slice-password'
 
 # if needed, configure which slices to load and in which order
 
-Merb::Plugins.config[:merb_slices] = { :queue => ["MerbAuthPasswordSlice", ...] }
+Merb::Plugins.config[:merb_slices] = { :queue => ["MerbAuthSlicePassword", ...] }
 
-# Setup your application to use MerbAuthPasswordSlice in an after_app_loads block
+# Setup your application to use MerbAuthSlicePassword in an after_app_loads block
 
 # To change the login or password field to a field of your choice
   update the Authentication::Strategies::Basic::Base.login_param and password_param
@@ -116,21 +116,21 @@ shown.  The defaults are shown
 file: config/router.rb
 
 # Any of the options can be left out for the defaults
-slice(:MerbAuthPasswordSlice, :name_prefix => nil, :path_prefix => "auth", :default_routes => false )
+slice(:MerbAuthSlicePassword, :name_prefix => nil, :path_prefix => "auth", :default_routes => false )
 
 Normally you should also run the following rake task:
 
-rake slices:merb-auth_password_slice:install
+rake slices:merb-auth-slice-password:install
 
 ------------------------------------------------------------------------------
 
 You can put your application-level overrides in:
 
-host-app/slices/merb-auth_password_slice/app - controllers, models, views ...
+host-app/slices/merb-auth-slice-password/app - controllers, models, views ...
 
 Templates are located in this order:
 
-1. host-app/slices/merb-auth_password_slice/app/views/* 2.
+1. host-app/slices/merb-auth-slice-password/app/views/* 2.
 gems/mauth_password_slice/app/views/* 3. host-app/app/views/*
 
 To customize the login form, create a view in your host-app
@@ -140,7 +140,7 @@ host-app/app/views/exceptions/unauthenticated.html.haml
 The host-app's application layout is used by default
 
 You can use the host application's layout by configuring the
-merb-auth_password_slice slice in a before_app_loads block:
+merb-auth-slice-password slice in a before_app_loads block:
 
 You'll need to setup the Authentication::Manager#fetch_user and store_user
 methods for your given user model.

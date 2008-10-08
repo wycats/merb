@@ -5,7 +5,7 @@ require 'merb-core/version'
 require 'merb-core/tasks/merb_rake_helper'
 require 'merb-core/test/tasks/spectasks'
 
-GEM_NAME = "merb-auth_password_slice"
+GEM_NAME = "merb-auth-slice-password"
 AUTHOR = "Your Name"
 EMAIL = "Your Email"
 HOMEPAGE = "http://merbivore.com/"
@@ -25,6 +25,7 @@ spec = Gem::Specification.new do |s|
   s.email = EMAIL
   s.homepage = HOMEPAGE
   s.add_dependency('merb-auth-core', "~> 0.9.9")
+  s.add_dependency('merb-auth-more', "~> 0.9.9")
   s.require_path = 'lib'
   s.files = %w(LICENSE README.textile Rakefile TODO) + Dir.glob("{lib,spec,app,public,stubs}/**/*")
 end
@@ -33,7 +34,7 @@ Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
 
-desc "Install MerbAuthPasswordSlice as a gem"
+desc "Install MerbAuthSlicePassword as a gem"
 task :install do
   Merb::RakeHelper.install(GEM_NAME, :version => GEM_VERSION)
 end

@@ -1,5 +1,5 @@
 namespace :slices do
-  namespace :"merb-auth_password_slice" do
+  namespace :"merb-auth-slice-password" do
       
     desc "Run slice specs within the host application context"
     task :spec => [ "spec:explain", "spec:default" ]
@@ -9,7 +9,7 @@ namespace :slices do
       slice_root = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
       
       task :explain do
-        puts "\nNote: By running MerbAuthPasswordSlice specs inside the application context any\n" +
+        puts "\nNote: By running MerbAuthSlicePassword specs inside the application context any\n" +
              "overrides could break existing specs. This isn't always a problem,\n" +
              "especially in the case of views. Use these spec tasks to check how\n" +
              "well your application conforms to the original slice implementation."

@@ -8,9 +8,8 @@ require 'fileutils'
 include FileUtils
 
 gems = %w[
-  merb-auth-core merb-auth-more merb-auth_password_slice
+  merb-auth-core merb-auth-more merb-auth-slice-password
 ]
-
 merb_auth_spec = Gem::Specification.new do |s|
   s.rubyforge_project = 'merb-auth'
   s.name         = GEM_NAME
@@ -23,9 +22,6 @@ merb_auth_spec = Gem::Specification.new do |s|
   s.description  = s.summary
   s.files        = %w( LICENSE README.textile Rakefile TODO lib/merb-auth.rb )
   s.add_dependency "merb-core", "~> #{GEM_VERSION}"
-  s.add_dependency "merb-auth-core", "= #{GEM_VERSION}"
-  s.add_dependency "merb-auth-more", "= #{GEM_VERSION}"
-  s.add_dependency "merb-auth_password_slice", "= #{GEM_VERSION}"
   gems.each do |gem|
     s.add_dependency gem, "~> #{GEM_VERSION}"
   end
@@ -37,19 +33,65 @@ Rake::GemPackageTask.new(merb_auth_spec) do |package|
   package.gem_spec = merb_auth_spec
 end
 
-desc "install the plugin as a gem"
+desc "Install all gems"
 task :install do
-  Merb::RakeHelper.install(GEM_NAME, :version => GEM_VERSION)
+  Merb::RakeHelper.install("merb-auth", :version => GEM_VERSION)
+  Merb::RakeHelper.install_package("pkg/merb-auth-#{GEM_VERSION}.gem")
 end
 
-desc "Uninstall the gem"
-task :uninstall do
-  Merb::RakeHelper.uninstall(GEM_NAME, :version => GEM_VERSION)
+desc "Uninstall all gems"
+task :uninstall => :uninstall_gems do
+  Merb::RakeHelper.uninstall('merb-auth', :version => GEM_VERSION)
+  Merb::RakeHelper.uninstall('merb-auth', :version => GEM_VERSION)
 end
 
-desc "Create a gemspec file"
-task :gemspec do
-  File.open("#{GEM_NAME}.gemspec", "w") do |file|
-    file.puts spec.to_ruby
+desc "Build the merb-auth gems"
+task :build_gems do
+  gems.each do |dir|
+    Dir.chdir(dir) { sh "#{Gem.ruby} -S rake package" }
   end
+end
+
+desc "Install the merb-auth sub-gems"
+task :install_gems do
+  gems.each do |dir|
+    Dir.chdir(dir) { sh "#{Gem.ruby} -S rake install" }
+  end
+end
+
+desc "Uninstall the merb-auth sub-gems"
+task :uninstall_gems do
+  gems.each do |dir|
+    Dir.chdir(dir) { sh "#{Gem.ruby} -S rake uninstall" }
+  end
+end
+
+desc "Clobber the merb-auth sub-gems"
+task :clobber_gems do
+  gems.each do |dir|
+    Dir.chdir(dir) { sh "#{Gem.ruby} -S rake clobber" }
+  end
+end
+
+task :package => ["lib/merb-auth.rb"]
+desc "Create merb-auth.rb"
+task "lib/merb-auth.rb" do
+  mkdir_p "lib"
+  File.open("lib/merb-auth.rb","w+") do |file|
+    file.puts "### AUTOMATICALLY GENERATED.  DO NOT EDIT."
+    gems.each do |gem|
+      file.puts "require '#{gem}'"
+    end
+    
+  end
+end
+
+desc "Bundle up all the merb-auth gems"
+task :bundle => [:package, :build_gems] do
+  mkdir_p "bundle"
+  cp "pkg/merb-auth-#{GEM_VERSION}.gem", "bundle"
+  gems.each do |gem|
+    sh %{cp #{gem}/pkg/#{gem}-#{GEM_VERSION}.gem bundle/}
+  end
+
 end

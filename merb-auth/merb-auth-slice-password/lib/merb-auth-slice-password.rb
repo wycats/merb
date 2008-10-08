@@ -4,7 +4,7 @@ if defined?(Merb::Plugins)
 
   load_dependency 'merb-slices'
   require 'merb-auth-core'
-  Merb::Plugins.add_rakefiles "merb-auth_password_slice/merbtasks", "merb-auth_password_slice/slicetasks", "merb-auth_password_slice/spectasks"
+  Merb::Plugins.add_rakefiles "merb-auth-slice-password/merbtasks", "merb-auth-slice-password/slicetasks", "merb-auth-slice-password/spectasks"
 
   # Register the Slice for the current host application
   Merb::Slices::register(__FILE__)
@@ -16,13 +16,13 @@ if defined?(Merb::Plugins)
   # Configuration options:
   # :layout - the layout to use; defaults to :mauth_password_slice
   # :mirror - which path component types to use on copy operations; defaults to all
-  Merb::Slices::config[:"merb-auth_password_slice"][:layout] ||= :application
+  Merb::Slices::config[:"merb-auth-slice-password"][:layout] ||= :application
   
   # All Slice code is expected to be namespaced inside a module
-  module MerbAuthPasswordSlice
+  module MerbAuthSlicePassword
     
     # Slice metadata
-    self.description = "MerbAuthPasswordSlice is a merb slice that provides basic password based logins"
+    self.description = "MerbAuthSlicePassword is a merb slice that provides basic password based logins"
     self.version = "0.0.1"
     self.author = "Daniel Neighman"
     
@@ -33,9 +33,9 @@ if defined?(Merb::Plugins)
     
     # Initialization hook - runs before AfterAppLoads BootLoader
     def self.init
-      require 'merb-auth-more/strategies/basic/password_form'
-      require 'merb-auth-more/strategies/basic/basic_auth'
-      require 'merb-auth-more/strategies/basic/openid'
+      unless MerbAuthSlicePassword[:no_default_strategies]
+        require 'merb-auth-more/strategies/basic/password_form'
+      end
     end
     
     # Activation hook - runs after AfterAppLoads BootLoader
@@ -43,7 +43,7 @@ if defined?(Merb::Plugins)
       # Load the default strategies
     end
     
-    # Deactivation hook - triggered by Merb::Slices.deactivate(MerbAuthPasswordSlice)
+    # Deactivation hook - triggered by Merb::Slices.deactivate(MerbAuthSlicePassword)
     def self.deactivate
     end
     
@@ -65,22 +65,22 @@ if defined?(Merb::Plugins)
     
   end
   
-  # Setup the slice layout for MerbAuthPasswordSlice
+  # Setup the slice layout for MerbAuthSlicePassword
   #
-  # Use MerbAuthPasswordSlice.push_path and MerbAuthPasswordSlice.push_app_path
+  # Use MerbAuthSlicePassword.push_path and MerbAuthSlicePassword.push_app_path
   # to set paths to mauth_password_slice-level and app-level paths. Example:
   #
-  # MerbAuthPasswordSlice.push_path(:application, MerbAuthPasswordSlice.root)
-  # MerbAuthPasswordSlice.push_app_path(:application, Merb.root / 'slices' / 'mauth_password_slice')
+  # MerbAuthSlicePassword.push_path(:application, MerbAuthSlicePassword.root)
+  # MerbAuthSlicePassword.push_app_path(:application, Merb.root / 'slices' / 'mauth_password_slice')
   # ...
   #
-  # Any component path that hasn't been set will default to MerbAuthPasswordSlice.root
+  # Any component path that hasn't been set will default to MerbAuthSlicePassword.root
   #
   # Or just call setup_default_structure! to setup a basic Merb MVC structure.
-  MerbAuthPasswordSlice.setup_default_structure!
+  MerbAuthSlicePassword.setup_default_structure!
   
-  MaPS = MerbAuthPasswordSlice
-  # Add dependencies for other MerbAuthPasswordSlice classes below. Example:
+  MaPS = MerbAuthSlicePassword
+  # Add dependencies for other MerbAuthSlicePassword classes below. Example:
   # dependency "mauth_password_slice/other"
   
 end

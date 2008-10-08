@@ -1,7 +1,7 @@
 namespace :slices do
-  namespace :"merb-auth_password_slice" do 
+  namespace :"merb-auth-slice-password" do 
     
-    # add your own merb-auth_password_slice tasks here
+    # add your own merb-auth-slice-password tasks here
     
     # implement this to test for structural/code dependencies
     # like certain directories or availability of other files
