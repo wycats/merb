@@ -104,7 +104,7 @@ use_template_engine :erb
 
 require 'dm-validations'
 dependency "merb-slices"
-dependency 'merb_auth_password_slice'
+dependency 'merb-auth_password_slice'
 
 Merb.push_path(:lib, File.join(File.dirname(__FILE__), "..", "lib"))
 
