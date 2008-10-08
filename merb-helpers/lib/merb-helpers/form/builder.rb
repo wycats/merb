@@ -10,10 +10,6 @@ module Merb::Helpers::Form::Builder
       @name = name || @obj.class.name.snake_case.split("/").last
     end
 
-    def concat(attrs, &blk)
-      @origin.concat(@origin.capture(&blk), blk.binding)
-    end
-
     def form(attrs = {}, &blk)
       captured = @origin.capture(&blk)
       fake_method_tag = process_form_attrs(attrs)
