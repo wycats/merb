@@ -19,6 +19,6 @@ module Merb::Generators
 
   end
   
-  add :app, MerbGenerator
+  add :core, MerbGenerator
   
 end
