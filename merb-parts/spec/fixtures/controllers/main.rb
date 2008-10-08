@@ -19,7 +19,7 @@ class Main < Merb::Controller
   end
   
   def part_with_params
-    part(TodoPart => :part_with_params, :my_param => "my_value")
+    part(TodoPart => :part_with_params, :my_param => "my_value", :other_param => "other_value")
   end
   
   def part_with_arrays_in_params

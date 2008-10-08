@@ -41,10 +41,11 @@ describe "A Merb PartController" do
     controller = dispatch_to(Main, :index4, :format => 'js')
     controller.body.should match(/part_js_format/m)
   end
-  
+
   it "should provide params when calling a part" do
     controller = dispatch_to(Main, :part_with_params)
     controller.body.should match( /my_param = my_value/)
+    controller.body.should match( /other_param = other_value/)
   end
 
   it "should provide arrays from params when calling a part" do
