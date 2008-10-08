@@ -1,0 +1,12 @@
+test_log
+pkg
+pkg/*
+*/pkg/*
+*.log
+log
+!log*.rb
+*/log
+log/*
+*/log/*
+coverage
+*/coverage

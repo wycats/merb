@@ -1,0 +1,68 @@
+require 'rubygems'
+require 'rake/gempackagetask'
+require "rake/rdoctask"
+require 'merb-core/tasks/merb_rake_helper'
+require "spec/rake/spectask"
+
+PLUGIN = "merb_exceptions"
+GEM_NAME = "merb_exceptions"
+AUTHOR = 'Andy Kent'
+EMAIL = "andy@new-bamboo.co.uk"
+HOMEPAGE = "http://merb-plugins.rubyforge.org/me/"
+SUMMARY = "Allows Merb to forward exceptions to emails or web hooks"
+
+PKG_BUILD   = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
+GEM_VERSION = (Merb::MORE_VERSION rescue "0.9.8") + PKG_BUILD
+
+require "extlib/tasks/release"
+
+spec = Gem::Specification.new do |s|
+  s.name = GEM_NAME
+  s.version = GEM_VERSION
+  s.platform = Gem::Platform::RUBY
+  s.has_rdoc = true
+  s.extra_rdoc_files = ["LICENSE"]
+  s.summary = SUMMARY
+  s.description = s.summary
+  s.author = AUTHOR
+  s.email = EMAIL
+  s.homepage = HOMEPAGE
+  s.require_path = 'lib'
+  s.autorequire = PLUGIN
+  s.files = %w(LICENSE README.markdown Rakefile) + Dir.glob("{lib,spec}/**/*")
+end
+
+Rake::GemPackageTask.new(spec) do |pkg|
+  pkg.gem_spec = spec
+end
+
+##############################################################################
+# Installation
+##############################################################################
+desc "Install the gem"
+task :install do
+  Merb::RakeHelper.install(GEM_NAME, :version => GEM_VERSION)
+end
+
+desc "Uninstall the gem"
+task :uninstall do
+  Merb::RakeHelper.uninstall(GEM_NAME, :version => GEM_VERSION)
+end
+
+##############################################################################
+# Specs
+##############################################################################
+desc "Run all specs"
+Spec::Rake::SpecTask.new("specs") do |t|
+  t.spec_opts = ["--format", "specdoc", "--colour"]
+  t.spec_files = Dir["spec/**/*_spec.rb"].sort
+end
+
+desc "Run all specs and generate an rcov report"
+Spec::Rake::SpecTask.new('rcov') do |t|
+  t.spec_files = FileList['spec/**/*_spec.rb']
+  t.spec_opts = ["--format", "specdoc", "--colour"]
+  t.rcov = true
+  t.rcov_dir = 'coverage'
+  t.rcov_opts = ['--exclude', 'gems', '--exclude', 'spec']
+end
