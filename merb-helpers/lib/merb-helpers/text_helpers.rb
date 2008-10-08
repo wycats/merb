@@ -56,6 +56,6 @@ module Merb::Helpers::Text
   end
 end
 
-class Merb::Controller
+module Merb::GlobalHelpers
   include Merb::Helpers::Text
 end
