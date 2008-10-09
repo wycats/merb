@@ -1,5 +1,5 @@
 module Merb::Generators
-  class MerbFlatGenerator < NamedGenerator
+  class MerbFlatGenerator < AppGenerator
     #
     # ==== Paths
     #
@@ -83,7 +83,7 @@ module Merb::Generators
     end
   end
 
-  add_private :app_flat, MerbFlatGenerator
+  add :flat, MerbFlatGenerator
 
 end
 

@@ -1,17 +1,41 @@
 class Authentication
-  cattr_reader   :strategies, :default_strategy_order
-  @@strategies, @@default_strategy_order = [], []
+  cattr_reader   :strategies, :default_strategy_order, :registered_strategies
+  @@strategies, @@default_strategy_order, @@registered_strategies = [], [], {}
   
   # Use this to set the default order of strategies 
   # if you need to in your application.  You don't need to use all avaiable strategies
   # in this array, but you may not include a strategy that has not yet been defined.
   # 
   # @params [Authentiation::Strategy,Authentication::Strategy]
+  # 
+  # @public
   def self.default_strategy_order=(*order)
     order = order.flatten
     bad = order.select{|s| !s.ancestors.include?(Strategy)}
     raise ArgumentError, "#{bad.join(",")} do not inherit from Authentication::Strategy" unless bad.empty?
     @@default_strategy_order = order
+  end
+  
+  # Allows for the registration of strategies.
+  # @params <Symbol, String>
+  #   +label+ The label is the label to identify this strategy
+  #   +path+  The path to the file containing the strategy.  This must be an absolute path!
+  # 
+  # Registering a strategy does not add it to the list of strategies to use
+  # it simply makes it available through the Authentication.activate method
+  # 
+  # This is for plugin writers to make a strategy availalbe but this should not
+  # stop you from declaring your own strategies
+  # 
+  # @plugin
+  def self.register(label, path)
+    self.registered_strategies[label] = path
+  end
+
+  def self.activate!(label)
+    path = self.registered_strategies[label]
+    raise "The #{label} Strategy is not registered" unless path
+    require path
   end
   
   # The Authentication::Strategy is where all the action happens in the merb-auth framework.

@@ -38,30 +38,10 @@ merb_more_spec = Gem::Specification.new do |s|
   end
 end
 
-merb_spec = Gem::Specification.new do |s|
-  s.rubyforge_project = 'merb'
-  s.name         = "merb"
-  s.version      = Merb::MORE_VERSION
-  s.platform     = Gem::Platform::RUBY
-  s.author       = "Ezra Zygmuntowicz"
-  s.email        = "ez@engineyard.com"
-  s.homepage     = "http://www.merbivore.com"
-  s.summary      = "(merb-core + merb-more) == all of Merb"
-  s.description  = s.summary
-  s.files        = %w( LICENSE README Rakefile TODO )
-  s.add_dependency "merb-core", "= #{Merb::VERSION}"
-  s.add_dependency "merb-more", "= #{Merb::MORE_VERSION}"
-  s.add_dependency "mongrel", ">= 1.0.1"
-end
-
 CLEAN.include ["**/.*.sw?", "pkg", "lib/*.bundle", "*.gem", "doc/rdoc", ".config", "coverage", "cache", "lib/merb-more.rb"]
 
 Rake::GemPackageTask.new(merb_more_spec) do |package|
   package.gem_spec = merb_more_spec
-end
-
-Rake::GemPackageTask.new(merb_spec) do |package|
-  package.gem_spec = merb_spec
 end
 
 desc "Install all gems"

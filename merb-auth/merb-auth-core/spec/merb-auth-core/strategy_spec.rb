@@ -226,4 +226,27 @@ describe "Authentication::Strategy" do
     
   end
   
+  describe "register strategies" do
+    
+    it "should allow for a strategy to be registered" do
+      Authentication.register(:test_one, "/path/to/strategy")
+      Authentication.registered_strategies[:test_one].should == "/path/to/strategy"
+    end
+    
+    it "should activate a strategy" do
+      Authentication.register(:test_activation, File.expand_path(File.dirname(__FILE__)) / "activation_fixture")
+      defined?(TheActivationTest).should be_nil
+      Authentication.activate!(:test_activation)
+      defined?(TheActivationTest).should_not be_nil
+    end
+    
+    it "should raise if the strategy is not registered" do
+      lambda do
+        Authentication.activate!(:not_here)
+      end.should raise_error
+    end
+    
+    
+  end
+  
 end
