@@ -6,7 +6,7 @@ class MerbAuthSlicePassword::Sessions < MerbAuthSlicePassword::Application
   # redirect from an after filter for max flexibility
   # We can then put it into a slice and ppl can easily 
   # customize the action
-  after :redirect_after_login,  :only => :update, :if => lambda{ puts "THE STATUS IS #{status}"; !(300..399).include?(status) }
+  after :redirect_after_login,  :only => :update, :if => lambda{ !(300..399).include?(status) }
   after :redirect_after_logout, :only => :destroy
   
   def update
@@ -19,11 +19,13 @@ class MerbAuthSlicePassword::Sessions < MerbAuthSlicePassword::Application
   
   
   private 
+  # @overwritable
   def redirect_after_login
-    redirect "/", :message => "Authenticated Successfully"
+    redirect_back_or "/", :message => "Authenticated Successfully"
   end
   
+  # @overwritable
   def redirect_after_logout
-    raise Unauthenticated, "Thank you, come again - Apu Nahasapeemapetilon"
+    redirect url(:controller => "exceptions", :action => "unauthenticated"), :message => "Logged Out"
   end  
 end

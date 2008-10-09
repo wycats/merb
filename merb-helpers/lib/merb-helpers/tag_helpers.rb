@@ -56,6 +56,6 @@ module Merb
   end
 end
 
-class Merb::Controller
+module Merb::GlobalHelpers
   include Merb::Helpers::Tag
 end    

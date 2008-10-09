@@ -15,7 +15,6 @@ module Merb
 end
 
 NAME = "merb"
-GEM_VERSION = Merb::MORE_VERSION
 AUTHOR = "Engine Yard"
 EMAIL = "merb@engineyard.com"
 HOMEPAGE = "http://merbivore.com/"

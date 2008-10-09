@@ -83,7 +83,7 @@ module Merb::Generators
     end
   end
 
-  add_private :app_flat, MerbFlatGenerator
+  add :flat, MerbFlatGenerator
 
 end
 
