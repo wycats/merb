@@ -1,0 +1,14 @@
+h1. MerbAuth - Merb Authentication
+
+h2. An extensible architecture for authentication
+
+* Stupidly Simple
+* Speaks fluent HTTP, even the errors
+* Pluggable Architecture (so that you can use any authentication algorithms you like)
+* Cascading Authentication (if one method fails, another is attempted, then another. When no methods succeed, authentication fails)
+
+h2. Principles
+
+#  Sessions are authenticated, not users.
+#  Just because one method of authentication fails doesn't mean the session, can't be authenticated another way.  This is especially true if your application has an external API as well as a public interface.
+#  HTTP has built-in "Errors":http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html which every web-browser (should) know how to speak.  If you're application speaks in HTTP Verbs (GET, POST, PUT, DELETE), it should also serve the correct HTTP Errors when things go wrong.

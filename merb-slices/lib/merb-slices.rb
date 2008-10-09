@@ -52,7 +52,7 @@ if defined?(Merb::Plugins)
     
       # Reload the router - takes all_slices into account to load slices at runtime.
       def reload_router!
-        Merb::BootLoader::LoadClasses.reload_router!
+        Merb::BootLoader::Router.reload!
       end
       
       # Slice-level paths for all loaded slices.

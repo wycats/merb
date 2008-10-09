@@ -16,6 +16,7 @@ begin
   cache.set(key, value)
   raise Exception unless cache.get(key) == value
 rescue Exception => e
+  puts e.message
   raise "Memcached connection failed.  Try starting memcached with the memcached:start rake task or installing memcached gem with sudo gem install memcached."
 end
 

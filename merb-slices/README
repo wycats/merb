@@ -58,19 +58,19 @@ file: config/router.rb
 
 # example: /blog-slice/:controller/:action/:id
 
-r.add_slice(:BlogSlice)
+add_slice(:BlogSlice)
 
 # example: /foo/:controller/:action/:id
 
-r.add_slice(:BlogSlice, 'foo') # same as :path => 'foo'
+add_slice(:BlogSlice, 'foo') # same as :path => 'foo'
 
 # example: /:lang/:controller/:action/:id (with :a param set)
 
-r.add_slice(:BlogSlice, :path => ':lang', :params => { :a => 'b' })
+add_slice(:BlogSlice, :path => ':lang', :params => { :a => 'b' })
 
 # example: /:controller/:action/:id
 
-r.slice(:BlogSlice)
+slice(:BlogSlice)
 
 Normally you should also run the following rake task:
 

@@ -228,6 +228,43 @@ class Numeric
         number
       end
     end
+    
+    
+    # Formats a +number+ into a two digit string. Basically it prepends an integer to a 2 digits string.
+    #
+    # ==== Parameters
+    # number<Numeric>:: Numeric value to convert
+    #
+    # ==== Returns
+    # String:: a string representing the number converted into a 2 digits string.
+    #
+    # ==== Examples
+    # two_digits(5-3) # => "02"
+    #
+    #---
+    # @private
+    def self.two_digits(number)
+      (0..9).include?(number) ? "0#{number}" : number.to_s
+    end
+
+    # Converts a +numeric+ value representing minutes into a string representing an hour value
+    #
+    # ==== Parameters
+    # number<Numeric>:: Numeric value representing minutes to convert in hours
+    #
+    # ==== Returns
+    # String:: a string representing the numeric value converted in hours
+    #
+    # ==== Examples
+    # minutes_to_hours(315) => "05:15"
+    #
+    #---
+    # @private
+    def self.minutes_to_hours(minutes)
+      hours = (minutes/60).ceil
+      minutes = (minutes - (hours * 60)).to_i
+      "#{two_digits(hours)}:#{two_digits(minutes)}"
+    end
 
   end #of Numeric::Transformer
  
@@ -315,5 +352,37 @@ class Numeric
   def to_currency(format_name = nil, options = {})
     Transformer.to_currency(self, format_name, options)
   end
+
+  # Formats a +number+ into a two digit string. Basically it prepends an integer to a 2 digits string.
+  #
+  # ==== Returns
+  # String:: a string representing the number converted into a 2 digits string.
+  #
+  # ==== Examples
+  # (5-3).two_digits # => "02"
+  #
+  #---
+  # @public
+  def two_digits
+    Transformer.two_digits(self)
+  end
+
+  # Converts a +numeric+ value representing minutes into a string representing an hour value
+  #
+  # ==== Parameters
+  # number<Numeric>:: Numeric value representing minutes to convert in hours
+  #
+  # ==== Returns
+  # String:: a string representing the numeric value converted in hours
+  #
+  # ==== Examples
+  # 315.minutes_to_hours => "05:15"
+  #
+  #---
+  # @public
+  def minutes_to_hours
+    Transformer.minutes_to_hours(self)
+  end
+  
   
 end

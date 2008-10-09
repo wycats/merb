@@ -36,7 +36,7 @@ module Merb
       #
       # Note: This tag will need to be closed
       def open_tag(name, attrs = nil)
-        "<#{name}#{' ' + attrs.to_html_attributes if attrs && !attrs.empty?}>"
+        "<#{name}#{' ' + attrs.to_html_attributes unless attrs.blank?}>"
       end
     
       # Creates a closing tag
@@ -56,6 +56,6 @@ module Merb
   end
 end
 
-class Merb::Controller
+module Merb::GlobalHelpers
   include Merb::Helpers::Tag
 end    

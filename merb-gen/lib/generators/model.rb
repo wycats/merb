@@ -39,9 +39,11 @@ module Merb::Generators
     def attributes_for_accessor
       self.attributes.keys.map{|a| ":#{a}" }.compact.uniq.join(", ")
     end
-    
+
+    def after_generation
+      STDOUT.puts "\n\nDon't forget to add model tests first."
+    end
   end
   
   add :model, ModelGenerator
-  
 end

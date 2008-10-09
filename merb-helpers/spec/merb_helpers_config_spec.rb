@@ -37,23 +37,6 @@ describe "loading configuration" do
     defined?(Merb::Helpers::Form)
   end
   
-  it "should raise an error if :with or :without are configured" do
-    Merb::Plugins.stub!(:config).and_return(:merb_helpers => {:with => "form_helpers", :without => "date_format_helpers"})
-    lambda do 
-      reload_merb_helpers
-    end.should raise_error
-    
-    Merb::Plugins.stub!(:config).and_return(:merb_helpers => {:with => "form_helpers"})
-    lambda do 
-      reload_merb_helpers
-    end.should raise_error
-    
-    Merb::Plugins.stub!(:config).and_return(:merb_helpers => {:without => "date_format_helpers"})
-    lambda do 
-      reload_merb_helpers
-    end.should raise_error
-  end
-  
   it "should only load the helpers specified in the config hash (if defined)" do
     unload_merb_helpers
     defined?(Merb::Helpers).should be_nil

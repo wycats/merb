@@ -1,9 +1,14 @@
-$TESTING=true
 require "rubygems"
 require "spec"
 require "merb-core"
 require File.join(File.dirname(__FILE__),"..",'lib',"merb-helpers")
 require "date"
+
+# Please read merb_helpers_form_spec.rb
+# for more info on how to test helpers
+# full stack specs are required
+# use the app in spec/fixture to test helpers
+
 
 default_options = {:environment => 'test', :adapter => 'runner'}.merge({:merb_root => File.dirname(__FILE__) / 'fixture'})
 options = default_options.merge($START_OPTIONS || {})
@@ -20,113 +25,6 @@ def reload_merb_helpers
   load(MERB_HELPERS_ROOT + "/lib/merb-helpers.rb") 
   Merb::Helpers.load
 end
-
-class FakeDMModel
-  def self.properties
-    [FakeColumn.new(:baz, TrueClass),
-     FakeColumn.new(:bat, TrueClass)
-    ]
-  end
-  
-  def new_record?
-    false
-  end
-  
-  def errors
-    FakeErrors.new(self)
-  end
-  
-  def baz?
-    true
-  end
-  alias baz baz?
-  
-  def bat?
-    false
-  end
-  alias bat bat?
-end
-
-
-class FakeModel
-  
-  attr_accessor :vin, :make, :model
-  
-  def self.columns
-    [FakeColumn.new(:foo, :string), 
-     FakeColumn.new(:foobad, :string),
-     FakeColumn.new(:desc, :string),
-     FakeColumn.new(:bar, :integer), 
-     FakeColumn.new(:barbad, :integer),      
-     FakeColumn.new(:baz, :boolean),
-     FakeColumn.new(:bazbad, :boolean),
-     FakeColumn.new(:bat, :boolean),
-     FakeColumn.new(:batbad, :boolean)
-     ]     
-  end
-  
-  def valid?
-    false
-  end
-  
-  def new_record?
-    false
-  end
-  
-  def errors
-    FakeErrors.new(self)
-  end
-  
-  def foo
-    "foowee"
-  end
-  alias_method :foobad, :foo
-  
-  def bar
-    7
-  end
-  alias_method :barbad, :bar
-  
-  def baz
-    true
-  end
-  alias_method :bazbad, :baz
-  
-  def bat
-    false
-  end
-  alias_method :batbad, :bat
-  
-  def nothing
-    nil
-  end
-end
-
-class FakeModel2 < FakeModel
-  
-  def id
-    1
-  end
-  
-  def foo
-    "foowee2"
-  end
-  alias_method :foobad, :foo
-  
-  def bar
-    "barbar"
-  end
-  
-  def new_record?
-    true
-  end
-  
-end
-
-class FakeModel3
-  attr_accessor :foo, :bar
-end
-
 
 class FakeErrors
   

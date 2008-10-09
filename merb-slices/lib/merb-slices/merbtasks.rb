@@ -1,4 +1,4 @@
-require "rubygems/dependency_installer"
+require "merb-core/tasks/merb_rake_helper"
 
 desc "Show information on application slices"
 task :slices => [ "slices:list" ]
@@ -22,41 +22,12 @@ namespace :slices do
   task :install_as_gem do
     if ENV['GEM']
       ENV['GEM_DIR'] ||= File.join(Merb.root, 'gems')
-      puts "Installing #{ENV["GEM"]} as a local gem"
-      install_gem(ENV['GEM_DIR'], ENV['GEM'], ENV['VERSION'])
+      options = { :install_dir => ENV['GEM_DIR'], 
+                  :cache => true, :ignore_dependencies => true }
+      options[:version] = ENV['VERSION'] if ENV['VERSION']
+      Merb::RakeHelper.install_package(ENV['GEM'], options)
     else
       puts "No slice GEM specified"
-    end
-  end
-  
-  # Install a gem - looks remotely and locally; won't process rdoc or ri options.
-  def install_gem(install_dir, gem, version = nil)
-    Gem.configuration.update_sources = false
-    Gem.clear_paths # default to plain rubygems path
-    installer = Gem::DependencyInstaller.new(:install_dir => install_dir)
-    exception = nil
-    begin
-        installer.install gem, version
-      rescue Gem::InstallError => e
-        exception = e
-      rescue Gem::GemNotFoundException => e
-      puts "Locating #{gem} in local gem path cache..."
-      spec = if version
-        Gem.source_index.find_name(gem, "= #{version}").first
-      else
-        Gem.source_index.find_name(gem).sort_by { |g| g.version }.last
-      end
-      if spec && File.exists?(gem_file = 
-        File.join(spec.installation_path, 'cache', "#{spec.full_name}.gem"))
-        installer.install gem_file
-      end
-      exception = e
-    end
-    if installer.installed_gems.empty? && e
-      puts "Failed to install gem '#{gem}' (#{e.message})"
-    end
-    installer.installed_gems.each do |spec|
-      puts "Successfully installed #{spec.full_name}"
     end
   end
   

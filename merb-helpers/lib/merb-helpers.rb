@@ -12,7 +12,6 @@ module Merb
 
       if Merb::Plugins.config[:merb_helpers]
         config = Merb::Plugins.config[:merb_helpers]
-        raise "With and Without options have been deprecated" if config[:with] || config[:without]
         
         if config[:include] && !config[:include].empty?
           load_helpers(config[:include])

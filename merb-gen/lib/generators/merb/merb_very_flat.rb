@@ -1,31 +1,72 @@
 module Merb::Generators
-  
-  class MerbVeryFlatGenerator < NamedGenerator
+
+  class MerbVeryFlatGenerator < AppGenerator
 
     def self.source_root
       File.join(super, 'application', 'merb_very_flat')
     end
-    
+
+    def self.common_templates_dir
+      File.expand_path(File.join(File.dirname(__FILE__), '..',
+                      'templates', 'application', 'common'))
+    end
+
+    def destination_root
+      File.join(@destination_root, base_name)
+    end
+
+    def common_templates_dir
+      File.expand_path(File.join(File.dirname(__FILE__), '..',
+                      'templates', 'application', 'common'))
+    end
+
+
+    option :testing_framework, :default => :rspec,
+                               :desc => 'Testing framework to use (one of: rspec, test_unit).'
+    option :orm, :default => :none,
+                 :desc => 'Object-Relation Mapper to use (one of: none, activerecord, datamapper, sequel).'
+    option :template_engine, :default => :erb,
+                :desc => 'Template engine to prefer for this application (one of: erb, haml).'
+
+
     desc <<-DESC
       This generates a very flat merb application: the whole application
       fits in one file, very much like Sinatra or Camping.
     DESC
-    
+
     first_argument :name, :required => true, :desc => "Application name"
-    
+
     template :application do |template|
       template.source = 'application.rbt'
       template.destination = "#{base_name}.rb"
     end
 
-    file :spec_helper, 'spec/spec_helper.rb', 'spec/spec_helper.rb'
-    
-    def class_name
-      self.name.camel_case
+    template :gitignore do |template|
+      template.source = File.join(common_templates_dir, 'dotgitignore')
+      template.destination = ".gitignore"
     end
-    
+
+    directory :test_dir do |directory|
+      dir    = testing_framework == :rspec ? "spec" : "test"
+
+      directory.source      = dir
+      directory.destination = dir
+    end
+
+    template :rakefile do |template|
+      template.source = File.join(common_templates_dir, "Rakefile")
+      template.destination = "Rakefile"
+    end
+
+    file :thorfile do |file|
+      file.source      = File.join(common_templates_dir, "merb.thor")
+      file.destination = "merb.thor"
+    end
+
+    def class_name
+      self.name.gsub("-", "_").camel_case
+    end
   end
-  
-  add_private :app_very_flat, MerbVeryFlatGenerator
-  
+
+  add :very_flat, MerbVeryFlatGenerator
 end

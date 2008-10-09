@@ -114,7 +114,7 @@ module Merb
         opts[:src] ||= opts.delete(:path) + img
       end
       random = opts.delete(:reload) || Merb::Config[:reload_templates]
-      opts[:src] += random_query_string if random
+      opts[:src] += opts[:src].include?('?') ? "&#{random_query_string}" : "?#{random_query_string}" if random
       %{<img #{ opts.to_xml_attributes } />}
     end
 
@@ -442,7 +442,7 @@ module Merb
 
       for script in scripts
         src = asset_path(:javascript, script)
-        src += random_query_string if reload
+        src += src.include?('?') ? "&#{random_query_string}" : "?#{random_query_string}" if reload
         attrs = {
           :src => src,
           :type => "text/javascript"
@@ -504,7 +504,7 @@ module Merb
 
       for stylesheet in stylesheets
         href = asset_path(:stylesheet, stylesheet)
-        href += random_query_string if reload
+        href += href.include?('?') ? "&#{random_query_string}" : "?#{random_query_string}" if reload
         attrs = {
           :href => href,
           :type => "text/css",
@@ -642,7 +642,7 @@ module Merb
     end
     
     def random_query_string
-      Time.now.strftime("?%m%d%H%M%S#{rand(99)}")
+      Time.now.strftime("%m%d%H%M%S#{rand(99)}")
     end
     
   end

@@ -55,7 +55,7 @@ if defined?(Merb::Plugins)
       # example of a named route
       scope.match('/index(.:format)').to(:controller => 'main', :action => 'index').name(:index)
       # the slice is mounted at /full-test-slice - note that it comes before default_routes
-      scope.match.to(:controller => 'main', :action => 'index').name(:home)
+      scope.match('/').to(:controller => 'main', :action => 'index').name(:home)
     end
     
   end

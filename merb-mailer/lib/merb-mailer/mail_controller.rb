@@ -253,7 +253,8 @@ module Merb
     # Mimic the behavior of absolute_url in AbstractController
     # but use @base_controller.request
     def url(name, *args)
-      self.base_controller.request.generate_url(name, *args)
+      return base_controller.url(name, *args) if base_controller
+      super
     end
 
     alias_method :relative_url, :url
@@ -261,7 +262,8 @@ module Merb
     # Mimic the behavior of absolute_url in AbstractController
     # but use @base_controller.request
     def absolute_url(name, *args)
-      self.base_controller.request.generate_absolute_url(name, *args)
+      return base_controller.absolute_url(name, *args) if base_controller
+      super
     end
 
     # Attaches a file or multiple files to an email. You call this from a

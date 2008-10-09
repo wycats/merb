@@ -22,6 +22,9 @@ module Merb::Generators
     
     first_argument :name, :required => true
     
+    option :testing_framework, :default => :rspec,
+                               :desc => 'Testing framework to use (one of: rspec, test_unit).'
+    
     def destination_root
       File.join(@destination_root, base_name)
     end

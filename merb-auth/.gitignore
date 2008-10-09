@@ -1,0 +1,16 @@
+log/*
+*.log
+db/
+*.db
+.DStore
+.DS_Store
+pkg
+pkg/*
+:memory:
+examples/example_app/config/open_id
+merb-auth-core/coverage
+examples/example_app/tmp
+merb-auth-core/log
+merb-auth-more/log
+merb-auth-more/coverage
+

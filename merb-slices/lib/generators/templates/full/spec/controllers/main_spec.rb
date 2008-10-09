@@ -48,7 +48,7 @@ describe "<%= module_name %>::Main (controller)" do
     controller.slice_url(:index, :format => 'html').should == url
     
     url = controller.url(:<%= symbol_name %>_home)
-    url.should == "/<%= base_name %>"
+    url.should == "/<%= base_name %>/"
     controller.slice_url(:home).should == url
   end
   
@@ -57,6 +57,10 @@ describe "<%= module_name %>::Main (controller)" do
     controller.public_path_for(:image).should == "/slices/<%= base_name %>/images"
     controller.public_path_for(:javascript).should == "/slices/<%= base_name %>/javascripts"
     controller.public_path_for(:stylesheet).should == "/slices/<%= base_name %>/stylesheets"
+    
+    controller.image_path.should == "/slices/<%= base_name %>/images"
+    controller.javascript_path.should == "/slices/<%= base_name %>/javascripts"
+    controller.stylesheet_path.should == "/slices/<%= base_name %>/stylesheets"
   end
   
   it "should have a slice-specific _template_root" do
