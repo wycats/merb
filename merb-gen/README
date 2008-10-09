@@ -6,10 +6,13 @@ generators for Merb.
 ==== Usage
 
 To generate directory structure for a new merb app, run merb-gen app &lt;app-name&gt;.
-For instance, <tt>merb-gen app foo</tt> would create a new foo merb app inside of the foo directory.
+For instance, <tt>merb-gen app foo</tt> would create a new foo merb stack application
+inside of the foo directory. Merb stack sets up commonly used Merb and DataMapper gems
+to quickly get you started.
 
-Use <tt>--flat</tt> to generate a flattened application (very simple directory structure)
-and <tt>--very-flat</tt> to generate a single file application.
+Use <tt>merb-gen core</tt> to generate minimal merb-core application with full layout.
+Use <tt>merb-gen flat</tt> to generate a flattened application (very simple directory structure)
+and <tt>merb-gen very-flat</tt> to generate a single file application.
 
 To generate a new merb plugin, run merb-gen plugin &lt;plugin_name&gt;.
 
