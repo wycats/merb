@@ -1,11 +1,11 @@
 module Merb::Generators
-  class MerbFullGenerator < NamedGenerator
+  class MerbCoreGenerator < NamedGenerator
     #
     # ==== Paths
     #
 
     def self.source_root
-      File.join(super, 'application', 'merb')
+      File.join(super, 'application', 'merb_core')
     end
 
     def self.common_templates_dir
@@ -85,6 +85,6 @@ module Merb::Generators
     end
   end
 
-  add_private :app_full, MerbFullGenerator
+  add :core, MerbCoreGenerator
 
 end

@@ -1,11 +1,11 @@
 module Merb::Generators
-  class MerbFlatGenerator < NamedGenerator
+  class MerbStackGenerator < NamedGenerator
     #
     # ==== Paths
     #
 
     def self.source_root
-      File.join(super, 'application', 'merb_flat')
+      File.join(super, 'application', 'merb_stack')
     end
 
     def self.common_templates_dir
@@ -33,9 +33,8 @@ module Merb::Generators
                 :desc => 'Template engine to prefer for this application (one of: erb, haml).'
 
     desc <<-DESC
-      This generates a flat merb application: all code but config files and
-      templates fits in one application. This is something in between Sinatra
-      and "regular" Merb application.
+      This generates a "jump start" Merb application with support for DataMapper,
+      helpers, assets, mailer, caching, slices and merb-auth all out of the box.
     DESC
 
     first_argument :name, :required => true, :desc => "Application name"
@@ -60,6 +59,11 @@ module Merb::Generators
       template.destination = ".gitignore"
     end
 
+    template :htaccess do |template|
+      template.source = 'public/dothtaccess'
+      template.destination = 'public/.htaccess'
+    end
+
     directory :test_dir do |directory|
       dir    = testing_framework == :rspec ? "spec" : "test"
 
@@ -71,28 +75,15 @@ module Merb::Generators
     # ==== Layout specific things
     #
 
-    file     :readme,      "README.txt"
-
-    template :application, "application.rb"
-
+    glob! "app"
+    glob! "autotest"
     glob! "config"
-    glob! "views"
+    glob! "public"
 
-    def class_name
-      self.name.gsub("-", "_").camel_case
+    invoke :layout do |generator|
+      generator.new(destination_root, options, 'application')
     end
   end
 
-  add :flat, MerbFlatGenerator
-
+  add :app,   MerbStackGenerator
 end
-
-
-
-
-
-
-
-
-
-

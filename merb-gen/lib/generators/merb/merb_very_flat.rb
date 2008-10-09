@@ -68,5 +68,5 @@ module Merb::Generators
     end
   end
 
-  add_private :app_very_flat, MerbVeryFlatGenerator
+  add :very_flat, MerbVeryFlatGenerator
 end
