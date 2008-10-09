@@ -1,0 +1,23 @@
+<h1><%= class_name %> controller, index action</h1>
+
+<p>Edit this file in <tt>app/views/<%= file_name %>/index.html.erb</tt></p>
+
+<table>
+  <tr>
+<% for property in properties.reject{|p| p.lazy?} -%>
+    <th><%= Extlib::Inflection.humanize(property.field) %></th>
+<% end -%>
+  </tr>
+
+<%% for <%= singular_model %> in @<%= plural_model %> %>
+  <tr>
+<% for property in properties.reject{|p| p.lazy?} -%>
+    <td><%%=h <%= singular_model %>.<%= property.getter %> %></td>
+<% end -%>
+    <td><%%= link_to 'Show', url(:<%= singular_model %>, <%= singular_model %>) %></td>
+    <td><%%= link_to 'Edit', url(:edit_<%= singular_model %>,  <%= singular_model %>) %></td>
+  </tr>
+<%% end %>
+</table>
+
+<%%= link_to 'New', url(:new_<%= singular_model %>) %>
