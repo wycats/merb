@@ -1,4 +1,21 @@
 module Merb
+  
+  module ColorfulMessages
+    # red
+    def error(*messages)
+      puts messages.map { |msg| "\033[1;31m#{msg}\033[0m" }
+    end
+    # yellow
+    def warning(*messages)
+      puts messages.map { |msg| "\033[1;33m#{msg}\033[0m" }
+    end
+    # green
+    def success(*messages)
+      puts messages.map { |msg| "\033[1;32m#{msg}\033[0m" }
+    end
+
+    alias_method :message, :success
+  end
 
   module Generators
     
@@ -9,6 +26,8 @@ module Merb
     DESC
     
     class Generator < Templater::Generator
+      
+      include Merb::ColorfulMessages
       
       def initialize(*args)
         super

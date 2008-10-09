@@ -3,6 +3,4 @@
 require 'rubygems'
 require 'merb-gen'
 
-# Merb::BootLoader.after_app_loads do
 Merb::Generators.run_cli(Dir.pwd, 'merb-gen', Merb::VERSION, ARGV)
-# end
