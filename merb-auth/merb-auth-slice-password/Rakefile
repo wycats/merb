@@ -24,8 +24,8 @@ spec = Gem::Specification.new do |s|
   s.author = AUTHOR
   s.email = EMAIL
   s.homepage = HOMEPAGE
-  s.add_dependency('merb-auth-core', "~> 0.9.9")
-  s.add_dependency('merb-auth-more', "~> 0.9.9")
+  s.add_dependency('merb-auth-core', "= 0.9.9")
+  s.add_dependency('merb-auth-more', "= 0.9.9")
   s.require_path = 'lib'
   s.files = %w(LICENSE README.textile Rakefile TODO) + Dir.glob("{lib,spec,app,public,stubs}/**/*")
 end
