@@ -1,5 +1,5 @@
 module Merb::Generators
-  class MerbStackGenerator < NamedGenerator
+  class MerbStackGenerator < AppGenerator
     #
     # ==== Paths
     #

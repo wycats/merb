@@ -9,6 +9,7 @@ path = File.join(File.dirname(__FILE__))
 require path / "merb-gen"   / "generator"
 require path / "merb-gen"   / "named_generator"
 require path / "merb-gen"   / "namespaced_generator"
+require path / "merb-gen"   / "app_generator"
 require path / "generators" / "merb" / "merb_stack"
 require path / "generators" / "merb" / "merb_core"
 require path / "generators" / "merb" / "merb_flat"

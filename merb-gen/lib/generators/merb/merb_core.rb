@@ -1,9 +1,9 @@
 module Merb::Generators
-  class MerbCoreGenerator < NamedGenerator
+  class MerbCoreGenerator < AppGenerator
     #
     # ==== Paths
     #
-
+    
     def self.source_root
       File.join(super, 'application', 'merb_core')
     end

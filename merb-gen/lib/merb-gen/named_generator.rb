@@ -6,6 +6,25 @@ module Merb
       # that inherits from this.
       first_argument :name, :required => true
       
+      def initialize(*args)
+        Merb::Config.setup({
+          :log_level        => :fatal,
+          :log_delimiter    => " ~ ",
+          :log_auto_flush   => false,
+          :reload_templates => false,
+          :reload_classes   => false
+        })
+
+        Merb::BootLoader::Logger.run
+        Merb::BootLoader::BuildFramework.run
+        Merb::BootLoader::Dependencies.run
+
+        Merb::BootLoader::BeforeAppLoads.run
+        Merb::BootLoader::ReloadClasses.run
+        Merb::BootLoader::AfterAppLoads.run
+        super
+      end
+      
       def class_name
         name.gsub('-', '_').camel_case
       end

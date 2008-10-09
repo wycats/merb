@@ -3,24 +3,6 @@
 require 'rubygems'
 require 'merb-gen'
 
-Merb::BootLoader.after_app_loads do
-  Merb::Generators.run_cli(Dir.pwd, 'merb-gen', Merb::VERSION, ARGV)
-end
-
-Merb::Config.setup({
-  :log_level        => :fatal,
-  :log_delimiter    => " ~ ",
-  :log_auto_flush   => false,
-  :reload_templates => false,
-  :reload_classes   => false
-})
-
-Merb.disable(:initfile)
-
-Merb::BootLoader::Logger.run
-Merb::BootLoader::BuildFramework.run
-Merb::BootLoader::Dependencies.run
-
-Merb::BootLoader::BeforeAppLoads.run
-Merb::BootLoader::ReloadClasses.run
-Merb::BootLoader::AfterAppLoads.run
+# Merb::BootLoader.after_app_loads do
+Merb::Generators.run_cli(Dir.pwd, 'merb-gen', Merb::VERSION, ARGV)
+# end

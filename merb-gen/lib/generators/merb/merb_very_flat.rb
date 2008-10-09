@@ -1,6 +1,6 @@
 module Merb::Generators
 
-  class MerbVeryFlatGenerator < NamedGenerator
+  class MerbVeryFlatGenerator < AppGenerator
 
     def self.source_root
       File.join(super, 'application', 'merb_very_flat')
