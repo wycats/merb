@@ -26,9 +26,9 @@ module Merb::AuthenticatedHelper
   # set the ignore url via an :ignore option in the opts hash.
   def redirect_back_or(default_url, opts = {})
     if session[:return_to] && session[:return_to] != opts[:ignore]
-      redirect session[:return_to]
+      redirect session[:return_to], opts
     else
-      redirect default_url
+      redirect default_url, opts
     end
     session[:return_to] = nil
   end
