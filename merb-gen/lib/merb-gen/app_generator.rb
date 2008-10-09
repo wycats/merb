@@ -5,7 +5,7 @@ module Merb
 
       def initialize(*args)
         Merb.disable(:initfile)
-        super(*args)
+        super
       end
 
     end
