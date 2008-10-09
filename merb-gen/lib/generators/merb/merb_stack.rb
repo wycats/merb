@@ -76,10 +76,11 @@ module Merb
       # ==== Layout specific things
       #
 
-      glob! "app"
-      glob! "autotest"
-      glob! "config"
-      glob! "public"
+    glob! "app"
+    glob! "autotest"
+    glob! "config"
+    glob! "doc"
+    glob! "public"
 
       invoke :layout do |generator|
         generator.new(destination_root, options, 'application')
