@@ -17,8 +17,9 @@ class Authentication
   # @return <User Class Object>
   #
   # @api overwritable
+  cattr_writer :user_class
   def self.user_class
-    User
+    @@user_class ||= User
   end
   
   def initialize(session)
