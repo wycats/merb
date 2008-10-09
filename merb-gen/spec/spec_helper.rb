@@ -6,6 +6,8 @@ require 'merb-core'
 require 'merb-gen'
 require 'templater/spec/helpers'
 
+Merb.disable(:initfile)
+
 Spec::Runner.configure do |config|
   config.include Templater::Spec::Helpers
 end
