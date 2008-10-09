@@ -5,12 +5,35 @@ require 'date'
 require 'merb-core/version'
 require 'merb-core/tasks/merb_rake_helper'
 
+## THESE ARE CRUCIAL
+module Merb
+  # Set this to the version of merb-core that you are building against/for
+  VERSION = "0.9.9"
+
+  # Set this to the version of merb-more you plan to release
+  MORE_VERSION = "0.9.9"
+end
+
 NAME = "merb"
-GEM_VERSION = Merb::MORE_VERSION
 AUTHOR = "Engine Yard"
 EMAIL = "merb@engineyard.com"
 HOMEPAGE = "http://merbivore.com/"
 SUMMARY = "(merb-core + merb-more) == all of Merb"
+
+# For RubyForge release task
+RUBY_FORGE_PROJECT  = "merb"
+PROJECT_URL         = HOMEPAGE
+PROJECT_SUMMARY     = SUMMARY
+PROJECT_DESCRIPTION = SUMMARY
+
+GEM_AUTHOR = AUTHOR
+GEM_EMAIL  = EMAIL
+
+GEM_NAME    = NAME
+PKG_BUILD   = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
+GEM_VERSION = (Merb::MORE_VERSION rescue "0.9.9") + PKG_BUILD
+
+RELEASE_NAME    = "REL #{GEM_VERSION}"
 
 merb_spec = Gem::Specification.new do |s|
   s.rubyforge_project = 'merb'
@@ -27,13 +50,18 @@ merb_spec = Gem::Specification.new do |s|
   s.add_dependency "merb-more", "= #{Merb::MORE_VERSION}"
 end
 
-Rake::GemPackageTask.new(spec) do |pkg|
-  pkg.gem_spec = spec
+Rake::GemPackageTask.new(merb_spec) do |pkg|
+  pkg.gem_spec = merb_spec
 end
 
-desc "install the plugin locally"
-task :install => [:package] do
-  sh %{#{sudo} #{Gem.ruby} -S gem install #{install_home} pkg/#{NAME}-#{GEM_VERSION}}
+desc "Install the gem"
+task :install do
+  Merb::RakeHelper.install(GEM_NAME, :version => GEM_VERSION)
+end
+
+desc "Uninstall the gem"
+task :uninstall do
+  Merb::RakeHelper.uninstall(GEM_NAME, :version => GEM_VERSION)
 end
 
 desc "create a gemspec file"

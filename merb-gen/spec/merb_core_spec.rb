@@ -1,11 +1,11 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
-describe Merb::Generators::MerbFullGenerator do
+describe Merb::Generators::MerbCoreGenerator do
   
   describe "templates" do
     
     before do
-      @generator = Merb::Generators::MerbFullGenerator.new('/tmp', {}, 'testing')
+      @generator = Merb::Generators::MerbCoreGenerator.new('/tmp', {}, 'testing')
     end
     
     it "should create an init.rb" do
