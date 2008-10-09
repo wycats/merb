@@ -2,7 +2,6 @@
 if defined?(Merb::Plugins)
   require 'extlib'
   
-  
   require 'merb-auth-core/authentication'
   require 'merb-auth-core/strategy'
   require 'merb-auth-core/session_mixin'
@@ -10,6 +9,7 @@ if defined?(Merb::Plugins)
   require 'merb-auth-core/redirection'
   require 'merb-auth-core/authenticated_helper'
   require 'merb-auth-core/customizations'
+  require 'merb-auth-core/bootloader'
   
   Merb::BootLoader.before_app_loads do
     # require code that must be loaded before the application 

@@ -20,7 +20,7 @@ class Authentication
             user = user_class.authenticate(params[login_param], params[password_param])
             if !user
               request.session.authentication.errors.clear!
-              request.session.authentication.errors.add(:login, 'Username or password were incorrect')
+              request.session.authentication.errors.add(login_param, "#{login_param.to_s.capitalize} or #{password_param.to_s.capitalize} were incorrect")
             end
             user
           end

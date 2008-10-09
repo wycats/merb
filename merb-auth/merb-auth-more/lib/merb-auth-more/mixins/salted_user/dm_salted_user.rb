@@ -13,6 +13,20 @@ class Authentication
             
             before :save,   :encrypt_password
           end # base.class_eval
+          
+          # Setup the session serialization
+          Authentication.class_eval <<-Ruby
+
+            def fetch_user(session_user_id)
+              #{base.name}.get(session_user_id)
+            end
+
+            def store_user(user)
+              user.nil? ? user : user.id
+            end
+
+          Ruby
+          
         end # self.extended
         
         def authenticate(login, password)
