@@ -1,4 +1,4 @@
-class Authentication
+class Merb::Authentication
   module Mixins
     module SaltedUser
       module DMClassMethods
@@ -15,7 +15,7 @@ class Authentication
           end # base.class_eval
           
           # Setup the session serialization
-          Authentication.class_eval <<-Ruby
+          Merb::Authentication.class_eval <<-Ruby
 
             def fetch_user(session_user_id)
               #{base.name}.get(session_user_id)
@@ -30,10 +30,10 @@ class Authentication
         end # self.extended
         
         def authenticate(login, password)
-          @u = first(Authentication::Strategies::Basic::Base.login_param => login)
+          @u = first(Merb::Authentication::Strategies::Basic::Base.login_param => login)
           @u && @u.authenticated?(password) ? @u : nil
         end
       end # DMClassMethods      
     end # SaltedUser
   end # Mixins
-end # Authentication
+end # Merb::Authentication

@@ -47,7 +47,7 @@ class Exceptions < Application
   end
 end
 
-class Authentication
+class Merb::Authentication
 
   def return_to_url
     @return_to_url ||= session[:return_to]

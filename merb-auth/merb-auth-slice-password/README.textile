@@ -95,10 +95,10 @@ Merb::Plugins.config[:merb_slices] = { :queue => ["MerbAuthSlicePassword", ...] 
 # Setup your application to use MerbAuthSlicePassword in an after_app_loads block
 
 # To change the login or password field to a field of your choice
-  update the Authentication::Strategies::Basic::Base.login_param and password_param
+  update the Merb::Authentication::Strategies::Basic::Base.login_param and password_param
 
 <pre><code>
-class Authentication::Strategies::Basic::Base < Authentication::Strategy
+class Merb::Authentication::Strategies::Basic::Base < Merb::Authentication::Strategy
   def self.login_param
     :email
   end
@@ -142,7 +142,7 @@ The host-app's application layout is used by default
 You can use the host application's layout by configuring the
 merb-auth-slice-password slice in a before_app_loads block:
 
-You'll need to setup the Authentication::Manager#fetch_user and store_user
+You'll need to setup the Merb::Authentication::Manager#fetch_user and store_user
 methods for your given user model.
 
 ------------------------------------------------------------------------------

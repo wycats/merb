@@ -1,11 +1,11 @@
-h1. MerbAuth - Merb Authentication
+h1. MerbAuth - Merb Merb::Authentication
 
 h2. An extensible architecture for authentication
 
 * Stupidly Simple
 * Speaks fluent HTTP, even the errors
 * Pluggable Architecture (so that you can use any authentication algorithms you like)
-* Cascading Authentication (if one method fails, another is attempted, then another. When no methods succeed, authentication fails)
+* Cascading Merb::Authentication (if one method fails, another is attempted, then another. When no methods succeed, authentication fails)
 
 h2. Principles
 

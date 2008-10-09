@@ -16,7 +16,7 @@ To specify them, simply require them.  For example,in lib/auth-strategies.rb
 require 'merb-auth-more/strategies/basic/password_form'
 require 'merb-auth-more/strategies/basic/openid'
 
-class MyApiLogin < ::Authentication::Strategy
+class MyApiLogin < ::Merb::Authentication::Strategy
   def run!
     # check for api login
   end
@@ -41,7 +41,7 @@ To use these, require the specific mixin, and then include it into your "User" c
   require 'merb-auth-more/mixins/salted_user'
   
   class User
-    include Authentication::Mixins::SaltedUser
+    include Merb::Authentication::Mixins::SaltedUser
     
   end
 </code></pre>

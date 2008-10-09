@@ -1,4 +1,4 @@
-class Authentication
+class Merb::Authentication
   module Mixins
     module SaltedUser
       module SQClassMethods
@@ -12,12 +12,12 @@ class Authentication
             
             before_save :encrypt_password
 
-            include Authentication::Mixins::SaltedUser::SQInstanceMethods
+            include Merb::Authentication::Mixins::SaltedUser::SQInstanceMethods
 
           end # base.class_eval 
           
           # Setup the session serialization
-          Authentication.class_eval <<-Ruby
+          Merb::Authentication.class_eval <<-Ruby
 
             def fetch_user(session_user_id)
               #{base.name}[session_user_id]
@@ -32,7 +32,7 @@ class Authentication
         end # self.extended
         
         def authenticate(login, password)
-          @u = find(Authentication::Strategies::Basic::Base.login_param => login)
+          @u = find(Merb::Authentication::Strategies::Basic::Base.login_param => login)
           @u && @u.authenticated?(password) ? @u : nil
         end
       end # SQClassMethods
@@ -45,4 +45,4 @@ class Authentication
 
     end # SaltedUser
   end # Mixins
-end # Authentication 
+end # Merb::Authentication 

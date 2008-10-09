@@ -1,5 +1,5 @@
 require "digest/sha1"
-class Authentication
+class Merb::Authentication
   module Mixins
     # This mixin provides basic salted user password encryption.
     # 
@@ -10,7 +10,7 @@ class Authentication
     # To use it simply require it and include it into your user class.
     #
     # class User
-    #   include Authentication::Mixins::SaltedUser
+    #   include Merb::Authentication::Mixins::SaltedUser
     #
     # end
     #
@@ -20,19 +20,19 @@ class Authentication
         base.class_eval do 
           attr_accessor :password, :password_confirmation
           
-          include Authentication::Mixins::SaltedUser::InstanceMethods
-          extend  Authentication::Mixins::SaltedUser::ClassMethods
+          include Merb::Authentication::Mixins::SaltedUser::InstanceMethods
+          extend  Merb::Authentication::Mixins::SaltedUser::ClassMethods
           
           path = File.expand_path(File.dirname(__FILE__)) / "salted_user"
           if defined?(DataMapper) && DataMapper::Resource > self
             require path / "dm_salted_user"
-            extend(Authentication::Mixins::SaltedUser::DMClassMethods)
+            extend(Merb::Authentication::Mixins::SaltedUser::DMClassMethods)
           elsif defined?(ActiveRecord) && ancestors.include?(ActiveRecord::Base)
             require path / "ar_salted_user"
-            extend(Authentication::Mixins::SaltedUser::ARClassMethods)
+            extend(Merb::Authentication::Mixins::SaltedUser::ARClassMethods)
           elsif defined?(Sequel) && ancestors.include?(Sequel::Model)
             require path / "sq_salted_user"
-            extend(Authentication::Mixins::SaltedUser::SQClassMethods)
+            extend(Merb::Authentication::Mixins::SaltedUser::SQClassMethods)
           end
           
         end # base.class_eval
@@ -61,7 +61,7 @@ class Authentication
         
         def encrypt_password
           return if password.blank?
-          self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{Authentication::Strategies::Basic::Base.login_param}--") if new_record?
+          self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{Merb::Authentication::Strategies::Basic::Base.login_param}--") if new_record?
           self.crypted_password = encrypt(password)
         end
         
@@ -69,5 +69,5 @@ class Authentication
       
     end # SaltedUser    
   end # Mixins
-end # Authentication
+end # Merb::Authentication
 

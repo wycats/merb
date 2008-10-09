@@ -10,7 +10,7 @@ require 'merb-auth-more/strategies/abstract_password'
 # === Methods
 # <User>.authenticate(login_param, password_param)
 #
-class Authentication
+class Merb::Authentication
   module Strategies
     module Basic
       class Form < Base

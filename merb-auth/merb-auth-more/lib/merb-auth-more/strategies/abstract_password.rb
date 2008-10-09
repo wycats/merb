@@ -1,11 +1,11 @@
-class Authentication
+class Merb::Authentication
   module Strategies
     # To use the password strategies, it is expected that you will provide
     # an @authenticate@ method on your user class.  This should take two parameters
     # login, and password.  It should return nil or the user object.
     module Basic
       
-      class Base < Authentication::Strategy
+      class Base < Merb::Authentication::Strategy
         abstract!
         
         # Overwrite this method to customize the field
@@ -28,4 +28,4 @@ class Authentication
       end # Base      
     end # Password
   end # Strategies
-end # Authentication
+end # Merb::Authentication
