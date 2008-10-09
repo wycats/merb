@@ -8,8 +8,9 @@ if defined?(Merb::Plugins)
     require 'merb-auth-core/session_mixin'
     require 'merb-auth-core/authentication'
     require 'merb-auth-core/errors'
-     require 'merb-auth-core/redirection'
+    require 'merb-auth-core/redirection'
     require 'merb-auth-core/authenticated_helper'
+    require 'merb-auth-core/customizations'
    
     Merb::Controller.send(:include, Merb::AuthenticatedHelper)
   end
