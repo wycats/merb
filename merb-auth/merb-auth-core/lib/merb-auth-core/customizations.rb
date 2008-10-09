@@ -12,6 +12,7 @@ class Authentication
       default_customizations
     end
     
+    # Gets the list of declared customizations
     def default_customizations
       @custom_default_blocks ||= []
     end

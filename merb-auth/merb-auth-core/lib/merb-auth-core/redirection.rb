@@ -1,3 +1,4 @@
+# These are not intended to be used directly
 class Authentication
   
   def redirected?

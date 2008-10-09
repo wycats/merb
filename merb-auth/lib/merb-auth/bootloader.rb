@@ -1,3 +1,5 @@
+# This is not intended to be modified.  It is for use with
+# Authentication.default_customizations
 class Merb::BootLoader::MerbAuthBootLoader < Merb::BootLoader
   before Merb::BootLoader::AfterAppLoads
   

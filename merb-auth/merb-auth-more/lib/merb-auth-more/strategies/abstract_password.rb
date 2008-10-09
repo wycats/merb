@@ -10,20 +10,20 @@ class Authentication
         
         # Overwrite this method to customize the field
         def self.password_param
-          :password
+          (Merb::Plugins[:"merb-auth"][:password_field] || :password).to_s.to_sym
         end
         
         # Overwrite this method to customize the field
         def self.login_param
-          :login
+          (Merb::Plugins[:"merb-auth"][:login_field] || :login).to_s.to_sym
         end
         
         def password_param
-          Base.password_param
+          @password_param ||= Base.password_param
         end
         
         def login_param
-          Base.login_param
+          @login_param ||= Base.login_param
         end
       end # Base      
     end # Password
