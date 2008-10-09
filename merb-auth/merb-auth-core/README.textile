@@ -95,24 +95,9 @@ Notice the @user_class@ method in the above strategy examples.  This is a conven
 to provide you with the user_class to use for this strategy.  You can overwrite
 this method on a per strategy basis to use different user model types.
 
-By default the strategy#user_class method will defer to Merb::Authentication#user_class.  You can 
-set which is the "default class" that Merb::Authentication will use in the provided strategies by
-setting the class inside your model declaration.  
-
-<pre><code>
-  class Person
-    include DataMapper::Resource
-    
-    Merb::Authentication.user_class = self
-    
-    #...
-  end
-</code></pre>
-
-This will cascade throughout the default strategies, and your own strategies vai that 
-Merb::Authentication::Strategy#user_class method.
-
-The default valud for the user class is @User@
+By default the strategy#user_class method will defer to Merb::Authentication#user_class
+so you can overwrite this method to set the default user class for your application if required.
+The default value is @User@
 
 h3. Strategies and Inheritance
 
