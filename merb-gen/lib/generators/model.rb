@@ -2,6 +2,7 @@ module Merb::Generators
   
   class ModelGenerator < NamespacedGenerator
 
+    
     def self.source_root
       File.join(super, 'component', 'model')
     end
