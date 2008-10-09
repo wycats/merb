@@ -1,6 +1,42 @@
 module Merb
   module Slices
     
+    module Support
+      
+      # This module should be explicitly included into a controller,
+      # for example in Application (the main controller of your app).
+      # It contains optional methods for slice/plugin developers.
+      
+      # Generate a slice url - takes the slice's :path_prefix into account.
+      #
+      # @param slice_name<Symbol> 
+      #   The name of the slice - in identifier_sym format (underscored).
+      # @param *args<Array[Symbol,Hash]> 
+      #   There are several possibilities regarding arguments:
+      #   - when passing a Hash only, the :default route of the current 
+      #     slice will be used
+      #   - when a Symbol is passed, it's used as the route name
+      #   - a Hash with additional params can optionally be passed
+      # 
+      # @return <String> A uri based on the requested slice.
+      #
+      # @example slice_url(:awesome, :format => 'html')
+      # @example slice_url(:forum, :posts, :format => 'xml')          
+      def slice_url(slice_name, *args)
+        opts = args.last.is_a?(Hash) ? args.pop : {}
+        route_name = args[0].is_a?(Symbol) ? args.shift : :default
+        
+        routes = Merb::Slices.named_routes[slice_name]
+        unless routes && route = routes[route_name]
+          raise Merb::Router::GenerationError, "Named route not found: #{route_name}"
+        end
+        
+        args.push(opts)
+        route.generate(args, params)
+      end
+      
+    end
+    
     module ControllerMixin
       
       def self.included(klass)

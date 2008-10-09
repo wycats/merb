@@ -11,6 +11,16 @@ require 'generators/very_thin'
 
 module Merb
   module Test
+    
+    class SampleAppController < Merb::Controller
+      
+      include Merb::Slices::Support
+      
+      def index
+      end
+      
+    end
+    
     module SliceHelper
       
       def current_slice_root=(path)
