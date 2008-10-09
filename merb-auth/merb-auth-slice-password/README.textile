@@ -16,6 +16,7 @@ For example
 User.authenticate("fred", "sekrit") #=> The user object for the "fred" login
 or nil / false if not found
 
+You can use the salted_user mixin from merb-auth-more for use with this slice.
 
 ------------------------------------------------------------------------------
 
@@ -95,22 +96,20 @@ Merb::Plugins.config[:merb_slices] = { :queue => ["MerbAuthSlicePassword", ...] 
 # Setup your application to use MerbAuthSlicePassword in an after_app_loads block
 
 # To change the login or password field to a field of your choice
-  update the Merb::Authentication::Strategies::Basic::Base.login_param and password_param
-
-<pre><code>
-class Merb::Authentication::Strategies::Basic::Base < Merb::Authentication::Strategy
-  def self.login_param
-    :email
-  end
-  
-  def self.password_param
-    :mot_de_passe
-  end
-end
-</code></pre>
+  Set 
+  Merb::Plugin.config[:"merb-auth"][:login_param]
+  Merb::Plugin.config[:"merb-auth"][:password_param]
 
 These are used to setup the login and password fields and the labels that are
 shown.  The defaults are shown
+
+h3. Included Strategies
+
+By default the password slice loads the :default_password_form strategy
+from merb-auth-more.  If you don't want to use this you should set the
+MerbAutheSlicePassword[:no_default_strategies] = true
+
+This will prevent it from loading any strategies. 
 
 
 file: config/router.rb
