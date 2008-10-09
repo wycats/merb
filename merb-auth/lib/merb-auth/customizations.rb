@@ -4,14 +4,13 @@
 Merb::Slices::config[:"merb-auth-slice-password"][:no_default_strategies] = true
 
 # Load the strategies
-strategies = Merb.plugins.config[:"merb-auth"][:strategies] || [:basic_password, :basic_basic_auth]
+strategies = Merb::Plugins.config[:"merb-auth"][:strategies] || [:default_password_form, :default_basic_auth]
 strategies.each do |s|
-  Authentication.activate_strategy(s)
+  Authentication.activate!(s)
 end
 
 # Setup customizations
 Authentication.customize_default do
-  
   #Mixin the user mixins
   require 'merb-auth-more/mixins/salted_user'
   Authentication.user_class.class_eval{ include Authentication::Mixins::SaltedUser }
@@ -24,7 +23,7 @@ Authentication.customize_default do
     end
     
     def store_user(user)
-      user.nil? user : user.id
+      user.nil? ? user : user.id
     end
     
   end # Authentication.class_eval

@@ -6,3 +6,4 @@ require 'merb-auth-slice-password'
 
 path = File.join(File.dirname(__FILE__), "merb-auth")
 require "#{path}/bootloader.rb"
+require "#{path}/customizations.rb"

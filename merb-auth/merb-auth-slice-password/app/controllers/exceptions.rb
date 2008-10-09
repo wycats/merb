@@ -7,11 +7,12 @@ class Exceptions < Application
   self._template_roots ||= []
   self._template_roots << [the_view_path, :_template_location]
   self._template_roots << [Merb.dir_for(:view), :_template_location]
-  
+    
   def unauthenticated
     provides :xml, :js, :json, :yaml
     
     session.abandon!
+
     case content_type
     when :html
       render
