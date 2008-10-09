@@ -56,6 +56,8 @@ if defined?(Merb::Plugins)
       scope.match('/index(.:format)').to(:controller => 'main', :action => 'index').name(:index)
       # the slice is mounted at /full-test-slice - note that it comes before default_routes
       scope.match('/').to(:controller => 'main', :action => 'index').name(:home)
+      # enable slice-level default routes by default
+      scope.default_routes
     end
     
   end

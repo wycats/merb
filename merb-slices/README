@@ -64,9 +64,9 @@ add_slice(:BlogSlice)
 
 add_slice(:BlogSlice, 'foo') # same as :path => 'foo'
 
-# example: /:lang/:controller/:action/:id (with :a param set)
+# example: /:lang/:controller/:action/:id
 
-add_slice(:BlogSlice, :path => ':lang', :params => { :a => 'b' })
+add_slice(:BlogSlice, :path => ':lang')
 
 # example: /:controller/:action/:id
 

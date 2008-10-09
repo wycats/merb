@@ -54,7 +54,7 @@ describe "The Merb::Router::Behavior methods" do
         scope.match('/dashboard').to(:controller => 'main', :action => 'index').name(:dashboard)
       end
       add_slice(:thin_test_slice, 'thin') # shortcut for :path => 'thin'
-      slice(:very_thin_test_slice, :name_prefix => 'awesome', :params => { :foo => 'bar' })
+      slice(:very_thin_test_slice, :name_prefix => 'awesome')
     end    
   end
   
@@ -81,10 +81,6 @@ describe "The Merb::Router::Behavior methods" do
   it "should mount a slice directly at the root using #slice" do
     Merb::Router.named_routes[:awesome_default].inspect.should == '/:controller(/:action(/:id))(.:format)'
     Merb::Router.named_routes[:awesome_default].should == VeryThinTestSlice.named_routes[:default]
-  end
-  
-  it "should allow default params to be set on a route" do
-    Merb::Router.named_routes[:awesome_default].params[:foo].should == '"bar"'
   end
   
   it "enable url() and slice_url() respectively" do

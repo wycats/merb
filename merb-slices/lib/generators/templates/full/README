@@ -96,9 +96,9 @@ add_slice(:<%= module_name %>)
 
 add_slice(:<%= module_name %>, 'foo') # same as :path => 'foo'
 
-# example: /:lang/:controller/:action/:id (with :a param set)
+# example: /:lang/:controller/:action/:id
 
-add_slice(:<%= module_name %>, :path => ':lang', :params => { :a => 'b' })
+add_slice(:<%= module_name %>, :path => ':lang')
 
 # example: /:controller/:action/:id
 
