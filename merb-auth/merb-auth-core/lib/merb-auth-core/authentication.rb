@@ -1,77 +1,76 @@
-module Merb
-  class Authentication
-    include Extlib::Hook
-    attr_accessor :session
-    attr_writer   :error_message
+class Authentication
+  include Extlib::Hook
+  attr_accessor :session
+  attr_writer   :error_message
   
-    class DuplicateStrategy < Exception; end
-    class MissingStrategy < Exception; end
-    class NotImplemented < Exception; end
+  class DuplicateStrategy < Exception; end
+  class MissingStrategy < Exception; end
+  class NotImplemented < Exception; end
   
-    # This method returns the default user class to use throughout the
-    # merb-auth authentication framework.  Merb::Authentication.user_class can
-    # be used by other plugins, and by default by strategies.
-    #
-    # By Default it is set to User class.  If you need a different class
-    # The intention is that you overwrite this method
-    #
-    # @return <User Class Object>
-    #
-    # @api overwritable
-    cattr_writer :user_class
-    def self.user_class
-      @@user_class ||= User
-    end
+  # This method returns the default user class to use throughout the
+  # merb-auth authentication framework.  Authentication.user_class can
+  # be used by other plugins, and by default by strategies.
+  #
+  # By Default it is set to User class.  If you need a different class
+  # The intention is that you overwrite this method
+  #
+  # @return <User Class Object>
+  #
+  # @api overwritable
+  cattr_writer :user_class
+  def self.user_class
+    @@user_class ||= User
+  end
   
-    def initialize(session)
-      @session = session
-    end
+  def initialize(session)
+    @session = session
+  end
   
-    # Returns true if there is an authenticated user attached to this session
-    #
-    # @return <TrueClass|FalseClass>
-    # 
-    def authenticated?
-      !!user
-    end
+  # Returns true if there is an authenticated user attached to this session
+  #
+  # @return <TrueClass|FalseClass>
+  # 
+  def authenticated?
+    !!user
+  end
   
-    # This method will retrieve the user object stored in the session or nil if there
-    # is no user logged in.
-    # 
-    # @return <User class>|NilClass
-    def user
-      return nil if !session[:user]
-      @user ||= fetch_user(session[:user])
-    end
+  # This method will retrieve the user object stored in the session or nil if there
+  # is no user logged in.
+  # 
+  # @return <User class>|NilClass
+  def user
+    return nil if !session[:user]
+    @user ||= fetch_user(session[:user])
+  end
   
-    # This method will store the user provided into the session
-    # and set the user as the currently logged in user
-    # @return <User Class>|NilClass
-    def user=(user)
-      session[:user] = nil && return if user.nil?
-      session[:user] = store_user(user)
-      @user = session[:user] ? user : session[:user]  
-    end
+  # This method will store the user provided into the session
+  # and set the user as the currently logged in user
+  # @return <User Class>|NilClass
+  def user=(user)
+    session[:user] = nil && return if user.nil?
+    session[:user] = store_user(user)
+    @user = session[:user] ? user : session[:user]  
+  end
   
-    # The workhorse of the framework.  The authentiate! method is where
-    # the work is done.  authenticate! will try each strategy in order
-    # either passed in, or in the default_strategy_order.  
-    #
-    # If a strategy returns some kind of user object, this will be stored
-    # in the session, otherwise a Merb::Controller::Unauthenticated exception is raised
-    #
-    # @params Merb::Request, [List,Of,Strategies, optional_options_hash]
-    #
-    # Pass in a list of strategy objects to have this list take precedence over the normal defaults
-    # 
-    # Use an options hash to provide an error message to be passed into the exception.
-    #
-    # @return user object of the verified user.  An exception is raised if no user is found
-    #
-    def authenticate!(request, *rest)
-      opts = rest.last.kind_of?(Hash) ? rest.pop : {}
-      rest = rest.flatten
-      strategies = rest.empty? ? Merb::Authentication.default_strategy_order : rest
+  # The workhorse of the framework.  The authentiate! method is where
+  # the work is done.  authenticate! will try each strategy in order
+  # either passed in, or in the default_strategy_order.  
+  #
+  # If a strategy returns some kind of user object, this will be stored
+  # in the session, otherwise a Merb::Controller::Unauthenticated exception is raised
+  #
+  # @params Merb::Request, [List,Of,Strategies, optional_options_hash]
+  #
+  # Pass in a list of strategy objects to have this list take precedence over the normal defaults
+  # 
+  # Use an options hash to provide an error message to be passed into the exception.
+  #
+  # @return user object of the verified user.  An exception is raised if no user is found
+  #
+  def authenticate!(request, *rest)
+    opts = rest.last.kind_of?(Hash) ? rest.pop : {}
+    rest = rest.flatten
+    strategies = rest.empty? ? Authentication.default_strategy_order : rest
 
       msg = opts[:message] || error_message
       user = nil    
