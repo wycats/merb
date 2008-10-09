@@ -1,10 +1,16 @@
 # make sure we're running inside Merb
 if defined?(Merb::Plugins)
-
   # Merb gives you a Merb::Plugins.config hash...feel free to put your stuff in your piece of it
   Merb::Plugins.config[:"merb-auth_more"] = {
     :chickens => false
   }
+  
+  # Register the strategies so that plugins and apps may utilize them
+  basic_path = File.expand_path(File.dirname(__FILE__)) / "merb-auth-more" / "strategies" / "basic"
+  
+  Authentication.register(:default_basic_auth,    basic_path / "basic_auth.rb")
+  Authentication.register(:default_openid,        basic_path / "openid.rb")
+  Authentication.register(:default_password_form, basic_path / "password_form.rb")
   
   Merb::BootLoader.before_app_loads do
     # require code that must be loaded before the application

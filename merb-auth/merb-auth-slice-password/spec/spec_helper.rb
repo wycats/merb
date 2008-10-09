@@ -2,10 +2,10 @@ require 'rubygems'
 require 'merb-core'
 require 'merb-slices'
 require 'spec'
-
+require 'merb-auth-core'
 # Add mauth_password_slice.rb to the search path
 Merb::Plugins.config[:merb_slices][:auto_register] = true
-Merb::Plugins.config[:merb_slices][:search_path]   = File.join(File.dirname(__FILE__), '..', 'lib', 'mauth_password_slice.rb')
+Merb::Plugins.config[:merb_slices][:search_path]   = File.join(File.dirname(__FILE__), '..', 'lib', 'merb-auth-slice-password.rb')
 
 # Using Merb.root below makes sure that the correct root is set for
 # - testing standalone, without being installed as a gem and no host application

@@ -8,7 +8,7 @@ require 'fileutils'
 include FileUtils
 
 gems = %w[
-  merb-auth-core merb-auth-more merb-auth_password_slice
+  merb-auth-core merb-auth-more merb-auth-slice-password
 ]
 
 merb_auth_spec = Gem::Specification.new do |s|
@@ -21,11 +21,11 @@ merb_auth_spec = Gem::Specification.new do |s|
   s.homepage     = "http://www.merbivore.com"
   s.summary      = "merb-auth.  The official authentication plugin for merb.  Setup for the default stack"
   s.description  = s.summary
-  s.files        = %w( LICENSE README.textile Rakefile TODO lib/merb-auth.rb )
+  s.files = %w(LICENSE README.textile Rakefile TODO) + Dir.glob("{lib,spec}/**/*")
   s.add_dependency "merb-core", "~> #{GEM_VERSION}"
   s.add_dependency "merb-auth-core", "= #{GEM_VERSION}"
   s.add_dependency "merb-auth-more", "= #{GEM_VERSION}"
-  s.add_dependency "merb-auth_password_slice", "= #{GEM_VERSION}"
+  s.add_dependency "merb-auth-slice-password", "= #{GEM_VERSION}"
   gems.each do |gem|
     s.add_dependency gem, "~> #{GEM_VERSION}"
   end
@@ -40,6 +40,7 @@ end
 desc "install the plugin as a gem"
 task :install do
   Merb::RakeHelper.install(GEM_NAME, :version => GEM_VERSION)
+  Merb::RakeHelper.install_package("pkg/merb-auth-#{GEM_VERSION}.gem")
 end
 
 desc "Uninstall the gem"
