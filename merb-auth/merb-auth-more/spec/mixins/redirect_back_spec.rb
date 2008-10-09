@@ -6,12 +6,12 @@ describe "redirect_back" do
   before(:all) do
     clear_strategies!
     
-    class Authentication
+    class Merb::Authentication
       def store_user(user); user; end
       def fetch_user(session_info); session_info; end
     end
     
-    class MyStrategy < Authentication::Strategy; def run!; request.env["USER"]; end; end
+    class MyStrategy < Merb::Authentication::Strategy; def run!; request.env["USER"]; end; end
     
     class Application < Merb::Controller; end
     

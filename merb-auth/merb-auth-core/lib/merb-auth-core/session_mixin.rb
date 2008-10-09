@@ -19,7 +19,7 @@ module Merb
       #    <%= error_messages_for session.authentication %>
       # 
       def authentication
-        @authentication ||= Authentication.new(self)
+        @authentication ||= Merb::Authentication.new(self)
       end
     
       # Check to see if the current session is authenticated
@@ -30,7 +30,7 @@ module Merb
     
       # Authenticates the session via the authentication object. 
       #
-      # See Authentication#authenticate for usage
+      # See Merb::Authentication#authenticate for usage
       def authenticate!(request, *rest)
         authentication.authenticate!(request, *rest)
       end
@@ -41,7 +41,7 @@ module Merb
       end
     
       # set the currently authenticated user manually
-      # Authentication#store_user should know how to store the object into the session
+      # Merb::Authentication#store_user should know how to store the object into the session
       def user=(the_user)
         authentication.user = the_user
       end

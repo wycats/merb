@@ -11,7 +11,7 @@ describe "A Salted User" do
     
     class Utilisateur
       include DataMapper::Resource
-      include Authentication::Mixins::SaltedUser
+      include Merb::Authentication::Mixins::SaltedUser
       
       property :id, Serial
       property :email, String

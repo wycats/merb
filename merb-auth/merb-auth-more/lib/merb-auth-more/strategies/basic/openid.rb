@@ -21,7 +21,7 @@ require 'openid'
 require 'openid/store/filesystem'
 require 'openid/extensions/sreg'
 
-class Authentication
+class Merb::Authentication
   module Strategies
     module Basic
       class OpenID < Base
@@ -126,4 +126,4 @@ class Authentication
       end # OpenID
     end # Basic
   end # Strategies
-end # Authentication
+end # Merb::Authentication

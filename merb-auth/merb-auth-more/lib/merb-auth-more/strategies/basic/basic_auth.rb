@@ -6,7 +6,7 @@ require 'merb-auth-more/strategies/abstract_password'
 # == Methods
 #   <User>.authenticate(login_field, password_field)
 #
-class Authentication
+class Merb::Authentication
   module Strategies
     module Basic
       class BasicAuth < Base
@@ -29,7 +29,7 @@ class Authentication
         # Need to overwrite this method so that we can pass in the request instead of a the strategy
         # which is what the mixin would do.
         def basic_authentication(realm = "Application", &authenticator)
-          @_basic_authentication ||= BasicAuthentication.new(Application.new(request), realm, &authenticator)
+          @_basic_authentication ||= BasicMerb::Authentication.new(Application.new(request), realm, &authenticator)
         end
         
         private
@@ -37,4 +37,4 @@ class Authentication
       end # BasicAuth
     end # Password
   end # Strategies
-end # Authentication
+end # Merb::Authentication

@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__), "..", 'spec_helper.rb')
 
-describe "Authentication::Strategy" do
+describe "Merb::Authentication::Strategy" do
     
   before(:all) do
     clear_strategies!
@@ -16,76 +16,76 @@ describe "Authentication::Strategy" do
   
   describe "adding a strategy" do
     it "should add a strategy" do
-      class MyStrategy < Authentication::Strategy; end
-      Authentication.strategies.should include(MyStrategy)
+      class MyStrategy < Merb::Authentication::Strategy; end
+      Merb::Authentication.strategies.should include(MyStrategy)
     end
     
     it "should keep track of the strategies" do
-      class Sone < Authentication::Strategy; end
-      class Stwo < Authentication::Strategy; end
-      Authentication.strategies.should include(Sone, Stwo)
-      Authentication.default_strategy_order.pop
-      Authentication.strategies.should include(Sone, Stwo)
+      class Sone < Merb::Authentication::Strategy; end
+      class Stwo < Merb::Authentication::Strategy; end
+      Merb::Authentication.strategies.should include(Sone, Stwo)
+      Merb::Authentication.default_strategy_order.pop
+      Merb::Authentication.strategies.should include(Sone, Stwo)
     end
     
     it "should add multiple strategies in order of decleration" do
-      class Sone < Authentication::Strategy; end
-      class Stwo < Authentication::Strategy; end
-      Authentication.default_strategy_order.should == [Sone, Stwo]
+      class Sone < Merb::Authentication::Strategy; end
+      class Stwo < Merb::Authentication::Strategy; end
+      Merb::Authentication.default_strategy_order.should == [Sone, Stwo]
     end
     
     it "should allow a strategy to be inserted _before_ another strategy in the default order" do
-      class Sone < Authentication::Strategy; end
-      class Stwo < Authentication::Strategy; end
-      class AuthIntruder < Authentication::Strategy; before Stwo; end
-      Authentication.strategies.should include(AuthIntruder, Stwo, Sone)
-      Authentication.default_strategy_order.should == [Sone, AuthIntruder, Stwo]
+      class Sone < Merb::Authentication::Strategy; end
+      class Stwo < Merb::Authentication::Strategy; end
+      class AuthIntruder < Merb::Authentication::Strategy; before Stwo; end
+      Merb::Authentication.strategies.should include(AuthIntruder, Stwo, Sone)
+      Merb::Authentication.default_strategy_order.should == [Sone, AuthIntruder, Stwo]
     end
     
     it "should allow a strategy to be inserted _after_ another strategy in the default order" do
-      class Sone < Authentication::Strategy; end
-      class Stwo < Authentication::Strategy; end
-      class AuthIntruder < Authentication::Strategy; after Sone; end
-      Authentication.strategies.should include(AuthIntruder, Stwo, Sone)
-      Authentication.default_strategy_order.should == [Sone, AuthIntruder, Stwo]
+      class Sone < Merb::Authentication::Strategy; end
+      class Stwo < Merb::Authentication::Strategy; end
+      class AuthIntruder < Merb::Authentication::Strategy; after Sone; end
+      Merb::Authentication.strategies.should include(AuthIntruder, Stwo, Sone)
+      Merb::Authentication.default_strategy_order.should == [Sone, AuthIntruder, Stwo]
     end
   end
   
   describe "the default order" do
     it "should allow a user to overwrite the default order" do
-      class Sone < Authentication::Strategy; end
-      class Stwo < Authentication::Strategy; end
-      Authentication.default_strategy_order = [Stwo]
-      Authentication.default_strategy_order.should == [Stwo]
+      class Sone < Merb::Authentication::Strategy; end
+      class Stwo < Merb::Authentication::Strategy; end
+      Merb::Authentication.default_strategy_order = [Stwo]
+      Merb::Authentication.default_strategy_order.should == [Stwo]
     end
     
-    it "should get raise an error if any strategy is not an Authentication::Strategy" do
-      class Sone < Authentication::Strategy; end
-      class Stwo < Authentication::Strategy; end
+    it "should get raise an error if any strategy is not an Merb::Authentication::Strategy" do
+      class Sone < Merb::Authentication::Strategy; end
+      class Stwo < Merb::Authentication::Strategy; end
       lambda do
-        Authentication.default_strategy_order = [Stwo, String]
+        Merb::Authentication.default_strategy_order = [Stwo, String]
       end.should raise_error(ArgumentError)
     end
   end
 
   it "should raise a not implemented error if the run! method is not defined in the subclass" do
-    class Sone < Authentication::Strategy; end
+    class Sone < Merb::Authentication::Strategy; end
     lambda do
       Sone.new("controller").run!
-    end.should raise_error(Authentication::NotImplemented)
+    end.should raise_error(Merb::Authentication::NotImplemented)
   end
   
   it "should not raise an implemented error if the run! method is defined on the subclass" do
-    class Sone < Authentication::Strategy; def run!; end; end
+    class Sone < Merb::Authentication::Strategy; def run!; end; end
     lambda do
       Sone.new("controller").run!
-    end.should_not raise_error(Authentication::NotImplemented)
+    end.should_not raise_error(Merb::Authentication::NotImplemented)
   end
   
   describe "convinience methods" do
     
     before(:each) do
-      class Sone < Authentication::Strategy; def run!; end; end 
+      class Sone < Merb::Authentication::Strategy; def run!; end; end 
       @request = mock("controller")
       @strategy = Sone.new(@request)
     end
@@ -108,16 +108,16 @@ describe "Authentication::Strategy" do
     # By inheriting you can add multiple user types to the authentication process
     
     before(:each) do
-      class Sone < Authentication::Strategy; def run!; end; end
+      class Sone < Merb::Authentication::Strategy; def run!; end; end
       class Stwo < Sone; end
       
-      class Mone < Authentication::Strategy
+      class Mone < Merb::Authentication::Strategy
         def user_class; String; end
         def run!; end
       end
       class Mtwo < Mone; end
       
-      class Pone < Authentication::Strategy
+      class Pone < Merb::Authentication::Strategy
         abstract!
         def user_class; Hash; end
         def special_method; true end
@@ -141,27 +141,27 @@ describe "Authentication::Strategy" do
     end
     
     it "should make it into the strategies collection when subclassed from a subclass" do
-      Authentication.strategies.should include(Mtwo)
+      Merb::Authentication.strategies.should include(Mtwo)
     end
     
     it "should make it in the default_strategy_order when subclassed from a subclass" do
-      Authentication.default_strategy_order.should include(Mtwo)
+      Merb::Authentication.default_strategy_order.should include(Mtwo)
     end
     
-    it "should defer to the Authentication.user_class if not over written" do
-      Authentication.should_receive(:user_class).and_return(User)
+    it "should defer to the Merb::Authentication.user_class if not over written" do
+      Merb::Authentication.should_receive(:user_class).and_return(User)
       s = Sone.new(@request)
       s.user_class
     end
     
     it "should inherit the user class from it's parent by default" do
-      Authentication.should_receive(:user_class).and_return(User)
+      Merb::Authentication.should_receive(:user_class).and_return(User)
       s = Stwo.new(@request)
       s.user_class.should == User
     end
     
     it "should inherit the user_class form it's parent when the parent defines a new one" do
-      Authentication.should_not_receive(:user_class)
+      Merb::Authentication.should_not_receive(:user_class)
       m = Mtwo.new(@request)
       m.user_class.should == String
     end
@@ -177,7 +177,7 @@ describe "Authentication::Strategy" do
     end
     
     before(:each) do
-      class MyStrategy < Authentication::Strategy
+      class MyStrategy < Merb::Authentication::Strategy
         def run!
           if params[:url]
             params[:status] ? redirect!(params[:url], :status => params[:status]) : redirect!(params[:url])
@@ -229,20 +229,20 @@ describe "Authentication::Strategy" do
   describe "register strategies" do
     
     it "should allow for a strategy to be registered" do
-      Authentication.register(:test_one, "/path/to/strategy")
-      Authentication.registered_strategies[:test_one].should == "/path/to/strategy"
+      Merb::Authentication.register(:test_one, "/path/to/strategy")
+      Merb::Authentication.registered_strategies[:test_one].should == "/path/to/strategy"
     end
     
     it "should activate a strategy" do
-      Authentication.register(:test_activation, File.expand_path(File.dirname(__FILE__)) / "activation_fixture")
+      Merb::Authentication.register(:test_activation, File.expand_path(File.dirname(__FILE__)) / "activation_fixture")
       defined?(TheActivationTest).should be_nil
-      Authentication.activate!(:test_activation)
+      Merb::Authentication.activate!(:test_activation)
       defined?(TheActivationTest).should_not be_nil
     end
     
     it "should raise if the strategy is not registered" do
       lambda do
-        Authentication.activate!(:not_here)
+        Merb::Authentication.activate!(:not_here)
       end.should raise_error
     end
     

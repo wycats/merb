@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__), "..", 'spec_helper.rb')
 
-describe "Authentication Session" do
+describe "Merb::Authentication Session" do
     
   before(:each) do
     @session_class = Merb::CookieSession
@@ -24,7 +24,7 @@ describe "Authentication Session" do
         pending "How to spec this when we need to overwrite it for the specs to work?"
         lambda do
           @session.authentication.store_user("THE USER")
-        end.should raise_error(Authentication::NotImplemented)
+        end.should raise_error(Merb::Authentication::NotImplemented)
       end
     end
     
@@ -35,7 +35,7 @@ describe "Authentication Session" do
         pending "How to spec this when we need to overwrite it for the specs to work?"
         lambda do 
           @session.authentication.fetch_user
-        end.should raise_error(Authentication::NotImplemented)
+        end.should raise_error(Merb::Authentication::NotImplemented)
       end
     end
   end
@@ -44,7 +44,7 @@ describe "Authentication Session" do
     
     before(:each) do
       @request = fake_request
-      @auth = Authentication.new(@request.session)
+      @auth = Merb::Authentication.new(@request.session)
     end
     
     it "should be 'Could not log in' by default" do
@@ -139,9 +139,9 @@ describe "Authentication Session" do
     end
   end
   
-  describe "Authentication" do
+  describe "Merb::Authentication" do
     it "Should be hookable" do
-      Authentication.should include(Extlib::Hook)
+      Merb::Authentication.should include(Extlib::Hook)
     end
     
   end
@@ -157,20 +157,20 @@ describe "Authentication Session" do
     end
     
     before(:each) do
-      class Sone < Authentication::Strategy
+      class Sone < Merb::Authentication::Strategy
         def run!
         end
       end
-      class Stwo < Authentication::Strategy
+      class Stwo < Merb::Authentication::Strategy
         def run!
         end
       end
-      class Sthree < Authentication::Strategy
+      class Sthree < Merb::Authentication::Strategy
         def run!
           "WINNA"
         end
       end
-      class Sfour < Authentication::Strategy
+      class Sfour < Merb::Authentication::Strategy
         abstract!
         
         def run!
@@ -180,8 +180,8 @@ describe "Authentication Session" do
       
       Sfour.should_not_receive(:run!)
       @request = Users.new(fake_request)
-      @auth = Authentication.new(@request.session)
-      Authentication.stub!(:new).and_return(@auth)
+      @auth = Merb::Authentication.new(@request.session)
+      Merb::Authentication.stub!(:new).and_return(@auth)
     end
     
     it "should execute the strategies in the default order" do
@@ -254,7 +254,7 @@ describe "Authentication Session" do
   
   describe "user_class" do
     it "should have User as the default user class if requested" do
-      Authentication.user_class.should == User
+      Merb::Authentication.user_class.should == User
     end  
   end
   
@@ -267,7 +267,7 @@ describe "Authentication Session" do
     end
     
     before(:each) do
-      class MyStrategy < Authentication::Strategy
+      class MyStrategy < Merb::Authentication::Strategy
         def run!
           if params[:url]
             params[:status] ? redirect!(params[:url], :status => params[:status]) : redirect!(params[:url])
@@ -277,7 +277,7 @@ describe "Authentication Session" do
         end
       end # MyStrategy
       
-      class FailStrategy < Authentication::Strategy
+      class FailStrategy < Merb::Authentication::Strategy
         def run!
           request.params[:should_not_be_here] = true
         end
@@ -287,7 +287,7 @@ describe "Authentication Session" do
       Merb::Router.prepare{ match("/").to(:controller => "foo_controller")}
       @request = mock_request("/")
       @s = MyStrategy.new(@request)
-      @a = Authentication.new(@request.session)
+      @a = Merb::Authentication.new(@request.session)
     end
     
     it "should answer redirected false if the strategy did not redirect" do

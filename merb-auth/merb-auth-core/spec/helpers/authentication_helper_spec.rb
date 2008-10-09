@@ -36,7 +36,7 @@ describe "Merb::AuthenticationHelper" do
   
   it "should accept and execute the provided strategies" do
     # This allows using a before filter with specific arguments
-    # before :ensure_authenticated, :with => [Authenticaiton::OAuth, Authentication::BasicAuth]
+    # before :ensure_authenticated, :with => [Authenticaiton::OAuth, Merb::Authentication::BasicAuth]
     M1 = mock("m1")
     M2 = mock("m2")
     M1.stub!(:new).and_return(M1)
@@ -63,7 +63,7 @@ describe "Merb::AuthenticationHelper" do
     end
     
     before(:each) do
-      class MyStrategy < Authentication::Strategy
+      class MyStrategy < Merb::Authentication::Strategy
         def run!
           if params[:url]
             opts = {}

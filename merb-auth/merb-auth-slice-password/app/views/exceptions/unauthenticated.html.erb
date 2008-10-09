@@ -3,8 +3,8 @@
 <div>
 
   <%= error_messages_for session.authentication %>
-  <% @login_param = Authentication::Strategies::Basic::Base.login_param %>
-  <% @password_param = Authentication::Strategies::Basic::Base.password_param %>
+  <% @login_param = Merb::Authentication::Strategies::Basic::Base.login_param %>
+  <% @password_param = Merb::Authentication::Strategies::Basic::Base.password_param %>
   
 	<form action="/login" method="POST" accept-charset="utf-8">
 	  <input type="hidden" name="_method" value="PUT" />

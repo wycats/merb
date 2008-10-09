@@ -44,11 +44,11 @@ form for you, since it may not be to your liking.
 h3. How Does It Authenticate my arbitrary user?
 
 This is very similar to the BootLoader process in Merbs initialization.  
-You declare a class that inherits from Authentication::Strategy and
+You declare a class that inherits from Merb::Authentication::Strategy and
 define an instance method @run!@
 
 <pre><code>
-  class PasswordStrategy &lt Authentication::Strategy
+  class PasswordStrategy &lt Merb::Authentication::Strategy
   
     def run!
       if params[:login] && params[:password]
@@ -75,7 +75,7 @@ another until either one is found that works (login), or none of them have
 passed (failed attempt).
 
 <pre><code>
-    class PasswordLoginBasicAuth &lt Authentication::Strategy
+    class PasswordLoginBasicAuth &lt Merb::Authentication::Strategy
       def run!
         if controller.basic_authentication.provided?
           controller.basic_authentication.authenticate do |login, password|
@@ -101,7 +101,7 @@ Notice the @user_class@ method in the above strategy examples.  This is a conven
 to provide you with the user_class to use for this strategy.  You can overwrite
 this method on a per strategy basis to use different user model types.
 
-By default the strategy#user_class method will defer to Authentication#user_class
+By default the strategy#user_class method will defer to Merb::Authentication#user_class
 so you can overwrite this method to set the default user class for your application if required.
 The default value is @User@
 
@@ -116,7 +116,7 @@ Instead it's good to put common logic in and then inherit from.
 To mark a class as abstract, use the @abstract!@ class method.
 
 <pre><code>
-  class AbstractStrategy < Authentication::Strategy
+  class AbstractStrategy < Merb::Authentication::Strategy
     abstract!
   end
 </code></pre>
@@ -126,7 +126,7 @@ h3. Customizing the order of the strategies
 By default, strategies are run in the order they are declared.  It's possible
 to customize the order that the strategies are called.
 
-@Authentication.default_strategy_order@ will return an array of
+@Merb::Authentication.default_strategy_order@ will return an array of
 the strategy classes in the order that they will be run.  
 You can customize this by setting the default_strategy_order array
 manually.
@@ -194,7 +194,7 @@ To configure your user object to go in and out of the session, here's how you
 could do it.
 
 <pre><code>
-    class Authentication
+    class Merb::Authentication
 
       # return the value you want stored in the session 
       def store_user(user)
@@ -213,7 +213,7 @@ h3. Providing feedback to users (Error Messages)
 
 There's at least 4 ways to provide feedback to users for failed logins. 
 
-* Overwrite Authentication#error_message  The return of this method is 
+* Overwrite Merb::Authentication#error_message  The return of this method is 
   the default message that is passed to the Unauthenticated exception.  Overwrite
   this to provide a very basic catch all message.
 * Provide a default message when you declare your before filter.
@@ -222,7 +222,7 @@ There's at least 4 ways to provide feedback to users for failed logins.
     # OR
     before :ensure_authentication, :with => {:message => "Sorry Buddy... You Lose"}
   </code></pre>
-  When you pass a message, it will replace the Authentication#error_message default for this
+  When you pass a message, it will replace the Merb::Authentication#error_message default for this
   action
 * Use an after filter for your login action.  This can be used to set your messaging system.  For example:
   <pre><code>
@@ -255,7 +255,7 @@ h3. Additional checks / actions to perform after the user is found
 
 Sometimes you may need to perform additional operations on the user object
 before or after you grab it out of the database when authenticating it.  The
-Authentication class implements Extlib::Hook so you can just setup hooks to
+Merb::Authentication class implements Extlib::Hook so you can just setup hooks to
 deal with this.
 
 Here's an example of checking that a user object is active after it's been
