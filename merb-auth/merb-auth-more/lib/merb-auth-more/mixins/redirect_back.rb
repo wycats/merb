@@ -25,22 +25,35 @@ module Merb::AuthenticatedHelper
   #
   # set the ignore url via an :ignore option in the opts hash.
   def redirect_back_or(default_url, opts = {})
-    if session[:return_to] && session[:return_to] != opts[:ignore]
-      redirect session[:return_to], opts
+    if session.authentication.return_to_url && ![opts[:ignore]].flatten.include?(session.authentication.return_to_url)
+      redirect session.authentication.return_to_url, opts
     else
       redirect default_url, opts
     end
-    session[:return_to] = nil
+    session.authentication.return_to_url = nil
   end
   
 end
 
-class Application < Merb::Controller; end # Just to make sure we have an application controller handy
+
+class Application < Merb::Controller; end
+
 class Exceptions < Application
-  after :_set_return_to, :only => :unauthenticated
-  
-  private 
+  after  :_set_return_to,   :only => :unauthenticated
+
+  private   
   def _set_return_to
-    session[:return_to] ||= request.uri unless request.exceptions.blank?
+    session.authentication.return_to_url ||= request.uri unless request.exceptions.blank?
+  end
+end
+
+class Authentication
+
+  def return_to_url
+    @return_to_url ||= session[:return_to]
+  end
+  
+  def return_to_url=(return_url)
+    @return_to_url = session[:return_to] = return_url
   end
 end

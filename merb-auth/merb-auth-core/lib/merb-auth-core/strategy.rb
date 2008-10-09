@@ -32,6 +32,10 @@ class Authentication
     self.registered_strategies[label] = path
   end
 
+  # Activates a registered strategy by it's label.
+  # Intended for use with plugin authors.  There is little
+  # need to register your own strategies.  Just declare them
+  # and they will be active.
   def self.activate!(label)
     path = self.registered_strategies[label]
     raise "The #{label} Strategy is not registered" unless path

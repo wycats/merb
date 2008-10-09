@@ -31,19 +31,19 @@ describe "redirect_back" do
     controller = dispatch_to(Exceptions, :unauthenticated, {}, {:user => "winna", :request_uri => "go_back"}) do |c|
       c.request.exceptions =  [Merb::Controller::Unauthenticated.new]
     end
-    controller.session[:return_to].should == "go_back"
+    controller.session.authentication.return_to_url.should == "go_back"
   end
   
   it  "should not set the return_to in the session when deliberately going to unauthenticated" do
     controller = dispatch_to(Exceptions, :unauthenticated, {}, {:user => "winna", :request_uri => "don't_go_back"}) do |c|
       c.request.exceptions = []
     end
-    controller.session[:return_to].should be_nil
+    controller.session.authentication.return_to_url.should be_nil
   end
   
   it "should not set the return_to when loggin into a controller directly" do 
     controller = dispatch_to(MyController, :index, {}, :user => "winna", :request_uri => "NOOO")
-    controller.session[:return_to].should be_nil
+    controller.session.authentication.return_to_url.should be_nil
   end
   
   describe "redirect_back helper" do
@@ -56,22 +56,22 @@ describe "redirect_back" do
     end
     
     it "should provide the url stored in the session" do
-      @with_redirect.session[:return_to].should == "request_uri"
+      @with_redirect.session.authentication.return_to_url.should == "request_uri"
       @with_redirect.redirect_back_or("/some/path")
       @with_redirect.headers["Location"].should == "request_uri"
     end
     
     it "should provide the url passed in by default when there is no return_to" do
-      @no_redirect.session[:return_to].should be_nil
+      @no_redirect.session.authentication.return_to_url.should be_nil
       @no_redirect.redirect_back_or("/some/path")
       @no_redirect.headers["Location"].should ==  "/some/path"
     end
     
     it "should wipe out the return_to in the session after the redirect" do
-      @with_redirect.session[:return_to].should == "request_uri"
+      @with_redirect.session.authentication.return_to_url.should == "request_uri"
       @with_redirect.redirect_back_or("somewhere")
       @with_redirect.headers["Location"].should == "request_uri"
-      @with_redirect.session[:return_to].should be_nil
+      @with_redirect.session.authentication.return_to_url.should be_nil
     end
     
     it "should ignore a return_to if it's the same as the ignore url" do
