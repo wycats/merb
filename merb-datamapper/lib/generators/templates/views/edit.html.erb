@@ -1,0 +1,18 @@
+<h1><%= class_name %> controller, edit action</h1>
+
+<p>Edit this file in <tt>app/views/<%= file_name %>/edit.html.erb</tt></p>
+
+<%%= form_for(@<%= singular_model %>, :action => url(:<%= singular_model %>, @<%= singular_model %>)) do %>
+<% for property in properties.select{|p| !p.key?} -%>
+  <p>
+    <%%= text_field :<%= property %>, :label => "<%= Extlib::Inflection.humanize(property) %>"  %>
+  </p>
+
+<% end -%>
+  <p>
+    <%%= submit "Update" %>
+  </p>
+<%% end =%>
+
+<%%= link_to 'Show', url(:<%= singular_model %>, @<%= singular_model %>) %> |
+<%%= link_to 'Back', url(:<%= plural_model %>) %>
