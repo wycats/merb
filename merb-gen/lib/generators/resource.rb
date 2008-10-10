@@ -29,7 +29,7 @@ module Merb::Generators
     end
 
     def after_generation
-      STDOUT << message("Don't forget to set your resource route in config/router.rb for instance: resources :#{model_name}s ")
+      STDOUT << message("Don't forget to set your resource route in config/router.rb for instance: resources :#{model_name.downcase}s ")
     end
   end
   
