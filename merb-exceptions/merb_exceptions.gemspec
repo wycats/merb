@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
-  s.name = %q{merb_exceptions}
-  s.version = "0.9.7"
+  s.name = %q{merb-exceptions}
+  s.version = "0.9.9"
 
   s.specification_version = 2 if s.respond_to? :specification_version=
 
