@@ -34,6 +34,23 @@ Rake::GemPackageTask.new(merb_auth_spec) do |package|
   package.gem_spec = merb_auth_spec
 end
 
+task :package => ["lib/merb-auth.rb"]
+desc "Create merb-auth.rb"
+task "lib/merb-auth.rb" do
+  mkdir_p "lib"
+  File.open("lib/merb-auth.rb","w+") do |file|
+    file.puts "### AUTOMATICALLY GENERATED. DO NOT EDIT!"
+    gems.each do |gem|
+      next if gem == "merb-gen"
+      file.puts "require '#{gem}'"
+    end
+    file.puts
+    file.puts "path = File.join(File.dirname(__FILE__), \"merb-auth\")"
+    file.puts "require \"#\{path\}/customizations.rb\""
+    file.puts "require \"#\{path\}/router_helper.rb\""
+  end
+end
+
 desc "install the plugin as a gem"
 task :install do
   Merb::RakeHelper.install(GEM_NAME, :version => GEM_VERSION)
