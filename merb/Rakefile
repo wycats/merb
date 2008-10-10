@@ -5,15 +5,6 @@ require 'date'
 require 'merb-core/version'
 require 'merb-core/tasks/merb_rake_helper'
 
-## THESE ARE CRUCIAL
-module Merb
-  # Set this to the version of merb-core that you are building against/for
-  VERSION = "0.9.9"
-
-  # Set this to the version of merb-more you plan to release
-  MORE_VERSION = "0.9.9"
-end
-
 NAME = "merb"
 AUTHOR = "Engine Yard"
 EMAIL = "merb@engineyard.com"
@@ -31,7 +22,7 @@ GEM_EMAIL  = EMAIL
 
 GEM_NAME    = NAME
 PKG_BUILD   = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
-GEM_VERSION = (Merb::MORE_VERSION rescue "0.9.9") + PKG_BUILD
+GEM_VERSION = (Merb::VERSION rescue "0.9.9") + PKG_BUILD
 
 RELEASE_NAME    = "REL #{GEM_VERSION}"
 

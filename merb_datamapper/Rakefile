@@ -15,7 +15,7 @@ PROJECT_DESCRIPTION = PROJECT_SUMMARY
 GEM_AUTHOR = "Jason Toy"
 GEM_EMAIL  = "jtoy@rubynow.com"
 
-GEM_NAME    = "mern_datamapper"
+GEM_NAME    = "merb_datamapper"
 PKG_BUILD   = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
 GEM_VERSION = (Merb::MORE_VERSION rescue "0.9.9") + PKG_BUILD
 
@@ -31,7 +31,7 @@ spec = Gem::Specification.new do |s|
   s.version = GEM_VERSION
   s.platform = Gem::Platform::RUBY
   s.has_rdoc = true
-  s.extra_rdoc_files = ["README", "LICENSE", 'TODO']
+  s.extra_rdoc_files = ["LICENSE", 'TODO']
   s.summary = PROJECT_SUMMARY
   s.description = PROJECT_DESCRIPTION
   s.author = GEM_AUTHOR
@@ -41,7 +41,7 @@ spec = Gem::Specification.new do |s|
     s.add_dependency gem, version
   end
   s.require_path = 'lib'
-  s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,spec}/**/*")
+  s.files = %w(LICENSE Rakefile TODO) + Dir.glob("{lib,spec}/**/*")
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|
