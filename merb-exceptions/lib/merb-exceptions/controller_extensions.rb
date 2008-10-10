@@ -23,6 +23,11 @@ module MerbExceptions
       end
     end
 
+    # if you need to handle the render yourself for some reason, you can call
+    # this method directly. It sends notifications without any rendering logic.
+    # Note though that if you are sending lots of notifications this could
+    # delay sending a response back to the user so try to avoid using it
+    # where possible.
     def notify_of_exceptions
       request = self.request
 
@@ -33,5 +38,6 @@ module MerbExceptions
       details['url']             = "#{request.protocol}#{request.env["HTTP_HOST"]}#{request.uri}"
       MerbExceptions::Notification.new(details).deliver!
     end
+
   end
 end
