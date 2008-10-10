@@ -195,33 +195,50 @@ describe "Merb::Authentication::Strategy" do
     
     it "allow for a redirect!" do
       @s.redirect!("/somewhere")
-      @s.redirect_url.should == "/somewhere"
+      @s.headers["Location"].should == "/somewhere"
     end
     
-    it "should set redirect_options as an empty hash" do
-      @s.redirect!("/somewhere")
-      @s.redirect_options.should == {}
+    it "should provide access to setting the headers" do
+      @s.headers["Location"] = "/a/url"
+      @s.headers["Location"].should == "/a/url"
     end
     
-    it "should return nil for the redirect_url if it is not redirected" do
+    it "should allow access to the setting header" do
+      @s.status = 403
+      @s.status.should == 403
+    end
+    
+    it "should return nil for the Location if it is not redirected" do
       @s.should_not be_redirected
-      @s.redirect_url.should be_nil
+      @s.headers["Location"].should be_nil
     end
       
     it "should pass through the options to the redirect options" do
       @s.redirect!("/somewhere", :status => 401)
-      @s.redirect_options.should == {:status => 401}
+      @s.headers["Location"].should == "/somewhere"
+      @s.status.should == 401
     end
     
     it "should set a redirect with a permanent true" do
       @s.redirect!("/somewhere", :permanent => true)
-      @s.redirect_options.should == {:permanent => true}
+      @s.status.should == 301
     end
     
     it "should be redirected?" do
       @s.should_not be_redirected
       @s.redirect!("/somewhere")
       @s.should be_redirected
+    end
+    
+    it "should set the strategy to halted" do
+      @s.redirect!("/somewhere")
+      @s.should be_halted
+    end
+    
+    it "should halt a strategy" do
+      @s.should_not be_halted
+      @s.halt!
+      @s.should be_halted
     end
     
   end

@@ -31,9 +31,9 @@ module Merb
     def ensure_authenticated(*strategies)
       session.authenticate!(request, *strategies) unless session.user
       auth = session.authentication
-      if auth.redirected?
-        redirect auth.redirect_url
-        self.status = auth.redirect_status
+      if auth.halted?
+        self.headers.merge!(auth.headers)
+        self.status  = auth.status
         throw :halt
       end
       session.user
