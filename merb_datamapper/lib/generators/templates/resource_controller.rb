@@ -49,7 +49,7 @@ class <%= class_name %> < Application
     @<%= singular_model %> = <%= model_class_name %>.get(<%= params_for_get %>)
     raise NotFound unless @<%= singular_model %>
     if @<%= singular_model %>.destroy
-      redirect url(:<%= (modules.collect{|m| m.downcase} << singular_model).join("_") %>)
+      redirect url(:<%= (modules.collect{|m| m.downcase} << plural_model).join("_") %>)
     else
       raise BadRequest
     end

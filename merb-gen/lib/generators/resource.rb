@@ -29,14 +29,7 @@ module Merb::Generators
     end
 
     def after_generation
-      STDOUT << (message <<-EOS
-\n
-Generated templates use form helpers from merb-helpers.
-You may need to add dependency 'merb-helpers' to your config/dependencies.rb file:
-
-dependency 'merb-helpers'
-EOS
-)
+      STDOUT << message("Don't forget to set your resource route in config/router.rb for instance: resources :#{model_name}s ")
     end
   end
   
