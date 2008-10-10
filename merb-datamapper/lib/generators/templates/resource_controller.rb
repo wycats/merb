@@ -27,6 +27,7 @@ class <%= class_name %> < Application
   end
 
   def create
+    raise BadRequest, "No params passed to create a new object, check your new action view!" if params[:<%= singular_model %>].nil?
     @<%= singular_model %> = <%= model_class_name %>.new(params[:<%= singular_model %>])
     if @<%= singular_model %>.save
       redirect url(:<%= (modules.collect{|m| m.downcase} << singular_model).join("_") %>, @<%= singular_model %>)
