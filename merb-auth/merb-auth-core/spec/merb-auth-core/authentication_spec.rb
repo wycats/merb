@@ -238,6 +238,7 @@ describe "Merb::Authentication Session" do
     
     before(:all) do
       class FooController < Merb::Controller
+        before :ensure_authenticated
         def index; "FooController#index" end
       end
     end
@@ -246,6 +247,7 @@ describe "Merb::Authentication Session" do
       class MyStrategy < Merb::Authentication::Strategy
         def run!
           if params[:url]
+            self.body = "this is the body"
             params[:status] ? redirect!(params[:url], :status => params[:status]) : redirect!(params[:url])
           else
             "WINNA"
@@ -298,6 +300,16 @@ describe "Merb::Authentication Session" do
       end.should_not raise_error(Merb::Controller::NotFound)
       @a.should be_halted
       @request.params[:should_not_be_here].should be_nil
+    end
+    
+    it "should allow you to set the body" do
+      @a.body = "body"
+      @a.body.should == "body"
+    end
+    
+    it "should put the body of the strategy as the response body of the controller" do
+      controller = get "/", :url => "/some/url"
+      controller.body.should == "this is the body"
     end
   end
   

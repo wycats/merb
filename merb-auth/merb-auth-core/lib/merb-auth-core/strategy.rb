@@ -63,6 +63,7 @@ module Merb
     #
     class Strategy
       attr_accessor :request
+      attr_writer   :body
     
       class << self
         def inherited(klass)
@@ -135,6 +136,7 @@ module Merb
         self.headers["Location"] = url
         self.status = opts[:permanent] ? 301 : 302
         self.status = opts[:status] if opts[:status]
+        self.body   = opts[:message] || "<div>You are being redirected to <a href='#{url}'>#{url}</a></div>"
         halt!
         return true
       end
@@ -161,6 +163,12 @@ module Merb
       # Checks to see if this strategy has been halted
       def halted?
         !!@halt
+      end
+      
+      
+      # Allows you to provide a body of content to return when halting
+      def body
+        @body || ""
       end
     
       # This is the method that is called as the test for authentication and is where
