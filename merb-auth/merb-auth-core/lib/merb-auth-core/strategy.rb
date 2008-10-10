@@ -136,6 +136,7 @@ module Merb
         self.headers["Location"] = url
         self.status = opts[:permanent] ? 301 : 302
         self.status = opts[:status] if opts[:status]
+        self.body   = opts[:message] || "<div>You are being redirected to <a href='#{url}'>#{url}</a></div>"
         halt!
         return true
       end
