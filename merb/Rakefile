@@ -36,9 +36,9 @@ merb_spec = Gem::Specification.new do |s|
   s.homepage     = HOMEPAGE
   s.summary      = SUMMARY
   s.description  = SUMMARY
-  s.files        = %w(LICENSE README Rakefile) + Dir.glob("{lib,spec}/**/*")
+  s.files        = %w(LICENSE README Rakefile) + Dir.glob("{lib}/**/*")
   s.add_dependency "merb-core", "= #{Merb::VERSION}"
-  s.add_dependency "merb-more", "= #{Merb::MORE_VERSION}"
+  s.add_dependency "merb-more", "= #{Merb::VERSION}"
 end
 
 Rake::GemPackageTask.new(merb_spec) do |pkg|
