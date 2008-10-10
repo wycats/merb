@@ -30,6 +30,22 @@ module Merb
       include Merb::ColorfulMessages
       
       def initialize(*args)
+        Merb::Config.setup({
+          :log_level        => :fatal,
+          :log_delimiter    => " ~ ",
+          :log_auto_flush   => false,
+          :reload_templates => false,
+          :reload_classes   => false
+        })
+
+        Merb::BootLoader::Logger.run
+        Merb::BootLoader::BuildFramework.run
+        Merb::BootLoader::Dependencies.run
+
+        Merb::BootLoader::BeforeAppLoads.run
+        Merb::BootLoader::ReloadClasses.run
+        Merb::BootLoader::AfterAppLoads.run
+        
         super
         options[:orm] ||= Merb.orm
         options[:testing_framework] ||= Merb.test_framework
