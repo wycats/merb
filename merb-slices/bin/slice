@@ -16,9 +16,11 @@ Merb::Config.use { |c|
 
 if File.exists?(slice_file = File.join(__DIR__, 'lib', "#{slice_name}.rb"))
   Merb::BootLoader.before_app_loads do
-    # See Merb::Slices::ModuleMixin - $SLICE_MODULE is used as a flag
     $SLICE_MODULE = Merb::Slices.filename2module(slice_file)
     require slice_file
+  end
+  Merb::BootLoader.after_app_loads do
+    # See Merb::Slices::ModuleMixin - $SLICE_MODULE is used as a flag
     Merb::Router.prepare do 
       slice($SLICE_MODULE)
       slice_id = slice_name.gsub('-', '_').to_sym
