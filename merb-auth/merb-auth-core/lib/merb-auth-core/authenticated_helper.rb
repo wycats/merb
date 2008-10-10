@@ -34,7 +34,7 @@ module Merb
       if auth.halted?
         self.headers.merge!(auth.headers)
         self.status  = auth.status
-        throw :halt
+        throw :halt, auth.body
       end
       session.user
     end 
