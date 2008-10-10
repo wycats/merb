@@ -33,7 +33,7 @@ module Merb::Generators
     end
   
     [:index, :show, :edit, :new].each do |view|
-      template "view_#{view}_none".to_sym do |template|
+      template "view_#{view}_none".to_sym, :orm => :none do |template|
         template.source = "app/views/%file_name%/#{view}.html.erb"
         template.destination = "app/views" / base_path / "#{file_name}/#{view}.html.erb"
       end
