@@ -381,7 +381,7 @@ module Merb::Helpers::Form::Builder
     private
 
     def update_bound_controls(method, attrs, type)
-      if @obj && @obj.errors.on(method.to_sym)
+      if @obj && !@obj.errors.on(method.to_sym).blank?
         add_css_class(attrs, "error")
       end
       super
