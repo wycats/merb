@@ -7,11 +7,23 @@ describe "Merb::AuthenticationHelper" do
   end
   
   before(:each) do
+    clear_strategies!
     @controller = ControllerMock.new(fake_request)
     @request = @controller.request
     @session = @controller.session
-    @controller.stub!(:session).and_return(@session)
-    @session.stub!(:user).and_return("WINNA")
+    @session.user = "WINNA"
+    Viking.captures.clear
+    
+    class Kone < Merb::Authentication::Strategy
+      def run!
+        puts params.inspect
+        Viking.capture(self.class)
+        params[self.class.name]
+      end
+    end
+    
+    class Ktwo < Kone; end
+    
   end
   
   it "should not raise and Unauthenticated error" do
@@ -37,19 +49,10 @@ describe "Merb::AuthenticationHelper" do
   it "should accept and execute the provided strategies" do
     # This allows using a before filter with specific arguments
     # before :ensure_authenticated, :with => [Authenticaiton::OAuth, Merb::Authentication::BasicAuth]
-    M1 = mock("m1")
-    M2 = mock("m2")
-    M1.stub!(:new).and_return(M1)
-    M2.stub!(:new).and_return(M2)
-    M1.should_receive(:abstract?).and_return(false)
-    M2.should_receive(:abstract?).and_return(false)
-    M1.should_receive(:run!).ordered.and_return(false)
-    M2.should_receive(:run!).ordered.and_return("WINNA")
-    M1.should_receive(:redirected?).and_return false
-    M2.should_receive(:redirected?).and_return false
     controller = ControllerMock.new(fake_request)
-    controller.session.should_receive(:user).and_return(nil, "WINNA")
-    controller.send(:ensure_authenticated, [M1, M2])
+    controller.request.params["Ktwo"] = true
+    controller.send(:ensure_authenticated, Kone, Ktwo)
+    Viking.captures.should == %w( Kone Ktwo )
   end
   
   describe "redirection" do

@@ -77,15 +77,17 @@ module Merb
         unless s.abstract?
           strategy = s.new(request)
           user = strategy.run! 
-          if strategy.redirected?
-            redirect!(strategy.redirect_url, strategy.redirect_options)
+          if strategy.halted?
+            self.headers  = strategy.headers
+            self.status   = strategy.status
+            halt!
             return
           end
           user
         end
       end
       raise Merb::Controller::Unauthenticated, msg unless user
-      session.user = user
+      self.user = user
     end
   
     # "Logs Out" a user from the session.  Also clears out all session data

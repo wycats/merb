@@ -132,25 +132,35 @@ module Merb
       #   +:permanent+ Set this to true to make the redirect permanent
       #   +:status+ Set this to an integer for the status to return
       def redirect!(url, opts = {})
-        @redirect_url = url
-        @redirect_opts = opts
+        self.headers["Location"] = url
+        self.status = opts[:permanent] ? 301 : 302
+        self.status = opts[:status] if opts[:status]
+        halt!
         return true
       end
     
       # Returns ture if the strategy redirected
       def redirected?
-        !!@redirect_url
+        !!headers["Location"]
       end
+      
+      # Provides a place to put the status of the response
+      attr_accessor :status
     
-      # Returns the redirect_url if it's ben set
-      def redirect_url
-        @redirect_url
+      # Provides a place to put headers
+      def headers
+        @headers ||={}
       end
-    
-      # Returns the redirect options set in the strategy
-      # or a blank hash
-      def redirect_options
-        @redirect_opts ||= {}
+      
+      # Mark this strategy as complete for this request.  Will cause that no other
+      # strategies will be executed.  
+      def halt!
+        @halt = true
+      end
+      
+      # Checks to see if this strategy has been halted
+      def halted?
+        !!@halt
       end
     
       # This is the method that is called as the test for authentication and is where

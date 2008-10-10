@@ -159,62 +159,49 @@ describe "Merb::Authentication Session" do
     before(:each) do
       class Sone < Merb::Authentication::Strategy
         def run!
+          Viking.capture(Sone)
+          params[:pass_1]
         end
       end
       class Stwo < Merb::Authentication::Strategy
         def run!
+          Viking.capture(Stwo) 
+          params[:pass_2]
         end
       end
       class Sthree < Merb::Authentication::Strategy
         def run!
-          "WINNA"
+          Viking.capture(Sthree)
+          params[:pass_3] 
         end
       end
       class Sfour < Merb::Authentication::Strategy
         abstract!
         
         def run!
-          "BAD"
+           "BAD MAN"
         end
       end
       
       Sfour.should_not_receive(:run!)
       @request = Users.new(fake_request)
       @auth = Merb::Authentication.new(@request.session)
-      Merb::Authentication.stub!(:new).and_return(@auth)
+      Viking.captures.clear
     end
     
     it "should execute the strategies in the default order" do
-      s1 = mock("s1")
-      s2 = mock("s2")
-      Sone.should_receive(:new).with(@request).and_return(s1)
-      Stwo.should_receive(:new).with(@request).and_return(s2)
-      s1.should_receive(:run!).ordered.and_return(nil)
-      s2.should_receive(:run!).ordered.and_return("WIN")
-      s1.should_receive(:redirected?).and_return false
-      s2.should_receive(:redirected?).and_return false
+      @request.params[:pass_3] = true
       @auth.authenticate!(@request)
+      Viking.captures.should == %w( Sone Stwo Sthree )
     end
     
     it "should run the strategeis until if finds a non nil non false" do
-      s1 = mock("s1")
-      s2 = mock("s2")
-      s3 = mock("s3")
-      Sone.should_receive(:new).with(@request).and_return(s1)
-      Stwo.should_receive(:new).with(@request).and_return(s2)
-      Sthree.should_receive(:new).with(@request).and_return(s3)
-      s1.should_receive(:run!).ordered.and_return(nil)
-      s2.should_receive(:run!).ordered.and_return(false)
-      s3.should_receive(:run!).ordered.and_return("WIN")
-      [s1,s2,s3].each{|s| s.should_receive(:redirected?).and_return(false)}
+      @request.params[:pass_2] = true
       @auth.authenticate!(@request)
+      Viking.captures.should == %w( Sone Stwo )
     end
     
     it "should raise an Unauthenticated exception if no 'user' is found" do
-      s3 = mock("s3")
-      Sthree.stub!(:new).and_return(s3)
-      s3.should_receive(:run!).and_return(nil)
-      s3.should_receive(:redirected?).and_return(false)
       lambda do
         @auth.authenticate!(@request)
       end.should raise_error(Merb::Controller::Unauthenticated)
@@ -222,32 +209,21 @@ describe "Merb::Authentication Session" do
     
     it "should store the user into the session if one is found" do
       @auth.should_receive(:user=).with("WINNA")
+      @request.params[:pass_1] = "WINNA"
       @auth.authenticate!(@request)
     end
     
     it "should use the Authentiation#error_message as the error message" do
       @auth.should_receive(:error_message).and_return("BAD BAD BAD")
-      s3 = mock("s3", :null_object => true)
-      s3.stub!(:run!).and_return(false)
-      s3.stub!(:redirected?).and_return(false)
-      Sthree.stub!(:new).and_return(s3)
       lambda do
         @auth.authenticate!(@request)
       end.should raise_error(Merb::Controller::Unauthenticated, "BAD BAD BAD")
     end
     
     it "should execute the strategies as passed into the authenticate! method" do
-      m1 = mock("strategy 1")
-      m2 = mock("strategy 2")
-      m1.stub!(:abstract?).and_return(false)
-      m2.stub!(:abstract?).and_return(false)
-      m1.should_receive(:new).and_return(m1)
-      m2.should_receive(:new).and_return(m2)
-      m2.should_receive(:run!).ordered
-      m1.should_receive(:run!).ordered.and_return("WINNA")
-      m1.stub!(:redirected?).and_return(false)
-      m2.stub!(:redirected?).and_return(false)
-      @auth.authenticate!(@request, m2, m1)
+      @request.params[:pass_1] = true
+      @auth.authenticate!(@request, Stwo, Sone)
+      Viking.captures.should == ["Stwo", "Sone"]
     end
     
   end
@@ -298,22 +274,21 @@ describe "Merb::Authentication Session" do
     it "should answer redirected true if the strategy did redirect" do
       @request.params[:url] = "/some/url"
       @a.authenticate! @request
-      @a.should be_redirected
+      @a.halted?
     end
     
-    it "should provide access to the redirect_url" do
+    it "should provide access to the Headers" do
       @request.params[:url] = "/some/url"
       @a.authenticate! @request
-      @a.should be_redirected
-      @a.redirect_url.should == "/some/url"
+      @a.headers.should == {"Location" => "/some/url"}
     end
     
-    it "should provide access to the redirect_options" do
+    it "should provide access to the status" do
       @request.params[:url] = "/some/url"
       @request.params[:status] = 401
       @a.authenticate! @request
-      @a.should be_redirected
-      @a.redirect_options.should == {:status => 401}
+      @a.should be_halted
+      @a.status.should == 401
     end
     
     it "should stop processing the strategies if one redirects" do
@@ -321,9 +296,11 @@ describe "Merb::Authentication Session" do
       lambda do
         @a.authenticate! @request, MyStrategy, FailStrategy
       end.should_not raise_error(Merb::Controller::NotFound)
-      @a.should be_redirected
+      @a.should be_halted
       @request.params[:should_not_be_here].should be_nil
     end
   end
+  
+
 
 end

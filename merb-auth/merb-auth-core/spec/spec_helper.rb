@@ -80,3 +80,14 @@ class Merb::Authentication
 end
 
 Merb::Authentication.user_class = User
+
+class Viking
+  def self.captures
+    @captures ||= []
+  end
+  
+  def self.capture(klass)
+    @captures ||= []
+    @captures << klass.name
+  end
+end
