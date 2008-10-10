@@ -25,8 +25,8 @@ gem_paths = %w[
   merb-slices
   merb-helpers 
   merb-param-protection
-  merb-auth
   merb-exceptions
+  merb_datamapper
 ]
 
 gems = gem_paths.map { |p| File.basename(p) }
@@ -111,7 +111,6 @@ end
 desc "Bundle up all the merb-more gems"
 task :bundle => [:package, :build_gems] do
   mkdir_p "bundle"
-  cp "pkg/merb-#{Merb::MORE_VERSION}.gem", "bundle"
   cp "pkg/merb-more-#{Merb::MORE_VERSION}.gem", "bundle"
   gems.each do |gem|
     sh %{cp #{gem}/pkg/#{gem}-#{Merb::MORE_VERSION}.gem bundle/}

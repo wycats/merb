@@ -3,31 +3,31 @@
 development: &defaults
   # These are the settings for repository :default
   adapter:  sqlite3
-  database: sample_development
+  database: sample_development.db
  
   # Add more repositories
   # repositories:
   #   repo1:
   #     adapter:  sqlite3
-  #     database: sample_development
+  #     database: sample_1_development.db
   #   repo2:
   #     ...
  
 test:
   <<:       *defaults
-  database: sample_test
+  database: sample_test.db
  
   # repositories:
   #   repo1:
-  #     database: sample_development
+  #     database: sample_1_test.db
  
 production:
   <<:       *defaults
-  database: sample_production
+  database: production.db
  
   # repositories:
   #   repo1:
-  #     database: sample_development
+  #     database: sample_production.db
  
 rake:
   <<: *defaults
