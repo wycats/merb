@@ -1,8 +1,9 @@
 GEM_VERSION = "0.9.9"
 GEM_NAME    = "merb-auth"
-
 require "rake/clean"
 require "rake/gempackagetask"
+require 'rubygems/specification'
+require "spec/rake/spectask"
 require 'merb-core/tasks/merb_rake_helper'
 require 'fileutils'
 include FileUtils
