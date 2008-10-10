@@ -16,6 +16,7 @@
 <% end -%>
     <td><%%= link_to 'Show', url(:<%= singular_model %>, <%= singular_model %>) %></td>
     <td><%%= link_to 'Edit', url(:edit_<%= singular_model %>,  <%= singular_model %>) %></td>
+    <td><%%= delete_button <%= singular_model %> %></td>
   </tr>
 <%% end %>
 </table>
