@@ -1,58 +1,81 @@
 require 'rubygems'
-require 'spec'
-require 'spec/rake/spectask'
-require 'pathname'
+require 'rake/gempackagetask'
+require "extlib"
+require 'merb-core/tasks/merb_rake_helper'
+require "spec/rake/spectask"
 
-ROOT = Pathname(__FILE__).dirname.expand_path
-require ROOT + 'lib/merb_datamapper/version'
+##############################################################################
+# Package && release
+##############################################################################
+RUBY_FORGE_PROJECT  = "merb_datamapper"
+PROJECT_URL         = "http://merbivore.com"
+PROJECT_SUMMARY     = "DataMapper plugin providing DataMapper support for Merb"
+PROJECT_DESCRIPTION = PROJECT_SUMMARY
 
-AUTHOR = "Jason Toy"
-EMAIL  = "jtoy@rubynow.com"
-GEM_NAME = "merb_datamapper"
-GEM_VERSION = DataMapper::MerbDataMapper::VERSION
-GEM_DEPENDENCIES = [["dm-core", ">=0.9.5"], ["dm-migrations", ">=0.9.5"], ["merb-core", ">=0.9.6"], ['templater', ">=0.2.0"]]
-GEM_CLEAN = ["log", "pkg", "coverage"]
-GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.txt LICENSE TODO ] }
+GEM_AUTHOR = "Jason Toy"
+GEM_EMAIL  = "jtoy@rubynow.com"
 
-PROJECT_NAME = "merb"
-PROJECT_URL  = "http://github.com/sam/dm-more/tree/master/merb_datamapper"
-PROJECT_DESCRIPTION = PROJECT_SUMMARY = "DataMapper plugin providing DataMapper support for Merb"
+GEM_NAME    = "mern_datamapper"
+PKG_BUILD   = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
+GEM_VERSION = (Merb::MORE_VERSION rescue "0.9.9") + PKG_BUILD
 
-require ROOT.parent + 'tasks/hoe'
+RELEASE_NAME    = "REL #{GEM_VERSION}"
 
-task :default => [ :spec ]
+GEM_DEPENDENCIES = [["dm-core", ">=0.9.5"], ["dm-migrations", ">=0.9.5"], ["merb-core", "~> #{GEM_VERSION}"], ['templater', ">=0.2.0"]]
 
-WIN32 = (RUBY_PLATFORM =~ /win32|mingw|cygwin/) rescue nil
-SUDO  = WIN32 ? '' : ('sudo' unless ENV['SUDOLESS'])
+require "extlib/tasks/release"
 
-desc "Install #{GEM_NAME} #{GEM_VERSION} (default ruby)"
-task :install => [ :package ] do
-  sh "#{SUDO} gem install --local pkg/#{GEM_NAME}-#{GEM_VERSION} --no-update-sources", :verbose => false
+spec = Gem::Specification.new do |s|
+  s.rubyforge_project = RUBY_FORGE_PROJECT
+  s.name = GEM_NAME
+  s.version = GEM_VERSION
+  s.platform = Gem::Platform::RUBY
+  s.has_rdoc = true
+  s.extra_rdoc_files = ["README", "LICENSE", 'TODO']
+  s.summary = PROJECT_SUMMARY
+  s.description = PROJECT_DESCRIPTION
+  s.author = GEM_AUTHOR
+  s.email = GEM_EMAIL
+  s.homepage = PROJECT_URL
+  GEM_DEPENDENCIES.each do |gem, version|
+    s.add_dependency gem, version
+  end
+  s.require_path = 'lib'
+  s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,spec}/**/*")
 end
 
-desc "Uninstall #{GEM_NAME} #{GEM_VERSION} (default ruby)"
-task :uninstall => [ :clobber ] do
-  sh "#{SUDO} gem uninstall #{GEM_NAME} -v#{GEM_VERSION} -I -x", :verbose => false
+Rake::GemPackageTask.new(spec) do |pkg|
+  pkg.gem_spec = spec
 end
 
-namespace :jruby do
-  desc "Install #{GEM_NAME} #{GEM_VERSION} with JRuby"
-  task :install => [ :package ] do
-    sh %{#{SUDO} jruby -S gem install --local pkg/#{GEM_NAME}-#{GEM_VERSION} --no-update-sources}, :verbose => false
+desc "Install the gem"
+task :install do
+  Merb::RakeHelper.install(GEM_NAME, :version => GEM_VERSION)
+end
+
+desc "Uninstall the gem"
+task :uninstall do
+  Merb::RakeHelper.uninstall(GEM_NAME, :version => GEM_VERSION)
+end
+
+desc "Create a gemspec file"
+task :gemspec do
+  File.open("#{GEM_NAME}.gemspec", "w") do |file|
+    file.puts spec.to_ruby
   end
 end
 
-desc 'Run specifications'
-Spec::Rake::SpecTask.new(:spec) do |t|
-  t.spec_opts << '--options' << 'spec/spec.opts' if File.exists?('spec/spec.opts')
-  t.spec_files = Pathname.glob((ROOT + 'spec/**/*_spec.rb').to_s)
-
-  begin
-    t.rcov = ENV.has_key?('NO_RCOV') ? ENV['NO_RCOV'] != 'true' : true
-    t.rcov_opts << '--exclude' << 'spec'
-    t.rcov_opts << '--text-summary'
-    t.rcov_opts << '--sort' << 'coverage' << '--sort-reverse'
-  rescue Exception
-    # rcov not installed
+desc "Run all examples (or a specific spec with TASK=xxxx)"
+Spec::Rake::SpecTask.new('spec') do |t|
+  t.spec_opts  = ["-cfs"]
+  t.spec_files = begin
+    if ENV["TASK"] 
+      ENV["TASK"].split(',').map { |task| "spec/**/#{task}_spec.rb" }
+    else
+      FileList['spec/**/*_spec.rb']
+    end
   end
 end
+
+desc 'Default: run spec examples'
+task :default => 'spec'
