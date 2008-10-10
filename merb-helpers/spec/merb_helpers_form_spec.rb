@@ -1227,7 +1227,7 @@ describe 'delete_button' do
   
   it "should have a default submit button text" do
     result = @controller.render :simple_delete # <%= delete_button @obj %>
-    result.should match(/<input type=\"submit\">Delete<\/input>/)
+    result.should match(/<input type=\"submit\" value="Delete"><\/input>/)
   end
 
   it 'should return a button inside of a form for the object' do
@@ -1238,12 +1238,12 @@ describe 'delete_button' do
 
   it 'should allow you to modify the label' do
     result = @controller.render :delete_with_label # <%= delete_button(@obj, "Delete moi!") %>
-    result.should match(/<input type=\"submit\">Delete moi!<\/input>/)
+    result.should match(/<input type=\"submit\" value=\"Delete moi!\"><\/input>/)
   end
   
   it "should allow you to pass some extra params like a class" do
     result = @controller.render :delete_with_extra_params
-    result.should match(/<input type=\"submit\" class=\"custom-class\">Delete<\/input>/)
+    result.should match(/<input type=\"submit\" class=\"custom-class\" value=\"Delete\"><\/input>/)
   end
   
   it "should allow to pass an explicit url as a string" do
