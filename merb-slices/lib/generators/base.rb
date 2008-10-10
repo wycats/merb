@@ -8,6 +8,11 @@ module Merb::Generators
     desc <<-DESC
       Generates a merb slice.
     DESC
+
+    def initialize(*args)
+      Merb.disable(:initfile)
+      super
+    end
     
     first_argument :name, :required => true
     
