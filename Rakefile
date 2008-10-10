@@ -18,6 +18,7 @@ include FileUtils
 gem_paths = %w[
   merb-action-args 
   merb-assets 
+  merb-auth
   merb-gen 
   merb-haml
   merb-mailer 
@@ -58,7 +59,7 @@ end
 desc "Install all gems"
 task :install do
   Merb::RakeHelper.install('merb-more', :version => Merb::MORE_VERSION)
-  Merb::RakeHelper.install_package("pkg/merb-more-#{Merb::MORE_VERSION}.gem")
+  Merb::RakeHelper.install_package("pkg/merb-#{Merb::MORE_VERSION}.gem")
 end
 
 desc "Uninstall all gems"
