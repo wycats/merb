@@ -78,3 +78,5 @@ class Merb::Authentication
     user.nil? ? nil : 24
   end
 end
+
+Merb::Authentication.user_class = User

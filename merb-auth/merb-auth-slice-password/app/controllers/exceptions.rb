@@ -1,7 +1,7 @@
 class Application < Merb::Controller; end
 
 class Exceptions < Application
-  include Merb::Slices::Support # REquired to provide slice_url
+  include Merb::Slices::Support # Required to provide slice_url
   
   # # This stuff allows us to provide a default view
   the_view_path = File.expand_path(File.dirname(__FILE__) / ".." / "views")

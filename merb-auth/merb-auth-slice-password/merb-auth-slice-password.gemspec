@@ -5,7 +5,7 @@ Gem::Specification.new do |s|
   s.version = "0.9.9"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Your Name"]
+  s.authors = ["Engine Yard"]
   s.date = %q{2008-10-10}
   s.description = %q{Merb Slice that provides ...}
   s.email = %q{Your Email}
