@@ -4,26 +4,21 @@ A simple Merb plugin to ease exception notifications.
 
 The notifier currently supports two interfaces, Email Alerts and Web Hooks. Emails are formatted as plain text and sent using your Merb environment's mail settings. Web hooks as sent as post requests.
 
-Instead of a messy port of a rails plugin this is a complete rewrite from scratch and so is able to take full advantage of Merb's exception handling functionality.
-
 Getting Going
 -------------
 Once you have the Gem installed you will need to add it as a dependency in your projects `init.rb` file
 
     dependency 'merb_exceptions'
 
-Configuration goes in `config/plugins.yml` file (which you may need to create). See 'Settings' below for a full description of the options.
+Configuration goes in 'config/init.rb' file in 'Merb::BootLoader.before_app_loads'. See 'Settings' below for a full description of the options.
 
-    :exceptions:
-      :app_name: My App Name
-      :email_from: exceptions@myapp.com
-      :web_hooks: http://localhost:4000/exceptions
-      :email_addresses: 
-      - user@myapp.com
-      - hello@exceptions.com
-      :environments:
-        - staging
-        - production
+    Merb::Plugins.config[:exceptions] = {
+      :web_hooks       => ['http://localhost:4000/exceptions'],
+      :email_addresses => ['hello@exceptions.com', 'user@myapp.com'],
+      :app_name        => "My App Name",
+      :email_from      => "exceptions@myapp.com",
+      :environments    => ['production', 'staging']
+    }
 
 The plugin now automatically includes itself into your Exceptions controller. If you are using an old version of this plugin, you can remove the include from your Exceptions controller.
 
@@ -65,19 +60,6 @@ Web hooks are a great way to push your data beyond your app to the outside world
 
 WEBHOOKS FORMATTING IS CURRENTLY BROKEN. WILL POST AN EXAMPLE OF THE CORRECT FORMAT HERE WHEN IT'S FIXED.
 
-Requirements
-------------
-* Edge Merb
-
-Install
--------
-Install gem from github
-
-    sudo gem install newbamboo-merb_exceptions --source=http://gems.github.com
-
-or install from source with
-
-    rake install_gem
 
 Licence
 -------
