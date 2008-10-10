@@ -1,15 +1,14 @@
 h2. merb-auth-core
 
-MerbAuth is a very _unopinionated_ authentication framework for use with the
+MerbAuth is an authentication framework for use with the
 Merb web framework.
 
-MerbAuth does not try to dictate what you should use as a user type model, or how
+MerbAuth does not try to dictate what you should use as a user model, or how
 it should authenticate.  Instead it focuses on the logic required to check
 that an object passes authentication, and store authenticated objects in the
-session.  This is in fact the guiding principle of MerbAuth.  The controller is
-not the place that an authenticated user of the system should live.  A controller
-is for directing traffic.  Instead, the session is used as the place for
-authentication, with a sprinkling of controller helpers.  For example, inside
+session.  This is in fact the guiding principle of MerbAuth.  The Session is 
+used as the place for authentication, with a sprinkling of controller helpers.  
+This makes sense to talk about an authenticated session. For example, inside
 your controller:
 
 * session.authenticated?  
@@ -24,22 +23,23 @@ your controller:
   manually sets the currently authenticated user object 
 
 * session.abandon!                  
-sets the session to unauthenticated, and clears all session data
+  sets the session to unauthenticated, and clears all session data
 
 MerbAuth makes use of Merb's exception handling facilities which return correct
 HTTP status codes when a 200 OK would be inappropriate.  To fail a login, or 
 to force a login at any point in your controller code, simply raise an 
 Unauthenticated exception, with an optional message and the user will be 
-taken to the login page.
+presented with login page.  The login page is in fact the html view for
+Extensions#unauthenticated
 
 To protect your controllers, add a simple @before@ filter to your controller.
 
 <code> before :ensure_authenticated </code>
 
-It is possible to use MerbAuth with any object type as a _user_ object, provided
-that object does not evaluate to false and it can be retrieved with @key@.  
+It is possible to use MerbAuth with any object as a _user_ object, provided
+that object does not evaluate to false and it can be serialized in an out of the session.  
 For this reason, merb-auth-core does not try to implement even a simple login 
-form for you, since it may not be to your liking.
+form for you, since it may not meet your requirements.
 
 h3. How Does It Authenticate my arbitrary user?
 
@@ -59,16 +59,17 @@ define an instance method @run!@
   
 </code></pre>
 
-bq. This login strategy uses the @authenticate@ finder on the User class to 
+bq. This login strategy uses the @authenticate@ method on the User class to 
 retrieve a user by @login@ and @password@.  Remember, you can put as much logic
-here as you require.
+here as you require.  The strategy uses an instance variable so the full power of
+classes are available to your strategy.
 
-The strategy provides access to the current controller giving you access
-to the params hash, request, session etc.
+The strategy provides access to the current request giving you access
+to the params hash, session etc.
 
 To pass authentication, simply return a non-nil
-non-false object at the end of the @run!@ method.  Any false or nil value will cause
-that strategy to fail.  Then the next one will be tried :)  wait... what?
+non-false value from the @run!@ method.  Any false or nil value will cause
+that strategy to fail.  Then the next strategy will be tried :)  wait... what?
 
 You can add as many strategies as you like and they will be tried one after
 another until either one is found that works (login), or none of them have
@@ -77,15 +78,8 @@ passed (failed attempt).
 <pre><code>
     class PasswordLoginBasicAuth &lt Merb::Authentication::Strategy
       def run!
-        if controller.basic_authentication.provided?
-          controller.basic_authentication.authenticate do |login, password|
-            user = user_class.authenticate(login, password) 
-            unless user
-              controller.basic_authentication.request!
-              throw(:halt, "Login Required")
-            end
-            user
-          end
+        if params[:api_key] && params[:api_token]
+          Machine.api_authenticate(params[:api_key], params[:api_token])
         end
       end
     end
@@ -101,9 +95,24 @@ Notice the @user_class@ method in the above strategy examples.  This is a conven
 to provide you with the user_class to use for this strategy.  You can overwrite
 this method on a per strategy basis to use different user model types.
 
-By default the strategy#user_class method will defer to Merb::Authentication#user_class
-so you can overwrite this method to set the default user class for your application if required.
-The default value is @User@
+By default the strategy#user_class method will defer to Merb::Authentication#user_class.  You can 
+set which is the "default class" that Merb::Authentication will use in the provided strategies by
+setting the class inside your model declaration.  
+
+<pre><code>
+  class Person
+    include DataMapper::Resource
+    
+    Merb::Authentication.user_class = self
+    
+    #...
+  end
+</code></pre>
+
+This will cascade throughout the default strategies, and your own strategies vai that 
+Merb::Authentication::Strategy#user_class method.
+
+The default valud for the user class is @User@
 
 h3. Strategies and Inheritance
 
@@ -111,7 +120,7 @@ Strategies may be inherited multiple times to make the job of combining similar 
 You can inherit as many levels as you like and at any point you may mark a strategy as _abstract_
 
 An abstract strategy just means that it will not be run when it comes time to authenticate.  
-Instead it's good to put common logic in and then inherit from.
+Instead it's good to put common logic in and then inherit from it to keep your strategies DRY.
 
 To mark a class as abstract, use the @abstract!@ class method.
 
@@ -120,6 +129,34 @@ To mark a class as abstract, use the @abstract!@ class method.
     abstract!
   end
 </code></pre>
+
+At any point you can activate a registered strategy.  You don't need to register
+your strategies, you just declare them, but plugin developers make life easier when they do.
+
+To activate a registered strategy:
+<pre><code>
+  Merb::Authentication.activate!(:defualt_password_form) 
+</code></pre>
+
+You can easily mix this in with your own strategies. In you lib/authentication/strategies.rb
+<pre><code>
+  class MyStrategy < Merb::Authentication::Strategy
+    def run!
+      #...
+    end
+  end
+  
+  Merb::Authentication.activate!(:default_openid)
+  
+  class AnotherStrategy < Merb::Authentication::Strategy
+    def run!
+      #...
+    end
+  end
+</code></pre>
+
+This will collect them in order of decleration.  i.e.:
+  MyStrategy, Merb::Authentication::Strategies::Basic::OpenID, AnotherStrategy
 
 h3. Customizing the order of the strategies
 
@@ -145,9 +182,9 @@ of #run!
 <pre><code>
   class ApiMethods < Application
     before :ensure_authenticated, :with => [
-                                            Authenticated::BasicAuth, 
-                                            Authenticated::OpenID, 
-                                            Authenticated::OAuth
+                                            Merb::Authenticated::Strategies::Basic::Form,
+                                            Merb::Authenticated::Strategies::Basic::BasicAuth, 
+                                            Merb::Authenticated::Strategies::Basic::OpenID, 
                                            ]
     before :machine_only, :only => [:create]
     
@@ -162,7 +199,7 @@ of #run!
     
     private
     def machine_only
-      ensure_authentiated Authenticated::Oauth, Authenticated::BasicAuth
+      ensure_authentiated Merb::Authenticated::Strategies::Basic::OAuth, Merb::Authenticated::Strategies::Basic::BasicAuth
     end
   end
 </code></pre>
@@ -173,9 +210,13 @@ ignored completely.
 
 h3. Where should Strategies be defined?
 
-So far the thinking is that strategies should be setup in a directory for this purpose.
-
-lib/strategies/ 
+You should store your strategies in 
+<pre><code>
+  lib
+  `-- authentication
+      |-- setup.rb
+      `-- strategies.rb
+</code></pre>
 
 This is a good place to put everything together so you can see what you're doing at a glance.
 
@@ -183,12 +224,11 @@ h3. What Strategies are there?
 
 See merb-auth-more
 
-
 h3. Storing you user object into the session
 
-You need to tell MerbAuth how to represent your user object in the session
-data store, and also how to reconstruct it from that data.  You don't
-want to store complex objects in the session if you can avoid it.
+You need to tell MerbAuth how to serialize your object into
+and out of the session.  If possible try not to store large or complex 
+data items in the session.
 
 To configure your user object to go in and out of the session, here's how you
 could do it.
@@ -208,6 +248,21 @@ could do it.
       end
     end
 </code></pre>
+
+h3. Registering Strategies
+
+Intended for plugin developers as a way to make it easy to use 
+strategies there is the possibility to register a strategy without loading it.
+
+<pre><code>
+  Authentication.register(:my_strategy, "/absolute/path/to/strategy.rb")
+</code></pre>
+
+This then allows developers to use
+
+<pre><code>
+  Authentication.activate!(:my_strategy)
+</pre></code>
 
 h3. Providing feedback to users (Error Messages)
 
@@ -238,14 +293,14 @@ There's at least 4 ways to provide feedback to users for failed logins.
     end
   </code></pre>
 * Use the authentications error messaging inside your strategies to set error messages there.
-  You can add to these errors just like adding to DataMappers validation errors. (That's where they come from)
+  You can add to these errors just like adding to DataMappers validation errors.
   
   <pre><code>
     session.authentication.errors.add("Label", "You Fail")
   </code></pre>
   Add as many as you like, ask @session.authentication.errors.on(:label)@ to get specific errors etc
   Really... They're just like the DataMapper validation errors.  The bonus of using this system
-  is that you can add messages inside your Strategies, and also in your views you can do this:
+  is that you can add messages inside your Strategies, and then in your views you can do this:
   <pre><code>
     <%= error_messages_for sessions.authentication %>
   </pre></code>
