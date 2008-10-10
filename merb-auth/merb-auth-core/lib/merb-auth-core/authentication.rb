@@ -80,6 +80,7 @@ module Merb
           if strategy.halted?
             self.headers  = strategy.headers
             self.status   = strategy.status
+            self.body     = strategy.body
             halt!
             return
           end
