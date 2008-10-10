@@ -2,10 +2,9 @@ if defined?(Merb::Plugins)
 
   $:.unshift File.dirname(__FILE__)
 
-  load_dependency 'merb-slices'
   require 'merb-auth-core'
   require 'merb-auth-more'
-  
+    
   Merb::Plugins.add_rakefiles "merb-auth-slice-password/merbtasks", "merb-auth-slice-password/slicetasks", "merb-auth-slice-password/spectasks"
 
   # Register the Slice for the current host application

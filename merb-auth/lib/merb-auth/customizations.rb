@@ -16,7 +16,11 @@ end
 Merb::Authentication.customize_default do
   #Mixin the user mixins
   unless Merb::Plugins.config[:"merb-auth"][:no_salted_user] # Use this to prevent mixing in the salted user mixin
-    require 'merb-auth-more/mixins/salted_user'
-    Merb::Authentication.user_class.class_eval{ include Merb::Authentication::Mixins::SaltedUser }
+    if Merb::Authentication.user_class
+      require 'merb-auth-more/mixins/salted_user'
+      Merb::Authentication.user_class.class_eval{ include Merb::Authentication::Mixins::SaltedUser }
+    else
+      Merb.logger.error "\n\nMerb::Authentication.user_class has no user class set.  You need this for logins!\n\n"
+    end
   end  
 end

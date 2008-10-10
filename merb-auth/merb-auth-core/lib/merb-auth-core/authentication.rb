@@ -18,10 +18,7 @@ module Merb
     # @return <User Class Object>
     #
     # @api overwritable
-    cattr_writer :user_class
-    def self.user_class
-      @@user_class ||= User
-    end
+    cattr_accessor :user_class
   
     def initialize(session)
       @session = session
