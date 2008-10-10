@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.description = %q{Allows Merb to forward exceptions to emails or web hooks}
   s.email = ["andy@new-bamboo.co.uk"]
   s.extra_rdoc_files = ["LICENSE"]
-  s.files = ["LICENSE", "README.markdown", "Rakefile", "lib/merb_exceptions.rb", "lib/merb_exceptions/controller_extensions.rb", "lib/merb_exceptions/notification.rb", "lib/merb_exceptions/templates/email.erb", "spec/spec_helper.rb", "spec/unit/notification_spec.rb"]
+  s.files = ["LICENSE", "README.markdown", "Rakefile", "lib/merb_exceptions.rb", "lib/merb_exceptions/controller_extensions.rb", "lib/merb_exceptions/exceptions_helper.rb", "lib/merb_exceptions/notification.rb", "lib/merb_exceptions/templates/email.erb", "spec/spec_helper.rb", "spec/unit/notification_spec.rb"]
   s.has_rdoc = true
   s.homepage = %q{http://github.com/wycats/merb-plugins/}
   s.rdoc_options = ["--main", "README.markdown"]

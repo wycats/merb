@@ -15,6 +15,7 @@ if defined?(Merb::Plugins)
   end
   
   Merb::BootLoader.after_app_loads do
+    Merb::Controller.send(:include, MerbExceptions::ExceptionsHelper)
     if Merb::Plugins.config[:exceptions][:environments].include?(Merb.env)
       Exceptions.send(:include, MerbExceptions::ControllerExtensions)
     end
