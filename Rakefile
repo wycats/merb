@@ -101,7 +101,7 @@ desc "Create merb-more.rb"
 task "lib/merb-more.rb" do
   mkdir_p "lib"
   File.open("lib/merb-more.rb","w+") do |file|
-    file.puts "### AUTOMATICALLY GENERATED.  DO NOT EDIT."
+    file.puts "### AUTOMATICALLY GENERATED. DO NOT EDIT!"
     gems.each do |gem|
       next if gem == "merb-gen"
       file.puts "require '#{gem}'"
