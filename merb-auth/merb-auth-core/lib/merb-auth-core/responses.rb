@@ -1,6 +1,7 @@
 module Merb
   # These are not intended to be used directly
   class Authentication
+    attr_accessor :body
     
     def redirected?
       !!headers["Location"]

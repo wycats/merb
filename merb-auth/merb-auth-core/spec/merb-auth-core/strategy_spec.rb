@@ -241,6 +241,11 @@ describe "Merb::Authentication::Strategy" do
       @s.should be_halted
     end
     
+    it "should allow a body to be set" do
+      @s.body = "body"
+      @s.body.should == "body"
+    end
+    
   end
   
   describe "register strategies" do
