@@ -83,6 +83,7 @@ module Merb
       glob! "config"
       glob! "doc",      []
       glob! "public"
+      glob! "lib"
 
       invoke :layout do |generator|
         generator.new(destination_root, options, 'application')
