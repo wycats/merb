@@ -35,10 +35,9 @@ if defined?(Merb::Plugins)
     
     # Initialization hook - runs before AfterAppLoads BootLoader
     def self.init
-      require "merb-auth-more/mixins/redirect_back"
-      
+      require 'merb-auth-more/mixins/redirect_back'      
       unless MerbAuthSlicePassword[:no_default_strategies]
-        ::Authentication.activate!(:default_password_form)
+        ::Merb::Authentication.activate!(:default_password_form)
       end
     end
     

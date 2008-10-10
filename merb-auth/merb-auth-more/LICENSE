@@ -19,7 +19,7 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-Some of the code in this plugin is based on Restful Authentication by Rick Olsen.  License File here:
+Some of the code in this plugin is based on Restful Merb::Authentication by Rick Olsen.  License File here:
 
 Copyright (c) 2005 Rick Olson
  

@@ -817,6 +817,19 @@ class Merb < Thor
         source.install_from_src(name, opts) if options[:install]
       end
     end
+    
+    desc 'stack', 'Update dm-more from git HEAD'
+    method_options "--sources"   => :optional,
+                   "--install"   => :boolean
+    def stack
+      m_edge = Edge.new
+      m_edge.options = options
+      m_edge.core
+      m_edge.more
+      m_edge.custom
+      m_edge.do('sqlite3')
+      m_edge.dm_more #dm_core gets also installed
+    end
 
   end
 

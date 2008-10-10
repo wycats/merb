@@ -6,10 +6,11 @@ require 'merb-core'
 require 'merb-action-args'
 require File.join(File.dirname(__FILE__), '..', 'lib', 'merb-cache')
 
-# We want logging!
-Merb.logger = Merb::Logger.new(File.join(File.dirname(__FILE__), '..', 'log', 'merb_test.log'))
+Merb.disable(:initfile)
 
-Merb.start :environment => "test", :adapter => "runner"
+Merb.start :environment => "test",
+           :adapter     => "runner",
+           :log_file    => File.join(File.dirname(__FILE__), '..', 'log', 'merb_test.log')
 
 require "merb-core/test"
 Spec::Runner.configure do |config|

@@ -43,7 +43,6 @@ module Merb
           slice_module = Object.full_const_get(slice_module.to_s.camel_case) if slice_module.class.in?(String, Symbol)
           namespace = options[:namespace] || slice_module.identifier_sym
           options[:path] ||= options[:path_prefix] || slice_module[:path_prefix] || options[:namespace] || slice_module.identifier
-          options[:default_routes] = true unless options.key?(:default_routes)
           options[:prepend_routes] = block if block_given?
           slice_module[:path_prefix] = options[:path]
           Merb.logger.info!("Mounting slice #{slice_module} at /#{options[:path]}")
@@ -57,7 +56,6 @@ module Merb
               options[:prepend_routes].call(ns) if options[:prepend_routes].respond_to?(:call)
               slice_module.setup_router(ns)     # setup the routes from the slice itself
               options[:append_routes].call(ns)  if options[:append_routes].respond_to?(:call)
-              ns.default_routes(options[:params] || {}) if options[:default_routes]
             end
           end
         else 

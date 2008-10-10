@@ -1,9 +1,9 @@
 require File.join(File.dirname(__FILE__), "..", 'spec_helper.rb')
 
-describe Authentication::Errors do
+describe Merb::Authentication::Errors do
  
   before(:each) do
-    @errors = Authentication::Errors.new
+    @errors = Merb::Authentication::Errors.new
   end
  
   it "should report that it is empty on first creation" do
@@ -44,8 +44,8 @@ describe Authentication::Errors do
   end
   
   it "should provide an errors instance method on the Authenticaiton instance" do
-    a = Authentication.new(Merb::CookieSession.generate)
-    a.errors.should be_a_kind_of(Authentication::Errors)
+    a = Merb::Authentication.new(Merb::CookieSession.generate)
+    a.errors.should be_a_kind_of(Merb::Authentication::Errors)
   end
 
 end

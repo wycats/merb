@@ -26,14 +26,14 @@ module Merb::Generators
     end
 
     def after_generation
-      STDOUT.puts <<-EOS
-\n\nDon't forget to add request/controller and model tests first.
-
+      STDOUT << (message <<-EOS
+\n
 Generated templates use form helpers from merb-helpers.
-You may need to add dependency 'merb-helpers' in your init.rb file:
+You may need to add dependency 'merb-helpers' to your config/dependencies.rb file:
 
 dependency 'merb-helpers'
 EOS
+)
     end
   end
   

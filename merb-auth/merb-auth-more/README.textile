@@ -13,10 +13,10 @@ The built in ones are basic but should be enough to get you going for most thing
 To specify them, simply require them.  For example,in lib/auth-strategies.rb
 
 <pre><code>
-require 'merb-auth-more/strategies/basic/password_form'
-require 'merb-auth-more/strategies/basic/openid'
+Merb::Authentication.activate!(:default_password_form)
+Merb::Authentication.activate!(:default_openid)
 
-class MyApiLogin < ::Authentication::Strategy
+class MyApiLogin < ::Merb::Authentication::Strategy
   def run!
     # check for api login
   end
@@ -25,9 +25,9 @@ end
 
 So far there are:
 
-* basic/password_form
-* basic/basic_auth
-* basic/openid
+* :default_password_form
+* :default_basic_auth
+* :default_openid
 
 h3. "User" mixins
 
@@ -41,7 +41,7 @@ To use these, require the specific mixin, and then include it into your "User" c
   require 'merb-auth-more/mixins/salted_user'
   
   class User
-    include Authentication::Mixins::SaltedUser
+    include Merb::Authentication::Mixins::SaltedUser
     
   end
 </code></pre>

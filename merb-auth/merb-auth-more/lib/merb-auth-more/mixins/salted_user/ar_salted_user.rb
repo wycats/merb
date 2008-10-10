@@ -1,4 +1,4 @@
-class Authentication
+class Merb::Authentication
   module Mixins
     module SaltedUser
       module ARClassMethods
@@ -11,14 +11,28 @@ class Authentication
             validates_confirmation_of :password,                   :if => :password_required?
             
             before_save :encrypt_password
-          end # base.class_eval 
+          end # base.class_eval
+          
+          # Setup the session serialization
+          Merb::Authentication.class_eval <<-Ruby
+
+            def fetch_user(session_user_id)
+              #{base.name}.find(session_user_id)
+            end
+
+            def store_user(user)
+              user.nil? ? user : user.id
+            end
+
+          Ruby
+                  
         end # self.extended
         
         def authenticate(login, password)
-          @u = find(:first, Authentication::Strategies::Basic::Base.login_param => login)
+          @u = find(:first, :conditions => ["#{Merb::Authentication::Strategies::Basic::Base.login_param} = ?", login])
           @u && @u.authenticated?(password) ? @u : nil
         end
       end # ARClassMethods
     end # SaltedUser
   end # Mixins
-end # Authentication 
+end # Merb::Authentication 

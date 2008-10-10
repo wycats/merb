@@ -54,7 +54,7 @@ describe "The Merb::Router::Behavior methods" do
         scope.match('/dashboard').to(:controller => 'main', :action => 'index').name(:dashboard)
       end
       add_slice(:thin_test_slice, 'thin') # shortcut for :path => 'thin'
-      slice(:very_thin_test_slice, :name_prefix => 'awesome', :params => { :foo => 'bar' })
+      slice(:very_thin_test_slice, :name_prefix => 'awesome')
     end    
   end
   
@@ -83,11 +83,7 @@ describe "The Merb::Router::Behavior methods" do
     Merb::Router.named_routes[:awesome_default].should == VeryThinTestSlice.named_routes[:default]
   end
   
-  it "should allow default params to be set on a route" do
-    Merb::Router.named_routes[:awesome_default].params[:foo].should == '"bar"'
-  end
-  
-  it "enable url() and slice_url() respectively" do
+  it "enables url() and slice_url() respectively" do
     controller = dispatch_to(FullTestSlice::Main, 'index')
     controller.url(:full_test_slice_index, :format => 'html').should == '/full/index.html'
     controller.slice_url(:full_test_slice, :index, :format => 'html').should == '/full/index.html'
@@ -96,6 +92,14 @@ describe "The Merb::Router::Behavior methods" do
     controller.url(:full_test_slice_dashboard).should == '/full/dashboard'
     controller.slice_url(:full_test_slice, :dashboard).should == '/full/dashboard'
     controller.slice_url(:dashboard).should == '/full/dashboard'
+  end
+  
+  it "enables slice_url() for Controllers that include Merb::Slices::Support" do
+    controller = dispatch_to(Merb::Test::SampleAppController, 'index')
+    controller.slice_url(:full_test_slice, :dashboard).should == '/full/dashboard'
+    params = { :controller => 'foo', :action => 'bar', :id => 'baz' }
+    controller.slice_url(:thin_test_slice, :default, params).should == '/thin/foo/bar/baz'
+    controller.slice_url(:very_thin_test_slice, :default, params).should == '/foo/bar/baz'
   end
   
 end

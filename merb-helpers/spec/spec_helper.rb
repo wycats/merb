@@ -10,8 +10,15 @@ require "date"
 # use the app in spec/fixture to test helpers
 
 
-default_options = {:environment => 'test', :adapter => 'runner'}.merge({:merb_root => File.dirname(__FILE__) / 'fixture'})
+default_options = {
+  :environment => 'test',
+  :adapter     => 'runner',
+  :merb_root   => File.dirname(__FILE__) / 'fixture',
+  :log_file    => File.dirname(__FILE__) / "merb_test.log"
+}
 options = default_options.merge($START_OPTIONS || {})
+
+Merb.disable(:initfile)
 Merb.start_environment(options)
 
 def unload_merb_helpers

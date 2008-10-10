@@ -96,9 +96,9 @@ add_slice(:FullTestSlice)
 
 add_slice(:FullTestSlice, 'foo') # same as :path => 'foo'
 
-# example: /:lang/:controller/:action/:id (with :a param set)
+# example: /:lang/:controller/:action/:id
 
-add_slice(:FullTestSlice, :path => ':lang', :params => { :a => 'b' })
+add_slice(:FullTestSlice, :path => ':lang')
 
 # example: /:controller/:action/:id
 

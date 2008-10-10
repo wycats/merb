@@ -6,11 +6,13 @@ require 'merb-core'
 require 'merb-gen'
 require 'templater/spec/helpers'
 
+Merb.disable(:initfile)
+
 Spec::Runner.configure do |config|
   config.include Templater::Spec::Helpers
 end
 
-shared_examples_for "named generator" do
+describe "named generator", :shared => true do
 
   describe '#file_name' do
 

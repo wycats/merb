@@ -47,6 +47,8 @@ if defined?(Merb::Plugins)
     # @note prefix your named routes with :<%= symbol_name %>_
     #   to avoid potential conflicts with global named routes.
     def self.setup_router(scope)
+      # enable slice-level default routes by default
+      scope.default_routes
     end
     
     # This sets up a thin slice's structure.
