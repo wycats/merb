@@ -63,6 +63,7 @@ module Merb
     #
     class Strategy
       attr_accessor :request
+      attr_writer   :body
     
       class << self
         def inherited(klass)
@@ -161,6 +162,12 @@ module Merb
       # Checks to see if this strategy has been halted
       def halted?
         !!@halt
+      end
+      
+      
+      # Allows you to provide a body of content to return when halting
+      def body
+        @body || ""
       end
     
       # This is the method that is called as the test for authentication and is where
