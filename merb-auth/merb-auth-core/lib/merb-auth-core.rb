@@ -21,3 +21,5 @@ Merb::BootLoader.after_app_loads do
 end
 
 Merb::Plugins.add_rakefiles "merb-auth-core/merbtasks"
+
+Merb.push_path(:lib_authentication, Merb.root / "lib" / "authentication")
