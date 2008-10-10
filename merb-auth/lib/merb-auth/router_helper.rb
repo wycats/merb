@@ -7,6 +7,7 @@ module Merb
       # when adding slices
       def merb_auth_routes(opts = {})
         slice(:merb_auth_slice_password, opts)
+        yield if block_given?
       end
       
     end # Behavior

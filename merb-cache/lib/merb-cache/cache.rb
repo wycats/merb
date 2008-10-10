@@ -7,7 +7,13 @@ module Merb
   module Cache
 
     def self.setup(&blk)
-      instance_eval(&blk) unless blk.nil?
+      if Merb::BootLoader.finished?(Merb::BootLoader::BeforeAppLoads)
+        instance_eval(&blk) unless blk.nil?
+      else
+        Merb::BootLoader.before_app_loads do
+          instance_eval(&blk) unless blk.nil?
+        end
+      end
     end
 
     # autoload is used so that gem dependencies can be required only when needed by
