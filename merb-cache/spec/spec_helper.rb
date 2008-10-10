@@ -6,11 +6,15 @@ require 'merb-core'
 require 'merb-action-args'
 require File.join(File.dirname(__FILE__), '..', 'lib', 'merb-cache')
 
+<<<<<<< HEAD:merb-cache/spec/spec_helper.rb
 Merb.disable(:initfile)
 
 Merb.start :environment => "test",
            :adapter     => "runner",
            :log_file    => File.join(File.dirname(__FILE__), '..', 'log', 'merb_test.log')
+=======
+Merb.start :environment => "test", :adapter => "runner", :log_file => Merb.root / :log / 'merb_test.log'
+>>>>>>> working:merb-cache/spec/spec_helper.rb
 
 require "merb-core/test"
 Spec::Runner.configure do |config|
