@@ -149,6 +149,84 @@ describe Merb::Cache::CacheMixin do
     end
   end
 
+  describe "#eager_cache" do
+    before(:each) do
+      Object.send(:remove_const, :EagerCacher) if defined?(EagerCacher)
+
+      class EagerCacher < Merb::Controller
+        def index
+          "index"
+        end
+      end
+    end
+
+
+
+    it "should accept a block with an arity of 1" do
+      class EagerCacher
+        eager_cache(:index) {|params|}
+      end
+
+      lambda { dispatch_to(EagerCacher, :index) }.should_not raise_error
+    end
+
+    it "should accept a block with an arity greater than 1" do
+      class EagerCacher
+        eager_cache(:index) {|params, env|}
+      end
+
+      lambda { dispatch_to(EagerCacher, :index) }.should_not raise_error
+    end
+
+    it "should accept a block with an arity of -1" do
+      class EagerCacher
+        eager_cache(:index) {|*args|}
+      end
+
+      lambda { dispatch_to(EagerCacher, :index) }.should_not raise_error
+    end
+
+    it "should accept a block with an arity of 0" do
+      class EagerCacher
+        eager_cache(:index) {||}
+      end
+
+      lambda { dispatch_to(EagerCacher, :index) }.should_not raise_error
+    end
+
+    it "should allow the block to return nil" do
+      class EagerCacher
+        eager_cache(:index) {}
+      end
+
+      lambda { dispatch_to(EagerCacher, :index) }.should_not raise_error
+    end
+
+    it "should allow the block to return a params hash" do
+      class EagerCacher
+        eager_cache(:index) {|params| params.merge(:foo => :bar)}
+      end
+
+      lambda { dispatch_to(EagerCacher, :index) }.should_not raise_error(ArgumentError)
+    end
+
+    it "should allow the block to return a Merb::Request object" do
+      class EagerCacher
+        eager_cache(:index) {|params| build_request('/')}
+      end
+
+      lambda { dispatch_to(EagerCacher, :index) }.should_not raise_error(ArgumentError)
+    end
+
+    it "should allow the block to return a Merb::Controller object" do
+      class EagerCacher
+        eager_cache(:index) {|params, env| EagerCacher.new(env)}
+      end
+
+      lambda { dispatch_to(EagerCacher, :index) }.should_not raise_error(ArgumentError)
+    end
+  end
+
   describe "eager_cache (Instance Method)" do
     class HasRun
       cattr_accessor :has_run
@@ -279,6 +357,24 @@ describe Merb::Cache::CacheMixin do
       end
 
       new_controller.fetch_fragment {}
+    end
+  end
+
+  describe ".build_request" do
+    it "should create a CacheRequest" do
+      Merb::Controller.build_request({}).class.should == Merb::Cache::CacheRequest
+    end
+
+    it "should use nil if the path is not supplied" do
+      Merb::Controller.build_request({}).path.should be_nil
+    end
+
+    it "should allow the params to be specified" do
+      Merb::Controller.build_request(:foo => :bar).params[:foo].should == :bar
+    end
+
+    it "should allow the env to be specified" do
+      Merb::Controller.build_request({}, :foo => :bar).env[:foo].should == :bar
     end
   end
 end
