@@ -112,7 +112,7 @@ setting the class inside your model declaration.
 This will cascade throughout the default strategies, and your own strategies vai that 
 Merb::Authentication::Strategy#user_class method.
 
-The default valud for the user class is @User@
+There is no default class set for Activation by default
 
 h3. Strategies and Inheritance
 
