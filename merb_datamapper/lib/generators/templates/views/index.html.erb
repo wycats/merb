@@ -11,11 +11,12 @@
 
 <%% for <%= singular_model %> in @<%= plural_model %> %>
   <tr>
-<% for property in properties.reject{|p| p.lazy?} -%>
+<% properties.reject{|p| p.lazy?}.each do |property| -%>
     <td><%%=h <%= singular_model %>.<%= property.getter %> %></td>
 <% end -%>
     <td><%%= link_to 'Show', url(:<%= singular_model %>, <%= singular_model %>) %></td>
     <td><%%= link_to 'Edit', url(:edit_<%= singular_model %>,  <%= singular_model %>) %></td>
+    <td><%%= delete_button <%= singular_model %> %></td>
   </tr>
 <%% end %>
 </table>

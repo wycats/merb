@@ -393,9 +393,10 @@ module Merb::Helpers::Form
   #
   def delete_button(object_or_url, contents="Delete", attrs = {})
     url = object_or_url.is_a?(String) ? object_or_url : url(object_or_url.class.to_s.snake_case.to_sym, object_or_url)
+    button_text = (contents || 'Delete')
     tag :form, :class => 'delete-btn', :action => url, :method => :post do
       tag(:input, :type => :hidden, :name => "_method", :value => "DELETE") <<
-      tag(:input, (contents || 'Delete'), attrs.merge(:type => :submit))
+      tag(:input, attrs.merge(:value => button_text, :type => :submit))
     end
   end
 
