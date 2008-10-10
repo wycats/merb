@@ -76,11 +76,13 @@ module Merb
       # ==== Layout specific things
       #
 
-    glob! "app"
-    glob! "autotest"
-    glob! "config"
-    glob! "doc"
-    glob! "public"
+      # empty array means all files are considered to be just
+      # files, not templates
+      glob! "app"
+      glob! "autotest"
+      glob! "config"
+      glob! "doc",      []
+      glob! "public"      
 
       invoke :layout do |generator|
         generator.new(destination_root, options, 'application')
