@@ -15,19 +15,30 @@ require 'merb-core/tasks/merb_rake_helper'
 require 'fileutils'
 include FileUtils
 
-gems = %w[
-  merb-action-args merb-assets merb-gen merb-haml
-  merb-builder merb-mailer merb-parts merb-cache merb-slices
-  merb-jquery merb-helpers
+gem_paths = %w[
+  merb-action-args 
+  merb-assets 
+  merb-gen 
+  merb-haml
+  merb-mailer 
+  merb-cache 
+  merb-slices
+  merb-helpers 
+  merb-param-protection
+  merb-auth
+  merb-exceptions
 ]
 
+gems = gem_paths.map { |p| File.basename(p) }
+
+
 merb_more_spec = Gem::Specification.new do |s|
-  s.rubyforge_project = 'merb'
+  s.rubyforge_project = 'merb-more'
   s.name         = "merb-more"
   s.version      = Merb::MORE_VERSION
   s.platform     = Gem::Platform::RUBY
-  s.author       = "Ezra Zygmuntowicz"
-  s.email        = "ez@engineyard.com"
+  s.author       = "Engine Yard"
+  s.email        = "merb@engineyard.com"
   s.homepage     = "http://www.merbivore.com"
   s.summary      = "(merb - merb-core) == merb-more.  The Full Stack. Take what you need; leave what you don't."
   s.description  = s.summary
@@ -47,7 +58,7 @@ end
 desc "Install all gems"
 task :install do
   Merb::RakeHelper.install('merb-more', :version => Merb::MORE_VERSION)
-  Merb::RakeHelper.install_package("pkg/merb-#{Merb::MORE_VERSION}.gem")
+  Merb::RakeHelper.install_package("pkg/merb-more-#{Merb::MORE_VERSION}.gem")
 end
 
 desc "Uninstall all gems"
@@ -58,28 +69,28 @@ end
 
 desc "Build the merb-more gems"
 task :build_gems do
-  gems.each do |dir|
+  gem_paths.each do |dir|
     Dir.chdir(dir) { sh "#{Gem.ruby} -S rake package" }
   end
 end
 
 desc "Install the merb-more sub-gems"
 task :install_gems do
-  gems.each do |dir|
+  gem_paths.each do |dir|
     Dir.chdir(dir) { sh "#{Gem.ruby} -S rake install" }
   end
 end
 
 desc "Uninstall the merb-more sub-gems"
 task :uninstall_gems do
-  gems.each do |dir|
+  gem_paths.each do |dir|
     Dir.chdir(dir) { sh "#{Gem.ruby} -S rake uninstall" }
   end
 end
 
 desc "Clobber the merb-more sub-gems"
 task :clobber_gems do
-  gems.each do |dir|
+  gem_paths.each do |dir|
     Dir.chdir(dir) { sh "#{Gem.ruby} -S rake clobber" }
   end
 end
@@ -137,7 +148,7 @@ namespace :release do
 
   desc "Publish Merb More gem to RubyForge, one by one."
   task :merb_more_gems => [ :build_gems ] do
-    gems.each do |gem|
+    gem_paths.each do |gem|
       Dir.chdir(gem){ sh "#{Gem.ruby} -S rake release" }
     end
   end
@@ -147,12 +158,12 @@ namespace :release do
     require 'rubyforge'
     require 'rake/contrib/rubyforgepublisher'
 
-    packages = %w( gem tgz zip ).collect{ |ext| "pkg/merb-#{PKG_VERSION}.#{ext}" }
+    packages = %w( gem tgz zip ).collect{ |ext| "pkg/merb-more-#{PKG_VERSION}.#{ext}" }
 
     begin
       sh %{rubyforge login}
-      sh %{rubyforge add_release #{RUBY_FORGE_PROJECT} merb #{Merb::VERSION} #{packages.join(' ')}}
-      sh %{rubyforge add_file #{RUBY_FORGE_PROJECT} merb #{Merb::VERSION} #{packages.join(' ')}}
+      sh %{rubyforge add_release #{RUBY_FORGE_PROJECT} merb-more #{Merb::VERSION} #{packages.join(' ')}}
+      sh %{rubyforge add_file #{RUBY_FORGE_PROJECT} merb-more #{Merb::VERSION} #{packages.join(' ')}}
     rescue Exception => e
       puts
       puts "Release failed: #{e.message}"
@@ -164,7 +175,7 @@ end
 
 desc "Run spec examples for Merb More gems, one by one."
 task :spec do
-  gems.each do |gem|
+  gem_paths.each do |gem|
     Dir.chdir(gem) { sh "#{Gem.ruby} -S rake spec" }
   end
 end

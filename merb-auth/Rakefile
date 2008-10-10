@@ -23,9 +23,6 @@ merb_auth_spec = Gem::Specification.new do |s|
   s.description  = s.summary
   s.files = %w(LICENSE README.textile Rakefile TODO) + Dir.glob("{lib,spec}/**/*")
   s.add_dependency "merb-core", "~> #{GEM_VERSION}"
-  s.add_dependency "merb-auth-core", "= #{GEM_VERSION}"
-  s.add_dependency "merb-auth-more", "= #{GEM_VERSION}"
-  s.add_dependency "merb-auth-slice-password", "= #{GEM_VERSION}"
   gems.each do |gem|
     s.add_dependency gem, "~> #{GEM_VERSION}"
   end

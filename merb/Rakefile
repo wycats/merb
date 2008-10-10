@@ -18,7 +18,7 @@ NAME = "merb"
 AUTHOR = "Engine Yard"
 EMAIL = "merb@engineyard.com"
 HOMEPAGE = "http://merbivore.com/"
-SUMMARY = "(merb-core + merb-more) == all of Merb"
+SUMMARY = "(merb-core + merb-more + DM) == Merb stack"
 
 # For RubyForge release task
 RUBY_FORGE_PROJECT  = "merb"

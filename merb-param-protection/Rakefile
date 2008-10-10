@@ -16,9 +16,9 @@ PROJECT_DESCRIPTION = PROJECT_SUMMARY
 GEM_AUTHOR = "Lance Carlson"
 GEM_EMAIL  = "lancecarlson@gmail.com"
 
-GEM_NAME    = "merb_param_protection"
+GEM_NAME    = "merb-param-protection"
 PKG_BUILD   = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
-GEM_VERSION = (Merb::MORE_VERSION rescue "0.9.8") + PKG_BUILD
+GEM_VERSION = (Merb::MORE_VERSION rescue "0.9.9") + PKG_BUILD
 
 RELEASE_NAME    = "REL #{GEM_VERSION}"
 

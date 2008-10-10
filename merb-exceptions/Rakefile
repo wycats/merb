@@ -4,15 +4,15 @@ require "rake/rdoctask"
 require 'merb-core/tasks/merb_rake_helper'
 require "spec/rake/spectask"
 
-PLUGIN = "merb_exceptions"
-GEM_NAME = "merb_exceptions"
+PLUGIN = "merb-exceptions"
+GEM_NAME = "merb-exceptions"
 AUTHOR = 'Andy Kent'
 EMAIL = "andy@new-bamboo.co.uk"
 HOMEPAGE = "http://merb-plugins.rubyforge.org/me/"
 SUMMARY = "Allows Merb to forward exceptions to emails or web hooks"
 
 PKG_BUILD   = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
-GEM_VERSION = (Merb::MORE_VERSION rescue "0.9.8") + PKG_BUILD
+GEM_VERSION = (Merb::MORE_VERSION rescue "0.9.9") + PKG_BUILD
 
 require "extlib/tasks/release"
 
