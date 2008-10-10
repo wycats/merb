@@ -12,14 +12,11 @@ module MerbExceptions
           end
         end
       else
-        def render_and_notify(*opts)
-          self.render(*opts)
+        mod.class_eval do
+          def render_and_notify(*opts)
+            self.render(*opts)
+          end
         end
-      end
-    end
-
-      if Merb::Plugins.config[:exceptions][:environments].include?(Merb.env)
-        self.render_then_call(render(*opts)) { notify_of_exceptions }
       end
     end
   end
