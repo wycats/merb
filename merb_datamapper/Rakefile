@@ -21,7 +21,7 @@ GEM_VERSION = (Merb::MORE_VERSION rescue "0.9.9") + PKG_BUILD
 
 RELEASE_NAME    = "REL #{GEM_VERSION}"
 
-GEM_DEPENDENCIES = [["dm-core", ">=0.9.5"], ["dm-migrations", ">=0.9.5"], ["merb-core", "~> #{GEM_VERSION}"], ['templater', ">=0.2.0"]]
+GEM_DEPENDENCIES = [["dm-core", ">=0.9.5"], ["dm-migrations", ">=0.9.5"], ["merb-core", "~> #{GEM_VERSION}"], ['templater', ">=0.3.2"]]
 
 require "extlib/tasks/release"
 
@@ -41,7 +41,7 @@ spec = Gem::Specification.new do |s|
     s.add_dependency gem, version
   end
   s.require_path = 'lib'
-  s.files = %w(LICENSE Rakefile TODO) + Dir.glob("{lib,spec}/**/*")
+  s.files = %w(LICENSE Rakefile TODO Generators) + Dir.glob("{lib}/**/*")
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|
