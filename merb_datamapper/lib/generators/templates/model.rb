@@ -2,7 +2,7 @@
 class <%= class_name %>
   include DataMapper::Resource
   
-  property :id, Integer, :serial => true
+  property :id, Serial
   
 <% attributes.each do |name, type| %>
   property :<%= name -%>, <%= datamapper_type(type) -%>
