@@ -55,14 +55,14 @@ module Merb
         template.destination = "Rakefile"
       end
 
-      template :gitignore do |template|
-        template.source = File.join(common_templates_dir, 'dotgitignore')
-        template.destination = ".gitignore"
+      file :gitignore do |file|
+        file.source = File.join(common_templates_dir, 'dotgitignore')
+        file.destination = ".gitignore"
       end
 
-      template :htaccess do |template|
-        template.source = 'public/dothtaccess'
-        template.destination = 'public/.htaccess'
+      file :htaccess do |file|
+        file.source = File.join(common_templates_dir, 'dothtaccess')
+        file.destination = 'public/.htaccess'
       end
 
       directory :test_dir do |directory|

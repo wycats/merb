@@ -40,9 +40,9 @@ module Merb
         template.destination = "#{base_name}.rb"
       end
 
-      template :gitignore do |template|
-        template.source = File.join(common_templates_dir, 'dotgitignore')
-        template.destination = ".gitignore"
+      file :gitignore do |file|
+        file.source = File.join(common_templates_dir, 'dotgitignore')
+        file.destination = ".gitignore"
       end
 
       directory :test_dir do |directory|

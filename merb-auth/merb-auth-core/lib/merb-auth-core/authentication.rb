@@ -65,7 +65,7 @@ module Merb
     #
     # @return user object of the verified user.  An exception is raised if no user is found
     #
-    def authenticate!(request, *rest)
+    def authenticate!(request, params, *rest)
       opts = rest.last.kind_of?(Hash) ? rest.pop : {}
       rest = rest.flatten
       strategies = rest.empty? ? Merb::Authentication.default_strategy_order : rest
@@ -75,7 +75,7 @@ module Merb
       # This one should find the first one that matches.  It should not run antother
       strategies.detect do |s|
         unless s.abstract?
-          strategy = s.new(request)
+          strategy = s.new(request, params)
           user = strategy.run! 
           if strategy.halted?
             self.headers  = strategy.headers

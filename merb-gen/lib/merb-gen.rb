@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'merb-core'
 require 'sha1'
-gem 'templater', '>= 0.3.1'
+gem 'templater', '>= 0.3.2'
 require 'templater'
 
 path = File.join(File.dirname(__FILE__))
@@ -27,9 +27,6 @@ require path / "generators" / "layout"
 
 Templater::Discovery.discover!("merb-gen")
 
-# Require all generators that plugins have added to merb, after the app has loaded.
-Merb::BootLoader.after_app_loads do
-  Merb.generators.each do |file|
-    require file
-  end
+Merb.generators.each do |file|
+  require file
 end

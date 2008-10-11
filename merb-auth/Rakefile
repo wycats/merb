@@ -1,8 +1,9 @@
 GEM_VERSION = "0.9.9"
 GEM_NAME    = "merb-auth"
-
 require "rake/clean"
 require "rake/gempackagetask"
+require 'rubygems/specification'
+require "spec/rake/spectask"
 require 'merb-core/tasks/merb_rake_helper'
 require 'fileutils'
 include FileUtils
@@ -28,7 +29,7 @@ merb_auth_spec = Gem::Specification.new do |s|
   end
 end
 
-CLEAN.include ["**/.*.sw?", "pkg", "lib/*.bundle", "*.gem", "doc/rdoc", ".config", "coverage", "cache", "lib/merb-auth.rb"]
+CLEAN.include ["**/.*.sw?", "pkg", "lib/*.bundle", "*.gem", "doc/rdoc", ".config", "coverage", "cache"]
 
 Rake::GemPackageTask.new(merb_auth_spec) do |package|
   package.gem_spec = merb_auth_spec

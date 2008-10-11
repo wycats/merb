@@ -1,3 +1,4 @@
+require "spec/rake/spectask"
 namespace :slices do
   namespace :"merb-auth-slice-password" do
       

@@ -37,15 +37,40 @@ module Merb::Cache::CacheMixin
       alias_method "_eager_cache_#{trigger_action}_to_#{target_controller.name.snake_case}__#{target_action}_after", :_eager_cache_after
     end
 
-    def eager_dispatch(action, env = {}, blk = nil)
-      kontroller = new(Merb::Request.new(env))
-      kontroller.force_cache!
+    def eager_dispatch(action, params = {}, env = {}, blk = nil)
+      kontroller = if blk.nil?
+        new(Merb::Request.new(env))
+      else
+        result = case blk.arity
+          when 0  then  blk[]
+          when 1  then  blk[params]
+          else          blk[*[params, env]]
+        end
 
-      blk.call(kontroller) unless blk.nil?
+        case result
+        when NilClass         then new(Merb::Request.new(env))
+        when Hash, Mash       then new(Merb::Request.new(result))
+        when Merb::Request    then new(result)
+        when Merb::Controller then result
+        else raise ArgumentError, "Block to eager_cache must return nil, the env Hash, a Request object, or a Controller object"
+        end
+      end
+
+      kontroller.force_cache!
 
       kontroller._dispatch(action)
 
       kontroller
+    end
+
+    def build_request(path, params = {}, env = {})
+      path, params, env = nil, path, params if path.is_a? Hash
+
+      Merb::Cache::CacheRequest.new(path, params, env)
+    end
+
+    def build_url(*args)
+      Merb::Router.url(*args)
     end
   end
 
@@ -95,14 +120,14 @@ module Merb::Cache::CacheMixin
   def _eager_cache_after(klass, action, conditions = {}, blk = nil)
     if @_skip_cache.nil?
       run_later do
-        controller = klass.eager_dispatch(action, request.env, blk)
+        controller = klass.eager_dispatch(action, request.params.dup, request.env.dup, blk)
 
         Merb::Cache[controller._lookup_store(conditions)].write(controller, nil, *controller._parameters_and_conditions(conditions))
       end
     end
   end
 
-  def eager_cache(action, conditions = {}, env = request.env.dup, &blk)
+  def eager_cache(action, conditions = {}, params = request.params.dup, env = request.env.dup, &blk)
     unless @_skip_cache
       if action.is_a?(Array)
         klass, action = *action
@@ -111,7 +136,7 @@ module Merb::Cache::CacheMixin
       end
 
       run_later do
-        controller = klass.eager_dispatch(action, env, blk)
+        controller = klass.eager_dispatch(action, params.dup, env.dup, blk)
       end
     end
   end

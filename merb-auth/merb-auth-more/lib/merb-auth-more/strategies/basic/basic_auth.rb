@@ -36,7 +36,7 @@ class Merb::Authentication
         @@failure_message = "Login Required"
         
         private
-        def initialize(request)
+        def initialize(request, params)
           super
           @auth = Rack::Auth::Basic::Request.new(request.env)
         end
