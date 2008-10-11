@@ -105,13 +105,16 @@ module Merb
     
       end # End class << self
     
-      def initialize(request)
+      def initialize(request, params)
         @request = request
+        @params  = params
       end
     
       # An alias to the request.params hash
+      # Only rely on this hash to find any router params you are looking for.
+      # If looking for paramteres use request.params
       def params
-        request.params
+        @params
       end
     
       # An alials to the request.cookies hash

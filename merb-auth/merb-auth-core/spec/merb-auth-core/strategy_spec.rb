@@ -71,7 +71,8 @@ describe "Merb::Authentication::Strategy" do
   it "should raise a not implemented error if the run! method is not defined in the subclass" do
     class Sone < Merb::Authentication::Strategy; end
     lambda do
-      Sone.new("controller").run!
+      request = fake_request
+      Sone.new(request, request.params).run!
     end.should raise_error(Merb::Authentication::NotImplemented)
   end
   
@@ -86,13 +87,12 @@ describe "Merb::Authentication::Strategy" do
     
     before(:each) do
       class Sone < Merb::Authentication::Strategy; def run!; end; end 
-      @request = mock("controller")
-      @strategy = Sone.new(@request)
+      @request = fake_request
+      @strategy = Sone.new(@request, {:params => true})
     end
     
     it "should provide a params helper that defers to the controller" do
-      @request.should_receive(:params).and_return("PARAMS")
-      @strategy.params.should == "PARAMS"
+      @strategy.params.should == {:params => true }
     end
     
     it "should provide a cookies helper" do
@@ -124,7 +124,7 @@ describe "Merb::Authentication::Strategy" do
       end
       class Ptwo < Pone; end;
       
-      @request = mock("request", :null_object => true)
+      @request = fake_request
     end
     
     it "should allow being set to an abstract strategy" do
@@ -136,7 +136,7 @@ describe "Merb::Authentication::Strategy" do
     end
     
     it "should implement a user_class helper" do
-      s = Sone.new(@request)
+      s = Sone.new(@request, @request.params)
       s.user_class.should == User
     end
     
@@ -150,19 +150,19 @@ describe "Merb::Authentication::Strategy" do
     
     it "should defer to the Merb::Authentication.user_class if not over written" do
       Merb::Authentication.should_receive(:user_class).and_return(User)
-      s = Sone.new(@request)
+      s = Sone.new(@request, @request.params)
       s.user_class
     end
     
     it "should inherit the user class from it's parent by default" do
       Merb::Authentication.should_receive(:user_class).and_return(User)
-      s = Stwo.new(@request)
+      s = Stwo.new(@request, @request.params)
       s.user_class.should == User
     end
     
     it "should inherit the user_class form it's parent when the parent defines a new one" do
       Merb::Authentication.should_not_receive(:user_class)
-      m = Mtwo.new(@request)
+      m = Mtwo.new(@request, @request.params)
       m.user_class.should == String
     end
     
@@ -189,8 +189,8 @@ describe "Merb::Authentication::Strategy" do
       
       Merb::Router.reset!
       Merb::Router.prepare{ match("/").to(:controller => "foo_controller")}
-      @request = mock_request("/")
-      @s = MyStrategy.new(@request)
+      @request = fake_request
+      @s = MyStrategy.new(@request, @request.params)
     end
     
     it "allow for a redirect!" do

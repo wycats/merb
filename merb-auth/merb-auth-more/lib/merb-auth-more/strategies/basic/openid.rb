@@ -26,7 +26,7 @@ class Merb::Authentication
     module Basic
       class OpenID < Base
         def run!
-          if params[:'openid.mode']
+          if request.params[:'openid.mode']
             response = consumer.complete(request.send(:query_params), "#{request.protocol}://#{request.host}" + request.path)
             case response.status.to_s
             when 'success'

@@ -191,38 +191,38 @@ describe "Merb::Authentication Session" do
     
     it "should execute the strategies in the default order" do
       @request.params[:pass_3] = true
-      @auth.authenticate!(@request)
+      @auth.authenticate!(@request, @request.params)
       Viking.captures.should == %w( Sone Stwo Sthree )
     end
     
     it "should run the strategeis until if finds a non nil non false" do
       @request.params[:pass_2] = true
-      @auth.authenticate!(@request)
+      @auth.authenticate!(@request, @request.params)
       Viking.captures.should == %w( Sone Stwo )
     end
     
     it "should raise an Unauthenticated exception if no 'user' is found" do
       lambda do
-        @auth.authenticate!(@request)
+        @auth.authenticate!(@request, @request.params)
       end.should raise_error(Merb::Controller::Unauthenticated)
     end
     
     it "should store the user into the session if one is found" do
       @auth.should_receive(:user=).with("WINNA")
       @request.params[:pass_1] = "WINNA"
-      @auth.authenticate!(@request)
+      @auth.authenticate!(@request, @request.params)
     end
     
     it "should use the Authentiation#error_message as the error message" do
       @auth.should_receive(:error_message).and_return("BAD BAD BAD")
       lambda do
-        @auth.authenticate!(@request)
+        @auth.authenticate!(@request, @request.params)
       end.should raise_error(Merb::Controller::Unauthenticated, "BAD BAD BAD")
     end
     
     it "should execute the strategies as passed into the authenticate! method" do
       @request.params[:pass_1] = true
-      @auth.authenticate!(@request, Stwo, Sone)
+      @auth.authenticate!(@request, @request.params, Stwo, Sone)
       Viking.captures.should == ["Stwo", "Sone"]
     end
     
@@ -264,31 +264,31 @@ describe "Merb::Authentication Session" do
       Merb::Router.reset!
       Merb::Router.prepare{ match("/").to(:controller => "foo_controller")}
       @request = mock_request("/")
-      @s = MyStrategy.new(@request)
+      @s = MyStrategy.new(@request, @request.params)
       @a = Merb::Authentication.new(@request.session)
     end
     
     it "should answer redirected false if the strategy did not redirect" do
-      @a.authenticate! @request
+      @a.authenticate! @request, @request.params
       @a.should_not be_redirected
     end
     
     it "should answer redirected true if the strategy did redirect" do
       @request.params[:url] = "/some/url"
-      @a.authenticate! @request
+      @a.authenticate! @request, @request.params
       @a.halted?
     end
     
     it "should provide access to the Headers" do
       @request.params[:url] = "/some/url"
-      @a.authenticate! @request
+      @a.authenticate! @request, @request.params
       @a.headers.should == {"Location" => "/some/url"}
     end
     
     it "should provide access to the status" do
       @request.params[:url] = "/some/url"
       @request.params[:status] = 401
-      @a.authenticate! @request
+      @a.authenticate! @request, @request.params
       @a.should be_halted
       @a.status.should == 401
     end
@@ -296,7 +296,7 @@ describe "Merb::Authentication Session" do
     it "should stop processing the strategies if one redirects" do
       @request.params[:url] = "/some/url"
       lambda do
-        @a.authenticate! @request, MyStrategy, FailStrategy
+        @a.authenticate! @request, @request.params, MyStrategy, FailStrategy
       end.should_not raise_error(Merb::Controller::NotFound)
       @a.should be_halted
       @request.params[:should_not_be_here].should be_nil
@@ -308,8 +308,8 @@ describe "Merb::Authentication Session" do
     end
     
     it "should put the body of the strategy as the response body of the controller" do
-      controller = get "/", :url => "/some/url"
-      controller.body.should == "this is the body"
+      controller = request "/", :params => {:url => "/some/url"}
+      controller.should redirect_to("/some/url")
     end
   end
   

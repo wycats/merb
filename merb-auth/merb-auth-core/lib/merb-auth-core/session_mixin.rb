@@ -31,8 +31,8 @@ module Merb
       # Authenticates the session via the authentication object. 
       #
       # See Merb::Authentication#authenticate for usage
-      def authenticate!(request, *rest)
-        authentication.authenticate!(request, *rest)
+      def authenticate!(request, params, *rest)
+        authentication.authenticate!(request, params, *rest)
       end
     
       # Provides access to the currently authenticated user.
