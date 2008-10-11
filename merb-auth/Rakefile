@@ -55,7 +55,6 @@ end
 desc "install the plugin as a gem"
 task :install do
   Merb::RakeHelper.install(GEM_NAME, :version => GEM_VERSION)
-  Merb::RakeHelper.install_package("pkg/merb-auth-#{GEM_VERSION}.gem")
 end
 
 desc "Uninstall the gem"
