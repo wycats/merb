@@ -51,14 +51,14 @@ module Merb
         file.destination = "merb.thor"
       end
 
-      template :rakefile do |template|
-        template.source = File.join(common_templates_dir, "Rakefile")
-        template.destination = "Rakefile"
+      file :rakefile do |file|
+        file.source = File.join(common_templates_dir, "Rakefile")
+        file.destination = "Rakefile"
       end
 
-      template :gitignore do |template|
-        template.source = File.join(common_templates_dir, 'dotgitignore')
-        template.destination = ".gitignore"
+      file :gitignore do |file|
+        file.source = File.join(common_templates_dir, 'dotgitignore')
+        file.destination = ".gitignore"
       end
 
       directory :test_dir do |directory|
