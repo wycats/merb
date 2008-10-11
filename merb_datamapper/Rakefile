@@ -21,7 +21,7 @@ GEM_VERSION = (Merb::MORE_VERSION rescue "0.9.9") + PKG_BUILD
 
 RELEASE_NAME    = "REL #{GEM_VERSION}"
 
-GEM_DEPENDENCIES = [["dm-core", ">=0.9.5"], ["dm-migrations", ">=0.9.5"], ["merb-core", "~> #{GEM_VERSION}"], ['templater', ">=0.3.2"]]
+GEM_DEPENDENCIES = [["dm-core", ">=0.9.5"], ["dm-migrations", ">=0.9.5"], ["merb-core", "~> #{GEM_VERSION}"]]
 
 require "extlib/tasks/release"
 
