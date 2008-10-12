@@ -2,6 +2,7 @@ if defined?(Merb::Plugins)
 
   $:.unshift File.dirname(__FILE__)
 
+  require 'merb-slices'
   require 'merb-auth-core'
   require 'merb-auth-more'
     
