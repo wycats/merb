@@ -335,7 +335,7 @@ class Merb::Controller < Merb::AbstractController
     options[:protocol] ||= request.protocol
     options[:host] ||= request.host
     args << options
-    super(args.first, *args[1..-1])
+    super(*args)
   end
 
   # The results of the controller's render, to be returned to Rack.
