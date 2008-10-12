@@ -544,7 +544,7 @@ class Merb::AbstractController
   # of protocol and host options. 
   #
   # @api public
-  def absolute_url(name, *args)
+  def absolute_url(*args)
     # FIXME: arrgh, why request.protocol returns http://?
     # :// is not part of protocol name
     options  = extract_options_from_args!(args) || {}
@@ -556,7 +556,7 @@ class Merb::AbstractController
     
     args << options
     
-    protocol + "://" + host + url(name, *args)
+    protocol + "://" + host + url(*args)
   end
   
   # Generates a URL for a single or nested resource.
