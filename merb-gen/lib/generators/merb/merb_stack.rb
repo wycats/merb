@@ -21,21 +21,25 @@ module Merb
       def common_templates_dir
         self.class.common_templates_dir
       end
+      
+      def testing_framework
+        :rspec
+      end
+      
+      def orm
+        :datamapper
+      end
 
       #
       # ==== Generator options
       #
 
-      option :testing_framework, :default => :rspec,
-      :desc => 'Testing framework to use (one of: rspec, test_unit).'
-      option :orm, :default => :none,
-      :desc => 'Object-Relation Mapper to use (one of: none, activerecord, datamapper, sequel).'
       option :template_engine, :default => :erb,
       :desc => 'Template engine to prefer for this application (one of: erb, haml).'
 
       desc <<-DESC
-      This generates a "jump start" Merb application with support for DataMapper,
-      helpers, assets, mailer, caching, slices and merb-auth all out of the box.
+      This generates a "prepackaged" (or "opinionated") Merb application that uses DataMapper,
+      RSpec, helpers, assets, mailer, caching, slices and merb-auth all out of the box.
     DESC
 
       first_argument :name, :required => true, :desc => "Application name"
