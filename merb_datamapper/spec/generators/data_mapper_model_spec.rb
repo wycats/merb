@@ -17,14 +17,14 @@ describe "Merb::Generators::ModelGenerator for DataMapper" do
     @generator.should create('/tmp/app/models/stuff.rb')
   end
 
-  it "should render successfully" do
-    lambda { @generator.render! }.should_not raise_error
-  end
+  # it "should render successfully" do
+  #   lambda { @generator.render! }.should_not raise_error
+  # end
 
-  it "generates a resource" do
-    model_file = @generator.render!.detect { |file| file =~ /class/ }
-    model_file.should match(/include DataMapper::Resource/)
-  end
+  # it "generates a resource" do
+  #   model_file = @generator.render!.detect { |file| file =~ /class/ }
+  #   model_file.should match(/include DataMapper::Resource/)
+  # end
   it "generates a resource with appropriate properties" do
     @generator = Merb::Generators::ModelGenerator.new('/tmp',{:orm => :datamapper}, 'Stuff', 'id' => 'serial')
     model_file = @generator.template(:model_datamapper).render
