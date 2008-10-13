@@ -4,7 +4,8 @@ require 'rdoc/rdoc'
 require 'fileutils'
 require 'erb'
 
-class Merb < Thor
+module Merb
+  
   class GemNotFoundException < Exception
   end
   
@@ -90,7 +91,6 @@ class Merb < Thor
       end
     end
     
-    
     desc 'more', 'Generate the rdoc for each merb-more gem seperatly'
     def more
       libs = get_more
@@ -128,7 +128,6 @@ class Merb < Thor
       
     end
     
-    
     desc 'stack', 'Generate the rdoc for merb-core, merb-more merged together'
     def stack
       libs = ["merb"]
@@ -146,4 +145,5 @@ class Merb < Thor
     end
     
   end
+  
 end

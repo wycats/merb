@@ -19,14 +19,12 @@ module Merb
                                    'templates', 'application', 'common'))
       end
 
-
       option :testing_framework, :default => :rspec,
       :desc => 'Testing framework to use (one of: rspec, test_unit).'
       option :orm, :default => :none,
       :desc => 'Object-Relation Mapper to use (one of: none, activerecord, datamapper, sequel).'
       option :template_engine, :default => :erb,
       :desc => 'Template engine to prefer for this application (one of: erb, haml).'
-
 
       desc <<-DESC
       This generates a very flat merb application: the whole application
@@ -46,8 +44,7 @@ module Merb
       end
 
       directory :test_dir do |directory|
-        dir    = testing_framework == :rspec ? "spec" : "test"
-
+        dir = testing_framework == :rspec ? "spec" : "test"
         directory.source      = dir
         directory.destination = dir
       end
