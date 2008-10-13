@@ -92,7 +92,7 @@ module Kernel
         Merb.fatal! "The file #{dep.name} was not found", e
       end
     end
-    Merb.logger.info!("loading gem '#{dep.name}' ...")
+    Merb.logger.verbose!("loading gem '#{dep.name}' ...")
     return dep # ensure needs explicit return
   end
 
