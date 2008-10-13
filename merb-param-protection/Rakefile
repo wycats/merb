@@ -9,7 +9,8 @@ require File.join(File.dirname(__FILE__), "../merb-core/lib/merb-core/version.rb
 ##############################################################################
 # Package && release
 ##############################################################################
-RUBY_FORGE_PROJECT  = "merb"
+RUBY_FORGE_PROJECT  = "merb-param-protection
+"
 PROJECT_URL         = "http://merbivore.com"
 PROJECT_SUMMARY     = "Merb plugin that provides params_accessible and params_protected class methods"
 PROJECT_DESCRIPTION = PROJECT_SUMMARY

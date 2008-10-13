@@ -115,14 +115,14 @@ task "lib/merb-more.rb" do
   end
 end
 
-desc "Bundle up all the merb-more gems"
-task :bundle => [:package, :build_gems] do
-  mkdir_p "bundle"
-  cp "pkg/merb-more-#{Merb::MORE_VERSION}.gem", "bundle"
-  gems.each do |gem|
-    sh %{cp #{gem}/pkg/#{gem}-#{Merb::MORE_VERSION}.gem bundle/}
-  end
-end
+# desc "Bundle up all the merb-more gems"
+# task :bundle => [:package, :build_gems] do
+#   mkdir_p "bundle"
+#   cp "pkg/merb-more-#{Merb::MORE_VERSION}.gem", "bundle"
+#   gems.each do |gem|
+#     sh %{cp #{gem}/pkg/#{gem}-#{Merb::MORE_VERSION}.gem bundle/}
+#   end
+# end
 
 RUBY_FORGE_PROJECT = "merb"
 
