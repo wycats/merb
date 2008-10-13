@@ -1,7 +1,7 @@
 require 'rubygems'
 $:.push File.join(File.dirname(__FILE__), '..', 'lib')
 require 'merb-core'
-require 'merb_param_protection'
+require 'merb-param-protection'
 
 Spec::Runner.configure do |config|
   config.include(Merb::Test::ViewHelper)

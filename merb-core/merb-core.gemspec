@@ -26,7 +26,7 @@ Gem::Specification.new do |s|
     s.specification_version = 2
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<extlib>, [">= 0.9.7"])
+      s.add_runtime_dependency(%q<extlib>, [">= 0.9.8"])
       s.add_runtime_dependency(%q<erubis>, [">= 0"])
       s.add_runtime_dependency(%q<rake>, [">= 0"])
       s.add_runtime_dependency(%q<json_pure>, [">= 0"])
@@ -36,7 +36,7 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<hpricot>, [">= 0"])
       s.add_runtime_dependency(%q<thor>, [">= 0.9.6"])
     else
-      s.add_dependency(%q<extlib>, [">= 0.9.6"])
+      s.add_dependency(%q<extlib>, [">= 0.9.8"])
       s.add_dependency(%q<erubis>, [">= 0"])
       s.add_dependency(%q<rake>, [">= 0"])
       s.add_dependency(%q<json_pure>, [">= 0"])
@@ -47,7 +47,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<thor>, [">= 0.9.6"])
     end
   else
-    s.add_dependency(%q<extlib>, [">= 0.9.6"])
+    s.add_dependency(%q<extlib>, [">= 0.9.8"])
     s.add_dependency(%q<erubis>, [">= 0"])
     s.add_dependency(%q<rake>, [">= 0"])
     s.add_dependency(%q<json_pure>, [">= 0"])

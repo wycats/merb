@@ -17,8 +17,8 @@ describe "Merb::Generators::ResourceControllerGenerator for DataMapper" do
     @generator.should create('/tmp/app/controllers/stuff.rb')
   end
 
-  it "should render successfully" do
-    lambda { @generator.render! }.should_not raise_error
-  end
+  # it "should render successfully" do
+  #   lambda { @generator.render! }.should_not raise_error
+  # end
 
 end

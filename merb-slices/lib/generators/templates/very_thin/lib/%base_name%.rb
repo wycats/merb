@@ -17,7 +17,7 @@ if defined?(Merb::Plugins)
     # Slice metadata
     self.description = "<%= module_name %> is a very thin Merb slice!"
     self.version = "0.0.1"
-    self.author = "YOUR NAME"
+    self.author = "Engine Yard"
     
     # Stub classes loaded hook - runs before LoadClasses BootLoader
     # right after a slice's classes have been loaded internally.

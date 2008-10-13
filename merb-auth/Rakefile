@@ -1,4 +1,6 @@
-GEM_VERSION = "0.9.9"
+require File.join(File.dirname(__FILE__), "../merb-core/lib/merb-core/version.rb")
+
+GEM_VERSION = Merb::VERSION
 GEM_NAME    = "merb-auth"
 require "rake/clean"
 require "rake/gempackagetask"
@@ -45,10 +47,6 @@ task "lib/merb-auth.rb" do
       next if gem == "merb-gen"
       file.puts "require '#{gem}'"
     end
-    file.puts
-    file.puts "path = File.join(File.dirname(__FILE__), \"merb-auth\")"
-    file.puts "require \"#\{path\}/customizations.rb\""
-    file.puts "require \"#\{path\}/router_helper.rb\""
   end
 end
 

@@ -19,9 +19,9 @@ describe "Merb::Generators::MigrationGenerator for DataMapper" do
       FileUtils.rm_r @base_dir
     end
 
-    it "should render successfully" do
-      lambda { @generator.render! }.should_not raise_error
-    end
+    # it "should render successfully" do
+    #   lambda { @generator.render! }.should_not raise_error
+    # end
 
     it "creates the file correctly" do
       @generator.should create('/tmp/migrations/schema/migrations/001_some_more_stuff_migration.rb')

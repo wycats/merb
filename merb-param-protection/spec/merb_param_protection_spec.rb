@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
-describe "merb_param_protection" do
+describe "merb-param-protection" do
   describe "Controller", "parameter filtering" do
     describe "accessible parameters" do
       class ParamsAccessibleController < Merb::Controller

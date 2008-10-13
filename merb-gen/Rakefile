@@ -4,6 +4,8 @@ require "extlib"
 require 'merb-core/tasks/merb_rake_helper'
 require "spec/rake/spectask"
 
+require File.join(File.dirname(__FILE__), "../merb-core/lib/merb-core/version.rb")
+
 ##############################################################################
 # Package && release
 ##############################################################################
@@ -17,7 +19,7 @@ GEM_EMAIL  = "jonas.nicklas@gmail.com"
 
 GEM_NAME    = "merb-gen"
 PKG_BUILD   = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
-GEM_VERSION = (Merb::MORE_VERSION rescue "0.9.9") + PKG_BUILD
+GEM_VERSION = Merb::VERSION + PKG_BUILD
 
 RELEASE_NAME    = "REL #{GEM_VERSION}"
 
@@ -42,7 +44,7 @@ spec = Gem::Specification.new do |s|
   s.add_dependency "templater", ">= 0.3.3"
 
   s.require_path = 'lib'
-  s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,bin,spec}/**/*")
+  s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,bin,spec,merb}/**/*")
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|

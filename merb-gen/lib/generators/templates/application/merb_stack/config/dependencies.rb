@@ -5,6 +5,7 @@ dependency "merb-helpers", "0.9.9"       # Provides the form, date/time, and oth
 dependency "merb-mailer", "0.9.9"        # Integrates mail support via Merb Mailer
 dependency "merb-slices", "0.9.9"        # Provides a mechanism for letting plugins provide controllers, views, etc. to your app
 dependency "merb-auth", "0.9.9"          # An authentication slice (Merb's equivalent to Rails' restful authentication)
+dependency "merb-param-protection", "0.9.9"
  
 dependency "dm-core", "0.9.6"         # The datamapper ORM
 dependency "dm-aggregates", "0.9.6"   # Provides your DM models with count, sum, avg, min, max, etc.

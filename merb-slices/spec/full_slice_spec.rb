@@ -63,7 +63,7 @@ describe "A slice" do
   it "should have metadata properties" do
     FullTestSlice.description.should == "FullTestSlice is a chunky Merb slice!"
     FullTestSlice.version.should == "0.0.1"
-    FullTestSlice.author.should == "YOUR NAME"
+    FullTestSlice.author.should == "Engine Yard"
   end
   
   it "should have a :named_routes property" do

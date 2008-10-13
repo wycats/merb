@@ -7,9 +7,10 @@ require 'merb-core/version'
 require 'merb-core/tasks/merb_rake_helper'
 require 'rake/testtask'
 
+require File.join(File.dirname(__FILE__), "../../merb-core/lib/merb-core/version.rb")
 
 GEM_NAME = "merb-auth-core"
-GEM_VERSION = "0.9.9"
+GEM_VERSION = Merb::VERSION
 AUTHOR = "Adam French, Daniel Neighman"
 EMAIL = "has.sox@gmail.com"
 HOMEPAGE = "http://merbivore.com/"
@@ -27,7 +28,7 @@ spec = Gem::Specification.new do |s|
   s.author = AUTHOR
   s.email = EMAIL
   s.homepage = HOMEPAGE
-  s.add_dependency('merb-core', '~>0.9.8')
+  s.add_dependency('merb-core', '~>0.9.9')
   s.add_dependency('extlib')
   s.require_path = 'lib'
   s.files = %w(LICENSE README.textile Rakefile TODO) + Dir.glob("{lib,spec}/**/*")
