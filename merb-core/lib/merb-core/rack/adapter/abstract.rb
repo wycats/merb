@@ -79,8 +79,6 @@ module Merb
         port = (opts[:socket] || opts[:port]).to_i
         max_port = Merb::Config[:cluster] ? Merb::Config[:cluster] - 1 : 0
 
-        Merb.logger.warn! "Cluster: #{max_port}"
-
         # If we only have a single merb, just start it up and dispense with
         # the spawner/worker setup.
         if max_port == 0
