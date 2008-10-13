@@ -8,7 +8,7 @@ if defined?(Merb::Plugins)
     after BeforeAppLoads
 
     def self.run
-      Merb.logger.debug "Merb::Orms::DataMapper::Connect block."
+      Merb.logger.verbose! "Merb::Orms::DataMapper::Connect block."
 
       # check for the presence of database.yml
       if File.file?(Merb.dir_for(:config) / "database.yml")
@@ -20,16 +20,16 @@ if defined?(Merb::Plugins)
       end
 
       # if we use a datamapper session store, require it.
-      Merb.logger.debug "Checking if we need to use DataMapper sessions"
+      Merb.logger.verbose! "Checking if we need to use DataMapper sessions"
       if Merb::Config.session_stores.include?(:datamapper)
-        Merb.logger.debug "Using DataMapper sessions"
+        Merb.logger.verbose! "Using DataMapper sessions"
         require File.dirname(__FILE__) / "merb" / "session" / "data_mapper_session"
       end
 
       # take advantage of the fact #id returns the key of the model, unless #id is a property
       Merb::Router.root_behavior = Merb::Router.root_behavior.identify(DataMapper::Resource => :id)
 
-      Merb.logger.debug "Merb::Orms::DataMapper::Connect complete"
+      Merb.logger.verbose! "Merb::Orms::DataMapper::Connect complete"
     end
   end
 
@@ -37,7 +37,7 @@ if defined?(Merb::Plugins)
     after LoadClasses
 
     def self.run
-      Merb.logger.debug 'Merb::Orms::DataMapper::Associations block'
+      Merb.logger.verbose! 'Merb::Orms::DataMapper::Associations block'
 
       # make sure all relationships are initialized after loading
       descendants = DataMapper::Resource.descendants.dup
@@ -48,7 +48,7 @@ if defined?(Merb::Plugins)
         model.relationships.each_value { |r| r.child_key }
       end
 
-      Merb.logger.debug 'Merb::Orms::DataMapper::Associations complete'
+      Merb.logger.verbose! 'Merb::Orms::DataMapper::Associations complete'
     end
   end
 
