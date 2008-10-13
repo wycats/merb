@@ -49,7 +49,7 @@ require 'rubygems/dependency'
 module GemManagement
   
   include ColorfulMessages
-  
+    
   # Install a gem - looks remotely and local gem cache;
   # won't process rdoc or ri options.
   def install_gem(gem, options = {})
@@ -274,15 +274,18 @@ module GemManagement
   
   # Create a modified executable wrapper in the specified bin directory.
   def ensure_bin_wrapper_for(gem_dir, bin_dir, *gems)
+    options = gems.last.is_a?(Hash) ? gems.last : {}
+    options[:no_minigems] ||= []
     if bin_dir && File.directory?(bin_dir)
       gems.each do |gem|
         if gemspec_path = Dir[File.join(gem_dir, 'specifications', "#{gem}-*.gemspec")].last
           spec = Gem::Specification.load(gemspec_path)
+          enable_minigems = !options[:no_minigems].include?(spec.name)
           spec.executables.each do |exec|
             executable = File.join(bin_dir, exec)
             message "Writing executable wrapper #{executable}"
             File.open(executable, 'w', 0755) do |f|
-              f.write(executable_wrapper(spec, exec))
+              f.write(executable_wrapper(spec, exec, enable_minigems))
             end
           end
         end
@@ -292,7 +295,10 @@ module GemManagement
 
   private
 
-  def executable_wrapper(spec, bin_file_name)
+  def executable_wrapper(spec, bin_file_name, minigems = true)
+    requirements = ['minigems', 'rubygems']
+    requirements.reverse! unless minigems
+    try_req, then_req = requirements
     <<-TEXT
 #!/usr/bin/env ruby
 #
@@ -302,9 +308,9 @@ module GemManagement
 # this file is here to facilitate running it.
 
 begin 
-  require 'minigems'
+  require '#{try_req}'
 rescue LoadError 
-  require 'rubygems'
+  require '#{then_req}'
 end
 
 if File.directory?(gems_dir = File.join(Dir.pwd, 'gems')) ||
@@ -432,12 +438,14 @@ module MerbThorHelper
         # A repository entry for this dependency exists
         repo = [name, repo_url]
         repos << repo unless repos.include?(repo) 
-      elsif (stack_name = Merb::Stack.lookup_component(name)) &&
-        (repo_url = Merb::Source.repo(stack_name, options[:sources]))
+      elsif (repo_name = Merb::Stack.lookup_repository_name(name)) &&
+        (repo_url = Merb::Source.repo(repo_name, options[:sources]))
         # A parent repository entry for this dependency exists
-        puts "Found #{stack_name}/#{name} at #{repo_url}"
-        repo = [stack_name, repo_url]
-        repos << repo unless repos.include?(repo) 
+        repo = [repo_name, repo_url]
+        unless repos.include?(repo)
+          puts "Found #{repo_name}/#{name} at #{repo_url}"
+          repos << repo 
+        end
       end
     end
     repos
@@ -560,7 +568,7 @@ module MerbThorHelper
     create_if_missing(@_source_dir)
     @_source_dir
   end
-  
+    
   # If a local ./gems dir is found, return it.
   def gem_dir
     if File.directory?(dir = default_gem_dir)
@@ -910,6 +918,7 @@ module Merb
           
         # Add local binaries for the installed framework dependencies
         comps = Merb::Stack.all_components & deps.map { |d| d.name }
+        comps << { :no_minigems => 'merb-gen' }
         ensure_bin_wrapper_for(*comps)
         return true
       end
@@ -1077,6 +1086,10 @@ module Merb
       Merb::BootLoader::Dependencies.dependencies
     rescue => e
       error "Couldn't extract dependencies from application!"
+      error e.message
+      
+      p e.backtrace
+      
       puts  "Make sure you're executing the task from your app (--merb-root), or"
       puts  "specify a config option (--config or --config-file=YAML_FILE)"
       return []
@@ -1105,6 +1118,15 @@ module Merb
     # The Stack tasks will install dependencies based on known sets of gems,
     # regardless of actual application dependency settings.
     
+    DM_STACK = %w[
+      dm-core
+      dm-aggregates
+      dm-migrations
+      dm-timestamps
+      dm-types
+      dm-validations
+    ]
+    
     MERB_STACK = %w[
       minigems
       
@@ -1116,14 +1138,7 @@ module Merb
       merb-mailer
       merb-slices
       merb-auth
-      
-      dm-core
-      dm-aggregates
-      dm-migrations
-      dm-timestamps
-      dm-types
-      dm-validations
-    ]
+    ] + DM_STACK
     
     MERB_BASICS = %w[
       minigems
@@ -1137,6 +1152,9 @@ module Merb
       merb-slices
     ]
     
+    # The following sets are meant for repository lookup; unlike the sets above
+    # these correspond to specific git repository items.
+    
     MERB_MORE = %w[
       merb-action-args
       merb-assets
@@ -1144,16 +1162,13 @@ module Merb
       merb-auth-core
       merb-auth-more 
       merb-auth-slice-password
-      merb-builder
       merb-cache
       merb-exceptions
       merb-gen
       merb-haml
       merb-helpers
-      merb-jquery
       merb-mailer
       merb-param-protection
-      merb-parts
       merb-slices
       merb_datamapper
     ]
@@ -1161,10 +1176,8 @@ module Merb
     MERB_PLUGINS = %w[
       merb_activerecord
       merb_builder
-      merb_helpers
       merb_jquery
       merb_laszlo
-      merb_param_protection
       merb_parts
       merb_screw_unit
       merb_sequel
@@ -1209,7 +1222,7 @@ module Merb
     global_method_options = {
       "--merb-root"            => :optional,  # the directory to operate on
       "--include-dependencies" => :boolean,   # gather sub-dependencies
-      "--version"              => :optional   # gather specific version of framework      
+      "--version"              => :optional   # gather specific version of framework    
     }
     
     method_options global_method_options
@@ -1219,21 +1232,22 @@ module Merb
     #
     # Examples:
     # 
-    # merb:stack:list                                           # list all components
+    # merb:stack:list                                           # list all standard stack components
+    # merb:stack:list all                                       # list all component sets
     # merb:stack:list merb-more                                 # list all dependencies of merb-more
   
-    desc 'list [comp]', 'List available components (optionally filtered)'
-    def list(comp = nil)
-      if comp
-        message "Dependencies for '#{comp}' set:"
-        Merb::Stack.components(comp).each { |c| puts "- #{c}" }
-      else
+    desc 'list [all|comp]', 'List available components (optionally filtered, defaults to merb stack)'
+    def list(comp = 'stack')
+      if comp == 'all'
         Merb::Stack.component_sets.keys.sort.each do |comp|
           unless (components = Merb::Stack.component_sets[comp]).empty?
             message "Dependencies for '#{comp}' set:"
             components.each { |c| puts "- #{c}" }
           end
         end
+      else
+        message "Dependencies for '#{comp}' set:"
+        Merb::Stack.components(comp).each { |c| puts "- #{c}" }
       end      
     end
     
@@ -1318,16 +1332,35 @@ module Merb
     
     public
     
-    def self.component_sets
-      @_component_sets ||= begin
+    def self.repository_sets
+      @_repository_sets ||= begin
         # the component itself as a fallback
         comps = Hash.new { |(hsh,c)| [c] }
+        
+        # git repository based component sets
+        comps["merb"]         = ["merb-core"] + MERB_MORE
         comps["merb-more"]    = MERB_MORE.sort
         comps["merb-plugins"] = MERB_PLUGINS.sort
         comps["dm-more"]      = DM_MORE.sort
         
+        comps
+      end     
+    end
+    
+    def self.component_sets
+      @_component_sets ||= begin
+        # the component itself as a fallback
+        comps = Hash.new { |(hsh,c)| [c] }
+        comps.update(repository_sets)
+        
         # specific set of dependencies
+        comps["stack"]        = MERB_STACK.sort
         comps["basics"]       = MERB_BASICS.sort
+        
+        # orm dependencies
+        comps["datamapper"]   = DM_STACK.sort
+        comps["sequel"]       = ["merb_sequel", "sequel"]
+        comps["activerecord"] = ["merb_activerecord", "activerecord"]
         
         comps
       end
@@ -1387,9 +1420,14 @@ module Merb
       end
     end
     
-    def self.lookup_component(item)
+    def self.lookup_repository_name(item)
       set_name = nil
-      self.component_sets.find do |set, items| 
+      # The merb repo contains -more as well, so it needs special attention
+      return 'merb' if self.repository_sets['merb'].include?(item)
+      
+      # Proceed with finding the item in a known component set
+      self.repository_sets.find do |set, items| 
+        next if set == 'merb'
         items.include?(item) ? (set_name = set) : nil
       end
       set_name
@@ -1450,7 +1488,7 @@ module Merb
         end
           
         if proceed && !dry_run?
-          File.open(File.join(working_dir, 'merb.thor'), 'w') do |f|
+          File.open(File.join(__FILE__), 'w') do |f|
             f.write(code)
           end
           success "Installed the latest merb.thor (v#{version})"
@@ -1854,8 +1892,7 @@ module Merb
     # Default Git repositories
     def self.default_repos
       @_default_repos ||= { 
-        'merb-core'     => "git://github.com/wycats/merb-core.git",
-        'merb-more'     => "git://github.com/wycats/merb-more.git",
+        'merb'          => "git://github.com/wycats/merb.git",
         'merb-plugins'  => "git://github.com/wycats/merb-plugins.git",
         'extlib'        => "git://github.com/sam/extlib.git",
         'dm-core'       => "git://github.com/sam/dm-core.git",
