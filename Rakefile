@@ -11,11 +11,11 @@ GEM_VERSION = Merb::VERSION
 
 require "rake/clean"
 require "rake/gempackagetask"
-require 'merb-core/tasks/merb_rake_helper'
+require File.join(File.dirname(__FILE__), 'merb-core/lib/merb-core/tasks/merb_rake_helper')
 require 'fileutils'
 include FileUtils
 
-gem_paths = %w[
+merb_more_gem_paths = %w[
   merb-action-args 
   merb-assets 
   merb-auth
@@ -27,10 +27,12 @@ gem_paths = %w[
   merb-helpers 
   merb-param-protection
   merb-exceptions
-  merb_datamapper
 ]
 
-gems = gem_paths.map { |p| File.basename(p) }
+merb_gem_paths = %w[merb-core] + merb_more_gem_paths
+
+merb_gems = merb_gem_paths.map { |p| File.basename(p) }
+merb_more_gems = merb_more_gem_paths.map { |p| File.basename(p) }
 
 
 merb_more_spec = Gem::Specification.new do |s|
@@ -45,7 +47,7 @@ merb_more_spec = Gem::Specification.new do |s|
   s.description  = s.summary
   s.files        = %w( LICENSE README Rakefile TODO lib/merb-more.rb )
   s.add_dependency "merb-core", ">= #{Merb::VERSION}"
-  gems.each do |gem|
+  merb_more_gems.each do |gem|
     s.add_dependency gem, [">= #{Merb::VERSION}", "<= 1.0"]
   end
 end
@@ -56,10 +58,12 @@ Rake::GemPackageTask.new(merb_more_spec) do |package|
   package.gem_spec = merb_more_spec
 end
 
-desc "Install all gems"
-task :install do
-  Merb::RakeHelper.install('merb-more', :version => Merb::MORE_VERSION)
-  Merb::RakeHelper.install_package("pkg/merb-#{Merb::MORE_VERSION}.gem")
+namespace :install do
+  desc "Install all gems"
+  task :more do
+    Merb::RakeHelper.install('merb-more', :version => Merb::MORE_VERSION)
+    Merb::RakeHelper.install_package("pkg/merb-#{Merb::MORE_VERSION}.gem")
+  end
 end
 
 desc "Uninstall all gems"
@@ -70,28 +74,28 @@ end
 
 desc "Build the merb-more gems"
 task :build_gems do
-  gem_paths.each do |dir|
+  merb_gem_paths.each do |dir|
     Dir.chdir(dir) { sh "#{Gem.ruby} -S rake package" }
   end
 end
 
 desc "Install the merb-more sub-gems"
-task :install_gems do
-  gem_paths.each do |dir|
+task :install do
+  merb_gem_paths.each do |dir|
     Dir.chdir(dir) { sh "#{Gem.ruby} -S rake install" }
   end
 end
 
 desc "Uninstall the merb-more sub-gems"
 task :uninstall_gems do
-  gem_paths.each do |dir|
+  merb_gem_paths.each do |dir|
     Dir.chdir(dir) { sh "#{Gem.ruby} -S rake uninstall" }
   end
 end
 
 desc "Clobber the merb-more sub-gems"
 task :clobber_gems do
-  gem_paths.each do |dir|
+  merb_gem_paths.each do |dir|
     Dir.chdir(dir) { sh "#{Gem.ruby} -S rake clobber" }
   end
 end
@@ -102,7 +106,7 @@ task "lib/merb-more.rb" do
   mkdir_p "lib"
   File.open("lib/merb-more.rb","w+") do |file|
     file.puts "### AUTOMATICALLY GENERATED. DO NOT EDIT!"
-    gems.each do |gem|
+    merb_more_gems.each do |gem|
       next if gem == "merb-gen"
       file.puts "require '#{gem}'"
     end
@@ -175,7 +179,7 @@ end
 
 desc "Run spec examples for Merb More gems, one by one."
 task :spec do
-  gem_paths.each do |gem|
+  merb_gem_paths.each do |gem|
     Dir.chdir(gem) { sh "#{Gem.ruby} -S rake spec" }
   end
 end
