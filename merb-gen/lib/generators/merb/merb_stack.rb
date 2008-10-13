@@ -80,7 +80,7 @@ module Merb
       end
 
       directory :test_dir do |directory|
-        dir    = testing_framework == :rspec ? "spec" : "test"
+        dir = testing_framework == :rspec ? "spec" : "test"
 
         directory.source      = File.join(source_root, dir)
         directory.destination = dir

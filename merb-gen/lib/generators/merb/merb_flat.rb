@@ -51,9 +51,9 @@ module Merb
         file.destination = "merb.thor"
       end
 
-      file :rakefile do |file|
-        file.source = File.join(common_templates_dir, "Rakefile")
-        file.destination = "Rakefile"
+      template :rakefile do |template|
+        template.source = File.join(common_templates_dir, "Rakefile")
+        template.destination = "Rakefile"
       end
 
       file :gitignore do |file|
@@ -62,7 +62,7 @@ module Merb
       end
 
       directory :test_dir do |directory|
-        dir    = testing_framework == :rspec ? "spec" : "test"
+        dir = testing_framework == :rspec ? "spec" : "test"
 
         directory.source      = File.join(source_root, dir)
         directory.destination = dir
