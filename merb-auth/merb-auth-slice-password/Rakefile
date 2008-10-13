@@ -1,11 +1,8 @@
 require 'rubygems'
 require 'rake/gempackagetask'
-require 'spec/rake/spectask'
-require 'merb-core/version'
-require 'merb-core/tasks/merb_rake_helper'
-require 'merb-core/test/tasks/spectasks'
 
-require File.join(File.dirname(__FILE__), "../../merb-core/lib/merb-core/version.rb")
+require 'merb-core'
+require 'merb-core/tasks/merb'
 
 GEM_NAME = "merb-auth-slice-password"
 AUTHOR = "Your Name"
@@ -47,3 +44,8 @@ task :gemspec do
     file.puts spec.to_ruby
   end
 end
+
+require 'spec/rake/spectask'
+require 'merb-core/test/tasks/spectasks'
+desc 'Default: run spec examples'
+task :default => 'spec'

@@ -1,10 +1,8 @@
 require 'rubygems'
 require 'rake/gempackagetask'
-require 'spec/rake/spectask'
 
 require 'merb-core'
 require 'merb-core/tasks/merb'
-require 'merb-core/test/tasks/spectasks'
 
 GEM_NAME = "full-test-slice"
 AUTHOR = "Your Name"
