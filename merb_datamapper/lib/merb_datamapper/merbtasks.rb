@@ -45,7 +45,7 @@ namespace :db do
   end
 
   desc "Migrate the database to the latest version"
-  task :migrate => 'dm:db:migrate:up'
+  task :migrate => 'db:migrate:up'
 
   desc "Create the database"
   task :create do
@@ -57,7 +57,7 @@ namespace :db do
     when 'mysql'
       `mysqladmin -u #{config[:username]} #{config[:password] ? "-p'#{config[:password]}'" : ''} create #{config[:database]}`
     when 'sqlite3'
-      Rake::Task['rake:dm:db:automigrate'].invoke
+      Rake::Task['rake:db:automigrate'].invoke
     else
       raise "Adapter #{config[:adapter]} not supported for creating databases yet."
     end
@@ -71,7 +71,7 @@ namespace :db do
     when 'postgres'
       `dropdb -U #{config[:username]} #{config[:database]}`
     else
-      raise "Adapter #{config[:adapter]} not supported for dropping databases yet.\ntry dm:db:automigrate"
+      raise "Adapter #{config[:adapter]} not supported for dropping databases yet.\ntry db:automigrate"
     end
   end
 
