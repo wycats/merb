@@ -1,6 +1,6 @@
-class Merb::Router::Behavior
+Merb::Router.extensions do
   
-  def protect(*strategies, &block)
+  def authenticate(*strategies, &block)
     p = Proc.new do |request, params|
       if request.session.authenticated?
         params

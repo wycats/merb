@@ -36,15 +36,15 @@ describe "router protection" do
     
     Merb::Router.prepare do
       to(:controller => "foo") do
-        protect do
+        authenticate do
           match("/single_level_default").register
             
-          protect(Mtwo) do
+          authenticate(Mtwo) do
             match("/nested_specific").register
           end
         end
               
-        protect(Mtwo, Mone) do
+        authenticate(Mtwo, Mone) do
           match("/single_level_specific").register
         end
       end
