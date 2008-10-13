@@ -46,26 +46,8 @@ describe Merb::Generators::ResourceControllerGenerator do
     @generator.should create('/tmp/app/views/stuff/edit.html.erb')
     @generator.should create('/tmp/app/views/stuff/show.html.erb')
   end
-  
-  it "should create a helper" do
-    @generator.should create('/tmp/app/helpers/stuff_helper.rb')
-  end
-  
-  describe "with rspec" do
-    
-    it "should create a controller spec"
 
-    it "should create a helper spec" do
-      @generator.should create('/tmp/spec/helpers/stuff_helper_spec.rb')
-    end
-    
-  end
-  
-  describe "with test_unit" do
-    
-    it "should create a controller test"
-    
-  end
+
   
   describe "with a namespace" do
     
@@ -86,22 +68,6 @@ describe Merb::Generators::ResourceControllerGenerator do
 
     it "should create a helper" do
       @generator.should create('/tmp/app/helpers/john/monkey/stuff_helper.rb')
-    end
-
-    describe "with rspec" do
-
-      it "should create a controller spec"
-
-      it "should create a helper spec" do
-        @generator.should create('/tmp/spec/helpers/john/monkey/stuff_helper_spec.rb')
-      end
-
-    end
-
-    describe "with test_unit" do
-
-      it "should create a controller test"
-
     end
     
   end

@@ -16,18 +16,10 @@ describe Merb::Generators::ControllerGenerator do
     @generator.should create('/tmp/app/views/stuff/index.html.erb')
   end
   
-  it "should create a helper" do
-    @generator.should create('/tmp/app/helpers/stuff_helper.rb')
-  end
-  
   describe "with rspec" do
     
     it "should create a controller spec" do
       @generator.should create('/tmp/spec/controllers/stuff_spec.rb')
-    end
-
-    it "should create a helper spec" do
-      @generator.should create('/tmp/spec/helpers/stuff_helper_spec.rb')
     end
     
     it "should render templates successfully" do
@@ -71,14 +63,6 @@ describe Merb::Generators::ControllerGenerator do
     end
     
     describe "with rspec" do
-
-      it "should create a controller spec" do
-        @generator.should create('/tmp/spec/controllers/john/monkey/stuff_spec.rb')
-      end
-
-      it "should create a helper spec" do
-        @generator.should create('/tmp/spec/helpers/john/monkey/stuff_helper_spec.rb')
-      end
       
       it "should render templates successfully" do
         lambda { @generator.render! }.should_not raise_error
@@ -90,10 +74,6 @@ describe Merb::Generators::ControllerGenerator do
 
       before do
         @generator = Merb::Generators::ControllerGenerator.new('/tmp', { :testing_framework => :test_unit }, 'John::Monkey::Stuff')
-      end
-
-      it "should create a controller test" do
-        @generator.should create('/tmp/test/controllers/john/monkey/stuff_test.rb')
       end
       
       it "should render templates successfully" do

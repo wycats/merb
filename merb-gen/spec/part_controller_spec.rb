@@ -16,26 +16,6 @@ describe Merb::Generators::PartControllerGenerator do
     @generator.should create('/tmp/app/parts/views/stuff_part/index.html.erb')
   end
   
-  it "should create a helper" do
-    @generator.should create('/tmp/app/helpers/stuff_part_helper.rb')
-  end
-  
-  describe "with rspec" do
-    
-    it "should create a controller spec"
-
-    it "should create a helper spec" do
-      @generator.should create('/tmp/spec/helpers/stuff_part_helper_spec.rb')
-    end
-    
-  end
-  
-  describe "with test_unit" do
-    
-    it "should create a controller test"
-    
-  end
-  
   describe "with a namespace" do
     
     before(:each) do
@@ -50,25 +30,6 @@ describe Merb::Generators::PartControllerGenerator do
       @generator.should create('/tmp/app/parts/views/john/monkey/stuff_part/index.html.erb')
     end
 
-    it "should create a helper" do
-      @generator.should create('/tmp/app/helpers/john/monkey/stuff_part_helper.rb')
-    end
-
-    describe "with rspec" do
-
-      it "should create a controller spec"
-
-      it "should create a helper spec" do
-        @generator.should create('/tmp/spec/helpers/john/monkey/stuff_part_helper_spec.rb')
-      end
-
-    end
-
-    describe "with test_unit" do
-
-      it "should create a controller test"
-
-    end
   end
   
 end
