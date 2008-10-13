@@ -1,6 +1,9 @@
-merb-core is a new branch of Merb (also referred to as merb-next or the 0.9 series) which aims to provide a stable, stripped down API for a future Merb 1.0 release.
+merb-core 
 
-This branch is based off the 0.5 release series but with significant rewrites.
+A new branch of Merb (sometimes referred to as merb-next) which aims to provide 
+a stable, stripped down API for the Merb 1.0 release.
+
+This branch was based off the 0.5 release series with *significant* rewrites.
 
 Goals of this release:
 
@@ -13,8 +16,9 @@ Goals of this release:
   * Implement a new render API
   * Build more extensions to regain selected features when needed
   
-To familiarize yourself with how a merb-core application might look,
+To familiarize yourself with how a merb-core application might look, 
 use merb-gen (from merb-more) to generate a few apps:
+
 $ merb-gen app myapp                   # a "normal" merb app
 $ merb-gen app myapp --flat            # a flattened app
 $ merb-gen app myapp --very-flat       # a single-file app

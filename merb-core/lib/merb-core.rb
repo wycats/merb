@@ -1,26 +1,25 @@
-#---
 # require 'merb' must happen after Merb::Config is instantiated
-require 'rubygems'
+require "rubygems"
 
 # Add the local gems dir if found within the app root; any dependencies loaded
 # hereafter will try to load from the local gems before loading system gems.
 root_key = %w[-m --merb-root].detect { |o| ARGV.index(o) }
 root = ARGV[ARGV.index(root_key) + 1] if root_key
 root = root.to_a.empty? ? Dir.getwd : root
-if File.directory?(gems_dir = File.join(root, 'gems')) && !$BUNDLE
+if File.directory?(gems_dir = File.join(root, "gems")) && !$BUNDLE
   $BUNDLE = true; Gem.clear_paths; Gem.path.unshift(gems_dir)
   # Warn if local merb-core is available but not loaded.
   if File.expand_path($0).index(root) != 0 && 
-    (local_mc = Dir[File.join(gems_dir, 'specifications', 'merb-core-*.gemspec')].last)
-    puts "Warning: please use bin/#{File.basename($0)} to load #{File.basename(local_mc, '.gemspec')} from ./gems"
+    (local_mc = Dir[File.join(gems_dir, "specifications", "merb-core-*.gemspec")].last)
+    Merb.logger.warn! "Warning: please use bin/#{File.basename($0)} to load #{File.basename(local_mc, ".gemspec")} from ./gems"
   end
 end
 
-require 'thread'
-require 'set'
-require 'fileutils'
-require 'socket'
-require 'pathname'
+require "thread"
+require "set"
+require "fileutils"
+require "socket"
+require "pathname"
 require "extlib"
 require "extlib/dictionary"
 
@@ -46,24 +45,27 @@ module Merb
     end
 
     # Merge environment settings
-    # Can allow you to have a "localdev" that runs like your "development"
+    #
+    # This can allow you to have a "localdev" environment that runs like your "development".
     #   OR
-    # A "staging" environment that runs like your "production"
+    # A "staging" environment that runs identical to your "production" environment.
     #
     # ==== Examples
-    # From any environment config file (ie, development.rb, custom.rb, localdev.rb, etc)
+    # From any environment config file (ie, development.rb, custom.rb, localdev.rb, etc).
     #   staging.rb:
-    #     Merb.merge_env "production"         #We want to use all the settings production uses
-    #     Merb::Config.use { |c|
+    #     Merb.merge_env "production"         # We want to use all the settings production uses
+    #     Merb::Config.use do |c|
     #       c[:log_level]         = "debug"   # except we want debug log level
     #       c[:log_stream]        = @some_io  # and log to this IO handle
     #       c[:exception_details] = true      # and we want to see exception details
-    #     }
+    #     end
     #
     # ==== Parameters
     # env<~String>:: Environment to run like
     # use_db<~Boolean>:: Should Merb use the merged environments DB connection
     #     Defaults to +false+
+    #
+    # @api public
     def merge_env(env,use_db=false)
       if Merb.environment_info.nil?
         Merb.environment_info = {
@@ -83,7 +85,6 @@ module Merb
         else
           Merb.logger.warn! "Environment file does not exist! #{env_file}"
         end
-        
       end
       
       # Mark specific environment to load when ORM loads,
@@ -94,14 +95,15 @@ module Merb
       end
     end
 
-    # Startup Merb by setting up the Config and starting the server.
-    # This is where Merb application environment and root path are set.
+    # Start Merb by setting up the Config and then starting the server.
+    # Set the Merb application environment and the root path.
     #
     # ==== Parameters
     # argv<String, Hash>::
     #   The config arguments to start Merb with. Defaults to +ARGV+.
-    def start(argv=ARGV)
-      # Hardcode the log stream to STDOUT
+    #
+    # @api public
+    def start(argv = ARGV)
       Merb::Config[:log_stream] = STDOUT
       if Hash === argv
         Merb::Config.setup(argv)
@@ -112,6 +114,7 @@ module Merb
       
       Merb.environment = Merb::Config[:environment]
       Merb.root = Merb::Config[:merb_root]
+
       case Merb::Config[:action]
       when :kill
         Merb::Server.kill(Merb::Config[:port], 2)
@@ -121,6 +124,7 @@ module Merb
         Merb::Server.kill("main", "HUP")
       else
         Merb::Server.start(Merb::Config[:port], Merb::Config[:cluster])
+        @started = true
       end
     end
 
@@ -129,11 +133,10 @@ module Merb
     # ==== Parameters
     # argv<String, Hash>::
     #   The config arguments to start Merb with. Defaults to +ARGV+.
+    #
+    # @api public
     def start_environment(argv=ARGV)
-      unless (@started ||= false)
-        start(argv)
-        @started = true
-      end
+      start(argv) unless (@started ||= false)
     end
 
     # Restart the Merb environment explicitly.
@@ -141,6 +144,8 @@ module Merb
     # ==== Parameters
     # argv<String, Hash>::
     #   The config arguments to restart Merb with. Defaults to +Merb::Config+.
+    #
+    # @api public
     def restart_environment(argv={})
       @started = false
       start_environment(Merb::Config.to_hash.merge(argv))
@@ -153,30 +158,30 @@ module Merb
 
     Merb.load_paths = Dictionary.new { [Merb.root] } unless Merb.load_paths.is_a?(Dictionary)
 
-    # This is the core mechanism for setting up your application layout.
+    # This is the mechanism for setting up your application layout.
     # There are three application layouts in Merb:
     #
-    # Regular app/:type layout of Ruby on Rails fame:
+    # 1. Regular app/:type layout of Ruby on Rails fame:
     #
-    # app/models      for models
-    # app/mailers     for mailers (special type of controllers)
-    # app/parts       for parts, Merb components
-    # app/views       for templates
-    # app/controllers for controller
-    # lib             for libraries
+    # app/models       for models
+    # app/mailers      for mailers (special type of controllers)
+    # app/parts        for parts, Merb components
+    # app/views        for templates
+    # app/controllers  for controller
+    # lib              for libraries
     #
-    # Flat application layout:
+    # 2. Flat application layout:
     #
     # application.rb       for models, controllers, mailers, etc
     # config/init.rb       for initialization and router configuration
     # config/framework.rb  for framework and dependencies configuration
     # views                for views
     #
-    # and Camping-style "very flat" application layout, where the whole Merb
-    # application and configs fit into a single file.
+    # 3. Camping-style "very flat" application layout, where the whole Merb
+    # application and configs are contained within a single file.
     #
     # ==== Notes
-    # Autoloading for lib uses empty glob by default. If you
+    # Autoloading for lib uses an empty glob by default. If you
     # want to have your libraries under lib use autoload, add
     # the following to Merb init file:
     #
@@ -202,6 +207,8 @@ module Merb
     # file_glob<String>::
     #   A glob that will be used to autoload files under the path. Defaults to
     #   "**/*.rb".
+    #
+    # @api public
     def push_path(type, path, file_glob = "**/*.rb")
       enforce!(type => Symbol)
       load_paths[type] = [path, file_glob]
@@ -212,18 +219,19 @@ module Merb
     #
     # ==== Parameters
     # *args<Array(Symbol)>::
-    #   components names, for instance, :views, :models
+    #   component(s) names, for instance, :views, :models
     #
     # ==== Examples
-    # Using this combined with Merb::GlobalHelpers.push_path
-    # you can make your Merb application use legacy Rails
-    # application components.
+    # Using this combined with Merb::GlobalHelpers.push_path you can make 
+    # your Merb application use legacy Rails application components.
     #
     # Merb.root = "path/to/legacy/app/root"
     # Merb.remove_paths(:mailer)
-    # Merb.push_path(:mailer,     Merb.root / "app" / "models",      "**/*.rb")
+    # Merb.push_path(:mailer, Merb.root / "app" / "models", "**/*.rb")
     #
     # Will make Merb use app/models for mailers just like Ruby on Rails does.
+    #
+    # @api public
     def remove_paths(*args)
       args.each {|arg| load_paths.delete(arg)}
     end
@@ -233,6 +241,8 @@ module Merb
     #
     # ==== Returns
     # String:: The directory for the requested type.
+    #
+    # @api public
     def dir_for(type)
       Merb.load_paths[type].first
     end
@@ -242,18 +252,24 @@ module Merb
     #
     # ===== Returns
     # String:: The pattern with which to match files within the type directory.
+    #
+    # @api public
     def glob_for(type)
       Merb.load_paths[type][1]
     end
 
     # ==== Returns
     # String:: The Merb root path.
+    #
+    # @api public
     def root
       @root || Merb::Config[:merb_root] || File.expand_path(Dir.pwd)
     end
 
     # ==== Parameters
     # value<String>:: Path to the root directory.
+    #
+    # @api public
     def root=(value)
       @root = value
     end
@@ -270,25 +286,33 @@ module Merb
     #   Merb.root = "/home/merb/app"
     #   Merb.path("images") # => "/home/merb/app/images"
     #   Merb.path("views", "admin") # => "/home/merb/app/views/admin"
-    #---
+    #
     # @public
     def root_path(*path)
       File.join(root, *path)
     end
 
-    # Logger settings
+    # Return the Merb Logger object for the current thread.
+    # Set it up if it does not exist.
+    # 
+    # @api public
     def logger
       Thread.current[:merb_logger] ||= Merb::Logger.new
     end
 
+    # Removes the logger for the current thread (nil).
+    # 
+    # @api public
     def reset_logger!
       Thread.current[:merb_logger] = nil
     end
 
     # ==== Returns
     # String::
-    #   The path to the log file. If this Merb instance is running as a daemon
-    #   this will return +STDOUT+.
+    #   The path to the log file. 
+    #   If this Merb instance is running as a daemon this will return +STDOUT+.
+    # 
+    # @api public
     def log_stream(port = "main")
       @streams ||= {}
       @streams[port] ||= begin
@@ -316,7 +340,9 @@ module Merb
     end
 
     # ==== Returns
-    # String:: Path to directory that contains the log file.
+    # String:: Path to the log directory which contains the log file.
+    # 
+    # @api public
     def log_path
       case Merb::Config[:log_file]
       when String then File.dirname(Merb::Config[:log_file])
@@ -326,6 +352,8 @@ module Merb
 
     # ==== Returns
     # String:: The path of root directory of the Merb framework.
+    # 
+    # @api public
     def framework_root
       @framework_root ||= File.dirname(__FILE__)
     end
@@ -336,8 +364,9 @@ module Merb
     #   are matched by Rack application handler.
     #
     # ==== Notes
-    # Concatenates :deferred_actions configuration option
-    # values.
+    # Concatenates :deferred_actions configuration option values.
+    # 
+    # @api public
     def deferred_actions
       @deferred ||= begin
         if Merb::Config[:deferred_actions].empty?
@@ -348,6 +377,10 @@ module Merb
       end
     end
 
+    # Perform a hard Exit.
+    # Print a backtrace to the merb logger before exiting if verbose is enabled.
+    #
+    # @api private
     def fatal!(str, e = nil)
       Merb.logger.fatal!
       Merb.logger.fatal!("\e[1;31;47mFATAL: #{str}\e[0m")
@@ -357,6 +390,9 @@ module Merb
       exit(1)
     end
     
+    # Print a colorized backtrace to the merb logger.
+    #
+    # @api private
     def print_colorized_backtrace(e)
       e.backtrace.map! do |line|
         line.gsub!(/^#{Merb.framework_root}/, "\e[34mFRAMEWORK_ROOT\e[31m")
@@ -377,13 +413,15 @@ module Merb
     #
     # ==== Returns
     # <Symbol>:: default ORM.
+    #
+    # @api public
     def orm
       @orm ||= :none
     end
     
     # @deprecated
     def orm_generator_scope
-      Merb.logger.warn!("WARNING: Merb.orm_generator_scope is deprecated")
+      Merb.logger.warn!("WARNING: Merb.orm_generator_scope is deprecated!")
       return :merb_default if Merb.orm == :none
       Merb.orm
     end
@@ -392,6 +430,8 @@ module Merb
     #
     # ==== Returns
     # <Symbol>:: default test framework.
+    #
+    # @api public
     def test_framework
       @test_framework ||= :rspec
     end
@@ -406,6 +446,8 @@ module Merb
     #
     # ==== Returns
     # <Symbol>:: default template engine.
+    #
+    # @api public
     def template_engine
       @template_engine ||= :erb
     end
@@ -417,14 +459,16 @@ module Merb
     #
     # ==== Notes
     # Bundling required gems makes your application independent from the 
-    # environment it runs in. This is a good practice to freeze application 
-    # framework and gems it uses and very useful when application is run in 
+    # environment it runs in. It is a good practice to freeze application 
+    # framework and gems and is very useful when application is run in 
     # some sort of sandbox, for instance, shared hosting with preconfigured gems.
+    #
+    # @api public
     def bundled?
       $BUNDLE || ENV.key?("BUNDLE")
     end
 
-    # Load configuration and assign logger.
+    # Load configuration and assign the logger.
     #
     # ==== Parameters
     # options<Hash>:: Options to pass on to the Merb config.
@@ -481,6 +525,8 @@ module Merb
     # Some of these options come from command line on Merb
     # application start, some of them are set in Merb init file
     # or environment-specific.
+    #
+    # @api public
     def load_config(options = {})
       Merb::Config.setup(Merb::Config.defaults.merge(options))
       Merb::BootLoader::Logger.run
@@ -494,6 +540,8 @@ module Merb
     #
     # ==== Parameters
     # options<Hash>:: Options to pass on to the Merb config.
+    #
+    # @api public
     def load_dependencies(options = {})
       load_config(options)
       Merb::BootLoader::BuildFramework.run
@@ -503,6 +551,8 @@ module Merb
 
     # Reload application and framework classes.
     # See Merb::BootLoader::ReloadClasses for details.
+    #
+    # @api public
     def reload
       Merb::BootLoader::ReloadClasses.reload
     end
@@ -510,6 +560,8 @@ module Merb
     # ==== Returns
     # Boolean:: True if Merb environment is testing for instance,
     # Merb is running with RSpec, Test::Unit of other testing facility.
+    #
+    # @api public
     def testing?
       $TESTING ||= env?(:test) || Merb::Config[:testing]
     end
@@ -522,6 +574,8 @@ module Merb
     # Merb.env #=> production
     # Merb.env?(:production) #=> true
     # Merb.env?(:development) #=> false
+    #
+    # @api public
     def env?(env)
       Merb.env == env.to_s
     end
@@ -549,6 +603,8 @@ module Merb
     #     reload_classes     true
     #     reload_time        0.5
     #   end
+    #
+    # @api public
     def config(&block)
       Merb::Config.configure(&block) if block_given?
       Config
@@ -558,24 +614,32 @@ module Merb
     #
     # ==== Parameters
     # *args:: One or more symbols of Merb internal components.
+    #
+    # @api public
     def disable(*components)
       disabled_components.push(*components)
     end
 
     # ==== Parameters
     # Array:: All components that should be disabled.
+    #
+    # @api public
     def disabled_components=(components)
       disabled_components.replace components
     end
 
     # ==== Returns
     # Array:: All components that have been disabled.
+    #
+    # @api public
     def disabled_components
       Merb::Config[:disabled_components] ||= []
     end
 
     # ==== Returns
     # Boolean:: True if all components (or just one) are disabled.
+    #
+    # @api public
     def disabled?(*components)
       components.all? { |c| disabled_components.include?(c) }
     end
@@ -586,6 +650,8 @@ module Merb
     # ==== Notes
     # Recommended way to find out what paths Rakefiles
     # are loaded from.
+    #
+    # @api public
     def rakefiles
       @rakefiles ||= []
     end
@@ -594,8 +660,9 @@ module Merb
     # Array(String):: Paths generators are loaded from
     #
     # === Notes
-    # Recommended way to find out what paths generators
-    # are loaded from.
+    # Recommended way to find out what paths generators are loaded from.
+    #
+    # @api public
     def generators
       @generators ||= []
     end
@@ -605,6 +672,8 @@ module Merb
     #
     # ==== Notes
     # Recommended way to add Rakefiles load path for plugins authors.
+    #
+    # @api public
     def add_rakefiles(*rakefiles)
       @rakefiles ||= []
       @rakefiles += rakefiles
@@ -615,6 +684,8 @@ module Merb
     #
     # ==== Notes
     # Recommended way to add Generator load paths for plugin authors.
+    #
+    # @api public
     def add_generators(*generators)
       @generators ||= []
       @generators += generators
@@ -625,6 +696,8 @@ module Merb
     # ==== Parameters
     # signal:: The name of the signal to install a handler for.
     # &block:: The block to be run when the given signal is received.
+    #
+    # @api public
     def trap(signal, &block)
       Kernel.trap(signal, &block) unless Merb.disabled?(:signals)
     end
@@ -632,12 +705,12 @@ module Merb
   end
 end
 
-require 'merb-core/autoload'
-require 'merb-core/server'
-require 'merb-core/gem_ext/erubis'
-require 'merb-core/logger'
-require 'merb-core/version'
-require 'merb-core/controller/mime'
+require "merb-core/autoload"
+require "merb-core/server"
+require "merb-core/gem_ext/erubis"
+require "merb-core/logger"
+require "merb-core/version"
+require "merb-core/controller/mime"
 
 # Set the environment if it hasn't already been set.
-Merb.environment ||= ENV['MERB_ENV'] || Merb::Config[:environment] || (Merb.testing? ? 'test' : 'development')
+Merb.environment ||= ENV["MERB_ENV"] || Merb::Config[:environment] || (Merb.testing? ? "test" : "development")
