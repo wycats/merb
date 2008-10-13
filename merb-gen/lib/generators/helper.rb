@@ -19,11 +19,6 @@ module Merb::Generators
       template.destination = "app/helpers" / base_path / "#{file_name}_helper.rb"
     end
     
-    template :helper_spec, :testing_framework => :rspec do |template|
-      template.source = 'spec/helpers/%file_name%_helper_spec.rb'
-      template.destination = "spec/helpers" / base_path / "#{file_name}_helper_spec.rb"
-    end
-    
   end
   
   add :helper, HelperGenerator

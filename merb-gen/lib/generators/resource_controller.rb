@@ -39,11 +39,6 @@ module Merb::Generators
       end
     end
     
-    # template :controller_spec, :testing_framework => :rspec do |template|
-    #   template.source = 'spec/controllers/%file_name%_spec.rb'
-    #   template.destination = "spec/controllers" / base_path / "#{file_name}_spec.rb"
-    # end
-
     template :request_spec, :testing_framework => :rspec do |template|
       template.source = 'spec/requests/%file_name%_spec.rb'
       template.destination = "spec/requests" / base_path / "#{file_name}_spec.rb"
