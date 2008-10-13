@@ -45,10 +45,6 @@ task "lib/merb-auth.rb" do
       next if gem == "merb-gen"
       file.puts "require '#{gem}'"
     end
-    file.puts
-    file.puts "path = File.join(File.dirname(__FILE__), \"merb-auth\")"
-    file.puts "require \"#\{path\}/customizations.rb\""
-    file.puts "require \"#\{path\}/router_helper.rb\""
   end
 end
 

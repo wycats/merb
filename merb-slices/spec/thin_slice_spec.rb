@@ -67,7 +67,7 @@ describe "A thin slice" do
   it "should have metadata properties" do
     ThinTestSlice.description.should == "ThinTestSlice is a thin Merb slice!"
     ThinTestSlice.version.should == "0.0.1"
-    ThinTestSlice.author.should == "YOUR NAME"
+    ThinTestSlice.author.should == "Engine Yard"
   end
   
   it "should have a :named_routes property" do
