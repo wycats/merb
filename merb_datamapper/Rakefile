@@ -10,7 +10,7 @@ require File.join(File.dirname(__FILE__), "../merb-core/lib/merb-core/version.rb
 ##############################################################################
 # Package && release
 ##############################################################################
-RUBY_FORGE_PROJECT  = "merb_datamapper"
+RUBY_FORGE_PROJECT  = "merb"
 PROJECT_URL         = "http://merbivore.com"
 PROJECT_SUMMARY     = "DataMapper plugin providing DataMapper support for Merb"
 PROJECT_DESCRIPTION = PROJECT_SUMMARY
@@ -20,7 +20,7 @@ GEM_EMAIL  = "jtoy@rubynow.com"
 
 GEM_NAME    = "merb_datamapper"
 PKG_BUILD   = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
-GEM_VERSION = Merb::VERSION + PKG_BUILD
+GEM_VERSION = (Merb::VERSION rescue "0.9.9") + PKG_BUILD
 
 RELEASE_NAME    = "REL #{GEM_VERSION}"
 

@@ -145,7 +145,7 @@ namespace :release do
 
   desc "Publish Merb More gem to RubyForge, one by one."
   task :merb_more_gems => [ :build_gems ] do
-    gem_paths.each do |gem|
+    merb_more_gems.each do |gem|
       Dir.chdir(gem){ sh "#{Gem.ruby} -S rake release" }
     end
   end
@@ -155,12 +155,12 @@ namespace :release do
     require 'rubyforge'
     require 'rake/contrib/rubyforgepublisher'
 
-    packages = %w( gem tgz zip ).collect{ |ext| "pkg/merb-more-#{PKG_VERSION}.#{ext}" }
+    packages = %w( gem tgz zip ).collect{ |ext| "pkg/merb-#{PKG_VERSION}.#{ext}" }
 
     begin
       sh %{rubyforge login}
-      sh %{rubyforge add_release #{RUBY_FORGE_PROJECT} merb-more #{Merb::VERSION} #{packages.join(' ')}}
-      sh %{rubyforge add_file #{RUBY_FORGE_PROJECT} merb-more #{Merb::VERSION} #{packages.join(' ')}}
+      sh %{rubyforge add_release #{RUBY_FORGE_PROJECT} merb #{Merb::VERSION} #{packages.join(' ')}}
+      sh %{rubyforge add_file #{RUBY_FORGE_PROJECT} merb #{Merb::VERSION} #{packages.join(' ')}}
     rescue Exception => e
       puts
       puts "Release failed: #{e.message}"

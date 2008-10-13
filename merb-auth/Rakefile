@@ -10,20 +10,36 @@ require 'merb-core/tasks/merb_rake_helper'
 require 'fileutils'
 include FileUtils
 
+require "extlib/tasks/release"
+
+RUBY_FORGE_PROJECT  = "merb-auth"
+PROJECT_URL         = "http://merbivore.com"
+PROJECT_SUMMARY     = "merb-auth.  The official authentication plugin for merb.  Setup for the default stack"
+PROJECT_DESCRIPTION = PROJECT_SUMMARY
+
+GEM_AUTHOR = "Daniel Neighman"
+GEM_EMAIL  = "has.sox@gmail.com"
+
+GEM_NAME    = "merb-auth"
+PKG_BUILD   = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
+GEM_VERSION = Merb::VERSION + PKG_BUILD
+
+RELEASE_NAME    = "REL #{GEM_VERSION}"
+
 gems = %w[
   merb-auth-core merb-auth-more merb-auth-slice-password
 ]
 
 merb_auth_spec = Gem::Specification.new do |s|
-  s.rubyforge_project = 'merb-auth'
+  s.rubyforge_project = RUBY_FORGE_PROJECT
   s.name         = GEM_NAME
   s.version      = GEM_VERSION
   s.platform     = Gem::Platform::RUBY
-  s.author       = "Daniel Neighman"
-  s.email        = "has.sox@gmail.com"
+  s.author       = GEM_AUTHOR
+  s.email        = GEM_EMAIL
   s.homepage     = "http://www.merbivore.com"
-  s.summary      = "merb-auth.  The official authentication plugin for merb.  Setup for the default stack"
-  s.description  = s.summary
+  s.summary      = PROJECT_SUMMARY
+  s.description  = PROJECT_SUMMARY
   s.files = %w(LICENSE README.textile Rakefile TODO) + Dir.glob("{lib,spec}/**/*")
   s.add_dependency "merb-core", "~> #{GEM_VERSION}"
   gems.each do |gem|

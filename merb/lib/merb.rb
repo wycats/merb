@@ -1,0 +1,11 @@
+### AUTOMATICALLY GENERATED. DO NOT EDIT!
+require 'merb-core'
+require 'merb-more'
+require 'dm-core'
+require 'do_sqlite3'
+require 'dm-timestamps'
+require 'dm-types'
+require 'dm-aggregates'
+require 'dm-migrations'
+require 'dm-validations'
+require 'dm-sweatshop'
