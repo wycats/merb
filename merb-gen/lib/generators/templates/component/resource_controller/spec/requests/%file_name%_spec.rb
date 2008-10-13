@@ -17,6 +17,7 @@ describe "resource(:<%= plural_model %>)" do
     end
 
     it "contains a list of speakers" do
+      pending
       @response.should have_xpath("//ul")
     end
     
@@ -28,6 +29,7 @@ describe "resource(:<%= plural_model %>)" do
     end
     
     it "has a list of <%= plural_model %>" do
+      pending
       @response.should have_xpath("//ul/li")
     end
   end
