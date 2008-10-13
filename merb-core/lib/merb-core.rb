@@ -275,7 +275,7 @@ module Merb
     #
     # @api public
     def root=(value)
-      @root = value
+      @root = File.expand_path(value) + File::SEPARATOR
     end
 
     # ==== Parameters
