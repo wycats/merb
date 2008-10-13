@@ -19,7 +19,7 @@ GEM_EMAIL  = "ez@engineyard.com"
 
 GEM_NAME    = "merb-assets"
 PKG_BUILD   = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
-GEM_VERSION = 3Merb::VERSION + PKG_BUILD
+GEM_VERSION = Merb::VERSION + PKG_BUILD
 
 RELEASE_NAME    = "REL #{GEM_VERSION}"
 
