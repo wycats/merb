@@ -21,10 +21,12 @@ module Merb::Template
     # ==== Returns
     # String:: The template name.
     #
-    #---
+    #
     # We might want to replace this with something that varies the
     # character replaced based on the non-alphanumeric character
     # to avoid edge-case collisions.
+    #
+    # @api private
     def template_name(path)
       path = File.expand_path(path)      
       path.gsub(/[^\.a-zA-Z0-9]/, "__").gsub(/\./, "_")
@@ -45,8 +47,9 @@ module Merb::Template
     # 
     # ==== Returns
     # IO#path:: An IO object that responds to path (File or VirtualFile).
-    #---
-    # @semipublic
+    #
+    # @api plugin
+    # @overridable
     def load_template_io(path)
       File.open(path, "r")
     end
@@ -60,8 +63,8 @@ module Merb::Template
     #
     # ==== Returns
     # <String>:: name of the method that inlines the template.
-    #---
-    # @semipublic
+    #
+    # @api private
     def template_for(path, template_stack = [], locals=[])
       path = File.expand_path(path)
       
@@ -81,7 +84,8 @@ module Merb::Template
     #
     # ==== Returns
     # Boolean:: Whether or not the template for the provided path needs to be recompiled
-    #---
+    #
+    # @api private
     def needs_compilation?(path, locals)
       return true if Merb::Config[:reload_templates] || !METHOD_LIST[path]
       
@@ -94,8 +98,8 @@ module Merb::Template
     #
     # ==== Returns
     #   Array:: Extension strings.
-    #---
-    # @semipublic
+    #
+    # @api plugin
     def template_extensions
       EXTENSIONS.keys
     end
@@ -113,11 +117,14 @@ module Merb::Template
     #   The module to put the compiled method into. Defaults to
     #   Merb::InlineTemplates
     #
+    # ==== Returns
+    # Symbol:: The name of the method that the template was compiled into.
+    #
     # ==== Notes
     # Even though this method supports inlining into any module, the method
     # must be available to instances of AbstractController that will use it.
-    #---
-    # @public
+    #
+    # @api private
     def inline_template(io, locals=[], mod = Merb::InlineTemplates)
       full_file_path = File.expand_path(io.path)
       engine_neutral_path = full_file_path.gsub(/\.[^\.]*$/, "")
@@ -137,8 +144,8 @@ module Merb::Template
     #
     # ==== Returns
     # Class:: The engine.
-    #---
-    # @semipublic
+    #
+    # @api private
     def engine_for(path)
       path = File.expand_path(path)      
       EXTENSIONS[path.match(/\.([^\.]*)$/)[1]]
@@ -156,10 +163,13 @@ module Merb::Template
     # ==== Raises
     # ArgumentError:: engine does not have a compile_template method.
     #
+    # ==== Returns
+    # nil
+    #
     # ==== Example
     #   Merb::Template.register_extensions(Merb::Template::Erubis, ["erb"])
-    #---
-    # @public
+    #
+    # @api plugin
     def register_extensions(engine, extensions) 
       raise ArgumentError, "The class you are registering does not have a compile_template method" unless
         engine.respond_to?(:compile_template)
@@ -178,6 +188,8 @@ module Merb::Template
     # name<String>:: The name of the method that will be created.
     # locals<Array[Symbol]>:: A list of locals to assign from the args passed into the compiled template.
     # mod<Module>:: The module that the compiled method will be placed into.
+    #
+    # @api private
     def self.compile_template(io, name, locals, mod)
       template = ::Erubis::BlockAwareEruby.new(io.read)
       _old_verbose, $VERBOSE = $VERBOSE, nil
@@ -207,6 +219,8 @@ module Merb::Template
       #   <% @foo = capture do %>
       #     <p>Some Foo content!</p> 
       #   <% end %>
+      #
+      # @private
       def capture_erb(*args, &block)
         _old_buf, @_erb_buf = @_erb_buf, ""
         block.call(*args)
@@ -215,7 +229,7 @@ module Merb::Template
         ret
       end
 
-      # DOC
+      # @private
       def concat_erb(string, binding)
         @_erb_buf << string
       end
@@ -229,30 +243,36 @@ end
 
 module Erubis
   module BlockAwareEnhancer
+    # @api private
     def add_preamble(src)
       src << "_old_buf, @_erb_buf = @_erb_buf, ''; "
       src << "@_engine = 'erb'; "
     end
 
+    # @api private
     def add_postamble(src)
       src << "\n" unless src[-1] == ?\n      
       src << "_ret = @_erb_buf; @_erb_buf = _old_buf; _ret.to_s;\n"
     end
 
+    # @api private
     def add_text(src, text)
       src << " @_erb_buf.concat('" << escape_text(text) << "'); "
     end
 
+    # @api private
     def add_expr_escaped(src, code)
       src << ' @_erb_buf.concat(' << escaped_expr(code) << ');'
     end
     
+    # @api private
     def add_stmt2(src, code, tailch)
       src << code
       src << " ).to_s; " if tailch == "="
       src << ';' unless code[-1] == ?\n
     end
     
+    # @api private
     def add_expr_literal(src, code)
       if code =~ /(do|\{)(\s*\|[^|]*\|)?\s*\Z/
         src << ' @_erb_buf.concat( ' << code << "; "

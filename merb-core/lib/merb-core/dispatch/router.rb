@@ -208,6 +208,7 @@ module Merb
       # 
       # params<Hash>::
       #   Any extra parameters needed to generate the route.
+      #
       # ==== Returns
       # String:: The generated URL
       # 
@@ -245,6 +246,9 @@ module Merb
       #   can be including a module or directly defining some new methods
       #   that should be available to building routes.
       #
+      # ==== Returns
+      # nil
+      #
       # ==== Example
       # Merb::Router.extensions do
       #   def domain(name, domain, options={}, &block)
@@ -262,7 +266,7 @@ module Merb
       #     # ... routes come here ...
       #   end
       # end
-      # ---
+      #
       # @api public
       def extensions(&block)
         Router::Behavior.class_eval(&block)

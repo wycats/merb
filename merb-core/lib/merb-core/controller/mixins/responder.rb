@@ -104,6 +104,8 @@ module Merb
     
     # ==== Parameters
     # base<Module>:: The module that ResponderMixin was mixed into
+    #
+    # @api private
     def self.included(base)
       base.extend(ClassMethods)
       base.class_eval do
@@ -130,8 +132,8 @@ module Merb
       #
       # ==== Examples
       #   provides :html, :xml
-      #---
-      # @public
+      #
+      # @api public
       def provides(*formats)
         self.class_provided_formats |= formats
       end
@@ -145,8 +147,7 @@ module Merb
       # ==== Returns
       # Array[Symbol]:: List of formats passed in.      
       #
-      #---
-      # @public
+      # @api public
       def only_provides(*formats)
         clear_provides
         provides(*formats)
@@ -162,8 +163,7 @@ module Merb
       # Array[Symbol]::
       #   List of formats that remain after removing the ones not to provide.
       #
-      #---
-      # @public
+      # @api public
       def does_not_provide(*formats)
         self.class_provided_formats -= formats
       end
@@ -172,6 +172,8 @@ module Merb
       #
       # ==== Returns
       # Array:: An empty Array.
+      #
+      # @api public
       def clear_provides
         self.class_provided_formats.clear
       end
@@ -180,6 +182,8 @@ module Merb
       #
       # ==== Returns
       # Array[Symbol]:: [:html].
+      #
+      # @api public
       def reset_provides
         only_provides(:html)
       end
@@ -190,6 +194,8 @@ module Merb
     #   The current list of formats provided for this instance of the
     #   controller. It starts with what has been set in the controller (or
     #   :html by default) but can be modifed on a per-action basis.      
+    #
+    # @api private
     def _provided_formats
       @_provided_formats ||= class_provided_formats.dup
     end
@@ -209,8 +215,7 @@ module Merb
     # ==== Returns
     # Array[Symbol]:: List of formats passed in.
     #
-    #---
-    # @public
+    # @api public
     def provides(*formats)
       if @_content_type
         raise ContentTypeAlreadySet, "Cannot modify provided_formats because content_type has already been set"
@@ -229,8 +234,7 @@ module Merb
     # ==== Returns
     # Array[Symbol]:: List of formats passed in.
     #
-    #---
-    # @public
+    # @api public
     def only_provides(*formats)
       @_provided_formats = []
       provides(*formats)
@@ -248,8 +252,7 @@ module Merb
     # Array[Symbol]::
     #   List of formats that remain after removing the ones not to provide.
     #
-    #---
-    # @public
+    # @api public
     def does_not_provide(*formats)
       @_provided_formats -= formats.flatten
     end
@@ -260,6 +263,8 @@ module Merb
     # 3. If it's */*, use the first provided format
     # 4. Look for one that is provided, in order of request
     # 5. Raise 406 if none found
+    #
+    # @api private
     def _perform_content_negotiation
       if (fmt = params[:format]) && !fmt.empty?
         accepts = [fmt.to_sym]
@@ -307,8 +312,7 @@ module Merb
     # ==== Returns
     # Symbol:: The content-type that will be used for this controller.
     #
-    #---
-    # @public
+    # @api public
     def content_type(fmt = nil)
       self.content_type = (fmt || _perform_content_negotiation) unless @_content_type
       @_content_type
@@ -327,8 +331,7 @@ module Merb
     # ==== Returns
     # Symbol:: The content-type that was passed in.
     #
-    #---
-    # @semipublic
+    # @api plugin
     def content_type=(type)
       unless Merb.available_mime_types.has_key?(type)
         raise Merb::ControllerExceptions::NotAcceptable.new("Unknown content_type for response: #{type}") 
@@ -359,6 +362,8 @@ module Merb
     #
     # ==== Returns
     # Array[AcceptType]:: The accepted types.
+    #
+    # @private
     def self.parse(accept_header)
       headers = accept_header.split(/,/)
       idx, list = 0, []
@@ -378,6 +383,8 @@ module Merb
     # index<Fixnum>::
     #   The index used for sorting accept types. A lower value indicates higher
     #   priority.
+    # 
+    # @api private
     def initialize(entry,index)
       @index = index
       
@@ -399,6 +406,8 @@ module Merb
     # Fixnum::
     #   -1, 0 or 1, depending on whether entry has a lower, equal or higher
     #   priority than the accept type being compared.
+    #
+    # @api private
     def <=>(entry)
       if entry.quality == quality
         @index <=> entry.index
@@ -415,20 +424,28 @@ module Merb
     # Boolean::
     #   True if the accept types are equal, i.e. if the synonyms for this
     #   accept type includes the entry media range.
+    #
+    # @api private
     def eql?(entry)
       synonyms.include?(entry.media_range)
     end
 
     # An alias for eql?.
+    #
+    # @api private
     def ==(entry); eql?(entry); end
 
     # ==== Returns
     # Fixnum:: A hash based on the super range.
+    #
+    # @api private
     def hash; super_range.hash; end
 
     # ==== Returns
     # Array[String]::
     #   All Accept header values, such as "text/html", that match this type.
+    #
+    # @api private
     def synonyms
       return @syns if @syns
       if _mime = mime
@@ -438,6 +455,7 @@ module Merb
       end
     end
     
+    # @api private
     def mime
       @mime ||= Merb.available_mime_types[Merb::ResponderMixin::MIMES[@media_range]]
     end
@@ -446,12 +464,16 @@ module Merb
     # String::
     #   The primary media range for this accept type, i.e. either the first
     #   synonym or, if none exist, the media range.
+    #
+    # @api private
     def super_range
       synonyms.first || @media_range
     end
 
     # ==== Returns
     # Symbol: The type as a symbol, e.g. :html.
+    #
+    # @api private
     def to_sym
       Merb.available_mime_types.select{|k,v| 
         v[:accepts] == synonyms || v[:accepts][0] == synonyms[0]}.flatten.first
@@ -459,6 +481,8 @@ module Merb
 
     # ==== Returns
     # String:: The accept type as a string, i.e. the media range.
+    #
+    # @api private
     def to_s
       @media_range
     end

@@ -103,6 +103,10 @@ module Merb
     # ==== Parameters
     # key<Symbol>:: The key that represents the mime-type to remove.
     #
+    # ==== Returns
+    # (Boolean, Hash{Symbol => Object}):: If it was present, the old specification of the MIME-type. Same structure
+    #   as a value in Merb.available_mime_types. False if the key was not present.
+    #
     # ==== Notes
     # :all is the key for */*; It can't be removed.
     #
@@ -121,7 +125,7 @@ module Merb
     # ==== Raises
     # ArgumentError:: The requested mime type is not valid.
     #
-    # @api public
+    # @api private
     def mime_transform_method(key)
       raise ArgumentError, ":#{key} is not a valid MIME-type" unless ResponderMixin::TYPES.key?(key)
       ResponderMixin::TYPES[key][:transform_method]

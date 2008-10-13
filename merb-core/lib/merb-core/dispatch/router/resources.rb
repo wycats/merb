@@ -65,8 +65,8 @@ module Merb
       #  r.resources :posts do |posts|
       #    posts.resources :comments
       #  end
-      #---
-      # @public
+      #
+      # @api public
       def resources(name, *args, &block)
         name       = name.to_s
         options    = extract_options_from_args!(args) || {}
@@ -217,8 +217,8 @@ module Merb
       #   r.resource :account, :namespace => "admin" do |account|
       #     account.resources :preferences, :controller => "settings"
       #   end
-      # ---
-      # @public
+      #
+      # @api public
       def resource(name, *args, &block)
         name    = name.to_s
         options = extract_options_from_args!(args) || {}
@@ -266,12 +266,14 @@ module Merb
       
     protected
     
+      #api private
       def register_resource(*key)
         key = [@options[:resource_prefix], key].flatten.compact
         @route.resource = key
         self
       end
 
+      #api private
       def resource_block(builders, &block)
         behavior = ResourceBehavior.new(builders, @proxy, @conditions, @params, @defaults, @identifiers, @options, @blocks)
         with_behavior_context(behavior, &block)
@@ -291,12 +293,14 @@ module Merb
     # Adding the collection and member methods to behavior
     class ResourceBehavior < Behavior #:nodoc:
       
+      #api private
       def initialize(builders, *args)
         super(*args)
         @collection = builders[:collection]
         @member     = builders[:member]
       end
       
+      #api private
       def collection(action, options = {})
         action = action.to_s
         method = options[:method]
@@ -304,6 +308,7 @@ module Merb
         @collection[action, to, method]
       end
       
+      # @api private
       def member(action, options = {})
         action = action.to_s
         method = options[:method]

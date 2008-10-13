@@ -74,8 +74,8 @@ module Merb
       # ==== Notes
       # If you pass a post body, the content-type will be set to URL-encoded.
       #
-      #---
-      # @public
+      # @api public
+      # @deprecated
       def fake_request(env = {}, opt = {})
         if opt[:post_body]
           req = opt[:post_body]
@@ -111,8 +111,8 @@ module Merb
       # ==== Notes
       # Does not use routes.
       #
-      #---
-      # @public
+      # @api public
+      # @deprecated
       def dispatch_to(controller_klass, action, params = {}, env = {}, &blk)
         params = merge_controller_and_action(controller_klass, action, params)
         dispatch_request(build_request(params, env), controller_klass, action.to_s, &blk)
@@ -124,6 +124,9 @@ module Merb
       # ==== Parameters
       # *controller_classes:: Controller classes to operate on in the context of the block.
       # &blk:: The context to operate on; optionally accepts the cookie jar as an argument.
+      #
+      # @api public
+      # @deprecated
       def with_cookies(*controller_classes, &blk)
         cookie_jar = CookieJar.new
         before_cb = lambda { |c| c.cookies.update(cookie_jar) }
@@ -166,8 +169,8 @@ module Merb
       # ==== Notes
       # Does not use routes.
       #
-      #---
-      # @public
+      # @api public
+      # @deprecated
       def dispatch_with_basic_authentication_to(controller_klass, action, username, password, params = {}, env = {}, &blk)
         env["X_HTTP_AUTHORIZATION"] = "Basic #{Base64.encode64("#{username}:#{password}")}"
         
@@ -175,6 +178,7 @@ module Merb
         dispatch_request(build_request(params, env), controller_klass, action.to_s, &blk)
       end
       
+      # @api private
       def merge_controller_and_action(controller_klass, action, params)
         params[:controller] = controller_klass.name.to_const_path
         params[:action]     = action.to_s
@@ -203,8 +207,8 @@ module Merb
       # ==== Notes
       # Does not use routes.
       #
-      #---
-      # @public      
+      # @api public    
+      # @deprecated  
       def build_request(params = {}, env = {})
         params             = Merb::Request.params_to_query_string(params)
 
@@ -227,8 +231,9 @@ module Merb
       # &blk::
       #   The controller is yielded to the block provided for actions *prior* to
       #   the action being dispatched.
-      #---
-      # @public      
+      #
+      # @api public  
+      # @deprecated    
       def get(path, params = {}, env = {}, &block)
         env[:request_method] = "GET"
         mock_request(path, params, env, &block)
@@ -246,8 +251,9 @@ module Merb
       # &blk::
       #   The controller is yielded to the block provided for actions *prior* to
       #   the action being dispatched.
-      #---
-      # @public      
+      #
+      # @api public  
+      # @deprecated    
       def post(path, params = {}, env = {}, &block)
         env[:request_method] = "POST"
         mock_request(path, params, env, &block)
@@ -265,8 +271,8 @@ module Merb
       # &blk::
       #   The controller is yielded to the block provided for actions *prior* to
       #   the action being dispatched.
-      #---
-      # @public      
+      #
+      # @api public      
       def put(path, params = {}, env = {}, &block)
         env[:request_method] = "PUT"
         mock_request(path, params, env, &block)
@@ -284,8 +290,9 @@ module Merb
       # &blk::
       #   The controller is yielded to the block provided for actions *prior* to
       #   the action being dispatched.
-      #---
-      # @public
+      #
+      # @api public
+      # @deprecated
       def delete(path, params = {}, env = {}, &block)
         env[:request_method] = "DELETE"
         mock_request(path, params, env, &block)
@@ -313,8 +320,8 @@ module Merb
       # ==== Notes
       # Uses Routes.
       #
-      #---
-      # @semi-public
+      # @api plugin
+      # @deprecated
       def mock_request(path, params = {}, env= {}, &block)
         env[:request_method] ||= "GET"
         env[:request_uri], env[:query_string] = path.split('?')
@@ -352,8 +359,8 @@ module Merb
       # ==== Notes
       # Does not use routes.
       #
-      #---
-      # @public
+      # @api public
+      # @deprecated
       def dispatch_request(request, controller_klass, action, &blk)
         controller = controller_klass.new(request)
         yield controller if block_given?
@@ -378,8 +385,8 @@ module Merb
       # ==== Returns
       # Hash:: The parameters built based on the matching route.
       #
-      #---
-      # @semi-public
+      # @api plugin
+      # @deprecated
       def check_request_for_route(request)
         match =  ::Merb::Router.match(request)
         if match[0].nil? && match[1].empty?
