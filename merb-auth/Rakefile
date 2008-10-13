@@ -1,4 +1,6 @@
-GEM_VERSION = "0.9.9"
+require File.join(File.dirname(__FILE__), "../merb-core/lib/merb-core/version.rb")
+
+GEM_VERSION = Merb::VERSION
 GEM_NAME    = "merb-auth"
 require "rake/clean"
 require "rake/gempackagetask"

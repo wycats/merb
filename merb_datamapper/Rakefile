@@ -4,6 +4,9 @@ require "extlib"
 require 'merb-core/tasks/merb_rake_helper'
 require "spec/rake/spectask"
 
+require File.join(File.dirname(__FILE__), "../merb-core/lib/merb-core/version.rb")
+
+
 ##############################################################################
 # Package && release
 ##############################################################################
@@ -17,7 +20,7 @@ GEM_EMAIL  = "jtoy@rubynow.com"
 
 GEM_NAME    = "merb_datamapper"
 PKG_BUILD   = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
-GEM_VERSION = (Merb::MORE_VERSION rescue "0.9.9") + PKG_BUILD
+GEM_VERSION = Merb::VERSION + PKG_BUILD
 
 RELEASE_NAME    = "REL #{GEM_VERSION}"
 

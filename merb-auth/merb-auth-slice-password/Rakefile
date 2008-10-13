@@ -5,12 +5,14 @@ require 'merb-core/version'
 require 'merb-core/tasks/merb_rake_helper'
 require 'merb-core/test/tasks/spectasks'
 
+require File.join(File.dirname(__FILE__), "../../merb-core/lib/merb-core/version.rb")
+
 GEM_NAME = "merb-auth-slice-password"
 AUTHOR = "Your Name"
 EMAIL = "Your Email"
 HOMEPAGE = "http://merbivore.com/"
 SUMMARY = "Merb Slice that provides ..."
-GEM_VERSION = "0.9.9"
+GEM_VERSION = Merb::VERSION
 
 spec = Gem::Specification.new do |s|
   s.rubyforge_project = 'merb'
@@ -24,8 +26,8 @@ spec = Gem::Specification.new do |s|
   s.author = AUTHOR
   s.email = EMAIL
   s.homepage = HOMEPAGE
-  s.add_dependency('merb-auth-core', "= 0.9.9")
-  s.add_dependency('merb-auth-more', "= 0.9.9")
+  s.add_dependency('merb-auth-core', "= #{Merb::VERSION}")
+  s.add_dependency('merb-auth-more', "= #{Merb::VERSION}")
   s.require_path = 'lib'
   s.files = %w(LICENSE README.textile Rakefile TODO) + Dir.glob("{lib,spec,app,public,stubs}/**/*")
 end

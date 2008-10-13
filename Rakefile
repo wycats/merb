@@ -1,10 +1,12 @@
 ## THESE ARE CRUCIAL
+require File.join(File.dirname(__FILE__), "merb-core/lib/merb-core/version.rb")
+
 module Merb
   # Set this to the version of merb-core that you are building against/for
-  VERSION = "0.9.9"
+  VERSION = Merb::VERSION
 
   # Set this to the version of merb-more you plan to release
-  MORE_VERSION = "0.9.9"
+  MORE_VERSION = Merb::VERSION
 end
 
 GEM_VERSION = Merb::VERSION
