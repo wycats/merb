@@ -1,0 +1,90 @@
+h1. MerbAuth - Merb Merb::Authentication
+
+h2. An extensible architecture for authentication
+
+* Stupidly Simple
+* Speaks fluent HTTP, even the errors
+* Pluggable Architecture (so that you can use any authentication algorithms you like)
+* Cascading Merb::Authentication (if one method fails, another is attempted, then another. When no methods succeed, authentication fails)
+
+h2. Principles
+
+#  Sessions are authenticated
+#  Just because one method of authentication fails doesn't mean the session, can't be authenticated another way.  This is especially true if your application has an external API as well as a public interface.
+#  HTTP has built-in "Errors":http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html which every web-browser (should) know how to speak.  If you're application speaks in HTTP Verbs (GET, POST, PUT, DELETE), it should also serve the correct HTTP Errors when things go wrong.
+
+h2.  What is it
+
+The merb-auth gem is the default implementation of merb-auth-core and merb-auth-more for
+the default Merb Stack.  Included are:
+
+merb-auth-slice-password # A basic slice that provides everything you need for basic password logins
+
+Strategies: 
+  :default_password_form # Form based login via a "login" field and "password" field
+  :default_basic_auth    # Basic authentication 
+
+Mixins:
+  redirect_back # For redirect_back_or functionality
+  salted_user   # Automtaically provides the required methods on your user model
+
+h3. Get merb-auth
+
+merb-auth is bundled with the merb gem.  To get it as stand alone you can get it two ways. 
+
+Gem Style
+@sudo gem install merb-auth@
+
+From Source
+<pre><code>
+git clone http://github.com/wycats/merb-more.git
+cd merb-more/merb-auth
+sudo rake install
+</code></pre>
+
+h2. Basic Setup
+
+h3. Application Setup
+
+h4. Setup your user
+
+Setup your User resource 
+$ merb-gen resource users
+
+Ensure you have a login property
+property :login, String
+
+Make sure you have the following in your migrations (if required)
+crypted_password - String
+salt             - String
+
+
+h4. Setup your configuration
+
+Include merb-auth in your application config/init.rb 
+<pre><code>
+  dependency "merb-auth"
+</code></pre>
+
+Setup the routing: config/router.rb
+
+<pre><code>
+  Merb::Router.prepare do
+    merb_auth_routes(:name_prefix => nil, :path_prefix => nil)
+  end
+</code></pre>
+
+Protect Your Controller
+<pre><code>
+  class MyController < Application
+    before :ensure_authenticated
+    
+    #...
+  end
+</pre></code>
+
+
+
+
+
+
