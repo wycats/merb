@@ -13,7 +13,7 @@
 # strings, regexp and numbers used as constants so no extra
 # objects created and VM just operate pointers.
 module Merb
-    module Const
+  module Const
     
     DEFAULT_SEND_FILE_OPTIONS = {
       :type         => 'application/octet-stream'.freeze,
@@ -40,7 +40,6 @@ module Merb
     ETAG                     = 'ETag'.freeze
     LAST_MODIFIED            = "Last-Modified".freeze
     SLASH                    = "/".freeze
-    REQUEST_METHOD           = "REQUEST_METHOD".freeze
     GET                      = "GET".freeze
     POST                     = "POST".freeze
     HEAD                     = "HEAD".freeze
@@ -63,5 +62,6 @@ module Merb
     DOUBLE_NEWLINE           = "\n\n".freeze
     LOCATION                 = "Location".freeze
     TEXT_SLASH_HTML          = "text/html".freeze
+  
   end
 end

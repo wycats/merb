@@ -315,9 +315,16 @@ module Merb
     # String::
     #   The path to the log file. 
     #   If this Merb instance is running as a daemon this will return +STDOUT+.
+    #
+    # ==== Notes
+    # When Merb.testing? the port is modified to become :test - this keeps this
+    # special environment situation from ending up in the memoized @streams
+    # just once, thereby never taking changes into account again. Now, it will
+    # be memoized as :test - and just logging to merb_test.log.
     # 
     # @api public
     def log_stream(port = "main")
+      port = :test if Merb.testing?
       @streams ||= {}
       @streams[port] ||= begin
         log = if Merb.testing?
