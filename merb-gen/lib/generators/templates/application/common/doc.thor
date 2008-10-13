@@ -129,7 +129,7 @@ class Merb < Thor
     end
     
     
-    desc 'stack', 'Generate the rdoc for merb-core, merb-more and merb-plugins merged together'
+    desc 'stack', 'Generate the rdoc for merb-core, merb-more merged together'
     def stack
       libs = ["merb"]
             

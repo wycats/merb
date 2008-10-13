@@ -51,7 +51,7 @@ module Merb
       empty_directory :gems, 'gems'
       file :thorfile do |file|
         file.source      = File.join(common_templates_dir, "merb.thor")
-        file.destination = "merb.thor"
+        file.destination = "tasks/merb.thor"
       end
 
       template :rakefile do |template|
