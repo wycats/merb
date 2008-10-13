@@ -52,7 +52,7 @@ module Merb
       bindir = File.expand_path(File.join(gemdir, '..', 'bin'))
       # Fall back to system wide bindir - usually needs sudo permissions
       bindir = Gem.bindir unless File.directory?(bindir)
-      ensure_bin_wrapper_for(gemdir, bindir, name)
+      ensure_bin_wrapper_for(gemdir, bindir, name, :no_minigems => ['merb-gen'])
     end
     
   end
