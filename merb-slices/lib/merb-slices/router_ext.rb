@@ -42,7 +42,7 @@ Merb::Router.extensions do
       options[:path] ||= options[:path_prefix] || slice_module[:path_prefix] || options[:namespace] || slice_module.identifier
       options[:prepend_routes] = block if block_given?
       slice_module[:path_prefix] = options[:path]
-      Merb.logger.info!("Mounting slice #{slice_module} at /#{options[:path]}")
+      Merb.logger.verbose!("Mounting slice #{slice_module} at /#{options[:path]}")
       
       # reset the inherited controller prefix - especially for 'slice' entries (see below)
       @options[:controller_prefix] = nil if options.delete(:reset_controller_prefix)

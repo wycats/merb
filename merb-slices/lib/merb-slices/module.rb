@@ -39,7 +39,7 @@ module Merb
         slice_path  = File.expand_path(File.dirname(slice_file) + '/..')
         # check if slice_path exists instead of just the module name - more flexible
         if !self.paths.include?(slice_path) || force
-          Merb.logger.info!("Registered slice '#{module_name}' located at #{slice_path}") if force
+          Merb.logger.verbose!("Registered slice '#{module_name}' located at #{slice_path}") if force
           self.files[module_name] = slice_file
           self.paths[module_name] = slice_path
           slice_mod = setup_module(module_name)

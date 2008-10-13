@@ -96,7 +96,7 @@ if defined?(Merb::Plugins)
   
     def self.run
       Merb::Slices.each_slice do |slice|
-        Merb.logger.info!("Initializing slice '#{slice}' ...") 
+        Merb.logger.verbose!("Initializing slice '#{slice}' ...") 
         slice.init if slice.respond_to?(:init)
       end
     end
