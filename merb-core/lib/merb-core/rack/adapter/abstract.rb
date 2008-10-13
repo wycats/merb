@@ -211,8 +211,8 @@ module Merb
             new_server(port)
           rescue Errno::EADDRINUSE
             unless printed_warning
-              Merb.logger.warn! "Couldn't bind to port #{port}."
-              Merb.logger.warn! "Waiting for it to become available"
+              Merb.logger.warn! "Port #{port} is in use, " \
+                "Waiting for it to become available."
               printed_warning = true
             end
 
