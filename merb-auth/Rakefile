@@ -68,3 +68,10 @@ task :gemspec do
     file.puts spec.to_ruby
   end
 end
+
+desc "Run all specs"
+task :spec do
+  gems.each do |gem|
+    Dir.chdir(gem) { sh "#{Gem.ruby} -S rake spec" }
+  end
+end
