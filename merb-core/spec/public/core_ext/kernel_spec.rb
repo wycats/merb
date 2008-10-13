@@ -58,7 +58,7 @@ describe Kernel, "#load_dependency" do
   it "returns a Gem::Dependency" do
     dep = load_dependency "core_ext_dependency"
     dep.name.should == "core_ext_dependency"
-    dep.version_requirements.to_s.should == ""
+    ["", ">= 0"].include?(dep.version_requirements.to_s.should)
   end
   
   it "adds a Gem::Dependency item to Merb::BootLoader::Dependencies.dependencies" do
