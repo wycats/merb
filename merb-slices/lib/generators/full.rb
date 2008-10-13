@@ -1,6 +1,11 @@
 module Merb::Generators
   
   class FullSliceGenerator < BaseSliceGenerator
+    
+    def initialize(*args)
+      Merb.disable(:initfile)
+      super
+    end
 
     def self.source_root
       File.join(File.dirname(__FILE__), 'templates', 'full')
