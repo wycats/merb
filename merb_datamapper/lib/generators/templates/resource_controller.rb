@@ -7,8 +7,8 @@ class <%= class_name %> < Application
     display @<%= plural_model %>
   end
 
-  def show
-    @<%= singular_model %> = <%= model_class_name %>.get(<%= params_for_get %>)
+  def show(id)
+    @<%= singular_model %> = <%= model_class_name %>.get(id)
     raise NotFound unless @<%= singular_model %>
     display @<%= singular_model %>
   end
@@ -16,43 +16,42 @@ class <%= class_name %> < Application
   def new
     only_provides :html
     @<%= singular_model %> = <%= model_class_name %>.new
-    render
+    display <%= model_class_name %>
   end
 
-  def edit
+  def edit(id)
     only_provides :html
-    @<%= singular_model %> = <%= model_class_name %>.get(<%= params_for_get %>)
+    @<%= singular_model %> = <%= model_class_name %>.get(id)
     raise NotFound unless @<%= singular_model %>
-    render
+    display @<%= singular_model %>
   end
 
-  def create
-    raise BadRequest, "No params passed to create a new object, check your new action view!" if params[:<%= singular_model %>].nil?
+  def create(<%= singular_model %>)
     @<%= singular_model %> = <%= model_class_name %>.new(params[:<%= singular_model %>])
     if @<%= singular_model %>.save
-      redirect url(:<%= (modules.collect{|m| m.downcase} << singular_model).join("_") %>, @<%= singular_model %>)
+      redirect resource(@<%= singular_model %>), :message => {:notice => "<%= model_class_name %> was successfully created"}
     else
       render :new
     end
   end
 
-  def update
-    @<%= singular_model %> = <%= model_class_name %>.get(<%= params_for_get %>)
+  def update(<%= singular_model %>)
+    @<%= singular_model %> = <%= model_class_name %>.get(<%= singular_model %>[:id] )
     raise NotFound unless @<%= singular_model %>
-    if @<%= singular_model %>.update_attributes(params[:<%= singular_model %>]) || !@<%= singular_model %>.dirty?
-      redirect url(:<%= (modules.collect{|m| m.downcase} << singular_model).join("_") %>, @<%= singular_model %>)
+    if @<%= singular_model %>.update_attributes(<%= singular_model %>)
+       redirect resource(@<%= singular_model %>)
     else
-      raise BadRequest
+      display @<%= singular_model %>, :edit
     end
   end
 
-  def destroy
-    @<%= singular_model %> = <%= model_class_name %>.get(<%= params_for_get %>)
+  def destroy(id)
+    @<%= singular_model %> = <%= model_class_name %>.get(id)
     raise NotFound unless @<%= singular_model %>
     if @<%= singular_model %>.destroy
-      redirect url(:<%= (modules.collect{|m| m.downcase} << plural_model).join("_") %>)
+      redirect resource(@<%= plural_model %>)
     else
-      raise BadRequest
+      raise InternalServerError
     end
   end
 
