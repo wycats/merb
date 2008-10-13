@@ -69,6 +69,11 @@ module Merb
         file.destination = 'public/.htaccess'
       end
       
+      file :doctask do |file|
+        file.source = File.join(common_templates_dir, 'doc.thor')
+        file.destination = 'tasks/doc.thor'
+      end
+      
       file :jquery do |file|
         file.source = File.join(common_templates_dir, 'jquery.js')
         file.destination = 'public/javascripts/jquery.js'

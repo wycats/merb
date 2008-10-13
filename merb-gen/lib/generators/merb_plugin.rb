@@ -1,6 +1,11 @@
 module Merb::Generators
   
   class MerbPluginGenerator < NamedGenerator
+    
+    def initialize(*args)
+      Merb.disable(:initfile)
+      super
+    end
 
     def self.source_root
       File.join(super, 'application', 'merb_plugin')
