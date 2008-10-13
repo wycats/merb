@@ -40,7 +40,7 @@ require 'rubygems/dependency'
 module GemManagement
   
   include ColorfulMessages
-  
+    
   # Install a gem - looks remotely and local gem cache;
   # won't process rdoc or ri options.
   def install_gem(gem, options = {})
@@ -222,10 +222,12 @@ module GemManagement
   end
   
   def rake(cmd)
-    system "#{Gem.ruby} -S #{which('rake')} -s #{cmd}"
+    cmd << " >/dev/null" if $SILENT && !Gem.win_platform?
+    system "#{Gem.ruby} -S #{which('rake')} -s #{cmd} >/dev/null"
   end
   
   def thor(cmd)
+    cmd << " >/dev/null" if $SILENT && !Gem.win_platform?
     system "#{Gem.ruby} -S #{which('thor')} #{cmd}"
   end
 
@@ -263,15 +265,18 @@ module GemManagement
   
   # Create a modified executable wrapper in the specified bin directory.
   def ensure_bin_wrapper_for(gem_dir, bin_dir, *gems)
+    options = gems.last.is_a?(Hash) ? gems.last : {}
+    options[:no_minigems] ||= []
     if bin_dir && File.directory?(bin_dir)
       gems.each do |gem|
         if gemspec_path = Dir[File.join(gem_dir, 'specifications', "#{gem}-*.gemspec")].last
           spec = Gem::Specification.load(gemspec_path)
+          enable_minigems = !options[:no_minigems].include?(spec.name)
           spec.executables.each do |exec|
             executable = File.join(bin_dir, exec)
             message "Writing executable wrapper #{executable}"
             File.open(executable, 'w', 0755) do |f|
-              f.write(executable_wrapper(spec, exec))
+              f.write(executable_wrapper(spec, exec, enable_minigems))
             end
           end
         end
@@ -281,7 +286,10 @@ module GemManagement
 
   private
 
-  def executable_wrapper(spec, bin_file_name)
+  def executable_wrapper(spec, bin_file_name, minigems = true)
+    requirements = ['minigems', 'rubygems']
+    requirements.reverse! unless minigems
+    try_req, then_req = requirements
     <<-TEXT
 #!/usr/bin/env ruby
 #
@@ -291,9 +299,9 @@ module GemManagement
 # this file is here to facilitate running it.
 
 begin 
-  require 'minigems'
+  require '#{try_req}'
 rescue LoadError 
-  require 'rubygems'
+  require '#{then_req}'
 end
 
 if File.directory?(gems_dir = File.join(Dir.pwd, 'gems')) ||
@@ -328,5 +336,5 @@ TEXT
   def update_source_index(dir)
     Gem.source_index.load_gems_in(File.join(dir, 'specifications'))
   end
-  
+    
 end

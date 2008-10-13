@@ -9,7 +9,12 @@ module Merb
       defaults = { :cache => false }
       defaults[:install_dir] = ENV['GEM_DIR'] if ENV['GEM_DIR']
       opts = defaults.merge(options)
-      install_gem_from_source(Dir.pwd, name, opts)
+      dir = if File.directory?(subdir = File.join(Dir.pwd, name))
+        subdir
+      else
+        Dir.pwd
+      end
+      install_gem_from_source(dir, name, opts)
       ensure_wrapper(opts[:install_dir] || Gem.default_dir, name)
     end
     

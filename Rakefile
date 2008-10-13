@@ -1,16 +1,6 @@
 ## THESE ARE CRUCIAL
 require File.join(File.dirname(__FILE__), "merb-core/lib/merb-core/version.rb")
 
-module Merb
-  # Set this to the version of merb-core that you are building against/for
-  VERSION = Merb::VERSION
-
-  # Set this to the version of merb-more you plan to release
-  MORE_VERSION = Merb::VERSION
-end
-
-GEM_VERSION = Merb::VERSION
-
 require "rake/clean"
 require "rake/gempackagetask"
 require File.join(File.dirname(__FILE__), 'merb-core/lib/merb-core/tasks/merb_rake_helper')
@@ -21,14 +11,15 @@ merb_more_gem_paths = %w[
   merb-action-args 
   merb-assets 
   merb-auth
+  merb-cache 
+  merb-exceptions
   merb-gen 
   merb-haml
-  merb-mailer 
-  merb-cache 
-  merb-slices
   merb-helpers 
+  merb-mailer 
   merb-param-protection
-  merb-exceptions
+  merb-slices
+  merb_datamapper
 ]
 
 merb_gem_paths = %w[merb-core] + merb_more_gem_paths
@@ -36,11 +27,10 @@ merb_gem_paths = %w[merb-core] + merb_more_gem_paths
 merb_gems = merb_gem_paths.map { |p| File.basename(p) }
 merb_more_gems = merb_more_gem_paths.map { |p| File.basename(p) }
 
-
 merb_more_spec = Gem::Specification.new do |s|
   s.rubyforge_project = 'merb-more'
   s.name         = "merb-more"
-  s.version      = Merb::MORE_VERSION
+  s.version      = Merb::VERSION
   s.platform     = Gem::Platform::RUBY
   s.author       = "Engine Yard"
   s.email        = "merb@engineyard.com"
@@ -61,37 +51,47 @@ Rake::GemPackageTask.new(merb_more_spec) do |package|
 end
 
 namespace :install do
-  desc "Install all gems"
-  task :more do
-    Merb::RakeHelper.install('merb-more', :version => Merb::MORE_VERSION)
-    Merb::RakeHelper.install_package("pkg/merb-#{Merb::MORE_VERSION}.gem")
+  
+  desc "Install core gem"
+  task :core => :clean do
+    Merb::RakeHelper.install('merb-core', :version => Merb::VERSION)
   end
+      
+  desc "Install all merb-more gems"
+  task :more => :clean do
+    merb_more_gems.each do |gem|
+      Merb::RakeHelper.install(gem, :version => Merb::VERSION)
+    end
+  end
+  
 end
 
-desc "Uninstall all gems"
-task :uninstall => :uninstall_gems do
-  Merb::RakeHelper.uninstall('merb-more', :version => Merb::MORE_VERSION)
-  Merb::RakeHelper.uninstall('merb', :version => Merb::MORE_VERSION)
+namespace :uninstall do
+  
+  desc "Uninstall core gem"
+  task :core do
+    Merb::RakeHelper.uninstall('merb-core', :version => Merb::VERSION)
+  end
+      
+  desc "Uninstall all merb-more gems"
+  task :more do
+    merb_more_gems.each do |gem|
+      Merb::RakeHelper.uninstall(gem, :version => Merb::VERSION)
+    end
+  end
+  
 end
+
+desc "Install all gems"
+task :install => ['install:core', 'install:more']
+
+desc "Uninstall all gems"
+task :uninstall => ['uninstall:core', 'uninstall:more']
 
 desc "Build the merb-more gems"
 task :build_gems do
   merb_gem_paths.each do |dir|
     Dir.chdir(dir) { sh "#{Gem.ruby} -S rake package" }
-  end
-end
-
-desc "Install the merb-more sub-gems"
-task :install do
-  merb_gem_paths.each do |dir|
-    Dir.chdir(dir) { sh "#{Gem.ruby} -S rake install" }
-  end
-end
-
-desc "Uninstall the merb-more sub-gems"
-task :uninstall_gems do
-  merb_gem_paths.each do |dir|
-    Dir.chdir(dir) { sh "#{Gem.ruby} -S rake uninstall" }
   end
 end
 
@@ -115,20 +115,11 @@ task "lib/merb-more.rb" do
   end
 end
 
-# desc "Bundle up all the merb-more gems"
-# task :bundle => [:package, :build_gems] do
-#   mkdir_p "bundle"
-#   cp "pkg/merb-more-#{Merb::MORE_VERSION}.gem", "bundle"
-#   gems.each do |gem|
-#     sh %{cp #{gem}/pkg/#{gem}-#{Merb::MORE_VERSION}.gem bundle/}
-#   end
-# end
-
 RUBY_FORGE_PROJECT = "merb"
 
 GROUP_NAME    = "merb"
 PKG_BUILD     = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
-PKG_VERSION   = GEM_VERSION + PKG_BUILD
+PKG_VERSION   = Merb::VERSION + PKG_BUILD
 
 RELEASE_NAME  = "REL #{PKG_VERSION}"
 
@@ -142,8 +133,8 @@ namespace :release do
 
     begin
       sh %{rubyforge login}
-      sh %{rubyforge add_release #{RUBY_FORGE_PROJECT} merb-more #{Merb::MORE_VERSION} #{packages.join(' ')}}
-      sh %{rubyforge add_file #{RUBY_FORGE_PROJECT} merb-more #{Merb::MORE_VERSION} #{packages.join(' ')}}
+      sh %{rubyforge add_release #{RUBY_FORGE_PROJECT} merb-more #{Merb::VERSION} #{packages.join(' ')}}
+      sh %{rubyforge add_file #{RUBY_FORGE_PROJECT} merb-more #{Merb::VERSION} #{packages.join(' ')}}
     rescue Exception => e
       puts
       puts "Release failed: #{e.message}"

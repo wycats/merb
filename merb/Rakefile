@@ -4,7 +4,6 @@ require 'rubygems/specification'
 require 'date'
 require 'merb-core/version'
 require 'merb-core/tasks/merb_rake_helper'
-require File.join(File.dirname(__FILE__), ".." / "VERSION" )
 
 NAME = "merb"
 AUTHOR = "Merb Team"
