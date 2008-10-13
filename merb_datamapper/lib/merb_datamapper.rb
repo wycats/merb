@@ -37,7 +37,7 @@ if defined?(Merb::Plugins)
     after LoadClasses
 
     def self.run
-      Merb.logger.debug 'Merb::Orms::DataMapper::Associations block.'
+      Merb.logger.debug 'Merb::Orms::DataMapper::Associations block'
 
       # make sure all relationships are initialized after loading
       descendants = DataMapper::Resource.descendants.dup

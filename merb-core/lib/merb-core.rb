@@ -9,7 +9,7 @@ root = root.to_a.empty? ? Dir.getwd : root
 if File.directory?(gems_dir = File.join(root, "gems")) && !$BUNDLE
   $BUNDLE = true; Gem.clear_paths; Gem.path.unshift(gems_dir)
   # Warn if local merb-core is available but not loaded.
-  if File.expand_path($0).index(root) != 0 && 
+  if File.expand_path($0).index(root) != 0 && Merb.respond_to?(:logger) &&
     (local_mc = Dir[File.join(gems_dir, "specifications", "merb-core-*.gemspec")].last)
     Merb.logger.warn! "Warning: please use bin/#{File.basename($0)} to load #{File.basename(local_mc, ".gemspec")} from ./gems"
   end
@@ -28,6 +28,10 @@ __DIR__ = File.dirname(__FILE__)
 $LOAD_PATH.unshift __DIR__ unless
   $LOAD_PATH.include?(__DIR__) ||
   $LOAD_PATH.include?(File.expand_path(__DIR__))
+
+# Some dependencies tend to require&rescue for optionally required files;
+# doing so will load the full rubygems, even though it was just optional.
+$MINIGEMS_SKIPPABLE = ['encoding/character/utf-8']
 
 module Merb
   # Create stub module for global controller helpers.
