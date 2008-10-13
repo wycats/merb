@@ -11,7 +11,7 @@ if File.directory?(gems_dir = File.join(root, "gems")) && !$BUNDLE
   # Warn if local merb-core is available but not loaded.
   if File.expand_path($0).index(root) != 0 && 
     (local_mc = Dir[File.join(gems_dir, "specifications", "merb-core-*.gemspec")].last)
-    puts Merb.logger.warn! "Warning: please use bin/#{File.basename($0)} to load #{File.basename(local_mc, ".gemspec")} from ./gems"
+    puts "Warning: please use bin/#{File.basename($0)} to load #{File.basename(local_mc, ".gemspec")} from ./gems"
   end
 end
 
