@@ -49,7 +49,7 @@ class <%= class_name %> < Application
     @<%= singular_model %> = <%= model_class_name %>.get(id)
     raise NotFound unless @<%= singular_model %>
     if @<%= singular_model %>.destroy
-      redirect resource(@<%= plural_model %>)
+      redirect resource(:<%= plural_model %>)
     else
       raise InternalServerError
     end
