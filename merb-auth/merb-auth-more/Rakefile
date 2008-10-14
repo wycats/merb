@@ -10,7 +10,9 @@ require 'rake/testtask'
 require File.join(File.dirname(__FILE__), "../../merb-core/lib/merb-core/version.rb")
 
 GEM_NAME = "merb-auth-more"
-GEM_VERSION = Merb::VERSION
+PKG_BUILD   = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
+GEM_VERSION = Merb::VERSION + PKG_BUILD
+
 AUTHOR = "Daniel Neighman"
 EMAIL = "has.sox@gmail.com"
 HOMEPAGE = "http://merbivore.com/"
@@ -28,7 +30,7 @@ spec = Gem::Specification.new do |s|
   s.author = AUTHOR
   s.email = EMAIL
   s.homepage = HOMEPAGE
-  s.add_dependency("merb-auth-core", "= #{Merb::VERSION}")
+  s.add_dependency("merb-auth-core", ">= #{Merb::VERSION}")
   s.require_path = 'lib'
   s.files = %w(LICENSE README.textile Rakefile TODO) + Dir.glob("{lib,spec}/**/*")
   
