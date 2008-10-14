@@ -27,7 +27,7 @@ class <%= class_name %> < Application
   end
 
   def create(<%= singular_model %>)
-    @<%= singular_model %> = <%= model_class_name %>.new(params[:<%= singular_model %>])
+    @<%= singular_model %> = <%= model_class_name %>.new(<%= singular_model %>)
     if @<%= singular_model %>.save
       redirect resource(@<%= singular_model %>), :message => {:notice => "<%= model_class_name %> was successfully created"}
     else
