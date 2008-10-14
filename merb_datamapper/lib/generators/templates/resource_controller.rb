@@ -35,8 +35,8 @@ class <%= class_name %> < Application
     end
   end
 
-  def update(<%= singular_model %>)
-    @<%= singular_model %> = <%= model_class_name %>.get(<%= singular_model %>[:id] )
+  def update(id, <%= singular_model %>)
+    @<%= singular_model %> = <%= model_class_name %>.get(id)
     raise NotFound unless @<%= singular_model %>
     if @<%= singular_model %>.update_attributes(<%= singular_model %>)
        redirect resource(@<%= singular_model %>)
