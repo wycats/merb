@@ -5,7 +5,7 @@ require 'fileutils'
 require 'yaml'
 
 # Important - don't change this line or its position
-MERB_THOR_VERSION = '0.0.5'
+MERB_THOR_VERSION = '0.0.51'
 
 ##############################################################################
 
@@ -198,7 +198,7 @@ module GemManagement
       options[:version] = Gem::Requirement.new ["= #{options[:version]}"]
     end
     update_source_index(options[:install_dir]) if options[:install_dir]
-    Gem::Uninstaller.new(gem, options).uninstall
+    Gem::Uninstaller.new(gem, options).uninstall rescue nil
   end
 
   def clobber(source_dir)
@@ -415,16 +415,11 @@ end
 
 module MerbThorHelper
   
-  attr_accessor :include_dependencies
+  attr_accessor :include_dependencies, :force_gem_dir
   
   def self.included(base)
     base.send(:include, ColorfulMessages)
     base.extend ColorfulMessages
-  end
-
-  def install_dependency(dependency, opts = {})
-    opts[:version] ||= dependency.version_requirements.to_s
-    Merb::Gem.install(dependency.name, default_install_options.merge(opts))
   end
   
   def source_manager
@@ -467,6 +462,11 @@ module MerbThorHelper
       end
     end
   end
+  
+  def install_dependency(dependency, opts = {})
+    opts[:version] ||= dependency.version_requirements.to_s
+    Merb::Gem.install(dependency.name, default_install_options.merge(opts))
+  end
 
   def install_dependency_from_source(dependency, opts = {})
     matches = Dir[File.join(source_dir, "**", dependency.name, "{Rakefile,Thorfile}")]
@@ -506,7 +506,7 @@ module MerbThorHelper
         note 'Uninstalling existing local gems:'
         local.each { |gemspec| note "Uninstalled #{gemspec.name}" }
       else
-        message 'Uninstalling existing local gems:' 
+        message 'Uninstalling existing local gems:' if local.size > 1
         local.each do |gemspec|
           Merb::Gem.uninstall(gemspec.name, default_uninstall_options)
         end
@@ -571,6 +571,7 @@ module MerbThorHelper
     
   # If a local ./gems dir is found, return it.
   def gem_dir
+    return force_gem_dir if force_gem_dir
     if File.directory?(dir = default_gem_dir)
       dir
     end
@@ -605,7 +606,7 @@ module MerbThorHelper
     ENV['THOR_SUDO'] ||= "sudo"
     sudo = Gem.win_platform? ? "" : ENV['THOR_SUDO']
   end
-  
+    
   def local_gemspecs(directory = gem_dir)
     if File.directory?(specs_dir = File.join(directory, 'specifications'))
       Dir[File.join(specs_dir, '*.gemspec')].map do |gemspec_path|
@@ -893,10 +894,10 @@ module Merb
       if method = strategy?(strategy)
         # Clobber existing local dependencies
         clobber_dependencies!
-    
+        
         # Run the chosen strategy - collect files installed from stable gems
         installed_from_stable = send(method, deps).map { |d| d.name }
-      
+
         # Sleep a bit otherwise the following steps won't see the new files
         sleep(deps.length) if deps.length > 0
       
@@ -910,16 +911,10 @@ module Merb
           end           
         end
         
-        # Ask for system installation of minigem - needs sudo...
-        if deps.find { |d| d.name == 'minigems' }
-          info "Installing minigems.rb on your system..."
-          `#{sudo} minigem install`
-        end
-          
         # Add local binaries for the installed framework dependencies
         comps = Merb::Stack.all_components & deps.map { |d| d.name }
         comps << { :no_minigems => 'merb-gen' }
-        ensure_bin_wrapper_for(*comps)
+        ensure_bin_wrapper_for(*comps)          
         return true
       end
       false
@@ -1119,6 +1114,7 @@ module Merb
     # regardless of actual application dependency settings.
     
     DM_STACK = %w[
+      extlib
       dm-core
       dm-aggregates
       dm-migrations
@@ -1127,9 +1123,8 @@ module Merb
       dm-validations
     ]
     
-    MERB_STACK = %w[
-      minigems
-      
+    MERB_STACK = %w[      
+      extlib
       merb-core
       merb-action-args
       merb-assets
@@ -1140,9 +1135,8 @@ module Merb
       merb-auth
     ] + DM_STACK
     
-    MERB_BASICS = %w[
-      minigems
-      
+    MERB_BASICS = %w[      
+      extlib
       merb-core
       merb-action-args
       merb-assets
@@ -1281,6 +1275,7 @@ module Merb
     # See also: Merb::Dependencies#uninstall
     #
     # Examples:
+    #
     # merb:stack:uninstall                                      # uninstall the default merb stack
     # merb:stack:uninstall merb-more                            # uninstall merb-more
     # merb:stack:uninstall merb-core thor merb-slices           # uninstall the specified gems
@@ -1292,6 +1287,48 @@ module Merb
       self.system, self.local, self.missing = Merb::Gem.partition_dependencies(deps, gem_dir)
       # Clobber existing local dependencies - based on self.local
       clobber_dependencies!
+    end
+    
+    # Install or uninstall minigems from the system.
+    #
+    # Due to the specific nature of MiniGems it can only be installed system-wide.
+    #
+    # Examples:
+    #
+    # merb:stack:minigems install                               # install minigems
+    # merb:stack:minigems uninstall                             # uninstall minigems
+    
+    desc 'minigems (install|uninstall)', 'Install or uninstall minigems (needs sudo privileges)'
+    def minigems(action)
+      case action
+      when 'install'
+        Kernel.system "#{sudo} thor merb:stack:install_minigems"
+      when 'uninstall'
+        Kernel.system "#{sudo} thor merb:stack:uninstall_minigems"
+      else
+        error "Invalid command: merb:stack:minigems #{action}"
+      end
+    end    
+    
+    # hidden minigems install task
+    def install_minigems
+      message "Installing MiniGems"
+      mngr = self.dependency_manager
+      deps = gather_dependencies('minigems')
+      mngr.system, mngr.local, mngr.missing = Merb::Gem.partition_dependencies(deps, gem_dir)
+      mngr.force_gem_dir = ::Gem.dir
+      mngr.install_dependencies(strategy, deps)
+      Kernel.system "#{sudo} minigem install"
+    end
+    
+    # hidden minigems uninstall task
+    def uninstall_minigems
+      message "Uninstalling MiniGems"
+      Kernel.system "#{sudo} minigem uninstall"
+      deps = gather_dependencies('minigems')
+      self.system, self.local, self.missing = Merb::Gem.partition_dependencies(deps, gem_dir)
+      # Clobber existing local dependencies - based on self.local
+      clobber_dependencies!      
     end
     
     protected
@@ -1900,8 +1937,7 @@ module Merb
         'sequel'        => "git://github.com/wayneeseguin/sequel.git",
         'do'            => "git://github.com/sam/do.git",
         'thor'          => "git://github.com/wycats/thor.git",
-        'rake'          => "git://github.com/jimweirich/rake.git",
-        'minigems'      => "git://github.com/fabien/minigems.git"
+        'rake'          => "git://github.com/jimweirich/rake.git"
       }
     end
        
