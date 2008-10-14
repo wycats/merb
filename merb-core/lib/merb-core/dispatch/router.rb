@@ -63,20 +63,6 @@ module Merb
         self
       end
       
-      # Appends route in the block to routing table.
-      # 
-      # @api public
-      def append(&block)
-        prepare(routes, [], &block)
-      end
-      
-      # Prepends routes in the block to routing table.
-      # 
-      # @api public
-      def prepend(&block)
-        prepare([], routes, &block)
-      end
-      
       # Clears the routing table. Route generation and request matching
       # won't work anymore until a new routing table is built.
       # 
