@@ -101,5 +101,29 @@ describe Merb::Router do
       route_for("/hello").should have_route(:controller => "world")
     end
   end
+  
+  describe "#around_match" do
+    
+    it "should set a class method of Router to be called around request matching" do
+      class Merb::Router
+        def self.my_awesome_thang(request)
+          before!
+          retval = yield
+          after!
+          retval
+        end
+      end
+      
+      Merb::Router.around_match = :my_awesome_thang
+      Merb::Router.prepare do
+        match("/").to(:controller => "home")
+      end
+      
+      Merb::Router.should_receive(:before!)
+      Merb::Router.should_receive(:after!)
+      route_for("/").should have_route(:controller => "home")
+    end
+    
+  end
 
 end

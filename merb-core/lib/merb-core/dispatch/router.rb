@@ -35,8 +35,53 @@ module Merb
     class NotCompiledError < StandardError; end;
     
     class << self
-      # @private
-      attr_accessor :routes, :named_routes, :resource_routes, :root_behavior
+      # An array containing all the application routes in order of
+      # priority.
+      # ---
+      # @api private
+      attr_accessor :routes
+      
+      # A hash containing all the named application routes. The names
+      # are absolute (as in, all routes named in a namespace will
+      # contain the name of the namespace).
+      # ---
+      # @api private
+      attr_accessor :named_routes
+      
+      # A hash of all the application resource routes. The key of the hash
+      # is an array with each element containing the "path" for the resource
+      # for example, given the following resource routes:
+      #
+      # resources :users do
+      #   resources :comments
+      # end
+      #
+      # The show comment route will have a key of ["User", "Comment"]
+      # ---
+      # @api private
+      attr_accessor :resource_routes
+      
+      # The starting point for route definition. Any route defined in a
+      # Merb::Router.prepare block will defined in context of this 
+      # behavior.
+      #
+      # ==== Examples
+      #
+      # Merb::Router.root_behavior = Merb::Router.root_bavior.match("/hello")
+      #
+      # In the previous example, all routes will have the path prefix /hello.
+      # It is important to note that this attribute must be set before any
+      # routes are defined in order for the behavior to be applied to the
+      # routes.
+      # ---
+      # @api plugin
+      attr_accessor :root_behavior
+      
+      # A block that will be run around route matching. This block must yield
+      # in order for the actual matching to happen.
+      # ---
+      # @api plugin
+      attr_accessor :around_match
       
       # Creates a route building context and evaluates the block in it. A
       # copy of +root_behavior+ (and instance of Behavior) is copied as
@@ -53,7 +98,7 @@ module Merb
       # ==== Returns
       # Merb::Router::
       #   Returns self to allow chaining of methods.
-      # 
+      # ---
       # @api public
       def prepare(first = [], last = [], &block)
         @routes = []
@@ -87,8 +132,12 @@ module Merb
       #   are :controller, :action and all the named segments of the route.
       # 
       # @api private
-      def route_for(request) #:nodoc:
-        index, params = match(request)
+      def route_for(request)
+        index, params = if @around_match
+          send(@around_match, request) { match(request) }
+        else
+          match(request)
+        end
         route = routes[index] if index
         if !route
           raise ControllerExceptions::NotFound, 
@@ -167,8 +216,8 @@ module Merb
       # end
       #
       # url(:articles, 2008, 10, "test_article")
-      #
-      # @api private
+      # ---
+      # @api plugin
       def url(name, *args)
         unless name.is_a?(Symbol)
           args.unshift(name)
@@ -197,8 +246,8 @@ module Merb
       #
       # ==== Returns
       # String:: The generated URL
-      # 
-      # @api private
+      # ---
+      # @api plugin
       def resource(*args)
         defaults = args.pop
         options  = extract_options_from_args!(args) || {}
@@ -252,7 +301,7 @@ module Merb
       #     # ... routes come here ...
       #   end
       # end
-      #
+      # ---
       # @api public
       def extensions(&block)
         Router::Behavior.class_eval(&block)
@@ -261,7 +310,7 @@ module Merb
     private
     
       # Compiles the routes and creates the +match+ method.
-      # 
+      # ---
       # @api private
       def compile
         if routes.any?
@@ -273,7 +322,7 @@ module Merb
       
       # Generates the method for evaluation defining a +match+ method to match
       # a request with the defined routes.
-      # 
+      # ---
       # @api private
       def compiled_statement
         @compiler_mutex.synchronize do
