@@ -545,8 +545,6 @@ class Merb::AbstractController
   #
   # @api public
   def absolute_url(*args)
-    # FIXME: arrgh, why request.protocol returns http://?
-    # :// is not part of protocol name
     options  = extract_options_from_args!(args) || {}
     protocol = options.delete(:protocol)
     host     = options.delete(:host)
