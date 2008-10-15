@@ -189,7 +189,7 @@ module GemManagement
       options[:version] = Gem::Requirement.new ["= #{options[:version]}"]
     end
     update_source_index(options[:install_dir]) if options[:install_dir]
-    Gem::Uninstaller.new(gem, options).uninstall
+    Gem::Uninstaller.new(gem, options).uninstall rescue nil
   end
 
   def clobber(source_dir)
