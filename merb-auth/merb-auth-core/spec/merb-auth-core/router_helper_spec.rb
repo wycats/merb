@@ -32,8 +32,6 @@ describe "router protection" do
     class Mthree < Mone; end
     class Mtwo < Mone; end
 
-
-    
     Merb::Router.prepare do
       to(:controller => "foo") do
         authenticate do

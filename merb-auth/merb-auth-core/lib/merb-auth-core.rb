@@ -11,6 +11,7 @@ require 'merb-auth-core/authenticated_helper'
 require 'merb-auth-core/customizations'
 require 'merb-auth-core/bootloader'
 require 'merb-auth-core/router_helper'
+require 'merb-auth-core/callbacks'
 
 Merb::BootLoader.before_app_loads do
   # require code that must be loaded before the application 
