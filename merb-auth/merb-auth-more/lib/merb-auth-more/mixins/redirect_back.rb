@@ -31,6 +31,7 @@ module Merb::AuthenticatedHelper
       redirect default_url, opts
     end
     session.authentication.return_to_url = nil
+    "Redirecting to <a href='#{deafult_url}'>#{default_url}</a>"
   end
   
 end
