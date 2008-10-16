@@ -271,9 +271,9 @@ class Merb::AbstractController
   #
   # @api plugin
   def _dispatch(action)
-    self._before_dispatch_callbacks.each { |cb| cb.call(self) }
     self.action_name = action
-    
+    self._before_dispatch_callbacks.each { |cb| cb.call(self) }
+
     caught = catch(:halt) do
       start = Time.now
       result = _call_filters(_before_filters)
