@@ -16,7 +16,7 @@ class <%= class_name %> < Application
   def new
     only_provides :html
     @<%= singular_model %> = <%= model_class_name %>.new
-    display <%= model_class_name %>
+    display @<%= singular_model %>
   end
 
   def edit(id)
