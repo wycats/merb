@@ -713,6 +713,18 @@ module Merb
       Kernel.trap(signal, &block) unless Merb.disabled?(:signals)
     end
 
+    def forking_environment?
+      !on_windows? && !on_jruby?
+    end
+
+    def on_jruby?
+      RUBY_PLATFORM =~ Merb::Const::JAVA_PLATFORM_REGEXP
+    end
+
+    def on_windows?
+      RUBY_PLATFORM =~ Merb::Const::WIN_PLATFORM_REGEXP
+    end
+
   end
 end
 
