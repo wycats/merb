@@ -1082,9 +1082,6 @@ module Merb
     rescue => e
       error "Couldn't extract dependencies from application!"
       error e.message
-      
-      p e.backtrace
-      
       puts  "Make sure you're executing the task from your app (--merb-root), or"
       puts  "specify a config option (--config or --config-file=YAML_FILE)"
       return []
