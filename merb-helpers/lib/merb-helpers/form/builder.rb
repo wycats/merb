@@ -72,7 +72,7 @@ module Merb::Helpers::Form::Builder
       val = control_value(method)
       arr.map do |attrs|
         attrs = {:value => attrs} unless attrs.is_a?(Hash)
-        attrs[:checked] ||= (val == attrs[:value])
+        attrs[:checked] = true if (val == attrs[:value])
         radio_group_item(method, attrs)
       end.join
     end
