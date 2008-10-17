@@ -7,7 +7,8 @@ MerbAuth does not try to dictate what you should use as a user model, or how
 it should authenticate.  Instead it focuses on the logic required to check
 that an object passes authentication, and store authenticated objects in the
 session.  This is in fact the guiding principle of MerbAuth.  The Session is 
-used as the place for authentication, with a sprinkling of controller helpers.  
+used as the place for authentication, with a sprinkling of controller helpers.
+You can choose to protect a controller action, or a route / group of routes.  
 This makes sense to talk about an authenticated session. For example, inside
 your controller:
 
@@ -24,6 +25,9 @@ your controller:
 
 * session.abandon!                  
   sets the session to unauthenticated, and clears all session data
+
+* session.authenticate!
+  authenticates the session against the active strategies
 
 MerbAuth makes use of Merb's exception handling facilities which return correct
 HTTP status codes when a 200 OK would be inappropriate.  To fail a login, or 
@@ -69,7 +73,7 @@ to the params hash, session etc.
 
 To pass authentication, simply return a non-nil
 non-false value from the @run!@ method.  Any false or nil value will cause
-that strategy to fail.  Then the next strategy will be tried :)  wait... what?
+that strategy to fail.  Then the next strategy will be tried.
 
 You can add as many strategies as you like and they will be tried one after
 another until either one is found that works (login), or none of them have
@@ -93,26 +97,23 @@ h3. Customizing the user_class
 
 Notice the @user_class@ method in the above strategy examples.  This is a convenience method on a strategy
 to provide you with the user_class to use for this strategy.  You can overwrite
-this method on a per strategy basis to use different user model types.
+this method on a per strategy basis to use different user model types.  You do not _have_ to use this method
+and it's only there to keep track of the "default" user class. (if any)
 
 By default the strategy#user_class method will defer to Merb::Authentication#user_class.  You can 
 set which is the "default class" that Merb::Authentication will use in the provided strategies by
-setting the class inside your model declaration.  
+setting it in Merb.root/merb/merb-auth/setup.rb
 
 <pre><code>
-  class Person
-    include DataMapper::Resource
     
-    Merb::Authentication.user_class = self
-    
-    #...
-  end
+    Merb::Authentication.user_class = Person
+
 </code></pre>
 
-This will cascade throughout the default strategies, and your own strategies vai that 
-Merb::Authentication::Strategy#user_class method.
+This will cascade throughout the default strategies, and your own strategies using the user class
+that you defined.  In this case Person. 
 
-There is no default class set for Activation by default
+There is no default class set for Merb::Authentication.user_class by default
 
 h3. Strategies and Inheritance
 
@@ -138,7 +139,7 @@ To activate a registered strategy:
   Merb::Authentication.activate!(:defualt_password_form) 
 </code></pre>
 
-You can easily mix this in with your own strategies. In you lib/authentication/strategies.rb
+You can easily mix this in with your own strategies. In you Merb.root/merb-auth/strategies.rb
 <pre><code>
   class MyStrategy < Merb::Authentication::Strategy
     def run!
@@ -155,7 +156,7 @@ You can easily mix this in with your own strategies. In you lib/authentication/s
   end
 </code></pre>
 
-This will collect them in order of decleration.  i.e.:
+This will collect them in order of declaration.  i.e.:
   MyStrategy, Merb::Authentication::Strategies::Basic::OpenID, AnotherStrategy
 
 h3. Customizing the order of the strategies
@@ -185,7 +186,8 @@ of #run!
                                             Merb::Authenticated::Strategies::Basic::Form,
                                             Merb::Authenticated::Strategies::Basic::BasicAuth, 
                                             Merb::Authenticated::Strategies::Basic::OpenID, 
-                                           ]
+                                           ],
+                                  :only => [:index]
     before :machine_only, :only => [:create]
     
     def index
@@ -212,13 +214,14 @@ h3. Where should Strategies be defined?
 
 You should store your strategies in 
 <pre><code>
-  lib
-  `-- authentication
+  merb
+  `-- merb-auth
       |-- setup.rb
       `-- strategies.rb
 </code></pre>
 
 This is a good place to put everything together so you can see what you're doing at a glance.
+It is also auto included by merb-auth-core when you're using it.
 
 h3. What Strategies are there?
 
@@ -309,27 +312,26 @@ There's at least 4 ways to provide feedback to users for failed logins.
 h3. Additional checks / actions to perform after the user is found
 
 Sometimes you may need to perform additional operations on the user object
-before or after you grab it out of the database when authenticating it.  The
-Merb::Authentication class implements Extlib::Hook so you can just setup hooks to
-deal with this.
+after you have found a valid user in the strategy.  There is a hook method
+Merb::Authentication.after_authentication which is designed for this.
 
 Here's an example of checking that a user object is active after it's been
 found: 
 
-  after :authenticate! do |instance, *args|
-    raise Merb::Controller::Unauthenticated, "User Not Active" unless instance.user.active?
+  Merb::Authentication.after_authentication do |user, request, params|
+    user.active? ? user : nil
   end
+  
+Pass the user model on if everything is still ok.  Return nil if you decide in the
+after_authentication hook that the user should in fact not be allowed to be authenticated.
 
-bq. Notice that to fail the check we raised an Unauthenticated exception.  The
-session is available in that block as <code>session</code>
-
-Really that's all there is to it.  By default this plugin doesn't actually
+By default this plugin doesn't actually
 authenticate anything ;)  It's up to you to get your model going, and add an
-authentication strategy.  Just remember that to login, you just use
-@session.authenticate(request)@ inside a controller.  To logout use
+authentication strategy.
+
+To logout use
 @session.abandon!@ and to force a login at any time use 
 @raise Unauthenticated, "You Aren't Cool Enough"@
-Be aware that strategies may throw :halt for use as a before filter...  
 
 h3. Contributors 
 

@@ -2,7 +2,6 @@ h1. MerbAuth - Merb Merb::Authentication
 
 h2. An extensible architecture for authentication
 
-* Stupidly Simple
 * Speaks fluent HTTP, even the errors
 * Pluggable Architecture (so that you can use any authentication algorithms you like)
 * Cascading Merb::Authentication (if one method fails, another is attempted, then another. When no methods succeed, authentication fails)
@@ -18,7 +17,7 @@ h2.  What is it
 The merb-auth gem is the default implementation of merb-auth-core and merb-auth-more for
 the default Merb Stack.  Included are:
 
-merb-auth-slice-password # A basic slice that provides everything you need for basic password logins
+merb-auth-slice-password # A basic slice that provides login and logout functionality
 
 Strategies: 
   :default_password_form # Form based login via a "login" field and "password" field
@@ -37,54 +36,58 @@ Gem Style
 
 From Source
 <pre><code>
-git clone http://github.com/wycats/merb-more.git
-cd merb-more/merb-auth
+git clone http://github.com/wycats/merb.git
+cd merb/merb-auth
 sudo rake install
 </code></pre>
 
 h2. Basic Setup
 
-h3. Application Setup
+h3. Application Setup (Stack)
 
-h4. Setup your user
+When you generate your application with @merb-gen app my_app@ your almost ready to go.
 
-Setup your User resource 
-$ merb-gen resource users
+You'll need something to protect @merb-gen resource foos@
 
-Ensure you have a login property
-property :login, String
+You'll need to make your database: @rake db:automigrate@
 
-Make sure you have the following in your migrations (if required)
-crypted_password - String
-salt             - String
-
-
-h4. Setup your configuration
-
-Include merb-auth in your application config/init.rb 
+Also you need a user
 <pre><code>
-  dependency "merb-auth"
+  $ merb -i
+  >> u = User.new(:login => "homer")
+  >> u.password = u.password_confirmation = "sekrit"
+  >> u.save
 </code></pre>
 
-Setup the routing: config/router.rb
+No you should setup authentication for the things you want to protect:
 
 <pre><code>
-  Merb::Router.prepare do
-    merb_auth_routes(:name_prefix => nil, :path_prefix => nil)
-  end
-</code></pre>
-
-Protect Your Controller
-<pre><code>
-  class MyController < Application
-    before :ensure_authenticated
-    
-    #...
+  # config/router.rb
+  authenticate do
+    resources :foos
   end
 </pre></code>
 
+You can protect your controller at an action level also
 
+<pre><code>
+  # app/controllers/foos.rb 
+  before :ensure_authenticated
+</code></pre>
 
+Fire It Up!
 
+@merb@
 
+h3. Customize your setup
 
+In the Merb.root/merb/merb-auth directory there are a couple of files that
+are generated for you by the stack generator.  These are @setup.rb@ and @strategies.rb@
+
+By default these setup merb-auth to work with the default stack.  To customize it, 
+modify these two files to get the results you want.  Serialize in and out of the session,
+change the user model for use with the default strategies. 
+
+You can of course not use the default strategies and declare your own, or mix and match them.
+
+Configure your routes in the config/router.rb file.

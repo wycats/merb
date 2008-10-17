@@ -10,7 +10,7 @@ Strategies are really simple to implement, but we've made some basic ones availa
 
 The built in ones are basic but should be enough to get you going for most things.  
 
-To specify them, simply require them.  For example,in lib/auth-strategies.rb
+To specify them, simply require them.  For example,in Merb.root/merb/merb-auth/strategies.rb
 
 <pre><code>
 Merb::Authentication.activate!(:default_password_form)
@@ -33,7 +33,7 @@ h3. "User" mixins
 
 To assist with your authenticating needs, there is user mixins available to enhance your user model
 for basic cases.  These really are just for the basic case, so if you need something extra you should 
-overwrite the methods, or implement (and share ;) ;) ) your requirements.
+overwrite the methods, or implement your requirements.
 
 To use these, require the specific mixin, and then include it into your "User" class.
 
