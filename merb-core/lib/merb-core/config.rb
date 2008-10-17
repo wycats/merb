@@ -18,7 +18,7 @@ module Merb
           :port                   => "4000",
           :adapter                => "runner",
           :reload_classes         => true,
-          :fork_for_class_load    => !Merb.forking_environment?,
+          :fork_for_class_load    => Merb.forking_environment?,
           :environment            => "development",
           :merb_root              => Dir.pwd,
           :use_mutex              => true,
