@@ -710,7 +710,9 @@ module Merb
     #
     # @api public
     def trap(signal, &block)
-      Kernel.trap(signal, &block) unless Merb.disabled?(:signals)
+      if Signal.list.include?(signal)
+        Kernel.trap(signal, &block) unless Merb.disabled?(:signals)
+      end
     end
 
     def forking_environment?
