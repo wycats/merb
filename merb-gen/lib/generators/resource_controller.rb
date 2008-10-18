@@ -30,6 +30,8 @@ module Merb::Generators
     template :controller_none, :orm => :none do |template|
       template.source = "app/controllers/%file_name%.rb"
       template.destination = "app/controllers" / base_path / "#{file_name}.rb"
+      
+      self.add_resource_route(self.plural_model)
     end
   
     [:index, :show, :edit, :new].each do |view|
@@ -47,6 +49,14 @@ module Merb::Generators
     template :controller_test_unit, :testing_framework => :test_unit, :orm => :none do |template|
       template.source = 'test/controllers/%file_name%_test.rb'
       template.destination = "test/controllers" / base_path / "#{file_name}_test.rb"
+    end
+    
+    def add_resource_route(plural_resource)
+      router_path = Merb.root + "/config/router.rb"
+      sentinel = "Merb::Router.prepare do"
+      to_inject = "resources :#{plural_resource}"
+      content = File.read(router_path).gsub(/(#{Regexp.escape(sentinel)})/mi){|match| "#{match}\n  #{to_inject}"}
+      File.open(router_path, 'wb') { |file| file.write(content) }
     end
     
     def model_class_name
