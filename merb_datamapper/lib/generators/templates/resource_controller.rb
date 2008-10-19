@@ -31,6 +31,7 @@ class <%= class_name %> < Application
     if @<%= singular_model %>.save
       redirect resource(@<%= singular_model %>), :message => {:notice => "<%= model_class_name %> was successfully created"}
     else
+      message[:error] = "<%= model_class_name %> failed to be created"
       render :new
     end
   end
