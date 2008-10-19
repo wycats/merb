@@ -1,4 +1,4 @@
-merb_exceptions
+merb-exceptions
 ===============
 A simple Merb plugin to ease exception notifications.
 
@@ -6,14 +6,14 @@ The notifier currently supports two interfaces, Email Alerts and Web Hooks. Emai
 
 Getting Going
 -------------
-Once you have the Gem installed you will need to add it as a dependency in your projects `init.rb` file
+Once you have the Gem installed you will need to add it as a dependency in your projects `dependencies.rb` file
 
-    dependency 'merb_exceptions'
+    dependency 'merb-exceptions'
 
-Configuration goes in 'config/init.rb' file in 'Merb::BootLoader.before_app_loads'. See 'Settings' below for a full description of the options.
+Configuration goes in your projects `config/init.rb` file inside `Merb::BootLoader.before_app_loads`. See the 'Settings' section below for a full description of the options.
 
     Merb::Plugins.config[:exceptions] = {
-      :web_hooks       => ['http://localhost:4000/exceptions'],
+      :web_hooks       => ['http://example.com'],
       :email_addresses => ['hello@exceptions.com', 'user@myapp.com'],
       :app_name        => "My App Name",
       :email_from      => "exceptions@myapp.com",
@@ -42,17 +42,17 @@ Settings
 
 Advanced usage
 --------------
-Including `MerbExceptions::ControllerExtensions` creates an `internal_server_error` action which renders the default exception page and delivers the exception. If you need to rescue any other exceptions or customize the behavior in any way you can write your own actions in `ExceptionsController` and make a call to `render_and_notify`.
+merb-exceptions will deliver exceptions for any unhandled exceptions (exceptions that do not have views defined in the `Exceptions` controller)
 
-For example to be notified of 404's:
+You can cause handled exceptions to send notifications as well, for example to be notified of 404's:
+
+    after :notify_of_exceptions, :only => :not_found
 
     def not_found
       render_and_notify :format => :html
     end
 
-`render_and_notify` - passes any provided options directly to Merb's render method and then sends the notification after rendering.
-
-`notify_of_exceptions` - if you need to handle the render yourself for some reason then you can call this method directly. It sends notifications without any rendering logic. Note though that if you are sending lots of notifications this could delay sending a response back to the user so try to avoid using it where possible.
+`notify_of_exceptions` - sends notifications without any rendering logic. Note though that if you are sending lots of notifications this could delay sending a response back to the user so it is better to use after rendering.
 
 Web hooks
 ---------
