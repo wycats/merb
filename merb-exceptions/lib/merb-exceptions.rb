@@ -17,13 +17,14 @@ if defined?(Merb::Plugins)
   Merb::BootLoader.after_app_loads do
     if Object.const_defined?(:Exceptions)
       Exceptions.send(:include, MerbExceptions::ExceptionsHelper)
-      if Merb::Plugins.config[:exceptions][:environments].include?(Merb.env)
-        Exceptions.send(:include, MerbExceptions::ControllerExtensions)
-      end
+    end
+    if Merb::Plugins.config[:exceptions][:environments].include?(Merb.env)
+      Merb::Dispatcher::DefaultException.send(:include, MerbExceptions::ExceptionsHelper)
+      Merb::Dispatcher::DefaultException.send(:include, MerbExceptions::DefaultExceptionExtensions)
     end
   end
 
   require 'merb-exceptions/notification'
-  require 'merb-exceptions/controller_extensions'
-  require 'merb-exceptions/exceptions_helper.rb'
+  require 'merb-exceptions/default_exception_extensions'
+  require 'merb-exceptions/exceptions_helper'
 end
