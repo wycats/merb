@@ -30,4 +30,12 @@ describe Merb::Controller, " redirects" do
     @controller = dispatch_to(Merb::Test::Fixtures::Controllers::SetsMessage, :index)
     @controller.body.should == "Hello"
   end
+
+  it "handles malformed message" do
+    message = Merb::Request.escape([Marshal.dump(:notice => "what?")].pack("m"))
+    message = message.reverse
+    lambda do
+      @controller = dispatch_to(Merb::Test::Fixtures::Controllers::SetsMessage, :index, {:_message => message})
+    end.should_not raise_error(TypeError)
+  end
 end
