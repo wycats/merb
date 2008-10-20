@@ -24,4 +24,4 @@ end
 
 Merb::Plugins.add_rakefiles "merb-auth-core/merbtasks"
 
-Merb.push_path(:lib_authentication, Merb.root / "merb" / "merb-auth")
+Merb.push_path(:lib_authentication, Merb.root_path("merb" / "merb-auth"), "*.rb" )

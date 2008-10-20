@@ -1145,23 +1145,9 @@ class Merb::BootLoader::SetupSession < Merb::BootLoader
 
 end
 
-class Merb::BootLoader::AfterAppLoads < Merb::BootLoader
-
-  # Call any after_app_loads hooks that were registered via after_app_loads in
-  # init.rb.
-  #
-  # ==== Returns
-  # nil
-  #
-  # @api plugin
-  def self.run
-    Merb::BootLoader.after_load_callbacks.each {|x| x.call }
-    nil
-  end
-end
-
 # In case someone's running a sparse app, the default exceptions require the
-# Exceptions class.
+# Exceptions class.  This must run prior to the AfterAppLoads BootLoader
+# So that plugins may have ensured access in the after_app_loads block
 class Merb::BootLoader::SetupStubClasses < Merb::BootLoader
   # Declares empty Application and Exception controllers.
   #
@@ -1176,10 +1162,25 @@ class Merb::BootLoader::SetupStubClasses < Merb::BootLoader
           abstract!
         end
 
-        class Exceptions < Application
+        class Exceptions < Merb::Controller
         end
       RUBY
     end
+    nil
+  end
+end
+
+class Merb::BootLoader::AfterAppLoads < Merb::BootLoader
+
+  # Call any after_app_loads hooks that were registered via after_app_loads in
+  # init.rb.
+  #
+  # ==== Returns
+  # nil
+  #
+  # @api plugin
+  def self.run
+    Merb::BootLoader.after_load_callbacks.each {|x| x.call }
     nil
   end
 end
