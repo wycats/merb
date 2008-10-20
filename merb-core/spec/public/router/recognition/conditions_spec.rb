@@ -217,6 +217,16 @@ describe "When recognizing requests," do
       lambda { route_for("/superblog1/post/123") }.should raise_not_found
       lambda { route_for("/ab/12") }.should raise_not_found
     end
+    
+    it "should raise an error when :path is used as a variable in the path" do
+      bad_path = lambda do
+        Merb::Router.prepare do
+          match("/:path").register
+        end
+      end
+      
+      bad_path.should raise_error(Merb::Router::Behavior::Error)
+    end
   end
   
   describe "a route built with nested conditions" do
