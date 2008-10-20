@@ -15,15 +15,14 @@ describe "redirect_back" do
     
     class Application < Merb::Controller; end
     
-    class Exceptions < Application
+    class Exceptions < Merb::Controller
+      include Merb::Authentication::Mixins::RedirectBack
       def unauthenticated; end
     end
 
     class MyController < Application
       before :ensure_authenticated
-
       def index; "HERE!" end
-
     end
   end 
   

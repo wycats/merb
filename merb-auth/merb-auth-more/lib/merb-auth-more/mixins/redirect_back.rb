@@ -36,18 +36,26 @@ module Merb::AuthenticatedHelper
   
 end
 
+# This mixin is mixed into the Exceptions controller to setup the correct methods
+# And filters.  It is implemented as a mixin so that it is completely overwritable in 
+# your controllers
+module Merb::Authentication::Mixins
+  module RedirectBack
+    def self.included(base)
+      base.class_eval do  
+        after  :_set_return_to,   :only => :unauthenticated
+      end
+    end
+    
+    private   
+    def _set_return_to
+      session.authentication.return_to_url ||= request.uri unless request.exceptions.blank?
+    end
 
-class Application < Merb::Controller; end
+  end # RedirectBack
+end # Merb::Authentication::Mixins
 
-class Exceptions < Application
-  after  :_set_return_to,   :only => :unauthenticated
-
-  private   
-  def _set_return_to
-    session.authentication.return_to_url ||= request.uri unless request.exceptions.blank?
-  end
-end
-
+# Adds required methods to  the Authentication object for redirection
 class Merb::Authentication
 
   def return_to_url
@@ -57,4 +65,9 @@ class Merb::Authentication
   def return_to_url=(return_url)
     @return_to_url = session[:return_to] = return_url
   end
+end
+
+# Mixin the RedirectBack mixin before the after_app_loads block (i.e. make sure there is an exceptions controller)
+Merb::Authentication.customize_default do
+  Exceptions.class_eval{ include Merb::Authentication::Mixins::RedirectBack }
 end
