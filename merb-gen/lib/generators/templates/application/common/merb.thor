@@ -1091,11 +1091,17 @@ module Merb
         @_merb_loaded = true
       end
       Merb::BootLoader::Dependencies.dependencies
-    rescue => e
+    rescue StandardError => e
       error "Couldn't extract dependencies from application!"
       error e.message
       puts  "Make sure you're executing the task from your app (--merb-root), or"
       puts  "specify a config option (--config or --config-file=YAML_FILE)"
+      return []
+    rescue SystemExit
+      error "Couldn't extract dependencies from application!"
+      error "application failed to run"
+      puts  "Please check if your application runs using 'merb'; for example,"
+      puts  "look for any gem version mismatches in dependencies.rb"
       return []
     end
         
