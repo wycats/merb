@@ -11,7 +11,7 @@
 # some cases. Eventually Rubinius and maybe MRI 2.0 gonna
 # improve this situation but at the moment, all commonly used
 # strings, regexp and numbers used as constants so no extra
-# objects created and VM just operate pointers.
+# objects created and VM just operates pointers.
 module Merb
   module Const
     
