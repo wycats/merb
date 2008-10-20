@@ -5,7 +5,7 @@ require 'fileutils'
 require 'yaml'
 
 # Important - don't change this line or its position
-MERB_THOR_VERSION = '0.0.51'
+MERB_THOR_VERSION = '0.0.52'
 
 ##############################################################################
 
@@ -316,9 +316,12 @@ end
 if File.directory?(gems_dir = File.join(Dir.pwd, 'gems')) ||
    File.directory?(gems_dir = File.join(File.dirname(__FILE__), '..', 'gems'))
   $BUNDLE = true; Gem.clear_paths; Gem.path.unshift(gems_dir)
+  if (local_gem = Dir[File.join(gems_dir, "specifications", "#{spec.name}-*.gemspec")].last)
+    version = File.basename(local_gem)[/-([\\.\\d]+)\\.gemspec$/, 1]
+  end
 end
 
-version = "#{Gem::Requirement.default}"
+version ||= "#{Gem::Requirement.default}"
 
 if ARGV.first =~ /^_(.*)_$/ and Gem::Version.correct? $1 then
   version = $1
