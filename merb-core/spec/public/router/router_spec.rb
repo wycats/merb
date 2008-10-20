@@ -56,26 +56,21 @@ describe Merb::Router do
         end
       }.should raise_error(Merb::Router::GenerationError)
     end
-  end
-  
-  describe "#reset!" do
     
-    before(:each) do      
+    it "should empty previously set #routes, #resource_routes, and #named_routes" do
       Merb::Router.prepare do
         resources :users
       end
-      Merb::Router.reset!
-    end
-    
-    it "should empty #routes and #named_routes" do
+      Merb::Router.prepare { }
+      
       Merb::Router.routes.should be_empty
       Merb::Router.named_routes.should be_empty
+      Merb::Router.resource_routes.should be_empty
     end
     
     it "should not be able to match routes anymore" do
       lambda { route_for("/users") }.should raise_error(Merb::Router::NotCompiledError)
     end
-    
   end
 
   describe "#match" do
