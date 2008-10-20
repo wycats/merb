@@ -1,4 +1,4 @@
-class Exceptions < Application
+class Exceptions < Merb::Controller
 
   attr_reader :handler 
   
