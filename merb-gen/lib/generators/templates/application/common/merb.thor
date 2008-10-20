@@ -1453,6 +1453,7 @@ module Merb
     def self.core_dependencies(gem_dir = nil, ignore_deps = false)
       @_core_dependencies ||= begin
         if gem_dir # add local gems to index
+          orig_gem_path = ::Gem.path
           ::Gem.clear_paths; ::Gem.path.unshift(gem_dir)
         end
         deps = []
@@ -1467,7 +1468,7 @@ module Merb
             deps += gemspec.dependencies
           end
         end
-        ::Gem.clear_paths if gem_dir # reset
+        ::Gem.path.replace(orig_gem_path) if gem_dir # reset
         deps
       end
     end
