@@ -73,7 +73,7 @@ module Merb
         match_opts = options.except(*resource_options)
         options    = options.only(*resource_options)
         singular   = options[:singular] ? options[:singular].to_s : Extlib::Inflection.singularize(name)
-        klass_name = args.first ? args.first.to_s : Extlib::Inflection.classify(singular)
+        klass_name = args.first ? args.first.to_s : singular.to_const_string
         klass      = Object.full_const_get(klass_name) rescue nil
         keys       = options.delete(:keys) || options.delete(:key)
         params     = { :controller => options.delete(:controller) || name }
