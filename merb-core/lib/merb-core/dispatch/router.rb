@@ -116,7 +116,7 @@ module Merb
         class << self
           alias_method :match, :match_before_compilation
         end
-        self.routes, self.named_routes = [], {}
+        self.routes, self.named_routes, self.resource_routes = [], {}, {}
       end
       
       # Finds route matching URI of the request and returns a tuple of
