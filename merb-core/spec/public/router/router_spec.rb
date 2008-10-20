@@ -71,6 +71,16 @@ describe Merb::Router do
     it "should not be able to match routes anymore" do
       lambda { route_for("/users") }.should raise_error(Merb::Router::NotCompiledError)
     end
+    
+    it "should log at the debug level when it cannot find a resource model" do
+      with_level(:info) do
+        Merb::Router.prepare { resources :zomghi2u }
+      end.should_not include_log("Could not find resource model Zonghi2u")
+      
+      with_level(:debug) do
+        Merb::Router.prepare { resources :zomghi2u }
+      end.should include_log("Could not find resource model Zomghi2u")
+    end
   end
 
   describe "#match" do
