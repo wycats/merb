@@ -2,15 +2,16 @@ require File.join(File.dirname(__FILE__), "spec_helper")
 require File.join(File.dirname(__FILE__), "controllers", "url")
 require 'ostruct'
 
-class Orm     < OpenStruct ; def id ; @table[:id] ; end ; end
-class User    < Orm ; end
-class Comment < Orm ; end
-
-module Namespaced
-  class User < Orm ; end
-end
-
 describe Merb::Controller, " #resource" do
+  
+  class Orm     < OpenStruct ; def id ; @table[:id] ; end ; end
+  class User    < Orm ; end
+  class Comment < Orm ; end
+  class Forum   < Orm ; end
+
+  module Namespaced
+    class User < Orm ; end
+  end
   
   before(:each) do
     @controller = dispatch_to(Merb::Test::Fixtures::Controllers::Url, :index)
@@ -71,6 +72,18 @@ describe Merb::Controller, " #resource" do
       
       @controller.resource(:users, :hello).should  == "/users/hello"
       @controller.resource(@user, :goodbye).should == "/users/5/goodbye"
+    end
+    
+    it "should be able to work with a model Named Forum" do
+      Merb::Router.prepare do
+        identify :id do
+          resources :forums
+        end
+      end
+      
+      @forum = Forum.new(:id => 9)
+      
+      @controller.resource(@forum).should == "/forums/9"
     end
     
   end
