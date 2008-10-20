@@ -47,18 +47,24 @@ module Merb::Test::Fixtures
         self.status = "awesome"
       end
     end
-    
+
     class DispatchCallbacks < Testing
-      
-      attr_accessor :called_before, :called_after
-      
-      self._before_dispatch_callbacks << lambda { |c| c.called_before = true }
-      self._after_dispatch_callbacks  << lambda { |c| c.called_after  = true }
-      
+
+      attr_accessor :called_before, :called_after, :observed_action
+
+      self._before_dispatch_callbacks << lambda do |c|
+        c.called_before = true
+        c.observed_action = c.action_name
+      end
+
+      self._after_dispatch_callbacks  << lambda do |c|
+         c.called_after  = true
+      end
+
       def index
         "index"
       end
-      
+
     end
 
   end

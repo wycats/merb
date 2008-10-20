@@ -58,7 +58,7 @@ spec = Gem::Specification.new do |s|
 
   # Dependencies
   s.add_dependency "extlib", ">= 0.9.8"
-  s.add_dependency "erubis"
+  s.add_dependency "erubis", ">= 2.6.2"
   s.add_dependency "rake"
   s.add_dependency "json_pure"
   s.add_dependency "rspec"

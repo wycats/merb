@@ -1,23 +1,22 @@
 MerbAuthSlicePassword ==================
 
 A slice for the Merb framework that uses the merb-auth-core authentication
-framework.  This provides basic form based login as well as basic auth login.
-To see how to customize the authentication process, see merb-auth-core.
+framework.  This slice provides a basic login and logout function.  By default
+it also include the form based password logins and basic authentication.
 
-To use this slice you should supply a User type model that logs in via an
-identifier and password.  i.e. "email" and "password", or "login" & "password"
+To see how to customize it see the merb-auth-core
 
-Additionally your model should implement a class level method,
-authenticate(login, password)  This should return the user object, or if not
-found should return false or nil
+To use this slice setup some strategies and make sure you have everything required there.
+Usually a "User" model of some kind. 
 
-For example
+To overwrite the login form, you should just create a view file in 
+app/views/exceptions/unauthenticated.html.erb in the host app.
 
-User.authenticate("fred", "sekrit") #=> The user object for the "fred" login
-or nil / false if not found
+By default the slice will load the password_form and the basic_auth strategies.  
+To prevent the slice from loading strategeis use:
+MerbAutheSliceDefault[:no_default_strategies] = true
 
-You can use the salted_user mixin from merb-auth-more for use with this slice.
-
+<pre>
 ------------------------------------------------------------------------------
 
 |-- LICENSE
@@ -59,7 +58,7 @@ You can use the salted_user mixin from merb-auth-more for use with this slice.
             `-- main.rb
 
 
-
+</pre>
 1. Rake tasks to package/install the gem - edit this to modify the manifest.
 2. The slice application: controllers, models, helpers, views.
 3. The default layout, as specified in Merb::Slices::config[:mauth_password_slice][:layout]

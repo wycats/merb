@@ -85,5 +85,12 @@ describe Merb::Controller, "before/after dispatch callbacks" do
     controller = dispatch_to(Controllers::DispatchCallbacks, :index)
     controller.called_before.should be_true
     controller.called_after.should be_true
-  end  
+  end
+
+  it 'has access to action name' do
+    controller = dispatch_to(Controllers::DispatchCallbacks, :index)
+    controller.called_before.should be_true
+    controller.called_after.should be_true
+    controller.observed_action.should == 'index'
+  end
 end

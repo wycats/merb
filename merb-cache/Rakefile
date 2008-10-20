@@ -1,4 +1,5 @@
 require 'rubygems'
+require "merb-core"
 require 'rake/gempackagetask'
 require "extlib"
 require 'merb-core/tasks/merb_rake_helper'
@@ -17,7 +18,7 @@ GEM_EMAIL  = "ben@benburkert.com"
 
 GEM_NAME    = "merb-cache"
 PKG_BUILD   = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
-GEM_VERSION = (Merb::VERSION rescue "0.9.10") + PKG_BUILD
+GEM_VERSION = Merb::VERSION + PKG_BUILD
 
 RELEASE_NAME    = "REL #{GEM_VERSION}"
 
@@ -35,7 +36,7 @@ spec = Gem::Specification.new do |s|
   s.author = GEM_AUTHOR
   s.email = GEM_EMAIL
   s.homepage = PROJECT_URL
-  s.add_dependency('merb-core', '>= 0.9.10')
+  s.add_dependency('merb-core', ">= #{Merb::VERSION}")
   s.require_path = 'lib'
   s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,spec}/**/*")
 end

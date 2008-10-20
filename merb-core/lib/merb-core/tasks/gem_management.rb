@@ -189,7 +189,7 @@ module GemManagement
       options[:version] = Gem::Requirement.new ["= #{options[:version]}"]
     end
     update_source_index(options[:install_dir]) if options[:install_dir]
-    Gem::Uninstaller.new(gem, options).uninstall
+    Gem::Uninstaller.new(gem, options).uninstall rescue nil
   end
 
   def clobber(source_dir)
@@ -251,7 +251,7 @@ module GemManagement
         gemspecs = ::Gem.source_index.search(dep)
         local = gemspecs.reverse.find { |s| s.loaded_from.index(gem_dir) == 0 }
         if local
-          local_specs  << local
+          local_specs << local
         elsif gemspecs.last
           system_specs << gemspecs.last
         else
@@ -259,6 +259,15 @@ module GemManagement
         end
       end
       ::Gem.clear_paths
+    else
+      dependencies.each do |dep|
+        gemspecs = ::Gem.source_index.search(dep)
+        if gemspecs.last
+          system_specs << gemspecs.last
+        else
+          missing_deps << dep
+        end
+      end
     end
     [system_specs, local_specs, missing_deps]
   end
@@ -307,9 +316,12 @@ end
 if File.directory?(gems_dir = File.join(Dir.pwd, 'gems')) ||
    File.directory?(gems_dir = File.join(File.dirname(__FILE__), '..', 'gems'))
   $BUNDLE = true; Gem.clear_paths; Gem.path.unshift(gems_dir)
+  if (local_gem = Dir[File.join(gems_dir, "specifications", "#{spec.name}-*.gemspec")].last)
+    version = File.basename(local_gem)[/-([\\.\\d]+)\\.gemspec$/, 1]
+  end
 end
 
-version = "#{Gem::Requirement.default}"
+version ||= "#{Gem::Requirement.default}"
 
 if ARGV.first =~ /^_(.*)_$/ and Gem::Version.correct? $1 then
   version = $1

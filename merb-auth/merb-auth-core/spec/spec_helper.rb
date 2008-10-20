@@ -33,7 +33,7 @@ Spec::Runner.configure do |config|
   config.include(StrategyHelper)
 end
 
-class Exceptions < Application
+class Exceptions < Merb::Controller
   def unauthenticated
     session.abandon!
     "Login please"
@@ -88,6 +88,11 @@ class Viking
   
   def self.capture(klass)
     @captures ||= []
-    @captures << klass.name
+    case klass
+    when Class
+      @captures << klass.name
+    else
+      @captures << klass
+    end
   end
 end

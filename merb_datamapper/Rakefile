@@ -20,7 +20,7 @@ GEM_EMAIL  = "jtoy@rubynow.com"
 
 GEM_NAME    = "merb_datamapper"
 PKG_BUILD   = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
-GEM_VERSION = (Merb::VERSION rescue "0.9.10") + PKG_BUILD
+GEM_VERSION = Merb::VERSION + PKG_BUILD
 
 RELEASE_NAME    = "REL #{GEM_VERSION}"
 

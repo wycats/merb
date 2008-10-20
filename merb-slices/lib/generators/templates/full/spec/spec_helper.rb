@@ -14,7 +14,6 @@ Merb.start_environment(
   :testing => true, 
   :adapter => 'runner', 
   :environment => ENV['MERB_ENV'] || 'test',
-  :merb_root => Merb.root,
   :session_store => 'memory'
 )
 

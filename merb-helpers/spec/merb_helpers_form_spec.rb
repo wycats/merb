@@ -791,6 +791,13 @@ describe "bound_radio_group" do
     radio[0].should match_tag(:input, :id => 'bar_id')
     radio[1].should match_tag(:label, :for => 'bar_id')
   end
+
+  it "should only have one element with the checked property" do
+    r = @c.render :basic
+    radio = r.scan(/<[^>]*>/)[2..-2]
+    radio[0].should match_tag(:input, :checked => "checked")
+    radio[3].should_not match_tag(:input, :checked => "false")
+  end
 end
 
 

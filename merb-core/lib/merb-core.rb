@@ -275,7 +275,7 @@ module Merb
     #
     # @api public
     def root=(value)
-      @root = value
+      @root = File.expand_path(value) + File::SEPARATOR
     end
 
     # ==== Parameters
@@ -710,7 +710,21 @@ module Merb
     #
     # @api public
     def trap(signal, &block)
-      Kernel.trap(signal, &block) unless Merb.disabled?(:signals)
+      if Signal.list.include?(signal)
+        Kernel.trap(signal, &block) unless Merb.disabled?(:signals)
+      end
+    end
+
+    def forking_environment?
+      !on_windows? && !on_jruby?
+    end
+
+    def on_jruby?
+      RUBY_PLATFORM =~ Merb::Const::JAVA_PLATFORM_REGEXP
+    end
+
+    def on_windows?
+      RUBY_PLATFORM =~ Merb::Const::WIN_PLATFORM_REGEXP
     end
 
   end

@@ -37,7 +37,7 @@ rescue
     
     If you want to fully customize your authentication you should use merb-core directly.  
     
-    See lib/authentication/setup.rb and strategies.rb to customize your setup
+    See merb/merb-auth/setup.rb and strategies.rb to customize your setup
 
     TEXT
 end

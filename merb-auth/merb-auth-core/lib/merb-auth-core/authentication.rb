@@ -1,5 +1,6 @@
 module Merb
   class Authentication
+    module Strategies; end
     include Extlib::Hook
     attr_accessor :session
     attr_writer   :error_message
@@ -74,19 +75,30 @@ module Merb
       user = nil    
       # This one should find the first one that matches.  It should not run antother
       strategies.detect do |s|
+        s = Merb::Authentication.lookup_strategy[s] # Get the strategy from string or class
         unless s.abstract?
           strategy = s.new(request, params)
           user = strategy.run! 
           if strategy.halted?
-            self.headers  = strategy.headers
-            self.status   = strategy.status
-            self.body     = strategy.body
+            self.headers, self.status, self.body = [strategy.headers, strategy.status, strategy.body]
             halt!
             return
           end
           user
         end
       end
+      # Check after callbacks to make sure the user is still cool
+      Merb::Authentication.after_callbacks.each do |cb|
+        user = case cb
+        when Proc
+          cb.call(user, request, params)
+        when Symbol, String
+          user.send(cb)
+        end
+        break unless user
+      end if user
+      
+      # Finally, Raise an error if there is no user found, or set it in the session if there is.
       raise Merb::Controller::Unauthenticated, msg unless user
       self.user = user
     end
@@ -126,5 +138,25 @@ module Merb
     def fetch_user(session_contents = session[:user])
       raise NotImplemented
     end
+    
+    # Keeps track of strategies by class or string
+    # When loading from string, strategies are loaded withing the Merb::Authentication::Strategies namespace
+    # When loaded by class, the class is stored directly
+    def self.lookup_strategy
+      @strategy_lookup || reset_strategy_lookup!
+    end
+    
+    # Restets the strategy lookup.  Useful in specsd
+    def self.reset_strategy_lookup!
+      @strategy_lookup = Mash.new do |h,k| 
+        case k
+        when Class
+          h[k] = k
+        when String, Symbol
+          h[k] = Merb::Authentication::Strategies.full_const_get(k.to_s) 
+        end
+      end
+    end
+    
   end # Merb::Authentication
 end # Merb

@@ -90,6 +90,14 @@ module Merb
       # ==== Layout specific things
       #
 
+      def merb_gems_version
+        "0.9.10"
+      end
+
+      def dm_gems_version
+        "0.9.6"
+      end
+      
       # empty array means all files are considered to be just
       # files, not templates
       glob! "app"

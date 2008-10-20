@@ -57,78 +57,6 @@ describe Merb::Router do
       }.should raise_error(Merb::Router::GenerationError)
     end
   end
-
-  describe "#append" do
-    
-    it "should prepare the routes" do
-      Merb::Router.append do
-        match("/hello").to(:controller => "hello")
-      end
-      
-      route_for("/hello").should have_route(:controller => "hello")
-    end
-    
-    it "should retain previously defined routes" do
-      Merb::Router.prepare do
-        match("/hello").to(:controller => "hello")
-      end
-      
-      Merb::Router.append do
-        match("/goodbye").to(:controller => "goodbye")
-      end
-      
-      route_for("/hello").should have_route(:controller => "hello")
-    end
-    
-    it "should not overwrite any routes" do
-      Merb::Router.prepare do
-        match("/hello").to(:controller => "first")
-      end
-      
-      Merb::Router.append do
-        match("/hello").to(:controller => "second")
-      end
-      
-      route_for("/hello").should have_route(:controller => "first")
-    end
-    
-  end
-  
-  describe "#prepend" do
-    
-    it "should prepare the routes" do
-      Merb::Router.prepend do
-        match("/hello").to(:controller => "hello")
-      end
-      
-      route_for("/hello").should have_route(:controller => "hello")
-    end
-    
-    it "should retain previously defined routes" do
-      Merb::Router.prepare do
-        match("/hello").to(:controller => "hello")
-      end
-      
-      Merb::Router.prepend do
-        match("/goodbye").to(:controller => "goodbye")
-      end
-      
-      route_for("/hello").should have_route(:controller => "hello")
-    end
-    
-    it "should overwrite any routes" do
-      Merb::Router.prepare do
-        match("/hello").to(:controller => "first")
-      end
-      
-      Merb::Router.prepend do
-        match("/hello").to(:controller => "second")
-      end
-      
-      route_for("/hello").should have_route(:controller => "second")
-    end
-    
-  end
   
   describe "#reset!" do
     
@@ -172,6 +100,30 @@ describe Merb::Router do
       
       route_for("/hello").should have_route(:controller => "world")
     end
+  end
+  
+  describe "#around_match" do
+    
+    it "should set a class method of Router to be called around request matching" do
+      class Merb::Router
+        def self.my_awesome_thang(request)
+          before!
+          retval = yield
+          after!
+          retval
+        end
+      end
+      
+      Merb::Router.around_match = :my_awesome_thang
+      Merb::Router.prepare do
+        match("/").to(:controller => "home")
+      end
+      
+      Merb::Router.should_receive(:before!)
+      Merb::Router.should_receive(:after!)
+      route_for("/").should have_route(:controller => "home")
+    end
+    
   end
 
 end

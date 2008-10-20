@@ -20,11 +20,15 @@ class Merb::Authentication
             user = user_class.authenticate(request.params[login_param], request.params[password_param])
             if !user
               request.session.authentication.errors.clear!
-              request.session.authentication.errors.add(login_param, "#{login_param.to_s.capitalize} or #{password_param.to_s.capitalize} were incorrect")
+              request.session.authentication.errors.add(login_param, strategy_error_message)
             end
             user
           end
         end # run!
+        
+        def strategy_error_message
+          "#{login_param.to_s.capitalize} or #{password_param.to_s.capitalize} were incorrect"
+        end
         
       end # Form
     end # Password

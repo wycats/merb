@@ -9,22 +9,22 @@ namespace :db do
   end
   
   desc "Create a sample database.yml file"
-  task :database_yaml => :merb_start do
+  task :database_yaml => :merb_env do
     sample_location = File.join(File.dirname(__FILE__), "..", "merb", "orms", "data_mapper", "database.yml.sample")
     target_location = Merb.dir_for(:config)
     FileUtils.cp sample_location, target_location
   end
   desc "Perform automigration"
-  task :automigrate => :merb_start do
+  task :automigrate => :merb_env do
     ::DataMapper::AutoMigrator.auto_migrate
   end
   desc "Perform non destructive automigration"
-  task :autoupgrade => :merb_start do
+  task :autoupgrade => :merb_env do
     ::DataMapper::AutoMigrator.auto_upgrade
   end
 
   namespace :migrate do
-    task :load => :merb_start do
+    task :load => :merb_env do
       gem 'dm-migrations'
       require 'migration_runner'
       FileList["schema/migrations/*.rb"].each do |migration|
@@ -81,12 +81,12 @@ end
 
 namespace :sessions do
   desc "Perform automigration for sessions"
-  task :create => :merb_start do
+  task :create => :merb_env do
     Merb::DataMapperSessionStore.auto_migrate!
   end
 
   desc "Clears sessions"
-  task :clear => :merb_start do
+  task :clear => :merb_env do
     Merb::DataMapperSessionStore.all.destroy!
   end
 end

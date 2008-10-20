@@ -29,7 +29,7 @@ module Merb::Generators
     end
 
     def after_generation
-      STDOUT << message("Don't forget to set your resource route in config/router.rb for instance: resources :#{model_name.downcase}s ")
+      STDOUT << message("resources :#{model_name.pluralize.snake_case} route added to config/router.rb")
     end
   end
   

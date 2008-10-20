@@ -18,7 +18,7 @@ module Merb
           :port                   => "4000",
           :adapter                => "runner",
           :reload_classes         => true,
-          :fork_for_class_load    => !(RUBY_PLATFORM =~ /(:?mswin|mingw|java)/),
+          :fork_for_class_load    => Merb.forking_environment?,
           :environment            => "development",
           :merb_root              => Dir.pwd,
           :use_mutex              => true,
@@ -26,7 +26,7 @@ module Merb
           :log_auto_flush         => false,
           :log_level              => :info,
           :log_stream             => STDOUT,
-          :disabled_components    => [],
+          :disabled_components    => Merb.on_windows? ? [:signals] : [],
           :deferred_actions       => [],
           :verbose                => false,
           :name                   => "merb"

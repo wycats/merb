@@ -16,7 +16,7 @@ class <%= class_name %> < Application
   def new
     only_provides :html
     @<%= singular_model %> = <%= model_class_name %>.new
-    display <%= model_class_name %>
+    display @<%= singular_model %>
   end
 
   def edit(id)
@@ -31,12 +31,13 @@ class <%= class_name %> < Application
     if @<%= singular_model %>.save
       redirect resource(@<%= singular_model %>), :message => {:notice => "<%= model_class_name %> was successfully created"}
     else
+      message[:error] = "<%= model_class_name %> failed to be created"
       render :new
     end
   end
 
-  def update(<%= singular_model %>)
-    @<%= singular_model %> = <%= model_class_name %>.get(<%= singular_model %>[:id] )
+  def update(id, <%= singular_model %>)
+    @<%= singular_model %> = <%= model_class_name %>.get(id)
     raise NotFound unless @<%= singular_model %>
     if @<%= singular_model %>.update_attributes(<%= singular_model %>)
        redirect resource(@<%= singular_model %>)

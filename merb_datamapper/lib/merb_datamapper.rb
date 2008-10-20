@@ -2,6 +2,7 @@ if defined?(Merb::Plugins)
   dependency 'dm-core'
 
   require File.dirname(__FILE__) / "merb" / "orms" / "data_mapper" / "connection"
+  require File.dirname(__FILE__) / "merb" / "session" / "data_mapper_session"
   Merb::Plugins.add_rakefiles "merb_datamapper" / "merbtasks"
 
   class Merb::Orms::DataMapper::Connect < Merb::BootLoader

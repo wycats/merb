@@ -28,6 +28,16 @@ namespace :spec do
     end
   end
 
+  desc "Run all request specs, run a spec for a specific Request with REQUEST=MyRequest"
+  Spec::Rake::SpecTask.new('request') do |t|
+    t.spec_opts = SPEC_OPTS
+    if(ENV['REQUEST'])
+      t.spec_files = Dir["spec/requests/**/#{ENV['REQUEST']}_spec.rb"].sort
+    else    
+      t.spec_files = Dir['spec/requests/**/*_spec.rb'].sort
+    end
+  end
+  
   desc "Run all controller specs, run a spec for a specific Controller with CONTROLLER=MyController"
   Spec::Rake::SpecTask.new('controller') do |t|
     t.spec_opts = SPEC_OPTS

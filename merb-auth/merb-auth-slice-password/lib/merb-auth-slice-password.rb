@@ -25,7 +25,7 @@ if defined?(Merb::Plugins)
     
     # Slice metadata
     self.description = "MerbAuthSlicePassword is a merb slice that provides basic password based logins"
-    self.version = "0.9.9"
+    self.version = "0.9.10"
     self.author = "Daniel Neighman"
     
     # Stub classes loaded hook - runs before LoadClasses BootLoader

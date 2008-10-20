@@ -19,7 +19,35 @@ Goals of this release:
 To familiarize yourself with how a merb-core application might look, 
 use merb-gen (from merb-more) to generate a few apps:
 
-$ merb-gen app myapp                   # a "normal" merb app
-$ merb-gen app myapp --flat            # a flattened app
-$ merb-gen app myapp --very-flat       # a single-file app
+$ merb-gen app myapp         # merb stack app, assuming you are using DM and RSpec
 
+The only option you can use with stack is --template_engine=(erb|haml).
+Default is erb.
+
+$ merb-gen core myapp        # a "regular" app without any predefined dependencies
+
+Options available:
+
+--orm=datamapper
+--orm=sequel
+--orm=activerecord
+
+Default is no ORM.
+
+--testing_framework=rspec
+--testing_framework=test_unit
+
+Default is rspec.
+
+--template_enging=erb
+--template_enging=haml
+
+Default is erb.
+
+$ merb-gen flat myapp        # a flattened app: one file and directory for views
+
+Options are same as for "regular" app.
+
+$ merb-gen very_flat myapp   # a single-file app
+
+Options are same as for "regular" app.
