@@ -1,5 +1,6 @@
 module Merb
   class Authentication
+    module Strategies; end
     include Extlib::Hook
     attr_accessor :session
     attr_writer   :error_message
@@ -74,6 +75,7 @@ module Merb
       user = nil    
       # This one should find the first one that matches.  It should not run antother
       strategies.detect do |s|
+        s = Merb::Authentication.lookup_strategy[s] # Get the strategy from string or class
         unless s.abstract?
           strategy = s.new(request, params)
           user = strategy.run! 
@@ -137,6 +139,24 @@ module Merb
       raise NotImplemented
     end
     
-    private 
+    # Keeps track of strategies by class or string
+    # When loading from string, strategies are loaded withing the Merb::Authentication::Strategies namespace
+    # When loaded by class, the class is stored directly
+    def self.lookup_strategy
+      @strategy_lookup || reset_strategy_lookup!
+    end
+    
+    # Restets the strategy lookup.  Useful in specsd
+    def self.reset_strategy_lookup!
+      @strategy_lookup = Mash.new do |h,k| 
+        case k
+        when Class
+          h[k] = k
+        when String, Symbol
+          h[k] = Merb::Authentication::Strategies.full_const_get(k.to_s) 
+        end
+      end
+    end
+    
   end # Merb::Authentication
 end # Merb
