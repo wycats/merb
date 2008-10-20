@@ -33,7 +33,7 @@ Spec::Runner.configure do |config|
   config.include(StrategyHelper)
 end
 
-class Exceptions < Application
+class Exceptions < Merb::Controller
   def unauthenticated
     session.abandon!
     "Login please"

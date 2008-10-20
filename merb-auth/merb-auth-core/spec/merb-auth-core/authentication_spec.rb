@@ -226,6 +226,41 @@ describe "Merb::Authentication Session" do
       Viking.captures.should == ["Stwo", "Sone"]
     end
     
+    
+    describe "Strategy loading as strings" do
+      
+      before :each do
+        Merb::Authentication.reset_strategy_lookup!
+        
+        class Merb::Authentication::Strategies::Zone < Merb::Authentication::Strategy
+          def run!
+            Viking.capture(Merb::Authentication::Strategies::Zone)
+            params[:z_one] 
+          end
+        end
+      end
+      
+      it "should allow for loading the strategies as strings" do
+        @request.params[:z_one] = "z_one"
+        @request.session.authenticate!(@request, @request.params, "Zone")
+        @request.session.user.should == "z_one"
+      end
+      
+      it "should raise a const misisng error when the error is not namespaced" do
+        @request.params[:pass_1] = "s_one"
+        lambda do
+          @request.session.authenticate!(@request, @request.params, "Sone")
+        end.should raise_error(NameError)
+      end
+        
+    
+      it "should allow a mix of strategies as strings or classes" do
+        @request.params[:pass_2] = "s_two"
+        @request.session.authenticate!(@request, @request.params, "Zone", Sone, Stwo)
+        Viking.captures.should == %w(Merb::Authentication::Strategies::Zone Sone Stwo)
+      end
+    end
+    
   end
   
   describe "user_class" do
@@ -313,6 +348,7 @@ describe "Merb::Authentication Session" do
     end
   end
   
+
 
 
 end
