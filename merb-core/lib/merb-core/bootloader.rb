@@ -243,21 +243,21 @@ class Merb::BootLoader::DropPidFile < Merb::BootLoader
 end
 
 # Setup some useful defaults
-#class Merb::BootLoader::Defaults < Merb::BootLoader
+class Merb::BootLoader::Defaults < Merb::BootLoader
   # Sets up the defaults
   #
   # ==== Returns
   # nil
   #
   # @api plugin
-#  def self.run
-#    Merb::Request.http_method_overrides.concat([
-#      proc { |c| c.params[:_method] },
-#      proc { |c| c.env['HTTP_X_HTTP_METHOD_OVERRIDE'] }
-#    ])
-#    nil
-#  end
-#end
+  def self.run
+    Merb::Request.http_method_overrides.concat([
+      proc { |c| c.params[:_method] },
+      proc { |c| c.env['HTTP_X_HTTP_METHOD_OVERRIDE'] }
+    ])
+    nil
+  end
+end
 
 
 # Build the framework paths.
