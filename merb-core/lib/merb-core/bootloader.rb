@@ -1139,6 +1139,11 @@ class Merb::BootLoader::SetupSession < Merb::BootLoader
     end
 
     # Mixin the Merb::Session module to add app-level functionality to sessions
+    overrides = (Merb::Session.instance_methods & Merb::SessionContainer.instance_methods)
+    overrides.each do |m| 
+      Merb.logger.warn!("Warning: Merb::Session##{m} overrides existing " \
+                        "Merb::SessionContainer##{m}")
+    end    
     Merb::SessionContainer.send(:include, Merb::Session)
     nil
   end

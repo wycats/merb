@@ -73,19 +73,22 @@ module Merb
         match_opts = options.except(*resource_options)
         options    = options.only(*resource_options)
         singular   = options[:singular] ? options[:singular].to_s : Extlib::Inflection.singularize(name)
-        klass_name = args.first ? args.first.to_s : Extlib::Inflection.classify(singular)
-        klass      = Object.full_const_get(klass_name) rescue nil
+        klass_name = args.first ? args.first.to_s : singular.to_const_string
         keys       = options.delete(:keys) || options.delete(:key)
         params     = { :controller => options.delete(:controller) || name }
         collection = options.delete(:collection) || {}
         member     = { :edit => :get, :delete => :get }.merge(options.delete(:member) || {})
         
         # Use the identifier for the class as a default
-        if klass
-          keys ||= options[:identify]
-          keys ||= @identifiers[klass]
-        elsif options[:identify]
-          raise Error, "The constant #{klass_name} does not exist, please specify the constant for this resource"
+        begin
+          if klass = Object.full_const_get(klass_name)
+            keys ||= options[:identify]
+            keys ||= @identifiers[klass]
+          elsif options[:identify]
+            raise Error, "The constant #{klass_name} does not exist, please specify the constant for this resource"
+          end
+        rescue NameError => e
+          Merb.logger.debug!("Could not find resource model #{klass_name}")
         end
         
         keys = [ keys || :id ].flatten

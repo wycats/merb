@@ -56,26 +56,31 @@ describe Merb::Router do
         end
       }.should raise_error(Merb::Router::GenerationError)
     end
-  end
-  
-  describe "#reset!" do
     
-    before(:each) do      
+    it "should empty previously set #routes, #resource_routes, and #named_routes" do
       Merb::Router.prepare do
         resources :users
       end
-      Merb::Router.reset!
-    end
-    
-    it "should empty #routes and #named_routes" do
+      Merb::Router.prepare { }
+      
       Merb::Router.routes.should be_empty
       Merb::Router.named_routes.should be_empty
+      Merb::Router.resource_routes.should be_empty
     end
     
     it "should not be able to match routes anymore" do
       lambda { route_for("/users") }.should raise_error(Merb::Router::NotCompiledError)
     end
     
+    it "should log at the debug level when it cannot find a resource model" do
+      with_level(:info) do
+        Merb::Router.prepare { resources :zomghi2u }
+      end.should_not include_log("Could not find resource model Zonghi2u")
+      
+      with_level(:debug) do
+        Merb::Router.prepare { resources :zomghi2u }
+      end.should include_log("Could not find resource model Zomghi2u")
+    end
   end
 
   describe "#match" do

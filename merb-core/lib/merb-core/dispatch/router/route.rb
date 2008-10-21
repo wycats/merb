@@ -424,6 +424,8 @@ module Merb
           segments << match[2].intern
           path = match.post_match
         end
+        
+        raise Router::Behavior::Error, "cannot use :path as a route placeholder" if segments.include?(:path)
 
         segments << path unless path.empty?
         segments
