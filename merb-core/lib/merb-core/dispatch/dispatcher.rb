@@ -13,7 +13,7 @@ module Merb
       # Queue:: the current queue of dispatch jobs.
       # 
       # @api private
-      def work_queue 
+      def work_queue
         @@work_queue
       end  
       
