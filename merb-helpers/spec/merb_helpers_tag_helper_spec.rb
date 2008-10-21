@@ -1,8 +1,8 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
-Merb::Router.prepare do
-  default_routes
-end
+# Merb::Router.prepare do
+#   default_routes
+# end
 
 describe Merb::Helpers::Tag do
   include Merb::Helpers::Tag
