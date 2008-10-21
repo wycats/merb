@@ -19,7 +19,7 @@ module Merb
   end # Config
   
   # The Merb::Session module gets mixed into Merb::SessionContainer to allow
-  # app-level functionality (usually found in app/models/merb/session.rb) for
+  # app-level functionality (usually found in ./merb/session/session.rb) for
   # session.
   #
   # You can use this module to implement additional methods to simplify
@@ -38,7 +38,7 @@ module Merb
   #                           session data; min. 16 chars
   #
   # :default_cookie_domain    The default domain to write cookies for.
-  module Session
+  module Session    
   end
   
   # This is mixed into Merb::Controller on framework boot.
