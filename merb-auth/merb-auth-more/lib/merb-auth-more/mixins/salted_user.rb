@@ -1,4 +1,6 @@
 require "digest/sha1"
+require File.expand_path(File.dirname(__FILE__) / "..") / "strategies" / "abstract_password"
+
 class Merb::Authentication
   module Mixins
     # This mixin provides basic salted user password encryption.
