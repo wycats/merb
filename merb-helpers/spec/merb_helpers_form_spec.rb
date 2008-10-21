@@ -42,11 +42,6 @@ Merb::Plugins.config[:helpers] = {
   :default_builder => Merb::Helpers::Form::Builder::FormWithErrors
 }
 
-Merb::Router.append do
-  resources :obj
-end
-
-
 describe "error_messages_for" do
 
   before :each do
@@ -651,10 +646,6 @@ describe "bound_hidden_field" do
     errors.should_receive(:on).with(:foo).and_return(true)
 
     model.stub!(:errors).and_return(errors)
-
-    Merb::Router.append do
-      resources :models
-    end
 
     @c.instance_variable_set(:@model, model)
     r = @c.render :hidden_error
