@@ -51,6 +51,10 @@ module Merb
 
         @__cookie__ = rack.headers["Set-Cookie"] && rack.headers["Set-Cookie"].join
 
+        Merb::Dispatcher.work_queue.size.times do
+          Merb::Dispatcher.work_queue.pop.call
+        end
+
         rack
       end
       alias requesting request
