@@ -16,7 +16,6 @@ describe "Merb::AuthenticationHelper" do
     
     class Kone < Merb::Authentication::Strategy
       def run!
-        puts params.inspect
         Viking.capture(self.class)
         params[self.class.name]
       end
