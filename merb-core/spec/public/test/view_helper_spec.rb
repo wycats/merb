@@ -73,7 +73,6 @@ describe Merb::Test::ViewHelper do
   it "should use @controller.body if no output parameter is supplied and both @output and @response_output do not contain output" do
     @output, @response_output = nil
     @controller = mock(:controller)
-    @controller.should_receive(:nil?).and_return false
     @controller.should_receive(:body).any_number_of_times.and_return test_response
     
     tag(:div)

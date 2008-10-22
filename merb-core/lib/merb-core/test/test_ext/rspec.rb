@@ -42,11 +42,6 @@ module Merb
       include ::Merb::Test::RouteHelper
       include ::Merb::Test::ControllerHelper
 
-      def initialize(defined_description, &implementation)
-        @_defined_description = defined_description
-        @_implementation = implementation
-      end
-
       class << self
         # This is a copy of the method in rspec, so we can have
         # describe "...", :when => "logged in", and the like
