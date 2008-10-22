@@ -102,7 +102,7 @@ module Merb
         
         def self.extended(klass)
           klass.send(:include, InstanceMethods)
-          klass.hide_action :slice
+          klass.hide_action :slice if klass.respond_to?(:hide_action)
         end
         
         # Use the slice's layout - defaults to underscored identifier.
