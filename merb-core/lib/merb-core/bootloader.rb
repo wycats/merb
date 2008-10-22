@@ -578,6 +578,7 @@ class Merb::BootLoader::LoadClasses < Merb::BootLoader
 
       # Log the process configuration user defined signal 1 (SIGUSR1) is received.
       Merb.trap("USR1") do
+        require "yaml"
         Merb.logger.fatal! "Configuration:\n#{Merb::Config.to_hash.merge(:pid => $$).to_yaml}\n\n"
       end
 
