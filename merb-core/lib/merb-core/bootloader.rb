@@ -1251,7 +1251,6 @@ class Merb::BootLoader::ReloadClasses < Merb::BootLoader
     #
     # @api private
     def self.every(seconds, &block)
-      Thread.abort_on_exception = true
       Thread.new do
         loop do
           sleep( seconds )

@@ -23,6 +23,8 @@ require "pathname"
 require "extlib"
 require "extlib/dictionary"
 
+Thread.abort_on_exception = true
+
 __DIR__ = File.dirname(__FILE__)
 
 $LOAD_PATH.unshift __DIR__ unless
