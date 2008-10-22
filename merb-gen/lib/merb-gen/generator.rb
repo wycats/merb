@@ -41,10 +41,6 @@ module Merb
         Merb::BootLoader::Logger.run
         Merb::BootLoader::BuildFramework.run
         Merb::BootLoader::Dependencies.run
-
-        Merb::BootLoader::BeforeAppLoads.run
-        Merb::BootLoader::ReloadClasses.run
-        Merb::BootLoader::AfterAppLoads.run
         
         super
         options[:orm] ||= Merb.orm
