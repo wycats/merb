@@ -7,7 +7,7 @@ module Merb::Generators
     end
     
     desc <<-DESC
-      This is a part controller generator
+      Generates a new part controller.
     DESC
     
     first_argument :name, :required => true
