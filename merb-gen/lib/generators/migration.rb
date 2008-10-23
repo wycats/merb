@@ -7,7 +7,7 @@ module Merb::Generators
     end
     
     desc <<-DESC
-      This is a migration generator
+      Generates a new database migration.
     DESC
     
     option :orm, :desc => 'Object-Relation Mapper to use (one of: none, activerecord, datamapper, sequel)'

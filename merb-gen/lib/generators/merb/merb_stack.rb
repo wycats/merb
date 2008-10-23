@@ -38,8 +38,8 @@ module Merb
       :desc => 'Template engine to prefer for this application (one of: erb, haml).'
 
       desc <<-DESC
-      This generates a "prepackaged" (or "opinionated") Merb application that uses DataMapper,
-      RSpec, helpers, assets, mailer, caching, slices and merb-auth all out of the box.
+      Generates a new "jump start" Merb application with support for DataMapper,
+      helpers, assets, mailer, caching, slices and merb-auth.
     DESC
 
       first_argument :name, :required => true, :desc => "Application name"
