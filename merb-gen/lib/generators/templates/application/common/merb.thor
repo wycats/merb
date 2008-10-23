@@ -5,7 +5,7 @@ require 'fileutils'
 require 'yaml'
 
 # Important - don't change this line or its position
-MERB_THOR_VERSION = '0.0.52'
+MERB_THOR_VERSION = '0.0.53'
 
 ##############################################################################
 
@@ -1130,6 +1130,7 @@ module Merb
       dm-timestamps
       dm-types
       dm-validations
+      merb_datamapper
     ]
     
     MERB_STACK = %w[      
@@ -1142,6 +1143,8 @@ module Merb
       merb-mailer
       merb-slices
       merb-auth
+      merb-param-protection
+      merb-exceptions
     ] + DM_STACK
     
     MERB_BASICS = %w[      
