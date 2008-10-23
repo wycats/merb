@@ -7,7 +7,7 @@ module Merb::Generators
     end
     
     desc <<-DESC
-      Generates a layout
+      Generates a new layout.
     DESC
     
     #option :testing_framework, :desc => 'Testing framework to use (one of: rspec, test_unit)'
