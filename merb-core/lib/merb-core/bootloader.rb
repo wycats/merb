@@ -167,10 +167,28 @@ module Merb
         before_load_callbacks << block
       end
 
+      # Execute a block of code before master process is shut down.
+      # Only makes sense on platforms where Merb server can use forking.
+      #
+      # ==== Parameters
+      # &block::
+      #   A block to be added to the callbacks that will be executed
+      #   before master process is shut down.
+      #
+      # @api public
       def before_master_shutdown(&block)
         before_master_shutdown_callbacks << block
       end
 
+      # Execute a block of code before worker process is shut down.
+      # Only makes sense on platforms where Merb server can use forking.
+      #
+      # ==== Parameters
+      # &block::
+      #   A block to be added to the callbacks that will be executed
+      #   before worker process is shut down.
+      #
+      # @api public
       def before_worker_shutdown(&block)
         before_worker_shutdown_callbacks << block
       end
