@@ -266,7 +266,7 @@ module Merb
           Merb.fatal! "Failed to store Merb logs in #{File.dirname(file)}, " \
             "permission denied. ", e
         end
-        Merb.logger.warn! "Storing #{type} file to #{file}..." if Merb::Config[:verbose]
+        Merb.logger.warn! "Storing pid #{Process.pid} file to #{file}..." if Merb::Config[:verbose]
         begin
           File.open(file, 'w'){ |f| f.write(Process.pid.to_s) }
         rescue Errno::EACCES => e
