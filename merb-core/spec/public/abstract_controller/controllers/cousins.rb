@@ -37,5 +37,24 @@ module Merb::Test::Fixtures
       end
     end
     
-  end
+    # #611 in merb-core tracker
+    class HasFiltersWithSimilarNames < Testing
+      before :befilter
+      before :bef
+
+      def index
+        @before_string.to_s + " Index"
+      end
+
+      protected
+
+      def befilter
+        @before_string = "Befilter"
+      end
+
+      def bef
+        @before_string << " Bef"
+      end
+    end # HasFiltersWithSimilarNames
+  end # Abstract
 end
