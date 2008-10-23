@@ -1144,6 +1144,7 @@ module Merb
       merb-slices
       merb-auth
       merb-param-protection
+      merb-exceptions
     ] + DM_STACK
     
     MERB_BASICS = %w[      
