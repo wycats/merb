@@ -366,6 +366,7 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
       load_initfile
       load_env_config
     end
+    expand_ruby_path
     enable_json_gem unless Merb::disabled?(:json)
     load_dependencies
     update_logger
@@ -497,6 +498,27 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
       end
       nil
     end
+
+    # Expands Ruby path with framework directories (for models, lib, etc). Only run once.
+    #
+    # ==== Returns
+    # nil
+    #
+    # @api private
+    def self.expand_ruby_path
+      # Add models, controllers, helpers and lib to the load path
+      unless @ran
+        Merb.logger.info "Expanding RUBY_PATH..." if Merb::Config[:verbose]
+
+        $LOAD_PATH.unshift Merb.dir_for(:model)
+        $LOAD_PATH.unshift Merb.dir_for(:controller)
+        $LOAD_PATH.unshift Merb.dir_for(:lib)
+        $LOAD_PATH.unshift Merb.dir_for(:helper)
+      end
+
+      @ran = true
+      nil
+    end
 end
 
 class Merb::BootLoader::MixinSession < Merb::BootLoader
@@ -564,15 +586,6 @@ class Merb::BootLoader::LoadClasses < Merb::BootLoader
     #
     # @api plugin
     def run
-      # Add models, controllers, helpers and lib to the load path
-      unless @ran
-        $LOAD_PATH.unshift Merb.dir_for(:model)
-        $LOAD_PATH.unshift Merb.dir_for(:controller)
-        $LOAD_PATH.unshift Merb.dir_for(:lib)
-        $LOAD_PATH.unshift Merb.dir_for(:helper)
-      end
-
-      @ran = true
       # process name you see in ps output
       $0 = "merb#{" : " + Merb::Config[:name] if Merb::Config[:name]} : master"
 
