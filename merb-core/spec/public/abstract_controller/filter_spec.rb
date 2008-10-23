@@ -135,4 +135,9 @@ describe Merb::AbstractController, " should support before and after filters" do
     dispatch_should_make_body("FilterChild1", "Before Limited", :limited)
     dispatch_should_make_body("FilterChild1", " Index")
   end
+
+  # #611 in merb-core
+  it "doesn't override existing filters by filters with similar names" do
+    dispatch_should_make_body("HasFiltersWithSimilarNames", "Befilter Bef Index")
+  end
 end
