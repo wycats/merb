@@ -2,7 +2,7 @@ require 'rubygems/dependency'
 
 module Gem
   class Dependency
-    attr_accessor :require_block
+    attr_accessor :require_block, :require_as
   end
 end
 
@@ -18,8 +18,10 @@ module Kernel
   #
   # @api private
   def track_dependency(name, *ver, &blk)
+    ver.pop if ver.last.is_a?(Hash) && ver.last.empty?
     dep = Gem::Dependency.new(name, ver.empty? ? nil : ver)
     dep.require_block = blk
+    dep.require_as = (ver.last.is_a?(Hash) && ver.last[:require_as]) || name
     
     existing = Merb::BootLoader::Dependencies.dependencies.find { |d| d.name == dep.name }
     if existing
@@ -51,7 +53,7 @@ module Kernel
   #
   # @api public
   def dependency(name, *ver, &blk)
-    immediate = ver.last.is_a?(Hash) && ver.pop[:immediate]
+    immediate = ver.last.delete(:immediate) if ver.last.is_a?(Hash)
     if immediate || Merb::BootLoader.finished?(Merb::BootLoader::Dependencies)
       load_dependency(name, *ver, &blk)
     else
@@ -78,20 +80,21 @@ module Kernel
   #
   # @api private
   def load_dependency(name, *ver, &blk)
-    dep = name.is_a?(Gem::Dependency) ? name : track_dependency(name, *ver)
+    dep = name.is_a?(Gem::Dependency) ? name : track_dependency(name, *ver, &blk)
     gem(dep)
   rescue Gem::LoadError => e
     Merb.fatal! "The gem #{name}, #{ver.inspect} was not found", e
   ensure
-    if block = blk || dep.require_block
-      block.call
-    else
-      begin
-        require dep.name
-      rescue LoadError => e
-        Merb.fatal! "The file #{dep.name} was not found", e
-      end
+    begin
+      require dep.require_as
+    rescue LoadError => e
+      Merb.fatal! "The file #{dep.require_as} was not found", e
     end
+
+    if block = dep.require_block
+      block.call
+    end
+
     Merb.logger.verbose!("loading gem '#{dep.name}' ...")
     return dep # ensure needs explicit return
   end
