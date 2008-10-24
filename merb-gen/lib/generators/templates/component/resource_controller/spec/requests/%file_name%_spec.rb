@@ -52,9 +52,9 @@ describe "resource(:<%= plural_model %>)" do
     
     it "redirects to resource(:<%= plural_model %>)" do
       <%- if orm.to_sym == :datamapper -%>
-      @response.should redirect_to(resource(<%= singular_model.capitalize %>.first), :message => {:notice => "<%= singular_model %> was successfully created"})
+      @response.should redirect_to(resource(<%= model_class_name %>.first), :message => {:notice => "<%= singular_model %> was successfully created"})
       <%- elsif orm.to_sym == :activerecord -%>
-      @response.should redirect_to(resource(<%= singular_model.capitalize %>.first), :message => {:notice => "<%= singular_model %> was successfully created"})
+      @response.should redirect_to(resource(<%= model_class_name %>.first), :message => {:notice => "<%= singular_model %> was successfully created"})
       <% end -%>
     end
     
