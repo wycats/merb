@@ -201,7 +201,8 @@ class Merb::BootLoader::Logger < Merb::BootLoader
       end
     end
 
-    Merb::Config[:log_stream] = Merb.log_stream
+    Merb::Config[:log_stream] = 
+      Merb::Config[:original_log_stream] || Merb.log_stream
 
     print_warnings
 
