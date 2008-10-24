@@ -110,12 +110,14 @@ module Merb
     #
     # @api public
     def start(argv = ARGV)
-      Merb::Config[:log_stream] = STDOUT
+      Merb::Config[:original_log_stream] = Merb::Config[:log_stream]
+      Merb::Config[:log_stream] ||= STDOUT
       if Hash === argv
         Merb::Config.setup(argv)
-      else
+      elsif !argv.nil?
         Merb::Config.parse_args(argv)
       end
+
       Merb::Config[:log_stream] = STDOUT
       
       Merb.environment = Merb::Config[:environment]
