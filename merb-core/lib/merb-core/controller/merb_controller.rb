@@ -113,7 +113,6 @@ class Merb::Controller < Merb::AbstractController
     callables.flatten.reject{|action| action =~ /^_.*/}
   end
 
-
   # The location to look for a template for a particular controller, context,
   # and mime-type. This is overridden from AbstractController, which defines a
   # version of this that does not involve mime-types.
