@@ -56,7 +56,7 @@ module Merb::Test::Rspec::RouteMatchers
     # ==== Returns
     # String:: The failure message.
     def failure_message
-      "expected the request to route to #{@expected_controller.camel_case}##{@expected_action}#{expected_parameters_message}, but was #{@target_controller.camel_case}##{@target_action}#{actual_parameters_message}"
+      "expected the request to route to #{@expected_controller.to_const_string}##{@expected_action}#{expected_parameters_message}, but was #{@target_controller.to_const_string}##{@target_action}#{actual_parameters_message}"
     end
 
     # ==== Returns
