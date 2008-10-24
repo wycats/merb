@@ -4,7 +4,7 @@
   Edit this file in 
   %tt app/views/<%= file_name %>/new.html.erb
 
-= error_messages_for :<%= singular_model %>
+= error_messages_for @<%= singular_model %>
 
 = form_for(@<%= singular_model %>, :action => url(:<%= plural_model %>) ) do
 <% for property in properties.select{|p| !p.key?} -%>
