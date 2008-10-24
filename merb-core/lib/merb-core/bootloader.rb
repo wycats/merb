@@ -829,7 +829,7 @@ class Merb::BootLoader::LoadClasses < Merb::BootLoader
       # Ignore the file for syntax errors. The next time
       # the file is changed, it'll be reloaded again
       begin
-        load file
+        require file
       rescue SyntaxError => e
         Merb.logger.error "Cannot load #{file} because of syntax error: #{e.message}"
       ensure
