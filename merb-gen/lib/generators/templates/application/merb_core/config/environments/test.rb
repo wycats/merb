@@ -6,7 +6,7 @@ Merb::Config.use { |c|
   # log less in testing environment
   c[:log_level]         = :error
 
-  c[:log_file]  = Merb.root / "log" / "test.log"
+  #c[:log_file]  = Merb.root / "log" / "test.log"
   # or redirect logger using IO handle
-  # c[:log_stream] = STDOUT
+  c[:log_stream] = STDOUT
 }

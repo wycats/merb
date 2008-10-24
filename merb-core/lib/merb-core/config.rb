@@ -350,6 +350,13 @@ module Merb
             begin
               require "ruby-debug"
               Debugger.start
+
+              # Load up any .rdebugrc files we find
+              [".", ENV["HOME"], ENV["HOMEPATH"]].each do |script_dir|
+                script_file = "#{script_dir}/.rdebugrc"
+                Debugger.run_script script_file, StringIO.new if File.exists?(script_file)
+              end
+
               if Debugger.respond_to?(:settings)
                 Debugger.settings[:autoeval] = true
               end

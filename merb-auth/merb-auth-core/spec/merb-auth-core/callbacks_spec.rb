@@ -43,7 +43,6 @@ describe "Authentication callbacks" do
     @request  = fake_request
     @params   = @request.params
     @auth     = Merb::Authentication.new(@request.session)
-    puts Merb::Authentication.strategies.inspect
   end
   
   after(:all) do

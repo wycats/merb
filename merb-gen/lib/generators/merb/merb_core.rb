@@ -34,8 +34,8 @@ module Merb
       :desc => 'Template engine to prefer for this application (one of: erb, haml).'
 
       desc <<-DESC
-      This generates a Merb application with Ruby on Rails like structure.
-      Generator lets you configure your ORM and testing framework of choice.
+      Generates a new Merb application with Ruby on Rails like structure.
+      You can specify the ORM and testing framework.
     DESC
 
       first_argument :name, :required => true, :desc => "Application name"

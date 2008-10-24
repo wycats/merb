@@ -302,11 +302,18 @@ module Kernel
       lines = File.read(file).split("\n")
       first_line = (f = line - size - 1) < 0 ? 0 : f
       
-      old_lines = lines
-      lines = lines[first_line, size * 2 + 1]
+      if first_line.zero?
+        new_size = line - 1
+        lines = lines[first_line, size + new_size + 1]
+      else
+        new_size = nil
+        lines = lines[first_line, size * 2 + 1]
+      end
 
       lines && lines.each_with_index do |str, index|
-        yield index + line - size, str.chomp
+        line_n = index + line
+        line_n = (new_size.nil?) ? line_n - size : line_n - new_size
+        yield line_n, str.chomp
       end
     end
   end

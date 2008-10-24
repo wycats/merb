@@ -58,7 +58,7 @@ task :gemspec do
 end
 
 desc "Run all specs"
-Spec::Rake::SpecTask.new("specs") do |t|
+Spec::Rake::SpecTask.new("spec") do |t|
   t.spec_opts = ["--format", "specdoc", "--colour"]
   t.spec_files = Dir["spec/**/*_spec.rb"].sort
   t.rcov = false

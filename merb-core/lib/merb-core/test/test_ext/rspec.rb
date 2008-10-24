@@ -36,8 +36,12 @@ module Merb
       end
     end
 
+    module Matchers
+    end
+    
     class ExampleGroup < Spec::Example::ExampleGroup
 
+      include ::Merb::Test::Matchers
       include ::Merb::Test::ViewHelper
       include ::Merb::Test::RouteHelper
       include ::Merb::Test::ControllerHelper
@@ -76,7 +80,7 @@ module Spec
   
     def self.create(*names, &block)
       @guid ||= 0
-      mod = Module.new do
+      Merb::Test::Matchers.module_eval do
         klass = Class.new(MatcherDSL) do
           def initialize(expected_value)
             @expected_value = expected_value
@@ -91,7 +95,6 @@ module Spec
           end
         end
       end
-      Merb::Test::ExampleGroup.send(:include, mod)
     end
   
     class MatcherDSL

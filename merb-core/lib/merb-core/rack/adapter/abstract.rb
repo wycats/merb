@@ -168,7 +168,9 @@ module Merb
           # If it was not fork_for_class_load, we already set up
           # ctrl-c handlers in the master thread.
         elsif Merb::Config[:fork_for_class_load]
-          Merb.trap('INT') { 1 }
+          if Merb::Config[:console_trap]
+            Merb::Server.add_irb_trap
+          end
         end
 
         # In daemonized mode or not, support HUPing the process to
