@@ -31,7 +31,7 @@ describe Merb::Rack::Application do
   it 'does not set Date header' do
     status, headers, body = @app.call(@env)
 
-    headers.should_not include(Merb::Const::DATE)
+    headers.keys.should_not include(Merb::Const::DATE)
   end
   
   describe "#deferred?" do
