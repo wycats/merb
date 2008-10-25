@@ -694,11 +694,11 @@ module Merb
         preserve_order ? query : query.to_mash
       end
 
-      NAME_REGEX = /Content-Disposition:.* name="?([^\";]*)"?/ni.freeze
+      NAME_REGEX         = /Content-Disposition:.* name="?([^\";]*)"?/ni.freeze
       CONTENT_TYPE_REGEX = /Content-Type: (.*)\r\n/ni.freeze
-      FILENAME_REGEX = /Content-Disposition:.* filename="?([^\";]*)"?/ni.freeze
-      CRLF = "\r\n".freeze
-      EOL = CRLF
+      FILENAME_REGEX     = /Content-Disposition:.* filename="?([^\";]*)"?/ni.freeze
+      CRLF               = "\r\n".freeze
+      EOL                = CRLF
 
       # ==== Parameters
       # request<IO>:: The raw request.
@@ -715,20 +715,22 @@ module Merb
       def parse_multipart(request, boundary, content_length)
         boundary = "--#{boundary}"
         paramhsh = {}
-        buf = ""
-        input = request
+        buf      = ""
+        input    = request
         input.binmode if defined? input.binmode
         boundary_size = boundary.size + EOL.size
-        bufsize = 16384
+        bufsize       = 16384
         content_length -= boundary_size
+        # status is boundary delimiter line
         status = input.read(boundary_size)
         return {} if status == nil || status.empty?
         raise ControllerExceptions::MultiPartParseError, "bad content body:\n'#{status}' should == '#{boundary + EOL}'"  unless status == boundary + EOL
+        # second argument to Regexp.quote is for KCODE
         rx = /(?:#{EOL})?#{Regexp.quote(boundary,'n')}(#{EOL}|--)/
         loop {
-          head = nil
-          body = ''
-          filename = content_type = name = nil
+          head      = nil
+          body      = ''
+          filename  = content_type = name = nil
           read_size = 0
           until head && buf =~ rx
             i = buf.index("\r\n\r\n")
@@ -739,9 +741,12 @@ module Merb
             if !head && i
               head = buf.slice!(0, i+2) # First \r\n
               buf.slice!(0, 2)          # Second \r\n
-              filename = head[FILENAME_REGEX, 1]
+
+              # String#[] with 2nd arg here is returning
+              # a group from match data
+              filename     = head[FILENAME_REGEX, 1]
               content_type = head[CONTENT_TYPE_REGEX, 1]
-              name = head[NAME_REGEX, 1]
+              name         = head[NAME_REGEX, 1]
 
               if filename && !filename.empty?
                 body = Tempfile.new(:Merb)
@@ -766,6 +771,10 @@ module Merb
 
           # Save the rest.
           if i = buf.index(rx)
+            # correct value of i for some edge cases
+            if (i > 2) && (j = buf.index(rx, i-2)) && (j < i)
+               i = j
+             end
             body << buf.slice!(0, i)
             buf.slice!(0, boundary_size+2)
 
