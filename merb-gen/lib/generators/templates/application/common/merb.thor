@@ -761,8 +761,10 @@ module Merb
         if only_missing = comp == 'missing'
           message "Preparing to install missing gems #{where} using #{strategy} strategy..."
           comp = nil
+          clobber = false
         else
           message "Preparing to install #{where} using #{strategy} strategy..."
+          clobber = true
         end
         
         # If comp given, filter on known stack components
@@ -778,7 +780,7 @@ module Merb
           warning "No dependencies to install..."
         else
           puts "#{deps.length} dependencies to install..."
-          install_dependencies(strategy, deps)
+          install_dependencies(strategy, deps, clobber)
         end
         
         # Show current dependency info now that we're done
@@ -903,10 +905,10 @@ module Merb
       end
     end
     
-    def install_dependencies(strategy, deps)
+    def install_dependencies(strategy, deps, clobber = true)
       if method = strategy?(strategy)
         # Clobber existing local dependencies
-        clobber_dependencies!
+        clobber_dependencies! if clobber
         
         # Run the chosen strategy - collect files installed from stable gems
         installed_from_stable = send(method, deps).map { |d| d.name }
