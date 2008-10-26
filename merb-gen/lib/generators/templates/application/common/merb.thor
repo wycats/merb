@@ -1150,6 +1150,9 @@ module Merb
       merb-mailer
       merb-slices
       merb-auth
+      merb-auth-core
+      merb-auth-more 
+      merb-auth-slice-password
       merb-param-protection
       merb-exceptions
     ] + DM_STACK
