@@ -5,7 +5,7 @@ require 'fileutils'
 require 'yaml'
 
 # Important - don't change this line or its position
-MERB_THOR_VERSION = '0.0.53'
+MERB_THOR_VERSION = '0.0.54'
 
 ##############################################################################
 
@@ -476,8 +476,9 @@ module MerbThorHelper
   end
   
   def install_dependency(dependency, opts = {})
-    opts[:version] ||= dependency.version_requirements.to_s
-    Merb::Gem.install(dependency.name, default_install_options.merge(opts))
+    version = dependency.version_requirements.to_s
+    install_opts = default_install_options.merge(:version => version)
+    Merb::Gem.install(dependency.name, install_opts.merge(opts))
   end
 
   def install_dependency_from_source(dependency, opts = {})
@@ -910,23 +911,25 @@ module Merb
         # Run the chosen strategy - collect files installed from stable gems
         installed_from_stable = send(method, deps).map { |d| d.name }
 
-        # Sleep a bit otherwise the following steps won't see the new files
-        sleep(deps.length) if deps.length > 0
-      
-        # Leave a file to denote the strategy that has been used for this dependency
-        self.local.each do |spec|
-          next unless File.directory?(spec.full_gem_path)
-          unless installed_from_stable.include?(spec.name)
-            FileUtils.touch(File.join(spec.full_gem_path, "#{strategy}.strategy"))
-          else
-            FileUtils.touch(File.join(spec.full_gem_path, "stable.strategy"))
-          end           
-        end
+        unless dry_run?
+          # Sleep a bit otherwise the following steps won't see the new files
+          sleep(deps.length) if deps.length > 0 && deps.length <= 10
+          
+          # Leave a file to denote the strategy that has been used for this dependency
+          self.local.each do |spec|
+            next unless File.directory?(spec.full_gem_path)
+            unless installed_from_stable.include?(spec.name)
+              FileUtils.touch(File.join(spec.full_gem_path, "#{strategy}.strategy"))
+            else
+              FileUtils.touch(File.join(spec.full_gem_path, "stable.strategy"))
+            end           
+          end
         
-        # Add local binaries for the installed framework dependencies
-        comps = Merb::Stack.all_components & deps.map { |d| d.name }
-        comps << { :no_minigems => 'merb-gen' }
-        ensure_bin_wrapper_for(*comps)          
+          # Add local binaries for the installed framework dependencies
+          comps = Merb::Stack.all_components & deps.map { |d| d.name }
+          comps << { :no_minigems => 'merb-gen' }
+          ensure_bin_wrapper_for(*comps)
+        end
         return true
       end
       false
@@ -967,7 +970,7 @@ module Merb
           end
         end
       end
-            
+      
       deps
     end
     
@@ -1037,15 +1040,12 @@ module Merb
       # Selectively update repositories for the matching dependencies
       update_dependency_repositories(deps) unless dry_run?
       
-      # Skip gem dependencies to prevent them from being installed from stable;
-      # however, core dependencies will be retrieved from source when available
-      install_opts = { :ignore_dependencies => true }
       if core = deps.find { |d| d.name == 'merb-core' }
         if dry_run?
           note "Installing #{core.name}..."
         else
-          if install_dependency_from_source(core, install_opts)
-          elsif install_dependency(core, install_opts)
+          if install_dependency_from_source(core)
+          elsif install_dependency(core)
             info "Installed #{core.name} from rubygems..."
             installed_from_rubygems << core
           end
@@ -1057,8 +1057,8 @@ module Merb
         if dry_run?
           note "Installing #{dependency.name}..."
         else
-          if install_dependency_from_source(dependency, install_opts)
-          elsif install_dependency(dependency, install_opts)
+          if install_dependency_from_source(dependency)
+          elsif install_dependency(dependency)
             info "Installed #{dependency.name} from rubygems..."
             installed_from_rubygems << dependency
           end
@@ -1091,11 +1091,17 @@ module Merb
         @_merb_loaded = true
       end
       Merb::BootLoader::Dependencies.dependencies
-    rescue => e
+    rescue StandardError => e
       error "Couldn't extract dependencies from application!"
       error e.message
       puts  "Make sure you're executing the task from your app (--merb-root), or"
       puts  "specify a config option (--config or --config-file=YAML_FILE)"
+      return []
+    rescue SystemExit
+      error "Couldn't extract dependencies from application!"
+      error "application failed to run"
+      puts  "Please check if your application runs using 'merb'; for example,"
+      puts  "look for any gem version mismatches in dependencies.rb"
       return []
     end
         
@@ -1124,6 +1130,7 @@ module Merb
     
     DM_STACK = %w[
       extlib
+      data_objects
       dm-core
       dm-aggregates
       dm-migrations
@@ -1219,6 +1226,15 @@ module Merb
       dm-couchdb-adapter
       dm-ferret-adapter
       dm-rest-adapter
+    ]
+    
+    DATA_OBJECTS = %w[
+      data_objects 
+      do_derby do_hsqldb 
+      do_jdbc
+      do_mysql
+      do_postgres
+      do_sqlite3
     ]
     
     attr_accessor :system, :local, :missing
@@ -1391,6 +1407,7 @@ module Merb
         comps["merb-more"]    = MERB_MORE.sort
         comps["merb-plugins"] = MERB_PLUGINS.sort
         comps["dm-more"]      = DM_MORE.sort
+        comps["do"]           = DATA_OBJECTS.sort
         
         comps
       end     
@@ -1438,7 +1455,7 @@ module Merb
     end
     
     def self.base_components
-      %w[thor rake]
+      %w[thor rake extlib]
     end
     
     def self.all_components
@@ -1450,6 +1467,7 @@ module Merb
     def self.core_dependencies(gem_dir = nil, ignore_deps = false)
       @_core_dependencies ||= begin
         if gem_dir # add local gems to index
+          orig_gem_path = ::Gem.path
           ::Gem.clear_paths; ::Gem.path.unshift(gem_dir)
         end
         deps = []
@@ -1464,7 +1482,7 @@ module Merb
             deps += gemspec.dependencies
           end
         end
-        ::Gem.clear_paths if gem_dir # reset
+        ::Gem.path.replace(orig_gem_path) if gem_dir # reset
         deps
       end
     end
