@@ -402,7 +402,12 @@ module Merb
       Merb.logger.fatal!
 
       print_colorized_backtrace(e) if e && Merb::Config[:verbose]
-      exit(1)
+      
+      if Merb::Config[:show_ugly_backtraces]
+        raise e
+      else
+        exit(1)
+      end
     end
     
     # Print a colorized backtrace to the merb logger.
