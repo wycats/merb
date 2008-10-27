@@ -2,6 +2,8 @@ require 'parse_tree'
 require 'ruby2ruby'
 
 class ParseTreeArray < Array
+  R2R = Object.const_defined?(:Ruby2Ruby) ? Ruby2Ruby : RubyToRuby
+  
   def self.translate(*args)
     sexp = ParseTree.translate(*args)
     # ParseTree.translate returns [nil] if called on an inherited method, so walk
@@ -46,7 +48,7 @@ class ParseTreeArray < Array
     # that should bring us back to regularly scheduled programming..
     lasgns = default_node[1..-1]
     lasgns.each do |asgn|
-      args.assoc(asgn[1]) << eval(RubyToRuby.new.process(asgn[2]))
+      args.assoc(asgn[1]) << eval(R2R.new.process(asgn[2]))
     end
     [args, (default_node[1..-1].map { |asgn| asgn[1] })]
   end
