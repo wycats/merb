@@ -68,7 +68,7 @@ module Merb
           options["expires"] = expiry.gmtime.strftime(Merb::Const::COOKIE_EXPIRATION_FORMAT)
         end
         secure  = options.delete("secure")
-        kookie  = "#{name}=#{Merb::Request.escape(value)}; "
+        kookie  = "#{name}=#{Merb::Parse.escape(value)}; "
         # WebKit in particular doens't like empty cookie options - skip them.
         options.each { |k, v| kookie << "#{k}=#{v}; " unless v.blank? }
         kookie  << 'secure' if secure
@@ -116,7 +116,7 @@ module Merb
       # a Hash of key => value pairs.
       def cookies
         @cookies ||= begin
-          values  = self.class.query_parse(@env[Merb::Const::HTTP_COOKIE], ';,')
+          values  = Merb::Parse.query(@env[Merb::Const::HTTP_COOKIE], ';,')
           cookies = Merb::Cookies.new(values)
           cookies.update(default_cookies) if respond_to?(:default_cookies)
           cookies

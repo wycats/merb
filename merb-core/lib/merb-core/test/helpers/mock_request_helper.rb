@@ -52,7 +52,7 @@ module Merb
             if value.blank?
               self.delete(key)
             else
-              self[key] = Merb::Request.unescape(value)
+              self[key] = Merb::Parse.unescape(value)
             end
           end
         end
@@ -210,7 +210,7 @@ module Merb
       # @api public    
       # @deprecated  
       def build_request(params = {}, env = {})
-        params             = Merb::Request.params_to_query_string(params)
+        params             = Merb::Parse.params_to_query_string(params)
 
         query_string = env[:query_string] || env['QUERY_STRING']
         env[:query_string] = query_string ? "#{query_string}&#{params}" : params

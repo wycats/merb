@@ -33,14 +33,14 @@ module Merb
         # ==== Returns
         # Boolean:: True if file exists under the server root and is readable.
         def file_exist?(path)
-          full_path = ::File.join(@static_server.root, ::Merb::Request.unescape(path))
+          full_path = ::File.join(@static_server.root, ::Merb::Parse.unescape(path))
           ::File.file?(full_path) && ::File.readable?(full_path)
         end
 
         # ==== Parameters
         # env<Hash>:: Environment variables to pass on to the server.
         def serve_static(env)
-          env[Merb::Const::PATH_INFO] = ::Merb::Request.unescape(env[Merb::Const::PATH_INFO])
+          env[Merb::Const::PATH_INFO] = ::Merb::Parse.unescape(env[Merb::Const::PATH_INFO])
           @static_server.call(env)
         end
       
