@@ -69,8 +69,20 @@ module Merb
     def authenticate!(request, params, *rest)
       opts = rest.last.kind_of?(Hash) ? rest.pop : {}
       rest = rest.flatten
-      strategies = rest.empty? ? Merb::Authentication.default_strategy_order : rest
-
+      
+      strategies = if rest.empty?
+        if request.session[:authentication_strategies] 
+          request.session[:authentication_strategies]
+        else
+          Merb::Authentication.default_strategy_order
+        end
+      else
+        request.session[:authentication_strategies] ||= []
+        request.session[:authentication_strategies] << rest
+        request.session[:authentication_strategies].flatten!.uniq!
+        request.session[:authentication_strategies]
+      end
+    
       msg = opts[:message] || error_message
       user = nil    
       # This one should find the first one that matches.  It should not run antother
@@ -87,19 +99,13 @@ module Merb
           user
         end
       end
+      
       # Check after callbacks to make sure the user is still cool
-      Merb::Authentication.after_callbacks.each do |cb|
-        user = case cb
-        when Proc
-          cb.call(user, request, params)
-        when Symbol, String
-          user.send(cb)
-        end
-        break unless user
-      end if user
+      user = run_after_authentication_callbacks(user, request, params) if user
       
       # Finally, Raise an error if there is no user found, or set it in the session if there is.
       raise Merb::Controller::Unauthenticated, msg unless user
+      session[:authentication_strategies] = nil # clear the session of Failed Strategies if login is successful      
       self.user = user
     end
   
@@ -142,11 +148,12 @@ module Merb
     # Keeps track of strategies by class or string
     # When loading from string, strategies are loaded withing the Merb::Authentication::Strategies namespace
     # When loaded by class, the class is stored directly
+    # @private
     def self.lookup_strategy
       @strategy_lookup || reset_strategy_lookup!
     end
     
-    # Restets the strategy lookup.  Useful in specsd
+    # Restets the strategy lookup.  Useful in specs
     def self.reset_strategy_lookup!
       @strategy_lookup = Mash.new do |h,k| 
         case k
@@ -156,6 +163,27 @@ module Merb
           h[k] = Merb::Authentication::Strategies.full_const_get(k.to_s) 
         end
       end
+    end
+    
+    # Maintains a list of keys to maintain when needing to keep some state 
+    # in the face of session.abandon! You need to maintain this state yourself
+    # @public
+    def self.maintain_session_keys
+      @maintain_session_keys ||= [:authentication_strategies]
+    end
+    
+    private
+    def run_after_authentication_callbacks(user, request, params)
+      Merb::Authentication.after_callbacks.each do |cb|
+        user = case cb
+        when Proc
+          cb.call(user, request, params)
+        when Symbol, String
+          user.send(cb)
+        end
+        break unless user
+      end
+      user
     end
     
   end # Merb::Authentication
