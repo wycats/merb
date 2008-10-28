@@ -5,7 +5,7 @@ require 'fileutils'
 require 'yaml'
 
 # Important - don't change this line or its position
-MERB_THOR_VERSION = '0.0.55'
+MERB_THOR_VERSION = '0.0.6'
 
 ##############################################################################
 
