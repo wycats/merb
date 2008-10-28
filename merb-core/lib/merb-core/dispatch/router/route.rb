@@ -23,11 +23,10 @@ module Merb
           @redirect_url      = @params[:url]
           @defaults          = {}
         else
+          @generatable       = true
           @defaults          = options[:defaults] || {}
         end
         
-        # @conditional_block = conditional_block
-
         @identifiers       = options[:identifiers]
         @deferred_procs    = deferred_procs
         @segments          = []
@@ -38,6 +37,10 @@ module Merb
 
       def regexp?
         @regexp
+      end
+      
+      def generatable?
+        @generatable && !regexp?
       end
 
       def allow_fixation?
@@ -100,7 +103,10 @@ module Merb
       # ==== Returns
       # String:: The generated URL.
       def generate(args = [], defaults = {})
-        raise GenerationError, "Cannot generate regexp Routes" if regexp?
+        unless generatable?
+          raise GenerationError, "Cannot generate regexp Routes" if regexp?
+          raise GenerationError, "Cannot generate this route"
+        end
         
         params = extract_options_from_args!(args) || { }
         
@@ -336,14 +342,17 @@ module Merb
 
       def compile_conditions
         @original_conditions = conditions.dup
-
-        if path = conditions[:path]
-          path = [path].flatten.compact
+        
+        if conditions[:path] && !conditions[:path].empty?
+          path = conditions[:path].flatten.compact
           if path = compile_path(path)
             conditions[:path] = Regexp.new("^#{path}$")
           else
             conditions.delete(:path)
           end
+        else
+          # If there is no path, we can't generate it
+          @generatable = false
         end
       end
 

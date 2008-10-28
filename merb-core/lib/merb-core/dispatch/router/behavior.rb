@@ -586,6 +586,8 @@ module Merb
       # 
       # @api private
       def full_name(name)
+        raise Error, ":this is reserved. Please pick another name." if name == :this
+        
         if @route
           @route.name = name
           self

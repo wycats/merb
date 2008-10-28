@@ -283,6 +283,7 @@ class Merb::Controller < Merb::AbstractController
   # @api public
   def url(name, *args)
     args << params
+    name = request.route if name == :this
     Merb::Router.url(name, *args)
   end
   

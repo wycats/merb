@@ -18,23 +18,23 @@ end
 describe Merb::Controller, " url" do
   
   before(:each) do
-    Merb::Router.prepare do |r|
+    Merb::Router.prepare do
       identify :to_param do
-        r.resources :monkeys do |m|
-          m.resources :blues do |b|
-            b.resources :pinks
+        resources :monkeys do
+          resources :blues do
+            resources :pinks
           end
         end
-        r.resources :donkeys do |d|
-          d.resources :blues
+        resources :donkeys do
+          resources :blues
         end
-        r.resource :red do |red|
-          red.resources :blues
+        resource :red do
+          resources :blues
         end
-        r.match(%r{/foo/(\d+)/}).to(:controller => 'asdf').name(:regexp)
-        r.match('/people(/:name)(.:format)').to(:controller => 'people', :action => 'show').name(:person)
-        r.match('/argstrs').to(:controller => "args").name(:args)
-        r.default_routes
+        match(%r{/foo/(\d+)/}).to(:controller => 'asdf').name(:regexp)
+        match('/people(/:name)(.:format)').to(:controller => 'people', :action => 'show').name(:person)
+        match('/argstrs').to(:controller => "args").name(:args)
+        default_routes
       end
     end
     
@@ -213,8 +213,83 @@ describe Merb::Controller, " url" do
 
 end
 
-
-
+describe Merb::Controller, "#url(:this, *args)" do
+  
+  before(:each) do
+    Merb::Router.prepare do
+      with(:controller => "merb/test/fixtures/controllers/url", :action => "this_route") do
+        
+        resources :users, :controller => "merb/test/fixtures/controllers/url" do
+          resources :comments, :controller => "merb/test/fixtures/controllers/url"
+        end
+        
+        resource :profile, :controller => "merb/test/fixtures/controllers/url"
+        
+        match(%r[/regex]).register
+        match("/simple").register
+        match("/no_optionals(/:one(/:two))").register
+        match("/one_optionals(/:one(/:two))").to(:action => "one_optionals")
+        match("/two_optionals(/:one(/:two))").to(:action => "two_optionals")
+        match("/postage", :method => :post).register
+        match("/action/:action").to(:action => "[1]")
+        match("/defer").defer_to { |r, params| params }
+        match(:method => :get).defer_to { |r, params| params }
+      end
+    end
+  end
+  
+  it "should use the current route" do
+    request("/simple").body.to_s.should == "/simple"
+  end
+  
+  it "should be able to generate a route with optional segments" do
+    request("/no_optionals").body.to_s.should == "/no_optionals"
+  end
+  
+  it "should drop the optional request params if they are not specified when generating the route" do
+    request("/no_optionals/one/two").body.to_s.should == "/no_optionals"
+  end
+  
+  it "should generate the optional segments as specified" do
+    request("/one_optionals/one/two").body.to_s.should == "/one_optionals/one"
+    request("/two_optionals/one/two").body.to_s.should == "/two_optionals/one/two"
+  end
+  
+  it "should generate the route even if it is not a GET request" do
+    request("/postage", :method => "post").body.to_s.should == "/postage"
+  end
+  
+  it "should be able to tag on extra query string paramters" do
+    request('/action/this_route_with_page').body.to_s.should == "/action/this_route_with_page?page=2"
+  end
+  
+  it "should work with deferred block routes" do
+    request("/defer").body.to_s.should == "/defer"
+  end
+  
+  it "should not work with routes that do not have a path" do
+    request("/foo/bar").should have_xpath("//h1[contains(.,'Generation Error')]")
+  end
+  
+  it "should raise an error when trying to generate a regexp route" do
+    request("/regex").should have_xpath("//h1[contains(.,'Generation Error')]")
+  end
+  
+  it "should work with resource routes" do
+    request("/users").body.to_s.should         == "/users"
+    request("/users/10").body.to_s.should      == "/users/10"
+    request("/users/new").body.to_s.should     == "/users/new"
+    request("/users/10/edit").body.to_s.should == "/users/10/edit"
+    request("/profile").body.to_s.should       == "/profile"
+  end
+  
+  it "should work with nested resource routes" do
+    request("/users/10/comments").body.to_s.should        == "/users/10/comments"
+    request("/users/10/comments/9").body.to_s.should      == "/users/10/comments/9"
+    request("/users/10/comments/new").body.to_s.should    == "/users/10/comments/new"
+    request("/users/10/comments/9/edit").body.to_s.should == "/users/10/comments/9/edit"
+  end
+end
 
 describe Merb::Controller, "absolute_url" do
   before do

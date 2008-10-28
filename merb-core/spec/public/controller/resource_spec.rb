@@ -14,7 +14,7 @@ describe Merb::Controller, " #resource" do
   end
   
   before(:each) do
-    @controller = dispatch_to(Merb::Test::Fixtures::Controllers::Url, :index)
+    @controller = dispatch_to(Merb::Test::Fixtures::Controllers::Url, :void)
   end
   
   describe "generating a resource collection route" do
