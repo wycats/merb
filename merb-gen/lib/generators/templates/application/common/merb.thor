@@ -5,7 +5,7 @@ require 'fileutils'
 require 'yaml'
 
 # Important - don't change this line or its position
-MERB_THOR_VERSION = '0.0.54'
+MERB_THOR_VERSION = '0.0.55'
 
 ##############################################################################
 
@@ -301,7 +301,7 @@ module GemManagement
       end
     end
   end
-
+  
   private
 
   def executable_wrapper(spec, bin_file_name, minigems = true)
@@ -325,6 +325,7 @@ end
 if File.directory?(gems_dir = File.join(Dir.pwd, 'gems')) ||
    File.directory?(gems_dir = File.join(File.dirname(__FILE__), '..', 'gems'))
   $BUNDLE = true; Gem.clear_paths; Gem.path.unshift(gems_dir)
+  ENV["PATH"] = "\#{File.dirname(__FILE__)}:\#{gems_dir}/bin:\#{ENV["PATH"]}"
   if (local_gem = Dir[File.join(gems_dir, "specifications", "#{spec.name}-*.gemspec")].last)
     version = File.basename(local_gem)[/-([\\.\\d]+)\\.gemspec$/, 1]
   end
@@ -876,10 +877,21 @@ module Merb
     # merb:dependencies:configure --config-file file.yml        # write to the specified config file 
     
     desc 'configure [comp]', 'Create a dependencies config file'
-    method_options "--dry-run" => :boolean, "--force" => :boolean
+    method_options "--dry-run" => :boolean, "--force" => :boolean, "--versions" => :boolean
     def configure(comp = nil)
       # If comp given, filter on known stack components
       deps = comp ? Merb::Stack.select_component_dependencies(dependencies, comp) : dependencies
+      
+      # If --versions is set, update the version_requirements with the actual version available
+      if options[:versions]
+        specs = local_gemspecs
+        deps.each do |dep|
+          if spec = specs.find { |s| s.name == dep.name }
+            dep.version_requirements = ::Gem::Requirement.create(spec.version)
+          end
+        end
+      end
+      
       config = YAML.dump(deps.map { |d| d.to_s })
       puts "#{config}\n"
       if File.exists?(config_file) && !options[:force]
@@ -1081,25 +1093,26 @@ module Merb
     end
     
     # Extract application dependencies by querying the app directly.
-    def self.extract_dependencies(merb_root, env = 'production')
+    def self.extract_dependencies(merb_root)
       require 'merb-core'
       if !@_merb_loaded || Merb.root != merb_root
         Merb.start_environment(
+          :log_level => :fatal,
           :testing => true, 
           :adapter => 'runner', 
-          :environment => env, 
+          :environment => ENV['MERB_ENV'] || 'development', 
           :merb_root => merb_root
         )
         @_merb_loaded = true
       end
       Merb::BootLoader::Dependencies.dependencies
-    rescue StandardError => e
+    rescue StandardError => e     
       error "Couldn't extract dependencies from application!"
       error e.message
       puts  "Make sure you're executing the task from your app (--merb-root), or"
       puts  "specify a config option (--config or --config-file=YAML_FILE)"
       return []
-    rescue SystemExit
+    rescue SystemExit      
       error "Couldn't extract dependencies from application!"
       error "application failed to run"
       puts  "Please check if your application runs using 'merb'; for example,"
@@ -1438,7 +1451,7 @@ module Merb
     end
     
     def self.framework_components
-      %w[merb-core merb-more merb-plugins].inject([]) do |all, comp| 
+      %w[merb-core merb-more].inject([]) do |all, comp| 
         all + components(comp)
       end
     end
@@ -1844,6 +1857,8 @@ module Merb
           message "Installing #{current_gem} from source..."
           if install_dependency_from_source(dependency)
             ensure_bin_wrapper_for(dependency.name) if options[:binaries]
+          else
+            raise "gem source not found"
           end
         end
       end
