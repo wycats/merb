@@ -133,7 +133,7 @@ module Merb
       default_redirect_options = { :message => nil, :permanent => false }
       opts = default_redirect_options.merge(opts)
       if opts[:message]
-        notice = Merb::Request.escape([Marshal.dump(opts[:message])].pack("m"))
+        notice = Merb::Parse.escape([Marshal.dump(opts[:message])].pack("m"))
         url = url =~ /\?/ ? "#{url}&_message=#{notice}" : "#{url}?_message=#{notice}"
       end
       self.status = opts[:permanent] ? 301 : 302
