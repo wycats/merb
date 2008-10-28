@@ -1,9 +1,8 @@
 class MerbAuthSlicePassword::Sessions < MerbAuthSlicePassword::Application
   
-  before :_grab_return_to                       # Need to hang onto the redirection during the session.abandon!
-  after  :_store_return_to_in_session           # Need to hang onto the redirection during the session.abandon!
-  
+  before :_maintain_auth_session_before, :exclude => [:destroy]  # Need to hang onto the redirection during the session.abandon!
   before :_abandon_session,     :only => [:update, :destroy]
+  before  :_maintain_auth_session_after,  :exclude => [:destroy]  # Need to hang onto the redirection during the session.abandon!
   before :ensure_authenticated, :only => [:update]
 
   # redirect from an after filter for max flexibility
@@ -33,15 +32,20 @@ class MerbAuthSlicePassword::Sessions < MerbAuthSlicePassword::Application
     message[:notice] = "Logged Out"
     redirect "/", :message => message
   end  
-  
-  # @private
-  def _grab_return_to
-    session.authentication.return_to_url
-  end
 
   # @private
-  def _store_return_to_in_session
-    session.authentication.return_to_url = session.authentication.return_to_url
+  def _maintain_auth_session_before
+    @_maintain_auth_session = {}
+    Merb::Authentication.maintain_session_keys.each do |k|
+      @_maintain_auth_session[k] = session[k]
+    end
+  end
+  
+  # @private
+  def _maintain_auth_session_after
+    @_maintain_auth_session.each do |k,v|
+      session[k] = v
+    end
   end
   
   # @private
