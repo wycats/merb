@@ -30,13 +30,13 @@ module Merb
           params = env.delete(:params) if env.key?(:params) && !env.key?(:input)
           
           unless env.key?(:input)
-            env[:input] = Merb::Request.params_to_query_string(params)
+            env[:input] = Merb::Parse.params_to_query_string(params)
             env["CONTENT_TYPE"] = "application/x-www-form-urlencoded"
           end
         end
 
         if env[:params]
-          uri << "?#{Merb::Request.params_to_query_string(env.delete(:params))}"
+          uri << "?#{Merb::Parse.params_to_query_string(env.delete(:params))}"
         end
 
         if @__cookie__

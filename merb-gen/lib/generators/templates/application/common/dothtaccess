@@ -14,4 +14,4 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^(.*)$ merb.fcgi [QSA,L]
 
 
-ErrorDocument 500 "<h2>Application Error</h2>Merb could not be reached
+ErrorDocument 500 "<h2>Application Error</h2>Merb could not be reached"

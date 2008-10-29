@@ -18,20 +18,16 @@ module Kernel
   #
   # @api private
   def track_dependency(name, *ver, &blk)
-    ver.pop if ver.last.is_a?(Hash) && ver.last.empty?
-    dep = Gem::Dependency.new(name, ver.empty? ? nil : ver)
-    dep.require_block = blk
-    dep.require_as = (ver.last.is_a?(Hash) && ver.last[:require_as]) || name
+    options = ver.pop if ver.last.is_a?(Hash)
+    new_dep = Gem::Dependency.new(name, ver.empty? ? nil : ver)
+    new_dep.require_block = blk
+    new_dep.require_as = (options && options[:require_as]) || name
     
-    existing = Merb::BootLoader::Dependencies.dependencies.find { |d| d.name == dep.name }
-    if existing
-      index = Merb::BootLoader::Dependencies.dependencies.index(existing)
-      Merb::BootLoader::Dependencies.dependencies.delete(existing)
-      Merb::BootLoader::Dependencies.dependencies.insert(index, dep)
-    else
-      Merb::BootLoader::Dependencies.dependencies << dep
-    end
-    return dep
+    deps = Merb::BootLoader::Dependencies.dependencies
+
+    deps.reject! {|current| current.name == new_dep.name }
+    deps << new_dep
+    new_dep
   end
   
   # Loads the given string as a gem. Execution is deferred until

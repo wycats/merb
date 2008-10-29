@@ -126,7 +126,7 @@ module Merb
     def to_cookie
       unless self.empty?
         data = self.serialize
-        value = Merb::Request.escape "#{data}--#{generate_digest(data)}"
+        value = Merb::Parse.escape "#{data}--#{generate_digest(data)}"
         if value.size > MAX
           msg = "Cookies have limit of 4K. Session contents: #{data.inspect}"
           Merb.logger.error!(msg)
@@ -164,7 +164,7 @@ module Merb
       if cookie.blank?
         {}
       else
-        data, digest = Merb::Request.unescape(cookie).split('--')
+        data, digest = Merb::Parse.unescape(cookie).split('--')
         return {} if data.blank? || digest.blank?
         unless digest == generate_digest(data)
           clear

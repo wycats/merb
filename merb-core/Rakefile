@@ -230,6 +230,12 @@ end
 setup_specs("mri", "spec")
 setup_specs("jruby", "jruby -S spec")
 
+task "specs:core_ext" do
+  require "lib/merb-core/test/run_specs"
+  run_specs("spec/public/core_ext/*_spec.rb", "spec", "-c -f o")
+end
+
+task "spec"           => ["specs:mri"]
 task "specs"          => ["specs:mri"]
 task "specs:private"  => ["specs:mri:private"]
 task "specs:public"   => ["specs:mri:public"]

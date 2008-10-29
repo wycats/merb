@@ -223,7 +223,7 @@ module Merb
           
           ruby << "  query_params.delete_if { |key, value| value.nil? }\n"
           ruby << "  unless query_params.empty?\n"
-          ruby << '    url << "?#{Merb::Request.params_to_query_string(query_params)}"' << "\n"
+          ruby << '    url << "?#{Merb::Parse.params_to_query_string(query_params)}"' << "\n"
           ruby << "  end\n"
           ruby << '  url << "##{fragment}" if fragment' << "\n"
           ruby << "  url\n"

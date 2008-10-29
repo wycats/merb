@@ -14,6 +14,7 @@ module Merb
   autoload :Rack,                     "merb-core/rack"
   autoload :RenderMixin,              "merb-core/controller/mixins/render"
   autoload :Request,                  "merb-core/dispatch/request"
+  autoload :Parse,                    "merb-core/dispatch/request_parsers.rb"
   autoload :ResponderMixin,           "merb-core/controller/mixins/responder"
   autoload :Router,                   "merb-core/dispatch/router"
   autoload :Test,                     "merb-core/test"

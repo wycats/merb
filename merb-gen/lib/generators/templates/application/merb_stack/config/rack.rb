@@ -1,4 +1,3 @@
-
 # use PathPrefix Middleware if :path_prefix is set in Merb::Config
 if prefix = ::Merb::Config[:path_prefix]
   use Merb::Rack::PathPrefix, prefix
