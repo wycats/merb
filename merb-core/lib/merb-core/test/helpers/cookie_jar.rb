@@ -6,7 +6,7 @@ module Merb
       
       attr_reader :name, :value
       
-      def initialize(raw, response_host)
+      def initialize(raw, default_host)
         # separate the name / value pair from the cookie options
         @name_value_raw, options = raw.split(/[;,] */n, 2)
         
@@ -15,7 +15,7 @@ module Merb
         
         @options.delete_if { |k, v| !v || v.empty? }
         
-        @options["domain"] ||= response_host
+        @options["domain"] ||= default_host
       end
       
       def raw
@@ -42,19 +42,13 @@ module Merb
         expires && expires < Time.now
       end
       
-      def matches?(uri)
-        host = uri.host || "example.org"
-        
-        # puts "#{!expired?} && "
-        # puts "#{host} =~ #{Regexp.new("#{Regexp.escape(domain)}$").inspect} && "
-        # puts "#{uri.path} =~ #{Regexp.new("^#{Regexp.escape(path)}").inspect} <br/>"
-        # puts "Result: #{! expired? &&
-        # host     =~ Regexp.new("#{Regexp.escape(domain)}$") &&
-        # uri.path =~ Regexp.new("^#{Regexp.escape(path)}")} <br/>"
-        
-        ! expired? &&
-        host     =~ Regexp.new("#{Regexp.escape(domain)}$") &&
+      def valid?(uri)
+        uri.host =~ Regexp.new("#{Regexp.escape(domain)}$") &&
         uri.path =~ Regexp.new("^#{Regexp.escape(path)}")
+      end
+      
+      def matches?(uri)
+        ! expired? && valid?(uri)
       end
       
       def <=>(other)
@@ -67,15 +61,19 @@ module Merb
     class CookieJar
       
       def initialize
-        @jars = Hash.new([])
+        @jars = {}
       end
       
       def update(jar, uri, raw_cookies)
         return unless raw_cookies
-        
-        host = URI(uri).host || "example.org"
         # Initialize all the the received cookies
-        cookies = raw_cookies.map { |raw| Cookie.new(raw, host) }
+        cookies = []
+        raw_cookies.each do |raw|
+          c = Cookie.new(raw, uri.host)
+          cookies << c if c.valid?(uri)
+        end
+        
+        @jars[jar] ||= []
         
         # Remove all the cookies that will be updated
         @jars[jar].delete_if do |existing|
@@ -83,17 +81,24 @@ module Merb
         end
         
         @jars[jar].concat cookies
+        
+        @jars[jar].sort!
       end
       
       def for(jar, uri)
-        uri = URI(uri)
-        cookies = []
+        cookies = {}
         
+        @jars[jar] ||= []
+        # The cookies are sorted by most specific first. So, we loop through
+        # all the cookies in order and add it to a hash by cookie name if
+        # the cookie can be sent to the current URI. It's added to the hash
+        # so that when we are done, the cookies will be unique by name and
+        # we'll have grabbed the most specific to the URI.
         @jars[jar].each do |cookie|
-          cookies << cookie.raw if cookie.matches?(uri)
+          cookies[cookie.name] = cookie.raw if cookie.matches?(uri)
         end
         
-        cookies.join
+        cookies.values.join
       end
       
     end

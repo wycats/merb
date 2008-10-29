@@ -555,7 +555,8 @@ module Merb
     #
     # @api public
     def host
-      @env[Merb::Const::HTTP_X_FORWARDED_HOST] || @env[Merb::Const::HTTP_HOST]
+      @env[Merb::Const::HTTP_X_FORWARDED_HOST] || @env[Merb::Const::HTTP_HOST] ||
+        @env[Merb::Const::SERVER_NAME]
     end
 
     # ==== Parameters

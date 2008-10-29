@@ -38,6 +38,20 @@ describe Merb::Test::RequestHelper do
     request("/counter").should have_body("1")
   end
   
+  it "should be able to disable the cookie jar" do
+    request("/counter", :jar => nil).should have_body("1")
+    request("/counter", :jar => nil).should have_body("1")
+    request("/counter").should have_body("1")
+    request("/counter").should have_body("2")
+  end
+  
+  it "should be able to specify separate jars" do
+    request("/counter", :jar => :one).should have_body("1")
+    request("/counter", :jar => :two).should have_body("1")
+    request("/counter", :jar => :one).should have_body("2")
+    request("/counter", :jar => :two).should have_body("2")
+  end
+  
   it "should respect cookie domains when no domain is explicitly set" do
     request("http://example.org/counter").should     have_body("1")
     request("http://www.example.org/counter").should have_body("2")
@@ -84,8 +98,8 @@ describe Merb::Test::RequestHelper do
   end
   
   it "should keep the less specific domain cookie" do
-    request("http://test.com/domain_set")
-    request("http://one.test.com/domain_set")
+    request("http://test.com/domain_set").should be_successful
+    request("http://one.test.com/domain_set").should be_successful
     request("http://test.com/domain_get").should have_body("test.com")
   end
   
