@@ -44,7 +44,8 @@ module Merb::Test
     end
     
     def domain_set
-      set_cookie :cookie, request.host
+      set_cookie :cookie, request.host, :domain => request.host
+      "SET"
     end
     
     def domain_get

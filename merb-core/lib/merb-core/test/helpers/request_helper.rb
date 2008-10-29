@@ -5,7 +5,10 @@ module Merb
     module MakeRequest
 
       def request(uri, env = {})
-        uri = url(uri) if uri.is_a?(Symbol)    
+        uri = url(uri) if uri.is_a?(Symbol)
+        uri = URI(uri)
+        uri.scheme ||= "http"
+        uri.host   ||= "example.org"
 
         if (env[:method] == "POST" || env["REQUEST_METHOD"] == "POST")
           params = env.delete(:body_params) if env.key?(:body_params)
@@ -18,24 +21,29 @@ module Merb
         end
 
         if env[:params]
-          uri << "?#{Merb::Parse.params_to_query_string(env.delete(:params))}"
+          uri.query = [
+            uri.query, Merb::Parse.params_to_query_string(env.delete(:params))
+          ].compact.join("&")
         end
+        
+        ignore_cookies = env.has_key?(:jar) && env[:jar].nil?
 
-        # Setup a default cookie jar container
-        @__cookie_jar__ ||= Merb::Test::CookieJar.new
-        # Grab the cookie group name
-        jar = env.delete(:jar) || :default
-        # 
-        # Set the cookie header with the cookies
-        env["HTTP_COOKIE"] = @__cookie_jar__.for(jar, uri)
-
+        unless ignore_cookies
+          # Setup a default cookie jar container
+          @__cookie_jar__ ||= Merb::Test::CookieJar.new
+          # Grab the cookie group name
+          jar = env.delete(:jar) || :default
+          # Set the cookie header with the cookies
+          env["HTTP_COOKIE"] = @__cookie_jar__.for(jar, uri)
+        end
+        
         app = Merb::Rack::Application.new
-        rack = app.call(::Rack::MockRequest.env_for(uri, env))
+        rack = app.call(::Rack::MockRequest.env_for(uri.to_s, env))
 
         rack = Struct.new(:status, :headers, :body, :url, :original_env).
-          new(rack[0], rack[1], rack[2], uri, env)
-
-        @__cookie_jar__.update(jar, uri, rack.headers["Set-Cookie"])
+          new(rack[0], rack[1], rack[2], uri.to_s, env)
+          
+        @__cookie_jar__.update(jar, uri, rack.headers["Set-Cookie"]) unless ignore_cookies
 
         Merb::Dispatcher.work_queue.size.times do
           Merb::Dispatcher.work_queue.pop.call
@@ -43,7 +51,7 @@ module Merb
 
         rack
       end
-    end    
+    end
     
     module RequestHelper
       include MakeRequest
