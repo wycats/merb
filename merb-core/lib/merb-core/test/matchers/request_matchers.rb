@@ -36,6 +36,26 @@ Spec::Matchers.create(:be_missing, :be_client_error) do
   end
 end
 
+Spec::Matchers.create(:have_body) do
+  matches do |rack, body|
+    @actual = if rack.respond_to?(:body)
+      rack.body.to_s
+    else
+      rack.to_s
+    end
+    
+    @actual == body
+  end
+  
+  negative_failure_message do |rack, body|
+    "Expected the response not to match:\n    #{body}\nActual response was:\n    #{@actual}" 
+  end
+  
+  failure_message do |rack, body|
+    "Expected the response to match:\n    #{body}\nActual response was:\n    #{@actual}" 
+  end
+end
+
 Spec::Matchers.create(:have_content_type) do
   matches do |rack, mime_symbol|
     content_type = rack.headers["Content-Type"].split("; ").first
