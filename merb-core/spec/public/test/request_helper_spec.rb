@@ -2,268 +2,97 @@ require File.expand_path(File.join(File.dirname(__FILE__), "spec_helper"))
 
 Merb.start :environment => 'test', :log_level => :fatal
 
-Dir[File.join(File.dirname(__FILE__), "controllers/**/*.rb")].each do |f|
-  require f
-end
+require File.dirname(__FILE__) / "controllers/request_controller"
 
 describe Merb::Test::RequestHelper do
   
-  describe Merb::Test::RequestHelper::CookieJar do
+  before(:each) do
+    Merb::Controller._default_cookie_domain = "example.org"
     
-    it "should update its values from a request object" do
-      cookie_jar = Merb::Test::RequestHelper::CookieJar.new
-      cookie_jar.should be_empty
-      request = fake_request
-      request.cookies[:foo] = "bar+baz" # escaped by default
-      cookie_jar.update_from_request request
-      cookie_jar[:foo].should == 'bar baz'
-    end
-    
-  end  
-  
-  describe "#dispatch_to" do
-
-    before(:all) do
-      @controller_klass = Merb::Test::DispatchController
-    end
-
-    it "should dispatch to the given controller and action" do
-      Merb::Test::ControllerAssertionMock.should_receive(:called).with(:index)
-
-      dispatch_to(@controller_klass, :index)
-    end
-
-    it "should dispatch to the given controller and action with params" do
-      Merb::Test::ControllerAssertionMock.should_receive(:called).with(:show)
-
-      controller = dispatch_to(@controller_klass, :show, :name => "Fred")
-      controller.params[:name].should == "Fred"
-    end
-
-    it "should dispatch to the given controller and action with the query string merged into the params" do
-      Merb::Test::ControllerAssertionMock.should_receive(:called).with(:show)
-      controller = dispatch_to(@controller_klass, :show, {:name => "Fred"}, {'QUERY_STRING' => "last_name=Jones&age=42"} )
-      
-      controller.params[:name].should == "Fred"
-      controller.params[:last_name].should == "Jones"
-      controller.params[:age].should == "42"   
-    end
-
-    it "should not hit the router to match its route" do
-      Merb::Router.should_not_receive(:match)
-      dispatch_to(@controller_klass, :index)
-    end
-    
-    it "merges :controller into params" do
-      controller = dispatch_to(@controller_klass, :show, :name => "Fred")
-      
-      controller.params[:controller].should == @controller_klass.name.to_const_path
-    end
-    
-    it "merges :action into params" do
-      controller = dispatch_to(@controller_klass, :show, :name => "Fred")
-      
-      controller.params[:action].should == "show"
-    end
-
-    it "should support setting request.raw_post" do
-      controller = dispatch_to(@controller_klass, :show, {}, {:post_body => 'some XML'})
-      controller.request.raw_post.should == 'some XML'
+    Merb::Router.prepare do
+      with(:controller => "merb/test/request_controller") do
+        match("/set/short/long/read").to(:action => "get")
+        match("/:action(/:junk)", :junk => ".*").register
+      end
     end
   end
   
-  describe "#dispatch_with_basic_authentication_to" do
-
-    before(:all) do
-      @controller_klass = Merb::Test::DispatchController
-    end
-
-    it "should dispatch to the given controller and action" do
-      Merb::Test::ControllerAssertionMock.should_receive(:called).with(:index)
-
-      dispatch_with_basic_authentication_to(@controller_klass, :index, "Fred", "secret")
-    end
-
-    it "should dispatch to the given controller and action with authentication token" do
-      Merb::Test::ControllerAssertionMock.should_receive(:called).with(:show)
-
-      controller = dispatch_with_basic_authentication_to(@controller_klass, :show, "Fred", "secret")
-
-      controller.request.env["X_HTTP_AUTHORIZATION"].should == "Basic #{Base64.encode64("Fred:secret")}"
-    end
-    
-    it "should dispatch to the given controller and action with authentication token and params" do
-      Merb::Test::ControllerAssertionMock.should_receive(:called).with(:show)
-
-      controller = dispatch_with_basic_authentication_to(@controller_klass, :show, "Fred", "secret", :name => "Fred")
-
-      controller.request.env["X_HTTP_AUTHORIZATION"].should == "Basic #{Base64.encode64("Fred:secret")}"
-      controller.params[:name].should == "Fred"
-    end
-
-    it "should not hit the router to match its route" do
-      Merb::Router.should_not_receive(:match)
-      dispatch_with_basic_authentication_to(@controller_klass, :index, "Fred", "secret")
-    end
-  end
-
-  describe "#get" do
-    before(:each) do 
-      Merb::Router.prepare do |r| 
-        r.resources :spec_helper_controller
-        r.match("/:controller/:action/:custom").to(:controller => ":controller") 
-      end
-    end
-
-    it "should perform the index action when used with a get" do
-      Merb::Test::ControllerAssertionMock.should_receive(:called).with(:index)
-      get("/spec_helper_controller")  
-    end
-
-    it "should perform the index action and have params available" do
-      Merb::Test::ControllerAssertionMock.should_receive(:called).with(:index)
-      controller = get("/spec_helper_controller", :name => "Harry")
-      controller.params[:name].should == "Harry"    
-    end
-    
-    it "should perform the index action and have params available from the query string" do
-      Merb::Test::ControllerAssertionMock.should_receive(:called).with(:index)
-      controller = get("/spec_helper_controller?last_name=Oswald&age=25", :name => "Harry")
-      controller.params[:name].should == "Harry"
-      controller.params[:last_name].should == "Oswald"
-      controller.params[:age].should == "25"
-    end
-
-    it "should evaluate in the context of the controller in the block" do
-      get("/spec_helper_controller") do |controller|
-        controller.class.should == SpecHelperController
-      end    
-    end
-
-    it "should allow for custom router params" do
-      controller = get("/spec_helper_controller/index/my_custom_stuff")
-      controller.params[:custom].should == "my_custom_stuff"    
-    end   
-
-    it "should get the show action" do
-      Merb::Test::ControllerAssertionMock.should_receive(:called).with(:show)
-      controller = get("/spec_helper_controller/my_id")
-      controller.params[:id].should == "my_id"    
-    end
-  end
-
-  describe "#post" do
-    before(:each) do
-      Merb::Router.prepare do |r|
-        r.resources :spec_helper_controller
-      end
-    end
-
-    it "should post to the create action" do
-      Merb::Test::ControllerAssertionMock.should_receive(:called).with(:create)
-      post("/spec_helper_controller")
-    end
-
-    it "should post to the create action with params" do
-      Merb::Test::ControllerAssertionMock.should_receive(:called).with(:create)
-      controller = post("/spec_helper_controller", :name => "Harry")
-      controller.params[:name].should == "Harry"
-    end
-  end
-
-  describe "#put" do
-    before(:each) do
-      Merb::Router.prepare do |r|
-        r.resources :spec_helper_controller
-      end
-    end
-    it "should put to the update action" do
-      Merb::Test::ControllerAssertionMock.should_receive(:called).with(:update)
-      put("/spec_helper_controller/1")
-    end
-
-    it "should put to the update action with params" do
-      Merb::Test::ControllerAssertionMock.should_receive(:called).with(:update)
-      controller = put("/spec_helper_controller/my_id", :name => "Harry")
-      controller.params[:name].should == "Harry"
-      controller.params[:id].should   == "my_id"
-    end
-  end
-
-  describe "#delete" do
-    before(:each) do
-      Merb::Router.prepare do |r|
-        r.resources :spec_helper_controller
-      end
-    end
-    it "should put to the update action" do
-      Merb::Test::ControllerAssertionMock.should_receive(:called).with(:destroy)
-      delete("/spec_helper_controller/1")
-    end
-
-    it "should put to the update action with params" do
-      Merb::Test::ControllerAssertionMock.should_receive(:called).with(:destroy)
-      controller = delete("/spec_helper_controller/my_id", :name => "Harry")
-      controller.params[:name].should == "Harry"
-      controller.params[:id].should   == "my_id"
-    end
+  it "should dispatch a request using GET by defalt" do
+    request("/method").should have_body("Method - GET")
   end
   
-  describe "#request" do
-    before(:each) do 
-      Merb::Router.prepare do |r| 
-        r.namespace :namespaced do |namespaced|
-          namespaced.resources :spec_helper_controller
-        end
-      end
-    end
-    
-    it "should support setting request.raw_post" do
-      controller = mock_request("/namespaced/spec_helper_controller", {}, {:post_body => 'some XML'})
-      controller.request.raw_post.should == 'some XML'
-    end
-
-    it "should get namespaced index action" do
-      Merb::Test::ControllerAssertionMock.should_receive(:called).with(:index)
-      controller = mock_request("/namespaced/spec_helper_controller")
-      controller.class.should == Namespaced::SpecHelperController
-    end
-
-    it "should make the post body available in the request on deferred routing" do
-      Merb::Router.prepare do |r|
-        r.match('/xmlrpc').defer_to do |request, params|
-          request.raw_post.should == 'XMLRPC request body'
-          {:controller => 'spec_helper_controller', :action => :index}
-        end
-      end
-
-      mock_request('/xmlrpc', {}, {:post_body => 'XMLRPC request body'})
-    end
+  it "should persist cookies across sequential cookie setting requests" do
+    request("/counter").should have_body("1")
+    request("/counter").should have_body("2")
   end
   
-end
-
-module Merb::Test::RequestHelper
-  describe FakeRequest, ".new(env = {}, req = StringIO.new)" do
-    it "should create request with default enviroment, minus rack.input" do
-      @mock = FakeRequest.new
-      @mock.env.except('rack.input').should == FakeRequest::DEFAULT_ENV
-    end
-
-    it "should override default env values passed in HTTP format" do
-      @mock = FakeRequest.new('HTTP_ACCEPT' => 'nothing')
-      @mock.env['HTTP_ACCEPT'].should == 'nothing'
-    end
-
-    it "should override default env values passed in symbol format" do
-      @mock = FakeRequest.new(:http_accept => 'nothing')
-      @mock.env['HTTP_ACCEPT'].should == 'nothing'
-    end
-
-    it "should set rack input to an empty StringIO" do
-      @mock = FakeRequest.new
-      @mock.env['rack.input'].should be_kind_of(StringIO)
-      @mock.env['rack.input'].read.should == ''
-    end
+  it "should persist cookies across requests that don't return any cookie headers" do
+    request("/counter").should have_body("1")
+    request("/void").should    have_body("Void")
+    request('/counter').should have_body("2")
   end
+  
+  it "should delete cookies from the jar" do
+    request("/counter").should have_body("1")
+    request("/delete").should  have_body("Delete")
+    request("/counter").should have_body("1")
+  end
+  
+  it "should respect cookie domains when no domain is explicitly set" do
+    request("http://example.org/counter").should     have_body("1")
+    request("http://www.example.org/counter").should have_body("2")
+    request("http://example.org/counter").should     have_body("3")
+    request("http://www.example.org/counter").should have_body("4")
+  end
+  
+  it "should respect the domain set in the cookie" do
+    request("http://example.org/domain").should     have_body("1")
+    request("http://foo.example.org/domain").should have_body("1")
+    request("http://example.org/domain").should     have_body("1")
+    request("http://foo.example.org/domain").should have_body("2")
+  end
+  
+  it "should respect the path set in the cookie" do
+    request("/path").should      have_body("1")
+    request("/path/zomg").should have_body("1")
+    request("/path").should      have_body("1")
+    request("/path/zomg").should have_body("2")
+  end
+  
+  it "should use the most specific path cookie" do
+    request("/set/short")
+    request("/set/short/long")
+    request("/set/short/long/read").should have_body("/set/short/long")
+  end
+  
+  it "should use the most specific path cookie even if it was defined first" do
+    request("/set/short/long")
+    request("/set/short")
+    request("/set/short/long/read").should have_body("/set/short/long")
+  end
+  
+  it "should leave the least specific cookie intact when specifying a more specific path" do
+    request("/set/short")
+    request("/set/short/long/zomg/what/hi")
+    request("/set/short/long/read").should have_body("/set/short")
+  end
+  
+  it "should use the most specific domain cookie" do
+    request("http://test.com/domain_set")
+    request("http://one.test.com/domain_set")
+    request("http://one.test.com/domain_get").should have_body("one.test.com")
+  end
+  
+  it "should keep the less specific domain cookie" do
+    request("http://test.com/domain_set")
+    request("http://one.test.com/domain_set")
+    request("http://test.com/domain_get").should have_body("test.com")
+  end
+  
+  it "should respect the expiration" do
+    request("/expires").should have_body("1")
+    sleep(1)
+    request("/expires").should have_body("1")
+  end
+  
 end

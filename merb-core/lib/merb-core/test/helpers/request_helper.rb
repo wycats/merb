@@ -21,9 +21,13 @@ module Merb
           uri << "?#{Merb::Parse.params_to_query_string(env.delete(:params))}"
         end
 
-        if @__cookie__
-          env["HTTP_COOKIE"] = @__cookie__
-        end
+        # Setup a default cookie jar container
+        @__cookie_jar__ ||= Merb::Test::CookieJar.new
+        # Grab the cookie group name
+        jar = env.delete(:jar) || :default
+        # 
+        # Set the cookie header with the cookies
+        env["HTTP_COOKIE"] = @__cookie_jar__.for(jar, uri)
 
         app = Merb::Rack::Application.new
         rack = app.call(::Rack::MockRequest.env_for(uri, env))
@@ -31,7 +35,7 @@ module Merb
         rack = Struct.new(:status, :headers, :body, :url, :original_env).
           new(rack[0], rack[1], rack[2], uri, env)
 
-        @__cookie__ = rack.headers["Set-Cookie"] && rack.headers["Set-Cookie"].join
+        @__cookie_jar__.update(jar, uri, rack.headers["Set-Cookie"])
 
         Merb::Dispatcher.work_queue.size.times do
           Merb::Dispatcher.work_queue.pop.call
