@@ -36,7 +36,8 @@ describe Merb::Generators::FullSliceGenerator do
         "testing/stubs/app/controllers", "testing/stubs/app/controllers/application.rb", 
         "testing/stubs/app/controllers/main.rb", "testing/TODO"
       ]
-      files.should == expected
+      diff = expected - files
+      diff.should be_empty
     end
     
     it "should render templates successfully" do
