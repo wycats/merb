@@ -1,5 +1,5 @@
 # make sure we're running inside Merb
-if defined?(Merb::Plugins)  
+if defined?(Merb)  
   require "haml"
   require "merb-haml/template"
   Merb::Plugins.add_rakefiles(File.join(File.dirname(__FILE__) / "merb-haml" / "merbtasks"))
