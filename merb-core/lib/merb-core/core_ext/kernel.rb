@@ -25,8 +25,12 @@ module Kernel
     
     deps = Merb::BootLoader::Dependencies.dependencies
 
-    deps.reject! {|current| current.name == new_dep.name }
-    deps << new_dep
+    idx = deps.each_with_index {|d,i| break i if d.name == new_dep.name}
+
+    idx = idx.is_a?(Array) ? deps.size + 1 : idx
+    deps.delete_at(idx)
+    deps.insert(idx - 1, new_dep)
+
     new_dep
   end
   
