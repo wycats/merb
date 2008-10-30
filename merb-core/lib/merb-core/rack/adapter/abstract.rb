@@ -253,7 +253,7 @@ module Merb
         app  = "merb#{" : #{name}" if (name && name != "merb")}"
         max_port  = Merb::Config[:cluster] ? (Merb::Config[:cluster] - 1) : 0
         numbers   = ((whoami != :worker) && (max_port > 0)) ? "#{port}..#{port + max_port}" : port
-        file      = Merb::Config[:socket_file]
+        file      = Merb::Config[:socket_file] % port
         
         listening_on = if Merb::Config[:socket]
           "socket#{'s' if max_port > 0 && whoami != :worker} #{numbers} "\
