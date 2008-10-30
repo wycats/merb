@@ -3,7 +3,9 @@ require 'rake/gempackagetask'
 
 require 'merb-core'
 require 'merb-core/tasks/merb'
+require "extlib/tasks/release"
 
+RUBY_FORGE_PROJECT = "merb-auth"
 GEM_NAME = "merb-auth-slice-password"
 AUTHOR = "Daniel Neighman"
 EMAIL = "has.sox@gmail.com"

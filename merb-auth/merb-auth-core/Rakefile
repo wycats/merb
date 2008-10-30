@@ -7,7 +7,9 @@ require File.join(File.dirname(__FILE__), "../../merb-core/lib/merb-core/version
 require File.join(File.dirname(__FILE__), "../../merb-core/lib/merb-core/tasks/merb_rake_helper")
 require 'rake/testtask'
 
+require "extlib/tasks/release"
 
+RUBY_FORGE_PROJECT = "merb-auth"
 GEM_NAME = "merb-auth-core"
 PKG_BUILD   = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
 GEM_VERSION = Merb::VERSION + PKG_BUILD

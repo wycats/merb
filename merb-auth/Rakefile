@@ -28,6 +28,26 @@ gems = %w[
   merb-auth-core merb-auth-more merb-auth-slice-password
 ]
 
+desc "Publish Merb More gem to RubyForge, one by one."
+task :release do
+  packages = %w( gem tgz zip ).collect{ |ext| "pkg/#{GEM_NAME}-#{GEM_VERSION}.#{ext}" }
+
+  begin
+    sh %{rubyforge login}
+    sh %{rubyforge add_release #{RUBY_FORGE_PROJECT} #{GEM_NAME} #{GEM_VERSION} #{packages.join(' ')}}
+    sh %{rubyforge add_file #{RUBY_FORGE_PROJECT} #{GEM_NAME} #{GEM_VERSION} #{packages.join(' ')}}
+  rescue Exception => e
+    puts
+    puts "Release failed: #{e.message}"
+    puts
+    puts "Set PKG_BUILD environment variable if you do a subrelease (0.9.4.2008_08_02 when version is 0.9.4)"
+  end
+  
+  %w(merb-auth-core merb-auth-more merb-auth-slice-password).each do |gem|
+    Dir.chdir(gem){ sh "#{Gem.ruby} -S rake release" }
+  end
+end
+
 merb_auth_spec = Gem::Specification.new do |s|
   s.rubyforge_project = RUBY_FORGE_PROJECT
   s.name         = GEM_NAME
