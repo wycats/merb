@@ -267,13 +267,13 @@ module Merb
           end
         end
         
-        params << options
-        
         unless route = Merb::Router.resource_routes[key]
           raise Merb::Router::GenerationError, "Resource route not found: #{args.inspect}"
         end
+
+        params << options
         
-        route.generate(params, defaults)
+        route.generate(params, defaults, true)
       end
       
       # Add functionality to the router. This can be in the form of

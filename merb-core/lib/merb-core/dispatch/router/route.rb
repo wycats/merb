@@ -12,7 +12,7 @@ module Merb
 
       attr_reader :conditions, :params, :segments
       attr_reader :index, :variables, :name
-      attr_accessor :fixation
+      attr_accessor :fixation, :resource_identifiers
 
       def initialize(conditions, params, deferred_procs, options = {})
         @conditions, @params = conditions, params
@@ -102,7 +102,7 @@ module Merb
       #
       # ==== Returns
       # String:: The generated URL.
-      def generate(args = [], defaults = {})
+      def generate(args = [], defaults = {}, resource = false)
         unless generatable?
           raise GenerationError, "Cannot generate regexp Routes" if regexp?
           raise GenerationError, "Cannot generate this route"
@@ -117,7 +117,7 @@ module Merb
         # Support for anonymous params
         unless args.empty?
           # First, let's determine which variables are missing
-          variables = @variables - params.keys
+          variables = (resource ? @resource_identifiers : @variables) - params.keys
           
           args.each do |param|
             raise GenerationError, "The route has #{@variables.length} variables: #{@variables.inspect}" if variables.empty?
