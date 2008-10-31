@@ -1,14 +1,7 @@
-require File.join(File.dirname(__FILE__), "../merb-core/lib/merb-core/version.rb")
-
-require "rake/clean"
-require "rake/gempackagetask"
-require 'rubygems/specification'
-require "spec/rake/spectask"
-require 'merb-core/tasks/merb_rake_helper'
+require File.expand_path(File.join(File.dirname(__FILE__), "..", "rake_helpers"))
 require 'fileutils'
 include FileUtils
-
-require "extlib/tasks/release"
+require 'rake/clean'
 
 RUBY_FORGE_PROJECT  = "merb-auth"
 PROJECT_URL         = "http://merbivore.com"
@@ -71,7 +64,7 @@ Rake::GemPackageTask.new(merb_auth_spec) do |package|
   package.gem_spec = merb_auth_spec
 end
 
-task :package => ["lib/merb-auth.rb"]
+task :package => ["lib/merb-auth.rb", :build_children]
 desc "Create merb-auth.rb"
 task "lib/merb-auth.rb" do
   mkdir_p "lib"
@@ -82,6 +75,12 @@ task "lib/merb-auth.rb" do
       file.puts "require '#{gem}'"
     end
   end
+end
+
+task :build_children do
+  %w(merb-auth-core merb-auth-more merb-auth-slice-password).each do |dir|
+    Dir.chdir(dir) { sh "#{Gem.ruby} -S rake package" }
+  end  
 end
 
 desc "install the plugin as a gem"

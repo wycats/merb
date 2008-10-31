@@ -1,13 +1,4 @@
-require 'rubygems'
-require 'rake/gempackagetask'
-require 'rubygems/specification'
-require 'date'
-require "spec/rake/spectask"
-require 'merb-core/tasks/merb_rake_helper'
-require 'rake/testtask'
-require "extlib/tasks/release"
-
-require File.join(File.dirname(__FILE__), "../../merb-core/lib/merb-core/version.rb")
+require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "rake_helpers"))
 
 RUBY_FORGE_PROJECT = "merb-auth"
 GEM_NAME = "merb-auth-more"

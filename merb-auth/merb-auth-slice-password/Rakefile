@@ -1,9 +1,4 @@
-require 'rubygems'
-require 'rake/gempackagetask'
-
-require 'merb-core'
-require 'merb-core/tasks/merb'
-require "extlib/tasks/release"
+require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "rake_helpers"))
 
 RUBY_FORGE_PROJECT = "merb-auth"
 GEM_NAME = "merb-auth-slice-password"
@@ -49,7 +44,5 @@ task :gemspec do
   end
 end
 
-require 'spec/rake/spectask'
-require 'merb-core/test/tasks/spectasks'
 desc 'Default: run spec examples'
 task :default => 'spec'

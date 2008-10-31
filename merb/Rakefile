@@ -1,9 +1,4 @@
-require 'rubygems'
-require 'rake/gempackagetask'
-require 'rubygems/specification'
-require 'date'
-require 'merb-core/version'
-require 'merb-core/tasks/merb_rake_helper'
+require File.expand_path(File.join(File.dirname(__FILE__), "..", "rake_helpers"))
 
 NAME = "merb"
 AUTHOR = "Merb Team"
