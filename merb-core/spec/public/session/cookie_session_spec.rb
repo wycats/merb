@@ -1,6 +1,5 @@
 require File.join(File.dirname(__FILE__), "spec_helper")
 startup_merb(:session_store => "cookie", :session_secret_key => "session-secret-key-here")
-require File.join(File.dirname(__FILE__), "session_spec")
 require File.join(File.dirname(__FILE__), "controllers", "sessions")
 
 describe Merb::CookieSession do

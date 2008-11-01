@@ -1,3 +1,4 @@
+require File.join(File.dirname(__FILE__), "spec_helper")
 require File.join(File.dirname(__FILE__), "controllers", "sessions")
 
 # The Merb::Session module gets mixed into Merb::SessionContainer to allow 

@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'benchmark'
-require 'drb'
 require 'spec'
 require 'spec/runner/formatter/base_text_formatter'
 require 'spec/spec_helper.rb'
@@ -13,6 +12,7 @@ require 'base64'
 require 'nkf'
 require 'kconv'
 require 'rack'
+require 'fileutils'
 
 begin
   require 'json'
@@ -22,32 +22,18 @@ end
 
 Merb::Dispatcher
 
-module Spec
-  module Runner
-    module Formatter
-      class BaseTextFormatter
-        def dump_failure(counter, failure)
-          output = @options.error_stream
-          output.puts
-          output.puts "#{counter.to_s})"
-          output.puts colourise("#{failure.header}\n#{failure.exception.message}", failure)
-          output.puts format_backtrace(failure.exception.backtrace)
-          output.flush
-        end
-      end
-    end
-  end
-end
-
 module Merb
   class Counter
-    include DRb::DRbUndumped
 
     attr_accessor :time
     def initialize
       @examples, @failures, @errors, @pending, @total_time = 0, 0, 0, 0, 0
       @err = ""
       @mutex = Mutex.new
+    end
+  
+    def failed?
+      @failures > 0
     end
   
     def add(spec, out, err)
@@ -73,6 +59,11 @@ module Merb
     end
 
     def report
+      i = 0
+      @err.gsub!(/^\d*\)\s*/) do
+        "#{i += 1})\n"
+      end
+      
       puts @err
       puts
       if @failures != 0 || @errors != 0
@@ -82,13 +73,14 @@ module Merb
       else
         print "\e[32m" # Green
       end
-      puts "Total actual time: #{@total_time}"
       puts "#{@examples} examples, #{@failures} failures, #{@errors} errors, #{@pending} pending, #{sprintf("suite run in %3.3f seconds", @time.real)}"
       # TODO: we need to report pending examples all together
        puts "\e[0m"    
     end  
   end
 end
+
+require File.dirname(__FILE__) / "run_spec"
 
 # Runs specs in all files matching the file pattern.
 #
@@ -103,40 +95,39 @@ def run_specs(globs, spec_cmd='spec', run_opts = "-c", except = [])
   require "spec"
   globs = globs.is_a?(Array) ? globs : [globs]
   
+  forking = (ENV["FORK"] ? ENV["FORK"] == "1" : Merb.forking_environment?)
+  base_dir = File.expand_path(File.dirname(__FILE__) / ".." / ".." / "..")
+  
   counter = Merb::Counter.new
   forks   = 0
   failure = false
 
+  FileUtils.rm_rf(base_dir / "results")
+  FileUtils.mkdir_p(base_dir / "results")
+
   time = Benchmark.measure do
-    pid = nil
+    files = {}
     globs.each do |glob|
       Dir[glob].each do |spec|
-        drb_uri = DRb.start_service(nil, counter).uri
-        Kernel.fork do
-          $VERBOSE = nil
-          DRb.stop_service
-          DRb.start_service
-          counter_client = DRbObject.new_with_uri(drb_uri)
-          err, out = StringIO.new, StringIO.new
-          def out.tty?() true end
-          options = Spec::Runner::OptionParser.parse(%W(#{spec} -fs --color), err, out)
-          options.filename_pattern = File.expand_path(spec)
-          failure = ! Spec::Runner::CommandLine.run(options)
-          begin
-            counter_client.add(spec, out.string, err.string)
-          rescue DRb::DRbConnError => e
-            puts "#{Process.pid}: Exception caught"
-            puts "#{e.class}: #{e.message}"
-            retry
+        if forking
+          Kernel.fork do
+            run_spec(spec, base_dir)
           end
-          exit(failure ? -1 : 0)
+          Process.wait
+        else
+          `NOW=1 #{Gem.ruby} #{File.dirname(__FILE__) / "run_spec.rb"} \"#{spec}\"`
         end
+        out = File.read(base_dir / "results" / "#{File.basename(spec)}_out")
+        err = File.read(base_dir / "results" / "#{File.basename(spec)}_err")
+        counter.add(spec, out, err)        
       end
-      failure = Process.waitall.any? { |pid, s| !s.success? }
     end
   end
   
+  Process.waitall
+  
   counter.time = time
   counter.report
-  exit!(failure ? -1 : 0)
+  FileUtils.rm_rf(base_dir / "results")  
+  exit!(counter.failed? ? -1 : 0)
 end
