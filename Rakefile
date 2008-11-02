@@ -122,6 +122,19 @@ task :package do
   end
 end
 
+# This task is only for releasing edge gems on edge.merbivore.com
+
+task :release_edge => :package do
+  Dir.chdir("..") do
+    FileUtils.rm_rf("gems")
+    FileUtils.mkdir_p("gems")
+  end
+  FileUtils.cp("gems/*.gem", "../gems")
+  Dir.chdir("..") do
+    `gem generate_index`
+  end
+end
+
 RUBY_FORGE_PROJECT = "merb"
 
 GROUP_NAME    = "merb"
