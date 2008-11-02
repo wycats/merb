@@ -1,5 +1,13 @@
-require 'mongrel'
+begin
+  require 'mongrel'
+rescue LoadError => e
+  Merb.fatal! "Mongrel is not installed, but you are trying to use it. " \
+              "You need to either install mongrel or a different Ruby web " \
+              "server, like thin."
+end
+
 require 'merb-core/rack/handler/mongrel'
+
 module Merb
 
   module Rack
