@@ -333,9 +333,9 @@ rescue LoadError
   require '#{then_req}'
 end
 
-if File.directory?(gems_dir = File.join(Dir.pwd, 'gems')) ||
-   File.directory?(gems_dir = File.join(File.dirname(__FILE__), '..', 'gems'))
-  $BUNDLE = true; Gem.clear_paths; Gem.path.unshift(gems_dir)
+# use gems dir if ../gems exists - eg. only for ./bin/#{bin_file_name}
+if File.directory?(gems_dir = File.join(File.dirname(__FILE__), '..', 'gems'))
+  $BUNDLE = true; Gem.clear_paths; Gem.path.replace([gems_dir])
   ENV["PATH"] = "\#{File.dirname(__FILE__)}:\#{gems_dir}/bin:\#{ENV["PATH"]}"
   if (local_gem = Dir[File.join(gems_dir, "specifications", "#{spec.name}-*.gemspec")].last)
     version = File.basename(local_gem)[/-([\\.\\d]+)\\.gemspec$/, 1]
@@ -941,11 +941,6 @@ module Merb
               FileUtils.touch(File.join(spec.full_gem_path, "stable.strategy"))
             end           
           end
-        
-          # Add local binaries for the installed framework dependencies
-          comps = Merb::Stack.all_components & deps.map { |d| d.name }
-          comps << { :no_minigems => 'merb-gen' }
-          ensure_bin_wrapper_for(*comps)
         end
         return true
       end
@@ -1158,7 +1153,7 @@ module Merb
       merb_datamapper
     ]
     
-    MERB_STACK = %w[      
+    MERB_STACK = %w[
       extlib
       merb-core
       merb-action-args
@@ -1175,7 +1170,7 @@ module Merb
       merb-exceptions
     ] + DM_STACK
     
-    MERB_BASICS = %w[      
+    MERB_BASICS = %w[
       extlib
       merb-core
       merb-action-args
