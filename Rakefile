@@ -129,7 +129,7 @@ task :release_edge => :package do
     FileUtils.rm_rf("gems")
     FileUtils.mkdir_p("gems")
   end
-  FileUtils.cp("gems/*.gem", "../gems")
+  FileUtils.cp(Dir["gems/*.gem"], "../gems")
   Dir.chdir("..") do
     `gem generate_index`
   end
