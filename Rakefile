@@ -20,10 +20,9 @@ merb_more_gem_paths = %w[
   merb-param-protection
   merb-slices
   merb_datamapper
-  merb
 ]
 
-merb_gem_paths = %w[merb-core] + merb_more_gem_paths
+merb_gem_paths = %w[merb merb-core] + merb_more_gem_paths
 
 merb_gems = merb_gem_paths.map { |p| File.basename(p) }
 merb_more_gems = merb_more_gem_paths.map { |p| File.basename(p) }
