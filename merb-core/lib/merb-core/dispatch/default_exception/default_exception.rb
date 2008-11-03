@@ -20,21 +20,27 @@ module Merb
 
       # :api: private
       def frame_details(line)
-        filename, lineno, location = line.split(":")
-        if filename.index(Merb.framework_root)
-          type = "framework"
-          shortname = Pathname.new(filename).relative_path_from(Pathname.new(Merb.framework_root))
-        elsif filename.index(Merb.root)
-          type = "app"
-          shortname = Pathname.new(filename).relative_path_from(Pathname.new(Merb.root))
-        elsif path = Gem.path.find {|p| filename.index(p)}
-          type = "gem"
-          shortname = Pathname.new(filename).relative_path_from(Pathname.new(path))
+        if (match = line.match(/^(.+):(\d+):(.+)$/))
+          filename = match[1]
+          lineno = match[2]
+          location = match[3]
+          if filename.index(Merb.framework_root) == 0
+            type = "framework"
+            shortname = Pathname.new(filename).relative_path_from(Pathname.new(Merb.framework_root))
+          elsif filename.index(Merb.root) == 0
+            type = "app"
+            shortname = Pathname.new(filename).relative_path_from(Pathname.new(Merb.root))
+          elsif path = Gem.path.find {|p| filename.index(p) == 0}
+            type = "gem"
+            shortname = Pathname.new(filename).relative_path_from(Pathname.new(path))
+          else
+            type = "other"
+            shortname = filename
+          end
+          [type, shortname, filename, lineno, location]
         else
-          type = "other"
-          shortname = filename
+          ['', '', '', nil, nil]
         end
-        [type, shortname, filename, lineno, location]
       end
 
       # :api: private
@@ -85,6 +91,10 @@ module Merb
         ret   << str
         ret   << "</tr>"
         ret.join("\n")
+      end
+
+      def jar?(filename)
+        filename.match(/jar\!/)
       end
     end
     
