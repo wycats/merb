@@ -11,6 +11,10 @@ end
 
 class ActionArgs < Merb::Controller
   include ExtraActions
+
+  def nada
+    "NADA"
+  end
   
   def index(foo)
     foo
@@ -31,7 +35,7 @@ class ActionArgs < Merb::Controller
   define_method :dynamic_define_method do
     "mos def"
   end
-  
+    
   def with_default_nil(foo, bar = nil)
     "#{foo} #{bar}"
   end

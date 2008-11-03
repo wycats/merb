@@ -10,8 +10,12 @@ class Merb::AbstractController
     # klass<Class>::
     #   The controller that is being inherited from Merb::AbstractController.
     def inherited(klass)
-      klass.action_argument_list = Hash.new do |h,k| 
-        h[k] = ParseTreeArray.translate(klass, k.to_sym).get_args
+      klass.action_argument_list = Hash.new do |h,k|
+        args = klass.instance_method(k).get_args
+        arguments = args[0]
+        defaults = []
+        arguments.each {|a| defaults << a[0] if a.size == 2} if arguments
+        h[k] = [arguments || [], defaults]
       end
       old_inherited(klass)
     end
@@ -26,6 +30,7 @@ class Merb::AbstractController
   # BadRequest:: The params hash doesn't have a required parameter.
   def _call_action(action)
     arguments, defaults = self.class.action_argument_list[action]
+    
     args = arguments.map do |arg, default|
       arg = arg
       p = params.key?(arg.to_sym)
