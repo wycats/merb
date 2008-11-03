@@ -1,6 +1,9 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "spec_helper"))
 
-Merb.start(:merb_root => File.dirname(__FILE__) / "test_app")
+Merb.start(
+  :merb_root => File.dirname(__FILE__) / "test_app",
+  :fork_for_class_load => false
+)
 Merb::Config[:log_stream] = File.open("/dev/null", "w")
 Merb.reset_logger!
 
