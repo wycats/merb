@@ -4,7 +4,6 @@ require "merb-core/test"
 Merb.start :environment => 'test', :log_level => :fatal
 
 describe Merb::Test::Rspec::ViewMatchers do
-  include Merb::Test::ViewHelper
   
   before(:each) do
     @body = <<-EOF
@@ -14,128 +13,50 @@ describe Merb::Test::Rspec::ViewMatchers do
     EOF
   end
   
-  describe "#match_tag" do
-    it "should work with a HasContent matcher in the block" do
-      @body.should have_tag(:div) {|d| d.should_not contain("merb")}
+  describe "#have_selector" do
+    
+    it "should be able to match a CSS selector" do
+      @body.should have_selector("div")
     end
     
-    it "should work with a 'with_tag' chain" do
-      @body.should have_tag(:div, :id => :main).with_tag(:div, :class => 'inner')
+    it "should not match a CSS selector that does not exist" do
+      @body.should_not have_selector("p")
     end
     
-    it "should work with a block before a with_tag" do
-      @body.should have_tag(:div, :id => :main) {|d| d.should_not contain("merb")}.with_tag(:div, :class => 'inner')
+    it "should be able to loop over all the matched elements" do
+      @body.should have_selector("div") { |node| node.name.should == "div" }
     end
+    
+    it "should not match of any of the matchers in the block fail" do
+      lambda {
+        @body.should_not have_selector("div") { |node| node.name.should == "p" }
+      }.should raise_error(Spec::Expectations::ExpectationNotMetError)
+    end
+    
+  end
+  
+  describe "#have_tag" do
+    
+    it "should be able to match a tag" do
+      @body.should have_tag("div")
+    end
+    
+    it "should not match the tag when it should not match" do
+      @body.should_not have_tag("p")
+    end
+    
+    it "should be able to specify the content of the tag" do
+      @body.should have_tag("div", :content  => "hello, world!")
+    end
+    
+    it "should be able to specify the attributes of the tag" do
+      @body.should have_tag("div", :class => "inner")
+    end
+    
   end
 
   module Merb::Test::Rspec::ViewMatchers
-  
-    describe HasTag do
-      describe "#matches?" do
-        before(:each) do
-          @document = stub(:document)
-          Hpricot.should_receive(:parse).and_return @document
-        end
-      
-        it "should pass all found elements to the block" do
-          @block_called = false
-        
-          @document.should_receive(:search).and_return [""]
-          HasTag.new("tag").matches?("") {|e| e.should == "" }
-        end
-      
-        it 'should intercept errors raised in the block' do
-          @document.should_receive(:search).and_return [""]
-          lambda {
-            HasTag.new("tag").matches?("") {|e| true.should be_false }
-          }.should_not raise_error(Spec::Expectations::ExpectationNotMetError)
-        end
-
-        it 'should raise ExpectationNotMetError when there are no matched elements' do
-          @document.should_receive(:search).and_return [""]
-          lambda {
-            @document.should have_tag(:tag) {|e| true.should be_false }
-          }.should raise_error(Spec::Expectations::ExpectationNotMetError, "tag:\nexpected false, got true")
-        end
-
-        #part of bugfix for #329
-        it 'should not raise error if block for first of matched elements by xpath expression fails' do
-          @document.should_receive(:search).and_return ["a", "b"]
-          lambda {
-            @document.should have_tag(:tag) { |tag| tag.should == "b" }
-          }.should_not raise_error(Spec::Expectations::ExpectationNotMetError)
-        end
-      end
-    
-      describe "#with_tag" do
-        it "should set @outer_has_tag" do
-          outer = HasTag.new("outer")
-          inner = outer.with_tag("inner")
-        
-          inner.selector.should include(outer.selector)
-        end
-      end
-    
-      describe "#selector" do
-        it "should always start with \/\/" do
-          HasTag.new("tag").selector.should =~ /^\/\//
-        end
-      
-        it "should use @tag for the element" do
-          HasTag.new("tag").selector.should include("tag")
-        end
-      
-        it "should use dot notation for the class" do
-          HasTag.new("tag", :class => "class").selector.should include("tag.class")
-        end
-      
-        it "should use pound(#) notation for the id" do
-          HasTag.new("tag", :id => "id").selector.should include("tag#id")
-        end
-      
-        it "should include any custom attributes" do
-          HasTag.new("tag", :random => :attribute).selector.should include("[@random=\"attribute\"]")
-        end
-      
-        it "should not include the class as a custom attribute" do
-          HasTag.new("tag", :class => :my_class, :rand => :attr).selector.should_not include("[@class=\"my_class\"]")
-        end
-      
-        it "should not include the id as a custom attribute" do
-          HasTag.new("tag", :id => :my_id, :rand => :attr).selector.should_not include("[@id=\"my_id\"]")
-        end
-      end
-    
-      describe "#failure_message" do
-        it "should include the tag name" do
-          HasTag.new("anytag").failure_message.should include("anytag")
-        end
-      
-        it "should include the tag's id" do
-          HasTag.new("div", :id => :spacer).failure_message.should include("div#spacer")
-        end
-      
-        it "should include the tag's class" do
-          HasTag.new("div", :class => :header).failure_message.should include("div.header")
-        end
-      
-        it "should include the tag's custom attributes" do
-          HasTag.new("h1", :attr => :val, :foo => :bar).failure_message.should include("attr=\"val\"")
-          HasTag.new("h1", :attr => :val, :foo => :bar).failure_message.should include("foo=\"bar\"")
-        end
-      end
-    
-      describe "id, class, and attributes for error messages" do
-        it "should have '.classifier' in class_for_error" do
-          HasTag.new("tag", :class => "classifier").class_for_error.should include(".classifier")
-        end
-      
-        it "should have '#identifier' in id_for_error" do
-          HasTag.new("tag", :id => "identifier").id_for_error.should include("#identifier")
-        end
-      end
-    end
-    
+   
     describe HasContent do
       before(:each) do
         @element = stub(:element)

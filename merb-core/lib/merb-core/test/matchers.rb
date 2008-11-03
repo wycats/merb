@@ -7,4 +7,3 @@ require "merb-core/test/matchers/request_matchers"
 
 Merb::Test::ControllerHelper.send(:include, Merb::Test::Rspec::ControllerMatchers)
 Merb::Test::RouteHelper.send(:include, Merb::Test::Rspec::RouteMatchers)
-Merb::Test::ViewHelper.send(:include, Merb::Test::Rspec::ViewMatchers)

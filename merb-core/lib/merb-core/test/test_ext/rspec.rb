@@ -42,7 +42,6 @@ module Merb
     class ExampleGroup < Spec::Example::ExampleGroup
 
       include ::Merb::Test::Matchers
-      include ::Merb::Test::ViewHelper
       include ::Merb::Test::RouteHelper
       include ::Merb::Test::ControllerHelper
 

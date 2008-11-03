@@ -1,11 +1,27 @@
 module Merb::Test::Rspec::ViewMatchers
+  
   class HaveXpath
-    def initialize(expected, type)
-      @expected, @type = expected, type
+    def initialize(expected, &block)
+      # Require nokogiri and fall back on rexml
+      begin
+        require "nokogiri"
+      rescue LoadError => e
+        if require "rexml/document"
+          require "merb-core/vendor/nokogiri/css"
+          warn("Standard REXML library is slow. Please consider installing nokogiri.\nUse \"sudo gem install nokogiri\"")
+        end
+      end
+      
+      @expected = expected
+      @block    = block
     end
     
     def matches?(stringlike)
-      send("matches_#{@type}?", stringlike)
+      if defined?(Nokogiri::XML)
+        matches_nokogiri?(stringlike)
+      else
+        matches_rexml?(stringlike)
+      end
     end
     
     def matches_rexml?(stringlike)
@@ -17,23 +33,39 @@ module Merb::Test::Rspec::ViewMatchers
       when REXML::Node
         stringlike
       when StringIO, String
-        REXML::Document.new(stringlike).root
+        begin
+          REXML::Document.new(stringlike.to_s).root
+        rescue REXML::ParseException => e
+          if e.message.include?("second root element")
+            REXML::Document.new("<fake-root-element>#{stringlike}</fake-root-element>").root
+          else
+            raise e
+          end
+        end
       end
-      !REXML::XPath.match(@document, @expected).empty?
+      
+      query.all? do |q|
+        matched = REXML::XPath.match(@document, q)
+        matched.any? && (!block_given? || matched.all?(&@block))
+      end
     end
     
-    def matches_libxml?(stringlike)
+    def matches_nokogiri?(stringlike)
       stringlike = stringlike.body.to_s if stringlike.respond_to?(:body)
       
       @document = case stringlike
-      when LibXML::XML::Document, LibXML::XML::Node
+      when Nokogiri::HTML::Document, Nokogiri::XML::NodeSet
         stringlike
       when StringIO
-        LibXML::XML::HTMLParser.string(stringlike.string).parse
+        Nokogiri::HTML(stringlike.string)
       else
-        LibXML::XML::HTMLParser.string(stringlike).parse
+        Nokogiri::HTML(stringlike.to_s)
       end
-      !@document.find(@expected).empty?
+      @document.xpath(*query).any?
+    end
+    
+    def query
+      [@expected].flatten.compact
     end
     
     # ==== Returns
@@ -49,238 +81,71 @@ module Merb::Test::Rspec::ViewMatchers
     end    
   end
   
-  class HaveSelector
-
-    # ==== Parameters
-    # expected<String>:: The string to look for.
-    def initialize(expected)
-      @expected = expected
-    end
-
-    # ==== Parameters
-    # stringlike<Hpricot::Elem, StringIO, String>:: The thing to search in.
-    #
-    # ==== Returns
-    # Boolean:: True if there was at least one match.
-    def matches?(stringlike)
-      @document = case stringlike
-      when Hpricot::Elem
-        stringlike
-      when StringIO
-        Hpricot.parse(stringlike.string)
-      else
-        Hpricot.parse(stringlike)
-      end
-      !@document.search(@expected).empty?
-    end
+  class HaveSelector < HaveXpath
 
     # ==== Returns
     # String:: The failure message.
     def failure_message
       "expected following text to match selector #{@expected}:\n#{@document}"
     end
-
+    
     # ==== Returns
     # String:: The failure message to be displayed in negative matches.
     def negative_failure_message
       "expected following text to not match selector #{@expected}:\n#{@document}"
     end
-  end
-
-  class MatchTag
-
-    # ==== Parameters
-    # name<~to_s>:: The name of the tag to look for.
-    # attrs<Hash>:: Attributes to look for in the tag (see below).
-    #
-    # ==== Options (attrs)
-    # :content<String>:: Optional content to match.
-    def initialize(name, attrs)
-      @name, @attrs = name, attrs
-      @content = @attrs.delete(:content)
+    
+    def query
+      Nokogiri::CSS::Parser.parse(*super).map { |ast| ast.to_xpath }
     end
-
-    # ==== Parameters
-    # target<String>:: The string to look for the tag in.
-    #
-    # ==== Returns
-    # Boolean:: True if the tag matched.
-    def matches?(target)
-      @errors = []
-      unless target.include?("<#{@name}")
-        @errors << "Expected a <#{@name}>, but was #{target}"
-      end
-      @attrs.each do |attr, val|
-        unless target.include?("#{attr}=\"#{val}\"")
-          @errors << "Expected #{attr}=\"#{val}\", but was #{target}"
-        end
-      end
-      if @content
-        unless target.include?(">#{@content}<")
-          @errors << "Expected #{target} to include #{@content}"
-        end
-      end
-      @errors.size == 0
-    end
-
-    # ==== Returns
-    # String:: The failure message.
-    def failure_message
-      @errors[0]
-    end
-
-    # ==== Returns
-    # String:: The failure message to be displayed in negative matches.
-    def negative_failure_message
-      "Expected not to match against <#{@name} #{@attrs.map{ |a,v| "#{a}=\"#{v}\"" }.join(" ")}> tag, but it matched"
-    end
-  end
-
-  class NotMatchTag
-
-    # === Parameters
-    # attrs<Hash>:: A set of attributes that must not be matched.
-    def initialize(attrs)
-      @attrs = attrs
-    end
-
-    # ==== Parameters
-    # target<String>:: The target to look for the match in.
-    #
-    # ==== Returns
-    # Boolean:: True if none of the attributes were matched.
-    def matches?(target)
-      @errors = []
-      @attrs.each do |attr, val|
-        if target.include?("#{attr}=\"#{val}\"")
-          @errors << "Should not include #{attr}=\"#{val}\", but was #{target}"
-        end
-      end
-      @errors.size == 0
-    end
-
-    # ==== Returns
-    # String:: The failure message.
-    def failure_message
-      @errors[0]
-    end
+  
   end
   
-  class HasTag
+  class HaveTag < HaveSelector
     
-    attr_accessor :outer_has_tag, :inner_has_tag
-
-    # ==== Parameters
-    # tag<~to_s>:: The tag to look for.
-    # attributes<Hash>:: Attributes for the tag (see below).
-    def initialize(tag, attributes = {}, &blk)
-      @tag, @attributes = tag, attributes
-      @id, @class = @attributes.delete(:id), @attributes.delete(:class)
-      @blk = blk
-    end
-
-    # ==== Parameters
-    # stringlike<Hpricot::Elem, StringIO, String>:: The thing to search in.
-    # &blk:: An optional block for searching in child elements using with_tag.
-    #
-    # ==== Returns
-    # Boolean:: True if there was at least one match.
-    def matches?(stringlike, &blk)
-      @document = case stringlike
-      when Hpricot::Elem
-        stringlike
-      when StringIO
-        Hpricot.parse(stringlike.string)
-      else
-        Hpricot.parse(stringlike)
-      end
-      
-      @blk = blk unless blk.nil?
-
-      unless @blk.nil?
-        !@document.search(selector).select do |ele|
-          begin
-            @blk.call ele
-            true
-          rescue Spec::Expectations::ExpectationNotMetError
-            @error_message = "#{tag_for_error}:\n" + $!.message
-            false
-          end
-        end.empty?
-      else
-        !@document.search(selector).empty?
-      end
-    end
-
-    # ==== Returns
-    # String:: The complete selector for element queries.
-    def selector
-      @selector = @outer_has_tag ? @outer_has_tag.selector : ''
-
-      @selector << "//#{@tag}#{id_selector}#{class_selector}"
-      @selector << @attributes.map{|a, v| "[@#{a}=\"#{v}\"]"}.join
-    end
-
-    # ==== Returns
-    # String:: ID selector for use in element queries.
-    def id_selector
-      "##{@id}" if @id
-    end
-
-    # ==== Returns
-    # String:: Class selector for use in element queries.
-    def class_selector
-      ".#{@class}" if @class
-    end
-
     # ==== Returns
     # String:: The failure message.
     def failure_message
-      @error_message || "expected following output to contain a #{tag_for_error} tag:\n#{@document}"
-    end
-
-    # ==== Returns
-    # String:: The failure message to be displayed in negative matches.
-    def negative_failure_message
-      @error_message || "expected following output to omit a #{tag_for_error} tag:\n#{@document}"
+      "expected following output to contain a #{tag_inspect} tag:\n#{@document}"
     end
     
     # ==== Returns
-    # String:: The tag used in failure messages.
-    def tag_for_error
-      result = "#{@tag}#{id_for_error}#{class_for_error}#{attributes_for_error}"
-      inner_has_tag ? result << " > #{inner_has_tag.tag_for_error}" : result
+    # String:: The failure message to be displayed in negative matches.
+    def negative_failure_message
+      "expected following output to omit a #{tag_inspect}:\n#{@document}"
     end
-
-    # ==== Returns
-    # String:: ID for the error tag.
-    def id_for_error
-      "##{@id}" unless @id.nil?
-    end
-
-    # ==== Returns
-    # String:: Class for the error tag.
-    def class_for_error
-      ".#{@class}" unless @class.nil?
-    end
-
-    # ==== Returns
-    # String:: Class for the error tag.
-    def attributes_for_error
-      @attributes.map{|a,v| "[#{a}=\"#{v}\"]"}.join
-    end
-
-    # Search for a child tag within a have_tag block.
-    #
-    # ==== Parameters
-    # tag<~to_s>:: The tag to look for.
-    # attributes<Hash>:: Attributes for the tag (see below).
-    def with_tag(name, attrs={})
-      @inner_has_tag = HasTag.new(name, attrs)
-      @inner_has_tag.outer_has_tag = self
+    
+    def tag_inspect
+      options = @expected.last.dup
+      content = options.delete(:content)
       
-      @inner_has_tag
+      html = "<#{@expected.first}"
+      options.each do |k,v|
+        html << " #{k}='#{v}'"
+      end
+      
+      if content
+        html << ">#{content}</#{@expected.first}>"
+      else
+        html << "/>"
+      end
+      
+      html
     end
+    
+    def query
+      options  = @expected.last.dup
+      selector = @expected.first.to_s
+      
+      selector << ":contains('#{options.delete(:content)}')" if options[:content]
+      
+      options.each do |key, value|
+        selector << "[#{key}='#{value}']"
+      end
+      
+      Nokogiri::CSS::Parser.parse(selector).map { |ast| ast.to_xpath }
+    end
+    
   end
 
   class HasContent
@@ -289,6 +154,7 @@ module Merb::Test::Rspec::ViewMatchers
     end
 
     def matches?(element)
+      element = element.body.to_s if element.respond_to?(:body)
       @element = element
       
       case @content
@@ -320,83 +186,45 @@ module Merb::Test::Rspec::ViewMatchers
       end
     end
   end
-  
-  # ==== Parameters
-  # name<~to_s>:: The name of the tag to look for.
-  # attrs<Hash>:: Attributes to look for in the tag (see below).
-  #
-  # ==== Options (attrs)
-  # :content<String>:: Optional content to match.
-  #
-  # ==== Returns
-  # MatchTag:: A new match tag matcher.
-  def match_tag(name, attrs={})
-    MatchTag.new(name, attrs)
-  end
 
-  # ==== Parameters
-  # attrs<Hash>:: A set of attributes that must not be matched.
+  # Matches HTML content against a CSS 3 selector.
   #
-  # ==== Returns
-  # NotMatchTag:: A new not match tag matcher.
-  def not_match_tag(attrs)
-    NotMatchTag.new(attrs)
-  end
-
   # ==== Parameters
-  # expected<String>:: The string to look for.
+  # expected<String>:: The CSS selector to look for.
   #
   # ==== Returns
   # HaveSelector:: A new have selector matcher.
+  # ---
+  # @api public
   def have_selector(expected)
     HaveSelector.new(expected)
   end
   alias_method :match_selector, :have_selector
 
-  def have_xpath(expected)
-    begin
-      require "libxml"
-      type = "libxml"
-    rescue LoadError => e
-      if require "rexml/document" # show warning only once
-        warn(<<-WARN_TEXT)
-Standard REXML library is slow. Please consider to install libxml-ruby.
-Use "sudo gem install libxml-ruby"
-WARN_TEXT
-      end
-      type = "rexml"
-    end
-    HaveXpath.new(expected, type)
-  end
-  alias_method :match_xpath, :have_xpath
-
-  # RSpec matcher to test for the presence of tags.
+  # Matches HTML content against an XPath query
   #
   # ==== Parameters
-  # tag<~to_s>:: The name of the tag.
-  # attributes<Hash>:: Tag attributes.
+  # expected<String>:: The XPath query to look for.
   #
   # ==== Returns
-  # HasTag:: A new has tag matcher.
-  #
-  # ==== Examples
-  #   # Check for <div>
-  #   body.should have_tag("div")
-  #
-  #   # Check for <span id="notice">
-  #   body.should have_tag("span", :id => :notice)
-  #
-  #   # Check for <h1 id="foo" class="bar">
-  #   body.should have_tag(:h2, :class => "bar", :id => "foo")
-  #
-  #   # Check for <div attr="val">
-  #   body.should have_tag(:div, :attr => :val)
-  def have_tag(tag, attributes = {}, &blk)
-    HasTag.new(tag, attributes, &blk)
+  # HaveXpath:: A new have xpath matcher.
+  # ---
+  # @api public
+  def have_xpath(expected)
+    HaveXpath.new(expected)
   end
-
-  alias_method :with_tag, :have_tag
+  alias_method :match_xpath, :have_xpath
   
+  def have_tag(name, attributes = {})
+    HaveTag.new([name, attributes])
+  end
+  alias_method :match_tag, :have_tag
+  
+  # Matches the contents of an HTML document with
+  # whatever string is supplied
+  #
+  # ---
+  # @api public
   def contain(content)
     HasContent.new(content)
   end
