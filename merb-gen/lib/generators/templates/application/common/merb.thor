@@ -824,7 +824,7 @@ module Merb
       clobber_dependencies!
     end
     
-    # Recreate binary gems on the current platform.
+    # Recreate all gems from gems/cache on the current platform.
     #
     # This task should be executed as part of a deployment setup, where the 
     # deployment system runs this after the app has been installed.
@@ -836,24 +836,26 @@ module Merb
     # Note: gems/cache should be in your SCM for this to work correctly.
     
     desc 'redeploy', 'Recreate any binary gems on the target platform'
-    method_options "--dry-run" => :boolean
+    method_options "--dry-run" => :boolean, "--force" => :boolean
     def redeploy
       require 'tempfile' # for Dir::tmpdir access
       if gem_dir && File.directory?(cache_dir = File.join(gem_dir, 'cache'))
         local_gemspecs.each do |gemspec|
-          unless gemspec.extensions.empty?
-            if File.exists?(gem_file = File.join(cache_dir, "#{gemspec.full_name}.gem"))
-              gem_file_copy = File.join(Dir::tmpdir, File.basename(gem_file))
-              if dry_run?
-                note "Recreating #{gemspec.full_name}"
-              else
-                message "Recreating #{gemspec.full_name}"
-                # Copy the gem to a temporary file, because otherwise RubyGems/FileUtils
-                # will complain about copying identical files (same source/destination).
-                FileUtils.cp(gem_file, gem_file_copy)
-                Merb::Gem.install(gem_file_copy, :install_dir => gem_dir)
-                File.delete(gem_file_copy)
-              end
+          if File.exists?(gem_file = File.join(cache_dir, "#{gemspec.full_name}.gem"))
+            gem_file_copy = File.join(Dir::tmpdir, File.basename(gem_file))
+            if dry_run?
+              note "Recreating #{gemspec.full_name}"
+            else
+              message "Recreating #{gemspec.full_name}"       
+              if options[:force] && File.directory?(gem = File.join(gem_dir, 'gems', gemspec.full_name))
+                puts "Removing existing #{gemspec.full_name}"
+                FileUtils.rm_rf(gem) 
+              end              
+              # Copy the gem to a temporary file, because otherwise RubyGems/FileUtils
+              # will complain about copying identical files (same source/destination).
+              FileUtils.cp(gem_file, gem_file_copy)
+              Merb::Gem.install(gem_file_copy, :install_dir => gem_dir, :ignore_dependencies => true)
+              File.delete(gem_file_copy)
             end
           end
         end
