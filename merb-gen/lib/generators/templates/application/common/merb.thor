@@ -335,7 +335,7 @@ end
 
 # use gems dir if ../gems exists - eg. only for ./bin/#{bin_file_name}
 if File.directory?(gems_dir = File.join(File.dirname(__FILE__), '..', 'gems'))
-  $BUNDLE = true; Gem.clear_paths; Gem.path.replace([gems_dir])
+  $BUNDLE = true; Gem.clear_paths; Gem.path.replace([File.expand_path(gems_dir)])
   ENV["PATH"] = "\#{File.dirname(__FILE__)}:\#{gems_dir}/bin:\#{ENV["PATH"]}"
   if (local_gem = Dir[File.join(gems_dir, "specifications", "#{spec.name}-*.gemspec")].last)
     version = File.basename(local_gem)[/-([\\.\\d]+)\\.gemspec$/, 1]
