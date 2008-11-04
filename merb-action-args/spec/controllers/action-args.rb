@@ -8,6 +8,13 @@ module ExtraActions
   end
 end
 
+module Awesome
+  class ActionArgs < Merb::Controller
+    def index(foo)
+      foo.to_s
+    end
+  end
+end
 
 class ActionArgs < Merb::Controller
   include ExtraActions

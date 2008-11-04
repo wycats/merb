@@ -10,6 +10,10 @@ end
 
 describe Merb::AbstractController do
   
+  it "should be able to handle a nested class" do
+    dispatch_to(Awesome::ActionArgs, :index, :foo => "bar").body.should == "bar"
+  end
+  
   it "should be able to handle no arguments" do
     dispatch_to(ActionArgs, :nada).body.should == "NADA"
   end
