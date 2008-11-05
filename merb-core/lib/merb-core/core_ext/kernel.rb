@@ -182,11 +182,11 @@ module Kernel
   #   call takes over other.
   #
   # @api public
-  def use_orm(orm)
+  def use_orm(orm, &blk)
     begin
       Merb.orm = orm
       orm_plugin = "merb_#{orm}"
-      Kernel.dependency(orm_plugin)
+      Kernel.dependency(orm_plugin, &blk)
     rescue LoadError => e
       Merb.logger.warn!("The #{orm_plugin} gem was not found.  You may need to install it.")
       raise e
@@ -239,7 +239,7 @@ module Kernel
   #   $ merb-gen resource_controller Project 
   #
   # @api public
-  def use_template_engine(template_engine)
+  def use_template_engine(template_engine, &blk)
     Merb.template_engine = template_engine
 
     if template_engine != :erb
@@ -248,7 +248,7 @@ module Kernel
       else
         template_engine_plugin = "merb_#{template_engine}"
       end
-      Kernel.dependency(template_engine_plugin)
+      Kernel.dependency(template_engine_plugin, &blk)
     end
     
     nil
