@@ -1,14 +1,20 @@
 require 'net/http'
 require 'uri'
-require "erb"
+require 'erb'
+require 'merb-mailer'
 
 module MerbExceptions
   class Notification
+
+    class Mailer < Merb::Mailer
+    end
+
     attr_reader :details
 
     def initialize(details = nil)
-      @details = details || {}
-      @config = Merb::Plugins.config[:exceptions]
+      @details = details || []
+      Mailer.config = Merb::Plugins.config[:exceptions][:mailer_config]
+      Mailer.delivery_method = Merb::Plugins.config[:exceptions][:mailer_delivery_method]
     end
 
     def deliver!
@@ -17,7 +23,6 @@ module MerbExceptions
     end
 
     def deliver_web_hooks!
-      return unless should_deliver_notifications?
       Merb.logger.info "DELIVERING EXCEPTION WEB HOOKS"
       web_hooks.each do |address|
         post_hook(address)
@@ -25,10 +30,9 @@ module MerbExceptions
     end
 
     def deliver_emails!
-      return unless should_deliver_notifications?
       Merb.logger.info  "DELIVERING EXCEPTION EMAILS"
       email_addresses.each do |address|
-        send_notification_email(address)
+        send_email(address)
       end
     end
 
@@ -38,13 +42,8 @@ module MerbExceptions
 
     def environments; option_as_array(:environments); end
 
-
-    def should_deliver_notifications?
-      environments.include? Merb.env
-    end
-
-
     def params
+      @params ||=
       {
         'request_url'              => details['url'],
         'request_controller'       => details['params'][:controller],
@@ -52,7 +51,7 @@ module MerbExceptions
         'request_params'           => details['params'],
         'environment'              => details['environment'],
         'exceptions'               => details['exceptions'],
-        'app_name'                 => @config[:app_name]
+        'app_name'                 => Merb::Plugins.config[:exceptions][:app_name]
       }
     end
 
@@ -65,31 +64,29 @@ module MerbExceptions
       Net::HTTP.post_form( uri, params ).body
     end
 
-    def send_email(address, body)
+    def email_body
+      @body ||= begin
+        path = File.join(File.dirname(__FILE__), 'templates', 'email.erb')
+        template = Erubis::Eruby.new(File.open(path,'r') { |f| f.read })
+        template.result(binding)
+      end
+    end
+
+    def send_email(address)
       Merb.logger.info "- emailing to #{address}"
-      email = Merb::Mailer.new({
+      email = Mailer.new({
         :to => address,
-        :from => @config[:email_from],
-        :subject => "[#{@config[:app_name]} EXCEPTION]",
-        :text => body
+        :from => Merb::Plugins.config[:exceptions][:email_from],
+        :subject => "[#{Merb::Plugins.config[:exceptions][:app_name]} EXCEPTION]",
+        :text => email_body
       })
       email.deliver!
-    end
-
-    def send_notification_email(address)
-      send_email(address, plain_text_mail_body)
-    end
-
-    def plain_text_mail_body
-      path = File.join(File.dirname(__FILE__), 'templates', 'email.erb')
-      template = Erubis::Eruby.new(File.open(path,'r') { |f| f.read })
-      template.result(binding)
     end
 
     # Used so that we can accept either a single value or array (e.g. of
     # webhooks) in our YAML file.
     def option_as_array(option)
-      value = @config[option]
+      value = Merb::Plugins.config[:exceptions][option]
       case value
       when Array
         value.reject { |e| e.nil? } # Don't accept nil values
