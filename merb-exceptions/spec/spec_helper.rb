@@ -24,7 +24,12 @@ class Exceptions < Application
   end
 end
 
-Merb::Plugins.config[:exceptions][:environments] = 'test'
+Merb::Plugins.config[:exceptions] = {
+  :email_addresses => ['user1@test.com', 'user2@test.com'],
+  :web_hooks => ['http://www.test1.com', 'http://www.test2.com'],
+  :environments    => ['test'],
+  :mailer_delivery_method => :test_send
+}
 Merb.start :environment => 'test'
 
 module Merb
@@ -81,14 +86,10 @@ end
 module NotificationSpecHelper
   def mock_details(opts={})
     {
-      'exception'      => {},
+      'exceptions'      => [],
       'params'         => { :controller=>'errors', :action=>'show' },
       'environment'    => { 'key1'=>'value1', 'key2'=>'value2' },
       'url'            => 'http://www.my-app.com/errors/1'
     }.merge(opts)
-  end
-
-  def mock_merb_config(opts={})
-    Merb::Plugins.config[:exceptions].merge!(opts)
   end
 end

@@ -16,8 +16,10 @@ Configuration goes in your projects `config/init.rb` file inside `Merb::BootLoad
       :web_hooks       => ['http://example.com'],
       :email_addresses => ['hello@exceptions.com', 'user@myapp.com'],
       :app_name        => "My App Name",
+      :environments    => ['production', 'staging'],
       :email_from      => "exceptions@myapp.com",
-      :environments    => ['production', 'staging']
+      :mailer_config => nil,
+      :mailer_delivery_method => :sendmail
     }
 
 The plugin now automatically includes itself into your Exceptions controller. If you are using an old version of this plugin, you can remove the include from your Exceptions controller.
@@ -39,6 +41,10 @@ Settings
 `email_addresses`: Each email address is sent an exception notification using Merb's built in mailer settings.
 
 `environments`: Notifications will only be sent for environments in this list, defaults to `production`
+
+`mailer_delivery_method`: The delivery method for notifications mailer, see merb-mailer documentation.
+
+`mailer_config`: A hash of configuration options for the notifications mailer, see merb-mailer documentation.
 
 Advanced usage
 --------------
