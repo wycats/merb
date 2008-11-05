@@ -27,12 +27,15 @@ module Merb::Test::Rspec::ViewMatchers
     def matches_rexml?(stringlike)
       stringlike = stringlike.body.to_s if stringlike.respond_to?(:body)
       
+      @query = query
+      
       @document = case stringlike
       when REXML::Document
         stringlike.root
-      when REXML::Node
+      when REXML::Node, Array
+        @query = query.map { |q| q.gsub(%r'//', './') }
         stringlike
-      when StringIO, String
+      else
         begin
           REXML::Document.new(stringlike.to_s).root
         rescue REXML::ParseException => e
@@ -44,24 +47,36 @@ module Merb::Test::Rspec::ViewMatchers
         end
       end
       
-      query.all? do |q|
-        matched = REXML::XPath.match(@document, q)
-        matched.any? && (!block_given? || matched.all?(&@block))
-      end
+      matched = @query.map do |q|
+        if @document.is_a?(Array)
+          @document.map { |d| REXML::XPath.match(d, q) }
+        else
+          REXML::XPath.match(@document, q)
+        end
+      end.flatten.compact
+      
+      matched.any? && (!@block || @block.call(matched))
     end
     
     def matches_nokogiri?(stringlike)
       stringlike = stringlike.body.to_s if stringlike.respond_to?(:body)
       
+      @query = query
+      
       @document = case stringlike
-      when Nokogiri::HTML::Document, Nokogiri::XML::NodeSet
+      when Nokogiri::HTML::Document
+        stringlike
+      when Nokogiri::XML::NodeSet
+        @query = query.map { |q| q.gsub(%r'//', './') }
         stringlike
       when StringIO
         Nokogiri::HTML(stringlike.string)
       else
         Nokogiri::HTML(stringlike.to_s)
       end
-      @document.xpath(*query).any?
+
+      matched = @document.xpath(*@query)
+      matched.any? && (!@block || @block.call(matched))
     end
     
     def query
@@ -196,8 +211,8 @@ module Merb::Test::Rspec::ViewMatchers
   # HaveSelector:: A new have selector matcher.
   # ---
   # @api public
-  def have_selector(expected)
-    HaveSelector.new(expected)
+  def have_selector(expected, &block)
+    HaveSelector.new(expected, &block)
   end
   alias_method :match_selector, :have_selector
 
@@ -210,13 +225,14 @@ module Merb::Test::Rspec::ViewMatchers
   # HaveXpath:: A new have xpath matcher.
   # ---
   # @api public
-  def have_xpath(expected)
-    HaveXpath.new(expected)
+  def have_xpath(expected, &block)
+    HaveXpath.new(expected, &block)
   end
   alias_method :match_xpath, :have_xpath
   
-  def have_tag(name, attributes = {})
-    HaveTag.new([name, attributes])
+  
+  def have_tag(name, attributes = {}, &block)
+    HaveTag.new([name, attributes], &block)
   end
   alias_method :match_tag, :have_tag
   
