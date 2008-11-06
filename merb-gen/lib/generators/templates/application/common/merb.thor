@@ -1162,7 +1162,7 @@ module Merb
     # dependencies. For this, the application is queried for any dependencies.
     # All operations will be performed within this context.
     
-    attr_accessor :system, :local, :missing
+    attr_accessor :system, :local, :missing, :extract_dependencies
     
     include MerbThorHelper
     
@@ -1171,7 +1171,7 @@ module Merb
       "--ignore-dependencies"  => :boolean,   # ignore sub-dependencies
       "--stack"                => :boolean,   # gather only stack dependencies
       "--no-stack"             => :boolean,   # gather only non-stack dependencies
-      "--config"               => :boolean,   # gather dependencies from yaml config
+      "--extract"              => :boolean,   # gather dependencies from the app itself
       "--config-file"          => :optional,  # gather from the specified yaml config
       "--version"              => :optional   # gather specific version of framework
     }
@@ -1193,7 +1193,7 @@ module Merb
     # merb:dependencies:list all merb-more                      # list only merb-more related dependencies
     # merb:dependencies:list --stack                            # list framework dependencies
     # merb:dependencies:list --no-stack                         # list 3rd party dependencies
-    # merb:dependencies:list --config                           # list dependencies from the default config
+    # merb:dependencies:list --extract                          # list dependencies by extracting them
     # merb:dependencies:list --config-file file.yml             # list from the specified config file
        
     desc 'list [all|local|system|missing] [comp]', 'Show application dependencies'
@@ -1253,7 +1253,7 @@ module Merb
     # merb:dependencies:install stable merb-more                # install only merb-more related dependencies
     # merb:dependencies:install stable --stack                  # install framework dependencies
     # merb:dependencies:install stable --no-stack               # install 3rd party dependencies
-    # merb:dependencies:install stable --config                 # read dependencies from the default config
+    # merb:dependencies:install stable --extract                # extract dependencies from the actual app
     # merb:dependencies:install stable --config-file file.yml   # read from the specified config file
     #
     # In addition to the options above, edge install uses the following: 
@@ -1368,6 +1368,7 @@ module Merb
     desc 'configure [comp]', 'Create a dependencies config file'
     method_options "--dry-run" => :boolean, "--force" => :boolean, "--versions" => :boolean
     def configure(comp = nil)
+      self.extract_dependencies = true # of course we need to consult the app itself
       # If comp given, filter on known stack components
       deps = comp ? Merb::Stack.select_component_dependencies(dependencies, comp) : dependencies
       
@@ -1434,13 +1435,13 @@ module Merb
     end
     
     def dependencies
-      if use_config?
-        # Use preconfigured dependencies from yaml file
-        deps = config_dependencies
-      else
+      if extract_dependencies?
         # Extract dependencies from the current application
         deps = Merb::Stack.core_dependencies(gem_dir, ignore_dependencies?)
-        deps += Merb::Dependencies.extract_dependencies(working_dir)
+        deps += Merb::Dependencies.extract_dependencies(working_dir)        
+      else
+        # Use preconfigured dependencies from yaml file
+        deps = config_dependencies
       end
       
       stack_components = Merb::Stack.components
@@ -1476,12 +1477,13 @@ module Merb
       if File.exists?(config_file)
         self.class.parse_dependencies_yaml(File.read(config_file))
       else
+        warning "No dependencies.yml file found at: #{config_file}"
         []
       end
     end
     
-    def use_config?
-      options[:config] || options[:"config-file"]
+    def extract_dependencies?
+      options[:extract] || extract_dependencies
     end
     
     def config_file
@@ -1594,8 +1596,7 @@ module Merb
     rescue StandardError => e     
       error "Couldn't extract dependencies from application!"
       error e.message
-      puts  "Make sure you're executing the task from your app (--merb-root), or"
-      puts  "specify a config option (--config or --config-file=YAML_FILE)"
+      puts  "Make sure you're executing the task from your app (--merb-root)"
       return []
     rescue SystemExit      
       error "Couldn't extract dependencies from application!"
