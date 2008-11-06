@@ -110,7 +110,7 @@ describe "resource(@<%= singular_model %>)", :given => "a <%= singular_model %> 
     before(:each) do
       @<%= singular_model %> = <%= model_class_name %>.first
       @response = request(resource(@<%= singular_model %>), :method => "PUT", 
-        :params => { :article => {:id => @<%= singular_model %>.id} })
+        :params => { :<%= singular_model %> => {:id => @<%= singular_model %>.id} })
     end
   
     it "redirect to the article show action" do
