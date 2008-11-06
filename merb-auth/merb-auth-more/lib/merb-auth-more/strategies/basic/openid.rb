@@ -48,8 +48,7 @@ class Merb::Authentication
               openid_reg.request_fields(required_reg_fields)
               openid_request.add_extension(openid_reg)
               customize_openid_request!(openid_request)
-              redirect_to = "#{request.protocol}://#{request.host}#{Merb::Router.url(:openid)}"
-              redirect!(openid_request.redirect_url("#{request.protocol}://#{request.host}", redirect_to))
+              redirect!(openid_request.redirect_url("#{request.protocol}://#{request.host}", openid_callback_url))
             rescue ::OpenID::OpenIDError => e
               request.session.authentication.errors.clear!
               request.session.authentication.errors.add(:openid, 'The OpenID verification failed')
@@ -65,6 +64,14 @@ class Merb::Authentication
         # 
         # @api overwritable
         def customize_openid_request!(openid_request)
+        end
+        
+        # Used to define the callback url for the openid provider.  By default it
+        # is set to the named :openid route.
+        # 
+        # @api overwritable
+        def openid_callback_url
+          "#{request.protocol}://#{request.host}#{Merb::Router.url(:openid)}"
         end
         
         # Overwrite the on_success! method with the required behavior for successful logins
