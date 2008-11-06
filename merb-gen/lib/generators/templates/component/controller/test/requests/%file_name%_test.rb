@@ -6,8 +6,7 @@ class <%= full_class_name %>; def rescue_action(e) raise e end; end
 class <%= full_class_name %>Test < Test::Unit::TestCase
 
   def setup
-    @controller = <%= full_class_name %>.build(fake_request)
-    @controller.dispatch('index')
+    @resonse = request("/<%= full_class_name.to_s.to_const_path %>")
   end
 
   # Replace this with your real tests.

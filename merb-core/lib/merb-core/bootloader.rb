@@ -322,6 +322,7 @@ class Merb::BootLoader::BuildFramework < Merb::BootLoader
     # ==== Returns
     # nil
     def run
+      $:.push Merb.root unless Merb.root == File.expand_path(Dir.pwd)
       build_framework
       nil
     end

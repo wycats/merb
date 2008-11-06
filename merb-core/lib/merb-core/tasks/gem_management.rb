@@ -83,6 +83,7 @@ module GemManagement
       if installer.installed_gems.empty? && exception
         error "Failed to install gem '#{gem} (#{version || 'any version'})' (#{exception.message})"
       end
+      ensure_bin_wrapper_for_installed_gems(installer.installed_gems, options)
       installer.installed_gems.each do |spec|
         success "Successfully installed #{spec.full_name}"
       end
@@ -110,6 +111,7 @@ module GemManagement
     if installer.installed_gems.empty? && exception
       error "Failed to install gem '#{gem}' (#{e.message})"
     end
+    ensure_bin_wrapper_for_installed_gems(installer.installed_gems, options)
     installer.installed_gems.each do |spec|
       success "Successfully installed #{spec.full_name}"
     end
@@ -123,8 +125,8 @@ module GemManagement
   # install_gem_from_source(source_dir, :skip => [...])
   def install_gem_from_source(source_dir, *args)
     installed_gems = []
-    Dir.chdir(source_dir) do
-      opts = args.last.is_a?(Hash) ? args.pop : {}
+    opts = args.last.is_a?(Hash) ? args.pop : {}
+    Dir.chdir(source_dir) do      
       gem_name     = args[0] || File.basename(source_dir)
       gem_pkg_dir  = File.join(source_dir, 'pkg')
       gem_pkg_glob = File.join(gem_pkg_dir, "#{gem_name}-*.gem")
@@ -163,6 +165,8 @@ module GemManagement
           end
         end
       end
+      
+      ensure_bin_wrapper_for(opts[:install_dir], opts[:bin_dir], *installed_gems)
       
       # Finally install the main gem
       if install_pkg(Dir[gem_pkg_glob][0], opts.merge(:refresh => refresh))
@@ -293,6 +297,13 @@ module GemManagement
     end
   end
   
+  def ensure_bin_wrapper_for_installed_gems(gemspecs, options)
+    if options[:install_dir] && options[:bin_dir]
+      gems = gemspecs.map { |spec| spec.name }
+      ensure_bin_wrapper_for(options[:install_dir], options[:bin_dir], *gems)
+    end
+  end
+  
   private
 
   def executable_wrapper(spec, bin_file_name, minigems = true)
@@ -313,9 +324,9 @@ rescue LoadError
   require '#{then_req}'
 end
 
-if File.directory?(gems_dir = File.join(Dir.pwd, 'gems')) ||
-   File.directory?(gems_dir = File.join(File.dirname(__FILE__), '..', 'gems'))
-  $BUNDLE = true; Gem.clear_paths; Gem.path.unshift(gems_dir)
+# use gems dir if ../gems exists - eg. only for ./bin/#{bin_file_name}
+if File.directory?(gems_dir = File.join(File.dirname(__FILE__), '..', 'gems'))
+  $BUNDLE = true; Gem.clear_paths; Gem.path.replace([gems_dir])
   ENV["PATH"] = "\#{File.dirname(__FILE__)}:\#{gems_dir}/bin:\#{ENV["PATH"]}"
   if (local_gem = Dir[File.join(gems_dir, "specifications", "#{spec.name}-*.gemspec")].last)
     version = File.basename(local_gem)[/-([\\.\\d]+)\\.gemspec$/, 1]

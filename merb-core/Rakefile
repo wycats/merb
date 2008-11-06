@@ -64,7 +64,6 @@ spec = Gem::Specification.new do |s|
   s.add_dependency "rspec"
   s.add_dependency "rack"
   s.add_dependency "mime-types"
-  s.add_dependency "hpricot"
   s.add_dependency "thor", ">= 0.9.7"
   # this escalates to "regular" dependencies, comment it out
   # for now. RubyGems need some love.

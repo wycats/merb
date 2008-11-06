@@ -25,8 +25,12 @@ module Kernel
     
     deps = Merb::BootLoader::Dependencies.dependencies
 
-    deps.reject! {|current| current.name == new_dep.name }
-    deps << new_dep
+    idx = deps.each_with_index {|d,i| break i if d.name == new_dep.name}
+
+    idx = idx.is_a?(Array) ? deps.size + 1 : idx
+    deps.delete_at(idx)
+    deps.insert(idx - 1, new_dep)
+
     new_dep
   end
   
@@ -178,11 +182,11 @@ module Kernel
   #   call takes over other.
   #
   # @api public
-  def use_orm(orm)
+  def use_orm(orm, &blk)
     begin
       Merb.orm = orm
       orm_plugin = "merb_#{orm}"
-      Kernel.dependency(orm_plugin)
+      Kernel.dependency(orm_plugin, &blk)
     rescue LoadError => e
       Merb.logger.warn!("The #{orm_plugin} gem was not found.  You may need to install it.")
       raise e
@@ -235,7 +239,7 @@ module Kernel
   #   $ merb-gen resource_controller Project 
   #
   # @api public
-  def use_template_engine(template_engine)
+  def use_template_engine(template_engine, &blk)
     Merb.template_engine = template_engine
 
     if template_engine != :erb
@@ -244,7 +248,7 @@ module Kernel
       else
         template_engine_plugin = "merb_#{template_engine}"
       end
-      Kernel.dependency(template_engine_plugin)
+      Kernel.dependency(template_engine_plugin, &blk)
     end
     
     nil

@@ -1,11 +1,5 @@
-require 'rubygems'
-require 'rubygems/specification'
-require 'rake/gempackagetask'
-require "extlib"
-require 'merb-core/tasks/merb_rake_helper'
-require "spec/rake/spectask"
+require File.expand_path(File.join(File.dirname(__FILE__), "..", "rake_helpers"))
 
-require File.join(File.dirname(__FILE__), "../merb-core/lib/merb-core/version.rb")
 ##############################################################################
 # Package && release
 ##############################################################################

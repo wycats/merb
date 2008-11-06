@@ -91,7 +91,7 @@ module Merb
       #
 
       def merb_gems_version
-        "0.9.10"
+        Merb::VERSION
       end
 
       def dm_gems_version

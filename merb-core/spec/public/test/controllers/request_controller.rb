@@ -5,6 +5,10 @@ module Merb::Test
       "Method - #{request.method.to_s.upcase}"
     end
     
+    def document
+      '<html><body><div id="out"><div class="in">Hello</div></div></body></html>'
+    end
+    
     def counter
       value = (cookies[:counter] || 0).to_i + 1
       cookies[:counter] = value

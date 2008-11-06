@@ -219,13 +219,17 @@ module Merb
       # ---
       # @api plugin
       def url(name, *args)
-        unless name.is_a?(Symbol)
-          args.unshift(name)
-          name = :default
-        end
-        
-        unless route = Merb::Router.named_routes[name]
-          raise Merb::Router::GenerationError, "Named route not found: #{name}"
+        if name.is_a?(Route)
+          route = name
+        else
+          unless name.is_a?(Symbol)
+            args.unshift(name)
+            name = :default
+          end
+
+          unless route = Merb::Router.named_routes[name]
+            raise Merb::Router::GenerationError, "Named route not found: #{name}"
+          end
         end
         
         defaults = args.pop
@@ -263,13 +267,13 @@ module Merb
           end
         end
         
-        params << options
-        
         unless route = Merb::Router.resource_routes[key]
           raise Merb::Router::GenerationError, "Resource route not found: #{args.inspect}"
         end
+
+        params << options
         
-        route.generate(params, defaults)
+        route.generate(params, defaults, true)
       end
       
       # Add functionality to the router. This can be in the form of

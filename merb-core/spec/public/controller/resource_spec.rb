@@ -14,7 +14,7 @@ describe Merb::Controller, " #resource" do
   end
   
   before(:each) do
-    @controller = dispatch_to(Merb::Test::Fixtures::Controllers::Url, :index)
+    @controller = dispatch_to(Merb::Test::Fixtures::Controllers::Url, :void)
   end
   
   describe "generating a resource collection route" do
@@ -261,6 +261,18 @@ describe Merb::Controller, " #resource" do
     
     it "should generate the url for deleting a member of the collection" do
       @controller.resource(@user, :delete, :account => "foo").should == "/foo/users/5/delete"
+    end
+    
+    it "should use :account from the request params if it isn't specified" do
+      @controller = dispatch_to(Merb::Test::Fixtures::Controllers::Url, :void, :account => "foo")
+      @controller.resource(:users).should == "/foo/users"
+      @controller.resource(@user).should  == "/foo/users/5"
+    end
+    
+    it "should be able to override the :account request parameter" do
+      @controller = dispatch_to(Merb::Test::Fixtures::Controllers::Url, :void, :account => "foo")
+      @controller.resource(:users, :account => "bar").should == "/bar/users"
+      @controller.resource(@user, :account => "bar").should  == "/bar/users/5"
     end
     
   end

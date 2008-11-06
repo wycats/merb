@@ -21,6 +21,18 @@ describe Merb::Test::RequestHelper do
     request("/method").should have_body("Method - GET")
   end
   
+  it "should work with have_selector" do
+    request("/document").should have_selector("div div")
+  end
+  
+  it "should work with have_xpath" do
+    request("/document").should have_xpath("//div/div")
+  end
+  
+  it "should work with have_content" do
+    request("/method").should contain("Method")
+  end
+  
   it "should persist cookies across sequential cookie setting requests" do
     request("/counter").should have_body("1")
     request("/counter").should have_body("2")

@@ -1,7 +1,6 @@
 require File.join(File.dirname(__FILE__), "spec_helper")
 startup_merb(:session_store => "memcache")
 
-require File.join(File.dirname(__FILE__), "session_spec")
 require File.join(File.dirname(__FILE__), "controllers", "sessions")
 
 require 'memcache'
