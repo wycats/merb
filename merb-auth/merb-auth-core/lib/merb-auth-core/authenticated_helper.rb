@@ -29,7 +29,7 @@ module Merb
     #    end
     # 
     def ensure_authenticated(*strategies)
-      session.authenticate!(request, params, *strategies) unless session.user
+      session.authenticate!(request, params, *strategies) unless session.authenticated?
       auth = session.authentication
       if auth.halted?
         self.headers.merge!(auth.headers)

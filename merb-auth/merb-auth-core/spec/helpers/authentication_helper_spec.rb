@@ -40,7 +40,8 @@ describe "Merb::AuthenticationHelper" do
   
   it "should run the authentication when testing if it is authenticated" do
     @controller = ControllerMock.new(fake_request)
-    @controller.session.should_receive(:user).and_return(nil, "WINNA")
+    @controller.session.should_receive(:authenticated?).and_return(false)
+    @controller.session.should_receive(:user).and_return("WINNA")
     @controller.session.authentication.should_receive(:authenticate!).and_return("WINNA")
     @controller.send(:ensure_authenticated)
   end

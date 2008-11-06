@@ -30,7 +30,7 @@ module Merb
     # @return <TrueClass|FalseClass>
     # 
     def authenticated?
-      !!user
+      !!session[:user]
     end
   
     # This method will retrieve the user object stored in the session or nil if there
