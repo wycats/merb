@@ -5,6 +5,7 @@ module Merb::Test::Rspec::ViewMatchers
       # Require nokogiri and fall back on rexml
       begin
         require "nokogiri"
+        require "merb-core/test/test_ext/nokogiri"
       rescue LoadError => e
         if require "rexml/document"
           require "merb-core/vendor/nokogiri/css"
@@ -107,7 +108,7 @@ module Merb::Test::Rspec::ViewMatchers
     # ==== Returns
     # String:: The failure message to be displayed in negative matches.
     def negative_failure_message
-      "expected following text to not match selector #{@expected}:\n#{@document}"
+      "expected following text to not match selector #{@expected} (#{@query}):\n#{@document}"
     end
     
     def query
