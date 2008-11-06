@@ -68,9 +68,8 @@ describe Merb::Cache::CacheMixin do
   end
 
   before(:each) do
-    class TestController < Merb::Controller; end
-    @controller = TestController.new(fake_request)
-    @controller.stub!(:action_name).and_return :index
+    class TestController < Merb::Controller; def index; "Hello"; end end
+    @controller = dispatch_to(TestController, :index)
   end
 
   describe "#_lookup_store" do
