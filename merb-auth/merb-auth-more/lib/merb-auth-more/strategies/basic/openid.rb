@@ -47,6 +47,7 @@ class Merb::Authentication
               openid_reg = ::OpenID::SReg::Request.new
               openid_reg.request_fields(required_reg_fields)
               openid_request.add_extension(openid_reg)
+              customize_openid_request!(openid_request)
               redirect_to = "#{request.protocol}://#{request.host}#{Merb::Router.url(:openid)}"
               redirect!(openid_request.redirect_url("#{request.protocol}://#{request.host}", redirect_to))
             rescue ::OpenID::OpenIDError => e
@@ -57,6 +58,14 @@ class Merb::Authentication
           end
         end # run!
         
+        
+        # Overwrite this to add extra options to the OpenID request before it is made.
+        # 
+        # @example request.return_to_args["remember_me"] = 1 # remember_me=1 is added when returning from the OpenID provider.
+        # 
+        # @api overwritable
+        def customize_openid_request!(openid_request)
+        end
         
         # Overwrite the on_success! method with the required behavior for successful logins
         #
