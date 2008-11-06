@@ -7,6 +7,7 @@ include Merb::Test::Fixtures::Controllers
 describe Merb::Dispatcher do
   include Merb::Test::Rspec::ControllerMatchers
   include ::Webrat::Matchers
+  include ::Webrat::HaveTagMatcher
   
   def status(response)
     response.status

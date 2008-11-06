@@ -97,6 +97,7 @@ Spec::Runner.configure do |config|
   config.include Merb::Test::Helper
   config.include Merb::Test::RspecMatchers
   config.include ::Webrat::Matchers
+  config.include ::Webrat::HaveTagMatcher
   config.include Merb::Test::RequestHelper
   config.include Merb::Test::RouteHelper
 
