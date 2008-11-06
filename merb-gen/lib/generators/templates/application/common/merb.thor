@@ -446,6 +446,10 @@ module MerbThorHelper
     base.extend ColorfulMessages
   end
   
+  def use_edge_gem_server
+    ::Gem.sources << 'http://edge.merbivore.com'
+  end
+  
   def source_manager
     @_source_manager ||= SourceManager.new(source_dir)
   end
@@ -712,13 +716,16 @@ module Merb
     # merb:gem:install merb-core --version 0.9.8      # install a specific version of a gem
     # merb:gem:install merb-core --force              # uninstall then subsequently install the gem
     # merb:gem:install merb-core --cache              # try to install locally from system gems
+    # merb:gem:install merb --merb-edge               # install from edge.merbivore.com
      
     desc 'install GEM_NAME [GEM_NAME, ...]', 'Install a gem from rubygems'
     method_options "--cache"        => :boolean,
                    "--dry-run"      => :boolean,
-                   "--force"        => :boolean
+                   "--force"        => :boolean,
+                   "--merb-edge"    => :boolean
     def install(*names)
       opts = { :version => options[:version], :cache => options[:cache] }
+      use_edge_gem_server if options[:"merb-edge"]
       current_gem = nil
       
       # uninstall existing gems of the ones we're going to install
@@ -954,6 +961,7 @@ module Merb
                    "--force"        => :boolean,
                    "--wipe"         => :boolean
     def install(*names)
+      use_edge_gem_server
       # uninstall existing gems of the ones we're going to install
       uninstall(*names) if options[:force] || options[:wipe]
       
@@ -1513,6 +1521,7 @@ module Merb
     end
     
     def edge_strategy(deps)
+      use_edge_gem_server
       installed_from_rubygems = []
       
       # Selectively update repositories for the matching dependencies
@@ -1776,6 +1785,7 @@ module Merb
                     "--dry-run"   => :boolean,
                     "--strategy"  => :optional
     def install(*comps)
+      use_edge_gem_server if options[:edge]
       mngr = self.dependency_manager
       deps = gather_dependencies(comps)
       mngr.system, mngr.local, mngr.missing = Merb::Gem.partition_dependencies(deps, gem_dir)
