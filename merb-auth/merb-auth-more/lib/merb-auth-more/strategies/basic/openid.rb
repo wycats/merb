@@ -24,7 +24,7 @@ require 'openid/extensions/sreg'
 class Merb::Authentication
   module Strategies
     module Basic
-      class OpenID < Base
+      class OpenID < Merb::Authentication::Strategy
         def run!
           if request.params[:'openid.mode']
             response = consumer.complete(request.send(:query_params), "#{request.protocol}://#{request.host}" + request.path)
