@@ -793,7 +793,7 @@ module Merb
     #
     # Note: at least gems/cache and gems/specifications should be in your SCM.
     
-    desc 'redeploy', 'Recreate any binary gems on the target platform'
+    desc 'redeploy', 'Recreate all gems on the current platform'
     method_options "--dry-run" => :boolean, "--force" => :boolean
     def redeploy
       require 'tempfile' # for Dir::tmpdir access
@@ -1339,7 +1339,7 @@ module Merb
     #
     # Note: use merb:gem:redeploy instead
     
-    desc 'redeploy', 'Recreate any binary gems on the target platform'
+    desc 'redeploy', 'Recreate all gems on the current platform'
     method_options "--dry-run" => :boolean, "--force" => :boolean
     def redeploy
       warning 'Warning: merb:dependencies:redeploy has been deprecated - use merb:gem:redeploy instead'
