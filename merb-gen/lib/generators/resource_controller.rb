@@ -55,8 +55,10 @@ module Merb::Generators
       router_path = Merb.root + "/config/router.rb"
       sentinel = "Merb::Router.prepare do"
       to_inject = "resources :#{plural_resource}"
-      content = File.read(router_path).gsub(/(#{Regexp.escape(sentinel)})/mi){|match| "#{match}\n  #{to_inject}"}
-      File.open(router_path, 'wb') { |file| file.write(content) }
+      if File.exist?(router_path)
+        content = File.read(router_path).gsub(/(#{Regexp.escape(sentinel)})/mi){|match| "#{match}\n  #{to_inject}"}
+        File.open(router_path, 'wb') { |file| file.write(content) }
+      end
     end
     
     def model_class_name

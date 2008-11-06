@@ -23,6 +23,8 @@ require "pathname"
 require "extlib"
 require "extlib/dictionary"
 
+Thread.abort_on_exception = true
+
 __DIR__ = File.dirname(__FILE__)
 
 $LOAD_PATH.unshift __DIR__ unless
@@ -108,12 +110,14 @@ module Merb
     #
     # @api public
     def start(argv = ARGV)
-      Merb::Config[:log_stream] = STDOUT
+      Merb::Config[:original_log_stream] = Merb::Config[:log_stream]
+      Merb::Config[:log_stream] ||= STDOUT
       if Hash === argv
         Merb::Config.setup(argv)
-      else
+      elsif !argv.nil?
         Merb::Config.parse_args(argv)
       end
+
       Merb::Config[:log_stream] = STDOUT
       
       Merb.environment = Merb::Config[:environment]
@@ -275,7 +279,7 @@ module Merb
     #
     # @api public
     def root=(value)
-      @root = File.expand_path(value) + File::SEPARATOR
+      @root = value
     end
 
     # ==== Parameters
@@ -398,7 +402,12 @@ module Merb
       Merb.logger.fatal!
 
       print_colorized_backtrace(e) if e && Merb::Config[:verbose]
-      exit(1)
+      
+      if Merb::Config[:show_ugly_backtraces]
+        raise e
+      else
+        exit(1)
+      end
     end
     
     # Print a colorized backtrace to the merb logger.

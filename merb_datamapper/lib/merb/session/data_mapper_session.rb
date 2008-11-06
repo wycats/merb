@@ -1,5 +1,5 @@
 require 'merb-core/dispatch/session'
-
+require "dm-core"
 module Merb
   class DataMapperSessionStore
     include ::DataMapper::Resource

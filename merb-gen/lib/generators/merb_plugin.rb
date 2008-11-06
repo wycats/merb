@@ -16,7 +16,7 @@ module Merb::Generators
     option :bin, :as => :boolean # TODO: explain this
     
     desc <<-DESC
-      Merb plugin generator: lets you kick start your Merb plugin.
+      Generates a new Merb plugin.
     DESC
     
     glob!

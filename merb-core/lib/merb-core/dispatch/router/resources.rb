@@ -73,19 +73,22 @@ module Merb
         match_opts = options.except(*resource_options)
         options    = options.only(*resource_options)
         singular   = options[:singular] ? options[:singular].to_s : Extlib::Inflection.singularize(name)
-        klass_name = args.first ? args.first.to_s : Extlib::Inflection.classify(singular)
-        klass      = Object.full_const_get(klass_name) rescue nil
+        klass_name = args.first ? args.first.to_s : singular.to_const_string
         keys       = options.delete(:keys) || options.delete(:key)
         params     = { :controller => options.delete(:controller) || name }
         collection = options.delete(:collection) || {}
         member     = { :edit => :get, :delete => :get }.merge(options.delete(:member) || {})
         
         # Use the identifier for the class as a default
-        if klass
-          keys ||= options[:identify]
-          keys ||= @identifiers[klass]
-        elsif options[:identify]
-          raise Error, "The constant #{klass_name} does not exist, please specify the constant for this resource"
+        begin
+          if klass = Object.full_const_get(klass_name)
+            keys ||= options[:identify]
+            keys ||= @identifiers[klass]
+          elsif options[:identify]
+            raise Error, "The constant #{klass_name} does not exist, please specify the constant for this resource"
+          end
+        rescue NameError => e
+          Merb.logger.debug!("Could not find resource model #{klass_name}")
         end
         
         keys = [ keys || :id ].flatten
@@ -121,13 +124,13 @@ module Merb
 
           # => show
           resource.match("/#{root_keys}(.:format)", match_opts.merge(:method => :get)).to(:action => "show").
-            name(singular).register_resource(klass_name)
+            name(singular).register_resource(klass_name, :identifiers => keys)
 
           # => user defined member routes
           member.each_pair do |action, method|
             action = action.to_s
             resource.match("/#{root_keys}/#{action}(.:format)", match_opts.merge(:method => method)).
-              to(:action => "#{action}").name(action, singular).register_resource(klass_name, action)
+              to(:action => "#{action}").name(action, singular).register_resource(klass_name, action, :identifiers => keys)
           end
 
           # => update
@@ -139,9 +142,11 @@ module Merb
             to(:action => "destroy")
 
           if block_given?
-            nested_keys = keys.map do |k|
-              k.to_s == "id" ? ":#{singular}_id" : ":#{k}"
-            end.join("/")
+            parent_keys = keys.map do |k|
+              k == :id ? "#{singular}_id".to_sym : k
+            end
+            
+            nested_keys = parent_keys.map { |k| ":#{k}" }.join("/")
 
             nested_match_opts = match_opts.except(:id)
             nested_match_opts["#{singular}_id".to_sym] = match_opts[:id] if match_opts[:id]
@@ -157,10 +162,10 @@ module Merb
             
             builders[:member] = lambda do |action, to, method|
               resource.match("/#{root_keys}/#{action}(.:format)", match_opts.merge(:method => method)).
-                to(:action => to).name(action, singular).register_resource(klass_name, action)
+                to(:action => to).name(action, singular).register_resource(klass_name, action, :identifiers => keys)
             end
             
-            resource.options(:name_prefix => singular, :resource_prefix => klass_name).
+            resource.options(:name_prefix => singular, :resource_prefix => klass_name, :parent_keys => parent_keys).
               match("/#{nested_keys}", nested_match_opts).resource_block(builders, &block)
           end
         end # namespace
@@ -268,8 +273,11 @@ module Merb
     
       #api private
       def register_resource(*key)
-        key = [@options[:resource_prefix], key].flatten.compact
+        options     = extract_options_from_args!(key) || {}
+        key         = [ @options[:resource_prefix], key ].flatten.compact
+        identifiers = [ @options[:parent_keys], options[:identifiers] ]
         @route.resource = key
+        @route.resource_identifiers = identifiers.flatten.compact.map { |id| id.to_sym }
         self
       end
 

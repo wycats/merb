@@ -154,7 +154,7 @@ module Merb
           Merb::Server.remove_pid(port)
         end
 
-        Merb::Worker.start
+        Merb::Worker.start unless Merb.testing?
 
         # If Merb is daemonized, trap INT. If it's not daemonized,
         # we let the master process' ctrl-c control the cluster
@@ -168,7 +168,9 @@ module Merb
           # If it was not fork_for_class_load, we already set up
           # ctrl-c handlers in the master thread.
         elsif Merb::Config[:fork_for_class_load]
-          Merb.trap('INT') { 1 }
+          if Merb::Config[:console_trap]
+            Merb::Server.add_irb_trap
+          end
         end
 
         # In daemonized mode or not, support HUPing the process to
@@ -251,7 +253,7 @@ module Merb
         app  = "merb#{" : #{name}" if (name && name != "merb")}"
         max_port  = Merb::Config[:cluster] ? (Merb::Config[:cluster] - 1) : 0
         numbers   = ((whoami != :worker) && (max_port > 0)) ? "#{port}..#{port + max_port}" : port
-        file      = Merb::Config[:socket_file]
+        file      = Merb::Config[:socket_file] % port if Merb::Config[:socket_file]
         
         listening_on = if Merb::Config[:socket]
           "socket#{'s' if max_port > 0 && whoami != :worker} #{numbers} "\

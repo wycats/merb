@@ -25,36 +25,56 @@ module Merb::AuthenticatedHelper
   #
   # set the ignore url via an :ignore option in the opts hash.
   def redirect_back_or(default_url, opts = {})
-    if session.authentication.return_to_url && ![opts[:ignore]].flatten.include?(session.authentication.return_to_url)
-      redirect session.authentication.return_to_url, opts
+    if !session[:return_to].blank? && ![opts[:ignore]].flatten.include?(session[:return_to].first)
+      redirect session[:return_to].first, opts
+      session[:return_to] = nil
     else
       redirect default_url, opts
     end
-    session.authentication.return_to_url = nil
     "Redirecting to <a href='#{default_url}'>#{default_url}</a>"
   end
   
 end
 
+# This mixin is mixed into the Exceptions controller to setup the correct methods
+# And filters.  It is implemented as a mixin so that it is completely overwritable in 
+# your controllers
+module Merb::Authentication::Mixins
+  module RedirectBack
+    def self.included(base)
+      base.class_eval do  
+        after  :_set_return_to,   :only => :unauthenticated
+      end
+    end
+    
+    private   
+    def _set_return_to
+      unless request.exceptions.blank?
+        session[:return_to] ||= []
+        session[:return_to] << request.uri
+        session[:return_to]
+      end
+    end
 
-class Application < Merb::Controller; end
+  end # RedirectBack
+end # Merb::Authentication::Mixins
 
-class Exceptions < Application
-  after  :_set_return_to,   :only => :unauthenticated
-
-  private   
-  def _set_return_to
-    session.authentication.return_to_url ||= request.uri unless request.exceptions.blank?
-  end
+# Adds required methods to  the Authentication object for redirection
+Merb::BootLoader.after_app_loads do
+  Merb::Authentication.maintain_session_keys << :return_to
 end
+# class Merb::Authentication
+# 
+#   def return_to_url
+#     @return_to_url ||= session[:return_to]
+#   end
+#   
+#   def return_to_url=(return_url)
+#     @return_to_url = session[:return_to] = return_url
+#   end
+# end
 
-class Merb::Authentication
-
-  def return_to_url
-    @return_to_url ||= session[:return_to]
-  end
-  
-  def return_to_url=(return_url)
-    @return_to_url = session[:return_to] = return_url
-  end
+# Mixin the RedirectBack mixin before the after_app_loads block (i.e. make sure there is an exceptions controller)
+Merb::Authentication.customize_default do
+  Exceptions.class_eval{ include Merb::Authentication::Mixins::RedirectBack }
 end

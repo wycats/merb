@@ -2,7 +2,7 @@ require 'rubygems/dependency'
 
 module Gem
   class Dependency
-    attr_accessor :require_block
+    attr_accessor :require_block, :require_as
   end
 end
 
@@ -18,18 +18,20 @@ module Kernel
   #
   # @api private
   def track_dependency(name, *ver, &blk)
-    dep = Gem::Dependency.new(name, ver.empty? ? nil : ver)
-    dep.require_block = blk
+    options = ver.pop if ver.last.is_a?(Hash)
+    new_dep = Gem::Dependency.new(name, ver.empty? ? nil : ver)
+    new_dep.require_block = blk
+    new_dep.require_as = (options && options[:require_as]) || name
     
-    existing = Merb::BootLoader::Dependencies.dependencies.find { |d| d.name == dep.name }
-    if existing
-      index = Merb::BootLoader::Dependencies.dependencies.index(existing)
-      Merb::BootLoader::Dependencies.dependencies.delete(existing)
-      Merb::BootLoader::Dependencies.dependencies.insert(index, dep)
-    else
-      Merb::BootLoader::Dependencies.dependencies << dep
-    end
-    return dep
+    deps = Merb::BootLoader::Dependencies.dependencies
+
+    idx = deps.each_with_index {|d,i| break i if d.name == new_dep.name}
+
+    idx = idx.is_a?(Array) ? deps.size + 1 : idx
+    deps.delete_at(idx)
+    deps.insert(idx - 1, new_dep)
+
+    new_dep
   end
   
   # Loads the given string as a gem. Execution is deferred until
@@ -51,7 +53,7 @@ module Kernel
   #
   # @api public
   def dependency(name, *ver, &blk)
-    immediate = ver.last.is_a?(Hash) && ver.pop[:immediate]
+    immediate = ver.last.delete(:immediate) if ver.last.is_a?(Hash)
     if immediate || Merb::BootLoader.finished?(Merb::BootLoader::Dependencies)
       load_dependency(name, *ver, &blk)
     else
@@ -78,20 +80,21 @@ module Kernel
   #
   # @api private
   def load_dependency(name, *ver, &blk)
-    dep = name.is_a?(Gem::Dependency) ? name : track_dependency(name, *ver)
+    dep = name.is_a?(Gem::Dependency) ? name : track_dependency(name, *ver, &blk)
     gem(dep)
   rescue Gem::LoadError => e
     Merb.fatal! "The gem #{name}, #{ver.inspect} was not found", e
   ensure
-    if block = blk || dep.require_block
-      block.call
-    else
-      begin
-        require dep.name
-      rescue LoadError => e
-        Merb.fatal! "The file #{dep.name} was not found", e
-      end
+    begin
+      require dep.require_as
+    rescue LoadError => e
+      Merb.fatal! "The file #{dep.require_as} was not found", e
     end
+
+    if block = dep.require_block
+      block.call
+    end
+
     Merb.logger.verbose!("loading gem '#{dep.name}' ...")
     return dep # ensure needs explicit return
   end
@@ -179,11 +182,11 @@ module Kernel
   #   call takes over other.
   #
   # @api public
-  def use_orm(orm)
+  def use_orm(orm, &blk)
     begin
       Merb.orm = orm
       orm_plugin = "merb_#{orm}"
-      Kernel.dependency(orm_plugin)
+      Kernel.dependency(orm_plugin, &blk)
     rescue LoadError => e
       Merb.logger.warn!("The #{orm_plugin} gem was not found.  You may need to install it.")
       raise e
@@ -236,7 +239,7 @@ module Kernel
   #   $ merb-gen resource_controller Project 
   #
   # @api public
-  def use_template_engine(template_engine)
+  def use_template_engine(template_engine, &blk)
     Merb.template_engine = template_engine
 
     if template_engine != :erb
@@ -245,7 +248,7 @@ module Kernel
       else
         template_engine_plugin = "merb_#{template_engine}"
       end
-      Kernel.dependency(template_engine_plugin)
+      Kernel.dependency(template_engine_plugin, &blk)
     end
     
     nil
@@ -299,11 +302,18 @@ module Kernel
       lines = File.read(file).split("\n")
       first_line = (f = line - size - 1) < 0 ? 0 : f
       
-      old_lines = lines
-      lines = lines[first_line, size * 2 + 1]
+      if first_line.zero?
+        new_size = line - 1
+        lines = lines[first_line, size + new_size + 1]
+      else
+        new_size = nil
+        lines = lines[first_line, size * 2 + 1]
+      end
 
       lines && lines.each_with_index do |str, index|
-        yield index + line - size, str.chomp
+        line_n = index + line
+        line_n = (new_size.nil?) ? line_n - size : line_n - new_size
+        yield line_n, str.chomp
       end
     end
   end

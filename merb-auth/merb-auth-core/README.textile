@@ -5,8 +5,8 @@ Merb web framework.
 
 MerbAuth does not try to dictate what you should use as a user model, or how
 it should authenticate.  Instead it focuses on the logic required to check
-that an object passes authentication, and store authenticated objects in the
-session.  This is in fact the guiding principle of MerbAuth.  The Session is 
+that an object passes authentication, and store the keys of authenticated 
+objects in the session.  This is in fact the guiding principle of MerbAuth.  The Session is 
 used as the place for authentication, with a sprinkling of controller helpers.
 You can choose to protect a controller action, or a route / group of routes.  
 This makes sense to talk about an authenticated session. For example, inside
@@ -174,7 +174,34 @@ manually.
 It's possible to leave some out, and re-order existing ones.  It will error
 out if you specify one that doesn't exist though.
 
+h3. Authentication based on Routes
+
+With MerbAuth you can protect routes rather than individual actions on a controller.
+The benefit with doing this is that the request is stopped earlier in the request
+process.  This is a more efficient method of protection than controller based protection.
+
+The downside is that a controllers action is not guaranteed to be protected.  For example
+
+<pre><code>
+  
+  authenticate do 
+    match("/one").to(:controller => "one", :action => "index")
+  end
+  
+  match("/two").to(:controller => "one", :action => "index")
+  
+</code></pre> 
+
+The /one route is protected, but you can see that both of these routes point to the same 
+controller action.  If the One#index method is accessed through the /two route, there is 
+no protection.  You can specify which strategies to use as arguments to the authenticate method.
+The default strategies are used if there is no argument given.
+
 h3. Specifying selected strategies per action
+
+If you need to protect an action regardless of which route leads to it, you can use
+controller level protection.  Use a @before :ensure_authenticated@ filter to protect actions
+in your controller whenever the are accessed.  
 
 It's possible to configure each call to @ensure_authenticated@ with a custom list
 of strategies to run.  These will be run in order and should have an instance method
@@ -231,7 +258,7 @@ h3. Storing you user object into the session
 
 You need to tell MerbAuth how to serialize your object into
 and out of the session.  If possible try not to store large or complex 
-data items in the session.
+data items in the session but just store the objects key.
 
 To configure your user object to go in and out of the session, here's how you
 could do it.

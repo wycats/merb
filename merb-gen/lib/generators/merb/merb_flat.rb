@@ -34,9 +34,8 @@ module Merb
       :desc => 'Template engine to prefer for this application (one of: erb, haml).'
 
       desc <<-DESC
-      This generates a flat merb application: all code but config files and
-      templates fits in one application. This is something in between Sinatra
-      and "regular" Merb application.
+      Generates a new flat Merb application: all code in one file except for config files and
+      views, something in-between Sinatra and a "regular" Merb application.
     DESC
 
       first_argument :name, :required => true, :desc => "Application name"

@@ -74,7 +74,7 @@ module Merb
   # This would halt execution of your action and re-route it over to your
   # Exceptions controller which might look something like:
   #
-  # class Exceptions < Application
+  # class Exceptions < Merb::Controller
 
   #   def not_found
   #     render :layout => :none
@@ -132,7 +132,7 @@ module Merb
   #
   # Add the required action to our Exceptions controller
   #
-  #   class Exceptions < Application
+  #   class Exceptions < Merb::Controller
 
   #     def admin_access_required
   #       render

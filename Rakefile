@@ -22,7 +22,7 @@ merb_more_gem_paths = %w[
   merb_datamapper
 ]
 
-merb_gem_paths = %w[merb-core] + merb_more_gem_paths
+merb_gem_paths = %w[merb merb-core] + merb_more_gem_paths
 
 merb_gems = merb_gem_paths.map { |p| File.basename(p) }
 merb_more_gems = merb_more_gem_paths.map { |p| File.basename(p) }
@@ -102,7 +102,7 @@ task :clobber_gems do
   end
 end
 
-task :package => ["lib/merb-more.rb"]
+task :package => ["lib/merb-more.rb", :build_gems]
 desc "Create merb-more.rb"
 task "lib/merb-more.rb" do
   mkdir_p "lib"
@@ -112,6 +112,26 @@ task "lib/merb-more.rb" do
       next if gem == "merb-gen"
       file.puts "require '#{gem}'"
     end
+  end
+end
+
+task :package do
+  mkdir_p "gems"
+  Dir["**/pkg/*.gem"].each do |file|
+    FileUtils.cp(file, "gems")
+  end
+end
+
+# This task is only for releasing edge gems on edge.merbivore.com
+
+task :release_edge => :package do
+  Dir.chdir("..") do
+    FileUtils.rm_rf("gems")
+    FileUtils.mkdir_p("gems")
+  end
+  FileUtils.cp(Dir["gems/*.gem"], "../gems")
+  Dir.chdir("..") do
+    `gem generate_index`
   end
 end
 

@@ -71,28 +71,6 @@ module Merb
 
     @@mutex = {}
 
-    private
-
-    # Readies a log for writing.
-    #
-    # ==== Parameters
-    # log<IO, String>:: Either an IO object or a name of a logfile.
-    def initialize_log(log)
-      close if @log # be sure that we don't leave open files laying around.
-
-      if log.respond_to?(:write)
-        @log = log
-      elsif File.exist?(log)
-        @log = open(log, (File::WRONLY | File::APPEND))
-        @log.sync = true
-      else
-        FileUtils.mkdir_p(File.dirname(log)) unless File.directory?(File.dirname(log))
-        @log = open(log, (File::WRONLY | File::APPEND | File::CREAT))
-        @log.sync = true
-        @log.write("#{Time.now.httpdate} #{delimiter} info #{delimiter} Logfile created\n")
-      end
-    end
-
     public
 
     # To initialize the logger you create a new object, proxies to set_log.
@@ -131,6 +109,7 @@ module Merb
       end
 
       @log                      = stream
+      @log.sync                 = true
       @mutex = (@@mutex[@log] ||= Mutex.new)
     end
 

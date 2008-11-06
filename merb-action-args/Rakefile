@@ -1,9 +1,4 @@
-require 'rubygems'
-require "merb-core"
-require 'rake/gempackagetask'
-require "extlib"
-require File.join(File.dirname(__FILE__), '../merb-core/lib/merb-core/tasks/merb_rake_helper')
-require "spec/rake/spectask"
+require File.expand_path(File.join(File.dirname(__FILE__), "..", "rake_helpers"))
 
 ##############################################################################
 # Package && release
@@ -38,7 +33,7 @@ spec = Gem::Specification.new do |s|
   s.homepage = PROJECT_URL
   s.add_dependency('merb-core', ">= #{Merb::VERSION}")
   s.add_dependency('ruby2ruby', '>= 1.1.9')
-  s.add_dependency('ParseTree', '>= 2.2')
+  s.add_dependency('ParseTree', '>= 2.1.1')
   s.require_path = 'lib'
   s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,spec}/**/*")
 end

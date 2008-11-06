@@ -113,7 +113,6 @@ class Merb::Controller < Merb::AbstractController
     callables.flatten.reject{|action| action =~ /^_.*/}
   end
 
-
   # The location to look for a template for a particular controller, context,
   # and mime-type. This is overridden from AbstractController, which defines a
   # version of this that does not involve mime-types.
@@ -284,6 +283,7 @@ class Merb::Controller < Merb::AbstractController
   # @api public
   def url(name, *args)
     args << params
+    name = request.route if name == :this
     Merb::Router.url(name, *args)
   end
   

@@ -1,11 +1,4 @@
-require 'rubygems'
-require 'rake/gempackagetask'
-require "rake/rdoctask"
-require 'merb-core/tasks/merb_rake_helper'
-require "spec/rake/spectask"
-require "extlib/tasks/release"
-
-require File.join(File.dirname(__FILE__), "../merb-core/lib/merb-core/version.rb")
+require File.expand_path(File.join(File.dirname(__FILE__), "..", "rake_helpers"))
 
 ##############################################################################
 # Package && release
@@ -55,7 +48,7 @@ task :uninstall do
 end
 
 desc "Run all specs"
-Spec::Rake::SpecTask.new("specs") do |t|
+Spec::Rake::SpecTask.new("spec") do |t|
   t.spec_opts = ["--format", "specdoc", "--colour"]
   t.spec_files = Dir["spec/**/*_spec.rb"].sort
 end

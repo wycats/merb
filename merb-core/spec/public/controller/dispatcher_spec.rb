@@ -180,7 +180,7 @@ describe Merb::Dispatcher do
     describe "when the action raises an Exception" do
       before(:each) do
         Object.class_eval <<-RUBY
-          class Exceptions < Application
+          class Exceptions < Merb::Controller
             def gone
               "Gone"
             end
@@ -212,7 +212,7 @@ describe Merb::Dispatcher do
     describe "when the action raises an Exception that has a superclass Exception available" do
       before(:each) do
         Object.class_eval <<-RUBY
-          class Exceptions < Application
+          class Exceptions < Merb::Controller
             def client_error
               "ClientError"
             end
@@ -267,7 +267,7 @@ describe Merb::Dispatcher do
     describe "when the action raises an Exception" do
       before(:each) do
         Object.class_eval <<-RUBY
-          class Exceptions < Application
+          class Exceptions < Merb::Controller
             def gone
               "Gone"
             end
@@ -302,7 +302,7 @@ describe Merb::Dispatcher do
   describe "when the action raises an Error that is not a ControllerError" do
     before(:each) do
       Object.class_eval <<-RUBY
-        class Exceptions < Application
+        class Exceptions < Merb::Controller
           def load_error
             "LoadError"
           end
@@ -334,7 +334,7 @@ describe Merb::Dispatcher do
   describe "when the Exception action raises" do
     before(:each) do
       Object.class_eval <<-RUBY
-        class Exceptions < Application
+        class Exceptions < Merb::Controller
           def load_error
             raise StandardError, "Big error"
           end
@@ -371,7 +371,7 @@ describe Merb::Dispatcher do
   describe "when the Exception action raises a NotFound" do
     before(:each) do
       Object.class_eval <<-RUBY
-        class Exceptions < Application
+        class Exceptions < Merb::Controller
           def not_found
             raise NotFound, "Somehow, the thing you were looking for was not found."
           end
@@ -404,7 +404,7 @@ describe Merb::Dispatcher do
   describe "when the Exception action raises the same thing as the original failure" do
     before(:each) do
       Object.class_eval <<-RUBY
-        class Exceptions < Application
+        class Exceptions < Merb::Controller
           def load_error
             raise LoadError, "Something failed here"
           end          
@@ -436,7 +436,7 @@ describe Merb::Dispatcher do
   describe "when more than one Exceptions methods raises an Error" do
     before(:each) do
       Object.class_eval <<-RUBY
-        class Exceptions < Application
+        class Exceptions < Merb::Controller
           def load_error
             raise StandardError, "StandardError"
           end

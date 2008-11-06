@@ -1,4 +1,6 @@
 require "digest/sha1"
+require File.expand_path(File.dirname(__FILE__) / "..") / "strategies" / "abstract_password"
+
 class Merb::Authentication
   module Mixins
     # This mixin provides basic salted user password encryption.
@@ -33,6 +35,9 @@ class Merb::Authentication
           elsif defined?(Sequel) && ancestors.include?(Sequel::Model)
             require path / "sq_salted_user"
             extend(Merb::Authentication::Mixins::SaltedUser::SQClassMethods)
+          elsif defined?(RelaxDB) && ancestors.include?(RelaxDB::Document)
+            require path / "relaxdb_salted_user"
+            extend(Merb::Authentication::Mixins::SaltedUser::RDBClassMethods)
           end
           
         end # base.class_eval

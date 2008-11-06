@@ -5,9 +5,12 @@ module Merb
     # def self.subclasses
     #
     # @api plugin
-    cattr_accessor :subclasses, :after_load_callbacks, :before_load_callbacks, :finished
+    cattr_accessor :subclasses, :after_load_callbacks, :before_load_callbacks,
+    :finished, :before_worker_shutdown_callbacks, :before_master_shutdown_callbacks
+
     self.subclasses, self.after_load_callbacks,
-      self.before_load_callbacks, self.finished = [], [], [], []
+      self.before_load_callbacks, self.finished, self.before_master_shutdown_callbacks,
+      self.before_worker_shutdown_callbacks = [], [], [], [], [], []
 
     class << self
 
@@ -34,7 +37,7 @@ module Merb
       #
       # ==== Returns
       # nil
-      # 
+      #
       # @api plugin
       def after(klass)
         move_klass(klass, 1)
@@ -131,7 +134,7 @@ module Merb
         Merb.push_path(:config,       Merb.root_path("config"), nil)
         Merb.push_path(:router,       Merb.dir_for(:config), (Merb::Config[:router_file] || "router.rb"))
         Merb.push_path(:lib,          Merb.root_path("lib"), nil)
-        Merb.push_path(:merb,         Merb.root_path("merb"))
+        Merb.push_path(:merb_session, Merb.root_path("merb" / "session"))
         Merb.push_path(:log,          Merb.log_path, nil)
         Merb.push_path(:public,       Merb.root_path("public"), nil)
         Merb.push_path(:stylesheet,   Merb.dir_for(:public) / "stylesheets", nil)
@@ -163,6 +166,32 @@ module Merb
       def before_app_loads(&block)
         before_load_callbacks << block
       end
+
+      # Execute a block of code before master process is shut down.
+      # Only makes sense on platforms where Merb server can use forking.
+      #
+      # ==== Parameters
+      # &block::
+      #   A block to be added to the callbacks that will be executed
+      #   before master process is shut down.
+      #
+      # @api public
+      def before_master_shutdown(&block)
+        before_master_shutdown_callbacks << block
+      end
+
+      # Execute a block of code before worker process is shut down.
+      # Only makes sense on platforms where Merb server can use forking.
+      #
+      # ==== Parameters
+      # &block::
+      #   A block to be added to the callbacks that will be executed
+      #   before worker process is shut down.
+      #
+      # @api public
+      def before_worker_shutdown(&block)
+        before_worker_shutdown_callbacks << block
+      end
     end
 
   end
@@ -190,10 +219,11 @@ class Merb::BootLoader::Logger < Merb::BootLoader
       end
     end
 
-    Merb::Config[:log_stream] = Merb.log_stream
+    Merb::Config[:log_stream] = 
+      Merb::Config[:original_log_stream] || Merb.log_stream
 
     print_warnings
-    
+
     nil
   end
 
@@ -234,10 +264,10 @@ end
 # Setup some useful defaults
 class Merb::BootLoader::Defaults < Merb::BootLoader
   # Sets up the defaults
-  #
+  # 
   # ==== Returns
   # nil
-  #
+  # 
   # @api plugin
   def self.run
     Merb::Request.http_method_overrides.concat([
@@ -292,6 +322,7 @@ class Merb::BootLoader::BuildFramework < Merb::BootLoader
     # ==== Returns
     # nil
     def run
+      $:.push Merb.root unless Merb.root == File.expand_path(Dir.pwd)
       build_framework
       nil
     end
@@ -352,9 +383,10 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
     # then environment init file, then start enabling specific
     # components, load dependencies and update logger.
     unless Merb::disabled?(:initfile)
-      load_initfile 
+      load_initfile
       load_env_config
     end
+    expand_ruby_path
     enable_json_gem unless Merb::disabled?(:json)
     load_dependencies
     update_logger
@@ -362,7 +394,7 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
   end
 
   # Load each dependency that has been declared so far.
-  # 
+  #
   # ==== Returns
   # nil
   #
@@ -384,7 +416,7 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
     require "json/pure"
   end
 
-  # Resets the logger and sets the log_stream to Merb::Config[:log_file] 
+  # Resets the logger and sets the log_stream to Merb::Config[:log_file]
   # if one is specified, falling back to STDOUT.
   #
   # ==== Returns
@@ -403,7 +435,7 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
     else
       Merb::Config[:log_stream] ||= STDOUT
     end
-    
+
     nil
   end
 
@@ -486,6 +518,27 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
       end
       nil
     end
+
+    # Expands Ruby path with framework directories (for models, lib, etc). Only run once.
+    #
+    # ==== Returns
+    # nil
+    #
+    # @api private
+    def self.expand_ruby_path
+      # Add models, controllers, helpers and lib to the load path
+      unless @ran
+        Merb.logger.info "Expanding RUBY_PATH..." if Merb::Config[:verbose]
+
+        $LOAD_PATH.unshift Merb.dir_for(:model)
+        $LOAD_PATH.unshift Merb.dir_for(:controller)
+        $LOAD_PATH.unshift Merb.dir_for(:lib)
+        $LOAD_PATH.unshift Merb.dir_for(:helper)
+      end
+
+      @ran = true
+      nil
+    end
 end
 
 class Merb::BootLoader::MixinSession < Merb::BootLoader
@@ -553,20 +606,12 @@ class Merb::BootLoader::LoadClasses < Merb::BootLoader
     #
     # @api plugin
     def run
-      # Add models, controllers, helpers and lib to the load path
-      unless @ran
-        $LOAD_PATH.unshift Merb.dir_for(:model)
-        $LOAD_PATH.unshift Merb.dir_for(:controller)
-        $LOAD_PATH.unshift Merb.dir_for(:lib)
-        $LOAD_PATH.unshift Merb.dir_for(:helper)
-      end
-
-      @ran = true
       # process name you see in ps output
       $0 = "merb#{" : " + Merb::Config[:name] if Merb::Config[:name]} : master"
 
       # Log the process configuration user defined signal 1 (SIGUSR1) is received.
       Merb.trap("USR1") do
+        require "yaml"
         Merb.logger.fatal! "Configuration:\n#{Merb::Config.to_hash.merge(:pid => $$).to_yaml}\n\n"
       end
 
@@ -589,7 +634,7 @@ class Merb::BootLoader::LoadClasses < Merb::BootLoader
       end
 
       Merb::Controller.send :include, Merb::GlobalHelpers
-      
+
       nil
     end
 
@@ -607,14 +652,22 @@ class Merb::BootLoader::LoadClasses < Merb::BootLoader
       Merb::Server.remove_pid("main")
       # terminate, workers remove their own pids
       # in on exit hook
+
+      Merb::BootLoader.before_master_shutdown_callbacks.each do |cb|
+        begin
+          cb.call
+        rescue Exception => e
+          Merb.logger.fatal "before_master_shutdown callback crashed: #{e.message}"
+        end
+      end
       exit
     end
 
-    # Set up the BEGIN point for fork-based loading and sets up 
+    # Set up the BEGIN point for fork-based loading and sets up
     # any signals in the parent and child. This is done by forking
     # the app. The child process continues on to run the app. The parent
     # process waits for the child process to finish and either forks again
-    # 
+    #
     #
     # ==== Returns
     # Parent Process:
@@ -668,7 +721,7 @@ class Merb::BootLoader::LoadClasses < Merb::BootLoader
         reader_ary = [reader]
         loop do
           # wait for worker to exit and capture exit status
-          # 
+          #
           #
           # WNOHANG specifies that wait2 exists without waiting
           # if no worker processes are ready to be noticed.
@@ -705,13 +758,13 @@ class Merb::BootLoader::LoadClasses < Merb::BootLoader
         Merb::Server.add_irb_trap
         at_exit { reap_workers }
       else
-        Merb.trap('INT') {}
+        Merb.trap('INT') { Merb::BootLoader.before_worker_shutdown_callbacks.each { |cb| cb.call } }
         Merb.trap('ABRT') { reap_workers }
         Merb.trap('HUP') { reap_workers(128) }
       end
     end
 
-    # Reap any workers of the spawner process and 
+    # Reap any workers of the spawner process and
     # exit with an appropriate status code.
     #
     # Note that exiting the spawner process with a status code
@@ -728,6 +781,16 @@ class Merb::BootLoader::LoadClasses < Merb::BootLoader
     # @param status<Integer> The status code to exit with
     # @param sig<String>     The signal to send to workers
     def reap_workers(status = 0, sig = "ABRT")
+      Merb.logger.info "Executed all before worker shutdown callbacks..."
+      Merb::BootLoader.before_worker_shutdown_callbacks.each do |cb|
+        begin
+          cb.call
+        rescue Exception => e
+          Merb.logger.fatal "before worker shutdown callback crashed: #{e.message}"
+        end
+
+      end
+
       Merb.exiting = true unless status == 128
 
       begin
@@ -768,7 +831,7 @@ class Merb::BootLoader::LoadClasses < Merb::BootLoader
       # Ignore the file for syntax errors. The next time
       # the file is changed, it'll be reloaded again
       begin
-        load file
+        require file
       rescue SyntaxError => e
         Merb.logger.error "Cannot load #{file} because of syntax error: #{e.message}"
       ensure
@@ -781,7 +844,7 @@ class Merb::BootLoader::LoadClasses < Merb::BootLoader
       unless Merb::Config[:fork_for_class_load]
         LOADED_CLASSES[file] = ObjectSpace.classes - klasses
       end
-      
+
       nil
     end
 
@@ -808,7 +871,7 @@ class Merb::BootLoader::LoadClasses < Merb::BootLoader
       end
       load_classes_with_requirements(orphaned_classes)
     end
-    
+
     # Reloads the classes in the specified file. If fork-based loading is used,
     # this causes the current processes to be killed and and all classes to be
     # reloaded. If class-based loading is not in use, the classes declared in that file
@@ -856,7 +919,7 @@ class Merb::BootLoader::LoadClasses < Merb::BootLoader
       nil
     end
 
-    # Removes the specified class. 
+    # Removes the specified class.
     #
     # Additionally, removes the specified class from the subclass list of every superclass that
     # tracks it's subclasses in an array returned by _subclasses_list. Classes that wish to use this
@@ -943,7 +1006,7 @@ class Merb::BootLoader::LoadClasses < Merb::BootLoader
         end
         break if(klasses.size == size_at_start || klasses.size == 0)
       end
-      
+
       nil
     end
 
@@ -955,7 +1018,7 @@ end
 # the router has everything it needs to run.
 class Merb::BootLoader::Router < Merb::BootLoader
   class << self
-    
+
     # load the router file
     #
     # ==== Returns
@@ -964,7 +1027,7 @@ class Merb::BootLoader::Router < Merb::BootLoader
     # @api plugin
     def run
       Merb::BootLoader::LoadClasses.load_file(router_file) if router_file
-      
+
       nil
     end
 
@@ -1110,29 +1173,20 @@ class Merb::BootLoader::SetupSession < Merb::BootLoader
     end
 
     # Mixin the Merb::Session module to add app-level functionality to sessions
+    overrides = (Merb::Session.instance_methods & Merb::SessionContainer.instance_methods)
+    overrides.each do |m| 
+      Merb.logger.warn!("Warning: Merb::Session##{m} overrides existing " \
+                        "Merb::SessionContainer##{m}")
+    end    
     Merb::SessionContainer.send(:include, Merb::Session)
     nil
   end
 
 end
 
-class Merb::BootLoader::AfterAppLoads < Merb::BootLoader
-
-  # Call any after_app_loads hooks that were registered via after_app_loads in
-  # init.rb.
-  #
-  # ==== Returns
-  # nil
-  #
-  # @api plugin
-  def self.run
-    Merb::BootLoader.after_load_callbacks.each {|x| x.call }
-    nil
-  end
-end
-
 # In case someone's running a sparse app, the default exceptions require the
-# Exceptions class.
+# Exceptions class.  This must run prior to the AfterAppLoads BootLoader
+# So that plugins may have ensured access in the after_app_loads block
 class Merb::BootLoader::SetupStubClasses < Merb::BootLoader
   # Declares empty Application and Exception controllers.
   #
@@ -1147,10 +1201,25 @@ class Merb::BootLoader::SetupStubClasses < Merb::BootLoader
           abstract!
         end
 
-        class Exceptions < Application
+        class Exceptions < Merb::Controller
         end
       RUBY
     end
+    nil
+  end
+end
+
+class Merb::BootLoader::AfterAppLoads < Merb::BootLoader
+
+  # Call any after_app_loads hooks that were registered via after_app_loads in
+  # init.rb.
+  #
+  # ==== Returns
+  # nil
+  #
+  # @api plugin
+  def self.run
+    Merb::BootLoader.after_load_callbacks.each {|x| x.call }
     nil
   end
 end
@@ -1197,7 +1266,7 @@ class Merb::BootLoader::RackUpApplication < Merb::BootLoader
          run Merb::Rack::Application.new
        }.to_app
     end
-    
+
     nil
   end
 end
@@ -1216,7 +1285,6 @@ class Merb::BootLoader::ReloadClasses < Merb::BootLoader
     #
     # @api private
     def self.every(seconds, &block)
-      Thread.abort_on_exception = true
       Thread.new do
         loop do
           sleep( seconds )
@@ -1227,10 +1295,10 @@ class Merb::BootLoader::ReloadClasses < Merb::BootLoader
     end
   end
 
-  # Set up the class reloader if class reloading is enabled. This checks periodically 
+  # Set up the class reloader if class reloading is enabled. This checks periodically
   # for modifications to files loaded by the LoadClasses BootLoader and reloads them
   # when they are modified.
-  # 
+  #
   # ==== Returns
   # nil
   #
@@ -1255,7 +1323,7 @@ class Merb::BootLoader::ReloadClasses < Merb::BootLoader
       GC.start
       reload(paths)
     end
-    
+
     nil
   end
 
@@ -1272,7 +1340,7 @@ class Merb::BootLoader::ReloadClasses < Merb::BootLoader
 
       LoadClasses.reload(file)
     end
-    
+
     nil
   end
 end

@@ -27,8 +27,8 @@ module Merb
       :desc => 'Template engine to prefer for this application (one of: erb, haml).'
 
       desc <<-DESC
-      This generates a very flat merb application: the whole application
-      fits in one file, very much like Sinatra or Camping.
+      Generates a new very flat Merb application: the whole application
+      in one file, similar to Sinatra or Camping.
     DESC
 
       first_argument :name, :required => true, :desc => "Application name"

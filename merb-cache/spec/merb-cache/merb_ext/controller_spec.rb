@@ -68,9 +68,8 @@ describe Merb::Cache::CacheMixin do
   end
 
   before(:each) do
-    class TestController < Merb::Controller; end
-    @controller = TestController.new(fake_request)
-    @controller.stub!(:action_name).and_return :index
+    class TestController < Merb::Controller; def index; "Hello"; end end
+    @controller = dispatch_to(TestController, :index)
   end
 
   describe "#_lookup_store" do
@@ -94,23 +93,23 @@ describe Merb::Cache::CacheMixin do
 
   describe "#_parameters_and_conditions" do
     it "should remove the :params entry from the conditions hash" do
-      @controller._parameters_and_conditions(:params => [:foo, :bar]).last.should_not include(:params)
+      @controller._parameters_and_conditions(:params => [:foo, :bar]).last.should_not have_key(:params)
     end
 
     it "should remove the :store entry from the conditions hash" do
-      @controller._parameters_and_conditions(:store => :foo_store).last.should_not include(:store)
+      @controller._parameters_and_conditions(:store => :foo_store).last.should_not have_key(:store)
     end
 
     it "should remove the :stores entry from the conditions hash" do
-      @controller._parameters_and_conditions(:stores => [:foo_store, :bar_store]).last.should_not include(:stores)
+      @controller._parameters_and_conditions(:stores => [:foo_store, :bar_store]).last.should_not have_key(:stores)
     end
 
     it "should keep an :expires_in entry in the conditions hash" do
-      @controller._parameters_and_conditions(:expire_in => 10).last.should include(:expire_in)
+      @controller._parameters_and_conditions(:expire_in => 10).last.should have_key(:expire_in)
     end
 
     it "should move the :params entry to the parameters array" do
-      @controller._parameters_and_conditions(:params => :foo).first.should include(:foo)
+      @controller._parameters_and_conditions(:params => :foo).first.should have_key(:foo)
     end
   end
 

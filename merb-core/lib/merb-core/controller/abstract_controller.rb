@@ -545,6 +545,8 @@ class Merb::AbstractController
   #
   # @api public
   def absolute_url(*args)
+    # FIXME: arrgh, why request.protocol returns http://?
+    # :// is not part of protocol name
     options  = extract_options_from_args!(args) || {}
     protocol = options.delete(:protocol)
     host     = options.delete(:host)
@@ -659,7 +661,7 @@ class Merb::AbstractController
       # get appended
       filters << [filter, opts]
     when Symbol, String
-      if existing_filter = filters.find {|f| f.first.to_s[filter.to_s]}
+      if existing_filter = filters.find {|f| f.first.to_s == filter.to_s}
         filters[ filters.index(existing_filter) ] = [filter, opts]
       else
         filters << [filter, opts]

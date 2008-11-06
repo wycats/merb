@@ -36,16 +36,14 @@ module Merb
       end
     end
 
+    module Matchers
+    end
+    
     class ExampleGroup < Spec::Example::ExampleGroup
 
-      include ::Merb::Test::ViewHelper
+      include ::Merb::Test::Matchers
       include ::Merb::Test::RouteHelper
       include ::Merb::Test::ControllerHelper
-
-      def initialize(defined_description, &implementation)
-        @_defined_description = defined_description
-        @_implementation = implementation
-      end
 
       class << self
         # This is a copy of the method in rspec, so we can have
@@ -81,7 +79,7 @@ module Spec
   
     def self.create(*names, &block)
       @guid ||= 0
-      mod = Module.new do
+      Merb::Test::Matchers.module_eval do
         klass = Class.new(MatcherDSL) do
           def initialize(expected_value)
             @expected_value = expected_value
@@ -96,7 +94,6 @@ module Spec
           end
         end
       end
-      Merb::Test::ExampleGroup.send(:include, mod)
     end
   
     class MatcherDSL
