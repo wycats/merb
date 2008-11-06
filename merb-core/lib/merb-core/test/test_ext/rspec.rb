@@ -40,11 +40,11 @@ module Merb
     end
     
     class ExampleGroup < Spec::Example::ExampleGroup
-
       include ::Merb::Test::Matchers
       include ::Merb::Test::RouteHelper
       include ::Merb::Test::ControllerHelper
-
+      include ::Webrat::Methods
+      
       class << self
         # This is a copy of the method in rspec, so we can have
         # describe "...", :when => "logged in", and the like

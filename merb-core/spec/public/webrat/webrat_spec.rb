@@ -40,8 +40,6 @@ describe "an app tested with raw webrat" do
 end
 
 describe "an app tested using the webrat proxies" do
-  include Merb::WebratHelper
-  
   describe("#visits") do
     it "supports visits" do
       visits("/testing")
