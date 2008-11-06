@@ -782,6 +782,46 @@ module Merb
       error "Failed to uninstall #{current_gem ? current_gem : 'gem'} (#{e.message})"
     end
     
+    # Recreate all gems from gems/cache on the current platform.
+    #
+    # This task should be executed as part of a deployment setup, where the 
+    # deployment system runs this after the app has been installed.
+    # Usually triggered by Capistrano, God...
+    #
+    # It will regenerate gems from the bundled gems cache for any gem that has 
+    # C extensions - which need to be recompiled for the target deployment platform.
+    #
+    # Note: at least gems/cache and gems/specifications should be in your SCM.
+    
+    desc 'redeploy', 'Recreate any binary gems on the target platform'
+    method_options "--dry-run" => :boolean, "--force" => :boolean
+    def redeploy
+      require 'tempfile' # for Dir::tmpdir access
+      if gem_dir && File.directory?(cache_dir = File.join(gem_dir, 'cache'))
+        local_gemspecs.each do |gemspec|
+          if File.exists?(gem_file = File.join(cache_dir, "#{gemspec.full_name}.gem"))
+            gem_file_copy = File.join(Dir::tmpdir, File.basename(gem_file))
+            if dry_run?
+              note "Recreating #{gemspec.full_name}"
+            else
+              message "Recreating #{gemspec.full_name}"       
+              if options[:force] && File.directory?(gem = File.join(gem_dir, 'gems', gemspec.full_name))
+                puts "Removing existing #{gemspec.full_name}"
+                FileUtils.rm_rf(gem) 
+              end              
+              # Copy the gem to a temporary file, because otherwise RubyGems/FileUtils
+              # will complain about copying identical files (same source/destination).
+              FileUtils.cp(gem_file, gem_file_copy)
+              Merb::Gem.install(gem_file_copy, :install_dir => gem_dir, :ignore_dependencies => true)
+              File.delete(gem_file_copy)
+            end
+          end
+        end
+      else
+        error "No application local gems directory found"
+      end
+    end
+    
     private
     
     # Return dependencies for all installed gems; both system-wide and locally;
@@ -1284,7 +1324,6 @@ module Merb
     #
     # merb:dependencies:uninstall                               # uninstall all dependencies - the default
     # merb:dependencies:uninstall merb-more                     # uninstall merb-more related gems locally
-    # merb:dependencies:uninstall --config                      # read dependencies from the default config
     
     desc 'uninstall [comp]', 'Uninstall application dependencies'
     method_options "--dry-run" => :boolean, "--force" => :boolean
@@ -1298,42 +1337,15 @@ module Merb
     
     # Recreate all gems from gems/cache on the current platform.
     #
-    # This task should be executed as part of a deployment setup, where the 
-    # deployment system runs this after the app has been installed.
-    # Usually triggered by Capistrano, God...
-    #
-    # It will regenerate gems from the bundled gems cache for any gem that has 
-    # C extensions - which need to be recompiled for the target deployment platform.
-    #
-    # Note: gems/cache should be in your SCM for this to work correctly.
+    # Note: use merb:gem:redeploy instead
     
     desc 'redeploy', 'Recreate any binary gems on the target platform'
     method_options "--dry-run" => :boolean, "--force" => :boolean
     def redeploy
-      require 'tempfile' # for Dir::tmpdir access
-      if gem_dir && File.directory?(cache_dir = File.join(gem_dir, 'cache'))
-        local_gemspecs.each do |gemspec|
-          if File.exists?(gem_file = File.join(cache_dir, "#{gemspec.full_name}.gem"))
-            gem_file_copy = File.join(Dir::tmpdir, File.basename(gem_file))
-            if dry_run?
-              note "Recreating #{gemspec.full_name}"
-            else
-              message "Recreating #{gemspec.full_name}"       
-              if options[:force] && File.directory?(gem = File.join(gem_dir, 'gems', gemspec.full_name))
-                puts "Removing existing #{gemspec.full_name}"
-                FileUtils.rm_rf(gem) 
-              end              
-              # Copy the gem to a temporary file, because otherwise RubyGems/FileUtils
-              # will complain about copying identical files (same source/destination).
-              FileUtils.cp(gem_file, gem_file_copy)
-              Merb::Gem.install(gem_file_copy, :install_dir => gem_dir, :ignore_dependencies => true)
-              File.delete(gem_file_copy)
-            end
-          end
-        end
-      else
-        error "No application local gems directory found"
-      end
+      warning 'Warning: merb:dependencies:redeploy has been deprecated - use merb:gem:redeploy instead'
+      gem = Merb::Gem.new
+      gem.options = options
+      gem.redeploy
     end
     
     # Create a dependencies configuration file.
