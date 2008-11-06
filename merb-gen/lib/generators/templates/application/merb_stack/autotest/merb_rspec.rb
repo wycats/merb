@@ -14,7 +14,7 @@ class Autotest::MerbRspec < Autotest
     super
 
     # Ignore any happenings in these directories
-    add_exception %r%^\./(?:doc|log|public|tmp|\.git|\.hg|\.svn|framework|gems|schema|\.DS_Store|autotest|bin|.*\.sqlite3)% 
+    add_exception %r%^\./(?:doc|log|public|tmp|\.git|\.hg|\.svn|framework|gems|schema|\.DS_Store|autotest|bin|.*\.sqlite3|.*\.thor)% 
     # Ignore SCM directories and custom Autotest mappings
     %w[.svn .hg .git .autotest].each { |exception| add_exception(exception) }
 
@@ -44,7 +44,7 @@ class Autotest::MerbRspec < Autotest
     # Any change to global_helpers will result in all view and controller
     # tests being run
     add_mapping %r%^app/helpers/global_helpers\.rb% do
-      files_matching %r%^spec/(views|controllers|helpers)/.*_spec\.rb$%
+      files_matching %r%^spec/(views|controllers|helpers|requests)/.*_spec\.rb$%
     end
 
     # Any change to a helper will cause its spec to be run

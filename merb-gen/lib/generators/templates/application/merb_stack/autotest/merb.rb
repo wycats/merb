@@ -15,7 +15,10 @@ class Autotest::Merb < Autotest
     initialize_test_layout
     
     # Ignore any happenings in these directories
-    add_exception %r%^\./(?:doc|log|public|tmp)%
+    add_exception %r%^\./(?:doc|log|public|tmp|\.git|\.hg|\.svn|framework|gems|schema|\.DS_Store|autotest|bin|.*\.sqlite3)% 
+    # Ignore SCM directories and custom Autotest mappings
+    %w[.svn .hg .git .autotest].each { |exception| add_exception(exception) }
+    
     
     # Ignore any mappings that Autotest may have already set up
     clear_mappings
@@ -36,7 +39,7 @@ class Autotest::Merb < Autotest
       ]
     end
     
-    # Any change to a test or test will cause it to be run
+    # Any change to a test will cause it to be run
     add_mapping %r%^test/(unit|models|integration|controllers|views|functional)/.*rb$% do |filename, _|
       filename
     end
