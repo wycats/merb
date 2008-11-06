@@ -9,5 +9,5 @@ Merb::Test::ControllerHelper.send(:include, Merb::Test::Rspec::ControllerMatcher
 Merb::Test::RouteHelper.send(:include, Merb::Test::Rspec::RouteMatchers)
 
 module Merb::Test::ViewHelper
-  include Merb::Test::Rspec::ViewMatchers
+  include ::Webrat::Matchers
 end
