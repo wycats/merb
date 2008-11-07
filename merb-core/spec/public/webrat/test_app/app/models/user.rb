@@ -8,10 +8,10 @@
 # see merb/merb-auth/setup.rb to see how to disable the salted_user mixin
 # 
 # You will need to setup your database and create a user.
-class User
-  include DataMapper::Resource
-  
-  property :id,     Serial
-  property :login,  String
-  
-end
+# class User
+#   include DataMapper::Resource
+#   
+#   property :id,     Serial
+#   property :login,  String
+#   
+# end
