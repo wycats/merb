@@ -111,7 +111,7 @@ module Merb::Helpers::Form
   def fields_for(name, attrs = {}, &blk)
     attrs ||= {}
     with_form_context(name, attrs.delete(:builder)) do
-      yield
+      capture(&blk)
     end
   end
 
