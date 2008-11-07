@@ -24,7 +24,7 @@ describe "an app tested with raw webrat" do
   
   describe "with the webrat session" do
     before(:each) do
-      @session = Webrat::Session.new
+      @session = Webrat::MerbSession.new
       @session.visits("/testing")      
     end
     
