@@ -5,7 +5,7 @@ require 'fileutils'
 require 'yaml'
 
 # Important - don't change this line or its position
-MERB_THOR_VERSION = '0.2.0'
+MERB_THOR_VERSION = '0.2.1'
 
 ##############################################################################
 
@@ -731,6 +731,9 @@ module Merb
       # uninstall existing gems of the ones we're going to install
       uninstall(*names) if options[:force]
       
+      message "Installing #{names.length} #{names.length == 1 ? 'gem' : 'gems'}..."
+      puts "This may take a while..."
+      
       names.each do |gem_name|
         current_gem = gem_name      
         if dry_run?
@@ -798,7 +801,10 @@ module Merb
     def redeploy
       require 'tempfile' # for Dir::tmpdir access
       if gem_dir && File.directory?(cache_dir = File.join(gem_dir, 'cache'))
-        local_gemspecs.each do |gemspec|
+        specs = local_gemspecs
+        message "Recreating #{specs.length} from cache..."
+        puts "This may take a while..."
+        specs.each do |gemspec|
           if File.exists?(gem_file = File.join(cache_dir, "#{gemspec.full_name}.gem"))
             gem_file_copy = File.join(Dir::tmpdir, File.basename(gem_file))
             if dry_run?
@@ -1018,6 +1024,7 @@ module Merb
           note "Installing #{current_gem} from source..."
         else
           message "Installing #{current_gem} from source..."
+          puts "This may take a while..."
           unless install_dependency_from_source(dependency)
             raise "gem source not found"
           end
@@ -1296,6 +1303,7 @@ module Merb
           warning "No dependencies to install..."
         else
           puts "#{deps.length} dependencies to install..."
+          puts "This may take a while..."
           install_dependencies(strategy, deps, clobber)
         end
         
