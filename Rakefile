@@ -38,9 +38,10 @@ merb_more_spec = Gem::Specification.new do |s|
   s.summary      = "(merb - merb-core) == merb-more.  The Full Stack. Take what you need; leave what you don't."
   s.description  = s.summary
   s.files        = %w( LICENSE README Rakefile TODO lib/merb-more.rb )
+  s.required_rubygems_version = ">= 1.3.0"
   s.add_dependency "merb-core", ">= #{Merb::VERSION}"
   merb_more_gems.each do |gem|
-    s.add_dependency gem, [">= #{Merb::VERSION}", "<= 1.0"]
+    s.add_dependency gem, ">= #{Merb::VERSION}"
   end
 end
 
