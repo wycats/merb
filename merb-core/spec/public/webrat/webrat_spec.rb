@@ -7,38 +7,6 @@ Merb.start(
 Merb::Config[:log_stream] = File.open("/dev/null", "w")
 Merb.reset_logger!
 
-require "webrat"
-
-describe "an app tested with raw webrat" do
-  it "supports request" do
-    resp = request("/testing")
-    resp.should be_successful
-  end
-  
-  it "correctly handles links even if the request " \
-     "wasn't originally made by webrat" do
-    request("/testing")
-    @session.click_link("Next")
-    @session.response.should have_xpath("//p[contains(., 'Got to next')]")
-  end
-  
-  describe "with the webrat session" do
-    before(:each) do
-      @session = Webrat::MerbSession.new
-      @session.visits("/testing")      
-    end
-    
-    it "supports Webrat session #visiting" do
-      @session.response.should be_successful
-    end
-    
-    it "supports Webrat session #click" do
-      @session.click_link("Next")
-      @session.response.should have_xpath("//p[contains(., 'Got to next')]")
-    end
-  end
-end
-
 describe "an app tested using the webrat proxies" do
   describe("#visits") do
     it "supports visits" do
