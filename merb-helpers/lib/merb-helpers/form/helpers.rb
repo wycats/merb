@@ -103,7 +103,7 @@ module Merb::Helpers::Form
   #   <%= form_for @person do %>
   #     <%= text_field :first_name, :label => "First Name" %>
   #     <%= text_field :last_name,  :label => "Last Name" %>
-  #     <%= fields_for :permission do %>
+  #     <%= fields_for @permission do %>
   #       <%= check_box :is_admin, :label => "Administrator" %>
   #     <% end =%>
   #     <%= submit "Create" %>
