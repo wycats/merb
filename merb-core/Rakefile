@@ -56,6 +56,8 @@ spec = Gem::Specification.new do |s|
   s.has_rdoc         = true
   s.extra_rdoc_files = %w( README LICENSE TODO )
 
+  s.required_rubygems_version = ">= 1.3.0"
+  
   # Dependencies
   s.add_dependency "extlib", ">= 0.9.8"
   s.add_dependency "erubis", ">= 2.6.2"
@@ -69,6 +71,7 @@ spec = Gem::Specification.new do |s|
   # for now. RubyGems need some love.
   #s.add_development_dependency "libxml-ruby"
   #s.add_development_dependency "memcache-client"
+  s.add_development_dependency "webrat", ">= 0.3.0"
   # Requirements
   s.requirements << "install the json gem to get faster json parsing"
   s.required_ruby_version = ">= 1.8.6"
