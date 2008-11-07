@@ -161,6 +161,7 @@ module Merb
         # of workers.
         if Merb::Config[:daemonize]
           Merb.trap('INT') do
+            Merb.exiting = true
             stop
             Merb.logger.warn! "Exiting port #{port}\n"
             exit_process
@@ -209,7 +210,11 @@ module Merb
             # Call the adapter's new_server method, which should attempt
             # to bind to a port.
             new_server(port)
-          rescue Errno::EADDRINUSE
+          rescue Errno::EADDRINUSE => e
+            if Merb::Config[:bind_fail_fatal]
+              Merb.fatal! "Could not bind to #{port}. It was already in use", e
+            end
+            
             unless printed_warning
               Merb.logger.warn! "Port #{port} is in use, " \
                 "Waiting for it to become available."
@@ -237,7 +242,6 @@ module Merb
       # 
       # @api private
       def self.exit_process(status = 0)
-        Merb.at_exit_procs.each {|prc| prc.call }
         exit(status)
       end
 

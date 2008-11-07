@@ -707,7 +707,7 @@ class Merb::BootLoader::LoadClasses < Merb::BootLoader
           Merb.trap("INT") do
             Merb.logger.warn! "Reaping Workers"
             begin
-              Process.kill("ABRT", pid)
+              Process.kill(reap_workers_signal, pid)
             rescue SystemCallError
             end
             exit_gracefully
@@ -759,10 +759,16 @@ class Merb::BootLoader::LoadClasses < Merb::BootLoader
         Merb::Server.add_irb_trap
         at_exit { reap_workers }
       else
-        Merb.trap('INT') { Merb::BootLoader.before_worker_shutdown_callbacks.each { |cb| cb.call } }
+        Merb.trap('INT') do
+          Merb::BootLoader.before_worker_shutdown_callbacks.each { |cb| cb.call }
+        end
         Merb.trap('ABRT') { reap_workers }
-        Merb.trap('HUP') { reap_workers(128) }
+        Merb.trap('HUP') { reap_workers(128, "ABRT") }
       end
+    end
+
+    def reap_workers_signal
+      Merb::Config[:reap_workers_quickly] ? "KILL" : "ABRT"
     end
 
     # Reap any workers of the spawner process and
@@ -780,7 +786,8 @@ class Merb::BootLoader::LoadClasses < Merb::BootLoader
     # (Does not return.)
     #
     # @api private    
-    def reap_workers(status = 0, sig = "ABRT")
+    def reap_workers(status = 0, sig = reap_workers_signal)
+      
       Merb.logger.info "Executed all before worker shutdown callbacks..."
       Merb::BootLoader.before_worker_shutdown_callbacks.each do |cb|
         begin

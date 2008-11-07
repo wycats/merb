@@ -147,13 +147,22 @@ module Merb
       #
       # @api private
       def setup(settings = {})
-        @configuration = defaults.merge(settings)
+        config = defaults.merge(settings)
         
-        unless @configuration[:reload_classes]
-          @configuration[:fork_for_class_load] = false
+        unless config[:reload_classes]
+          config[:fork_for_class_load] = false
+        end
+
+        dev_mode = config[:environment] == "development"
+        unless config.key?(:reap_workers_quickly)
+          config[:reap_workers_quickly] = dev_mode & !config[:cluster]
         end
         
-        @configuration
+        unless config.key?(:bind_fail_fatal)
+          config[:bind_fail_fatal] = dev_mode
+        end
+        
+        @configuration = config
       end
 
       # Parses the command line arguments and stores them in the config.

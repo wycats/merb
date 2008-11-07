@@ -62,10 +62,16 @@ module Merb
     # @api private
     def exiting=(bool)
       Extlib.exiting = bool
-      if bool && Extlib.const_defined?("Pooling") && Extlib::Pooling.scavenger
-        Extlib::Pooling.scavenger.wakeup
-      end
       @exiting = bool
+      if bool
+        if Extlib.const_defined?("Pooling") && Extlib::Pooling.scavenger
+          Extlib::Pooling.scavenger.wakeup
+        end
+        while prc = self.at_exit_procs.pop
+          prc.call
+        end unless Merb::Config[:reap_workers_quickly]
+      end
+      @exiting
     end
     
     # Register a proc to run when Merb is exiting gracefully. It will *not*
