@@ -724,14 +724,17 @@ module Merb
       end
     end
 
+    # @api plugin
     def forking_environment?
       !on_windows? && !on_jruby?
     end
 
+    # @api plugin
     def on_jruby?
       RUBY_PLATFORM =~ Merb::Const::JAVA_PLATFORM_REGEXP
     end
 
+    # @api plugin
     def on_windows?
       RUBY_PLATFORM =~ Merb::Const::WIN_PLATFORM_REGEXP
     end

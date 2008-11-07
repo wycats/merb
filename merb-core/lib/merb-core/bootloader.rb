@@ -408,6 +408,8 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
   #
   # ==== Returns
   # nil
+  #
+  # @api private
   def self.enable_json_gem
     gem "json"
     require "json/ext"
@@ -676,7 +678,6 @@ class Merb::BootLoader::LoadClasses < Merb::BootLoader
     #   nil
     #
     # @api private
-
     def start_transaction
       Merb.logger.warn! "Parent pid: #{Process.pid}"
       reader, writer = nil, nil
@@ -773,13 +774,12 @@ class Merb::BootLoader::LoadClasses < Merb::BootLoader
     #
     # ==== Parameters
     # status<Integer>:: The status code to exit with. Defaults to 0.
+    # sig<String>::     The signal to send to workers
     #
     # ==== Returns
     # (Does not return.)
     #
-    # @api private
-    # @param status<Integer> The status code to exit with
-    # @param sig<String>     The signal to send to workers
+    # @api private    
     def reap_workers(status = 0, sig = "ABRT")
       Merb.logger.info "Executed all before worker shutdown callbacks..."
       Merb::BootLoader.before_worker_shutdown_callbacks.each do |cb|
