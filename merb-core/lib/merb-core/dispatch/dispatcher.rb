@@ -5,6 +5,7 @@ module Merb
     class << self
       include Merb::ControllerExceptions
       
+      # @api private
       attr_accessor :use_mutex
       
       @@work_queue = Queue.new

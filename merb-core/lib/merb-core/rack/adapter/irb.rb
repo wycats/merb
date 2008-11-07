@@ -61,11 +61,13 @@ module Merb
       end
 
       # Reloads classes using Merb::BootLoader::ReloadClasses.
+      # @api public
       def reload!
         Merb::BootLoader::ReloadClasses.reload
       end
 
       # Prints all routes for the application.
+      # @api public
       def show_routes
         seen = []
         unless Merb::Router.named_routes.empty?
@@ -96,6 +98,7 @@ module Merb
       #
       # An ORM should implement Merb::Orms::MyOrm#open_sandbox! to support this.
       # Usually this involves starting a transaction.
+      # @api public
       def open_sandbox!
         puts "Loading #{Merb.environment} environment in sandbox (Merb #{Merb::VERSION})"
         puts "Any modifications you make will be rolled back on exit"
@@ -106,12 +109,14 @@ module Merb
       #
       # An ORM should implement Merb::Orms::MyOrm#close_sandbox! to support this.
       # Usually this involves rolling back a transaction.
+      # @api public
       def close_sandbox!
         orm_modules.each { |orm| orm.close_sandbox! if orm.respond_to?(:close_sandbox!) }
         puts "Modifications have been rolled back"
       end
 
       # Explictly show logger output during IRB session
+      # @api public
       def trace_log!
         Merb.logger.auto_flush = true
       end
@@ -120,6 +125,7 @@ module Merb
 
       # ==== Returns
       # Array:: All Merb::Orms::* modules.
+      # @api private
       def orm_modules
         if Merb.const_defined?('Orms')
           Merb::Orms.constants.map { |c| Merb::Orms::const_get(c) }
@@ -138,6 +144,8 @@ module Merb
       # ==== Notes
       # If the +.irbrc+ file exists, it will be loaded into the IRBRC
       # environment variable.
+      #
+      # @api plugin
       def self.start(opts={})
         m = Merb::Rack::Console.new
         m.extend Merb::Test::RequestHelper
@@ -156,6 +164,7 @@ module Merb
 
       private
 
+      # @api private
       def self.sandboxed?
         Merb::Config[:sandbox]
       end

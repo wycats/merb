@@ -154,6 +154,9 @@ module Merb
 
       # === Returns
       # Integer:: The status-code of the error.
+      # 
+      # @overridable
+      # @api plugin
       def status; self.class.status; end
       alias :to_i :status
 
@@ -338,6 +341,8 @@ module Merb
   # Required to show exceptions in the log file
   #
   # e<Exception>:: The exception that a message is being generated for
+  #
+  # @api plugin
   def self.exception(e)
     "#{ e.message } - (#{ e.class })\n" <<  
     "#{(e.backtrace or []).join("\n")}" 

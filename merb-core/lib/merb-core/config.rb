@@ -85,6 +85,8 @@ module Merb
       # ==== Parameters
       # key<Object>:: The key to set the parameter for.
       # val<Object>:: The value of the parameter.
+      #
+      # @api public
       def []=(key, val)
         (@configuration ||= setup)[key] = val
       end
@@ -111,6 +113,8 @@ module Merb
       #
       # ==== Returns
       # Object:: The value of the configuration parameter or the default.
+      #
+      # @api public
       def fetch(key, default)
         @configuration.fetch(key, default)
       end
@@ -400,6 +404,7 @@ module Merb
         Merb::Config.setup(options)
       end
 
+      # @api private
       attr_accessor :configuration
 
       # Set configuration parameters from a code block, where each method

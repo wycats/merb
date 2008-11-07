@@ -220,7 +220,7 @@ module Merb::Template
       #     <p>Some Foo content!</p> 
       #   <% end %>
       #
-      # @private
+      # @api private
       def capture_erb(*args, &block)
         _old_buf, @_erb_buf = @_erb_buf, ""
         block.call(*args)
@@ -229,7 +229,7 @@ module Merb::Template
         ret
       end
 
-      # @private
+      # @api private
       def concat_erb(string, binding)
         @_erb_buf << string
       end

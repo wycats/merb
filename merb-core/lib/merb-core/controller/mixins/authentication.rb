@@ -101,6 +101,9 @@ module Merb::AuthenticationMixin
     #
     # ==== Returns
     # Object:: False if basic auth is not provided, otherwise the return value of the authenticator block.
+    # 
+    # @overridable
+    # @api public
     def authenticate(&authenticator)
       if @auth.provided? and @auth.basic?
         authenticator.call(*@auth.credentials)

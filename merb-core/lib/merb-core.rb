@@ -194,9 +194,14 @@ module Merb
       start_environment(Merb::Config.to_hash.merge(argv))
     end
 
-    attr_accessor :environment, :load_paths, :adapter, :environment_info, :started
+    # @api public
+    attr_accessor :environment, :adapter
+    # @api private
+    attr_accessor :load_paths, :environment_info, :started
 
+    # @api public
     alias :env :environment
+    # @api public
     alias :started? :started
 
     Merb.load_paths = Dictionary.new { [Merb.root] } unless Merb.load_paths.is_a?(Dictionary)

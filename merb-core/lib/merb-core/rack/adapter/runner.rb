@@ -12,6 +12,8 @@ module Merb
       # ==== Notes
       # If opts[:runner_code] matches a filename, that file will be read and
       # the contents executed. Otherwise the code will be executed directly.
+      #
+      # @api plugin
       def self.start(opts={})
         Merb::Server.change_privilege
         if opts[:runner_code]

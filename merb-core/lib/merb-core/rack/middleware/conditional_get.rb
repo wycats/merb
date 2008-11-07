@@ -2,6 +2,8 @@ module Merb
   module Rack
 
     class ConditionalGet < Merb::Rack::Middleware
+
+      # @api plugin
       def call(env)
         status, headers, body = @app.call(env)
 
@@ -16,6 +18,7 @@ module Merb
       end
     
     private
+      # @api private
       def document_not_modified?(env, headers)
         if etag = headers[Merb::Const::ETAG]
           etag == env[Merb::Const::HTTP_IF_NONE_MATCH]

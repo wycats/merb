@@ -5,7 +5,9 @@ module Merb
     cattr_accessor :subclasses 
     self.subclasses = []
     
+    # @api private
     attr_reader :session_id
+    # @api private
     attr_accessor :needs_new_cookie
     
     class << self

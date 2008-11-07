@@ -2,11 +2,13 @@ module Merb
   module Rack
     class Static < Merb::Rack::Middleware
 
+      # @api private
       def initialize(app,directory)
         super(app)
         @static_server = ::Rack::File.new(directory)
       end
       
+      # @api plugin
       def call(env)        
         path = if env[Merb::Const::PATH_INFO]
                  env[Merb::Const::PATH_INFO].chomp(Merb::Const::SLASH)
@@ -27,11 +29,13 @@ module Merb
         end
       end
       
-       # ==== Parameters
+        # ==== Parameters
         # path<String>:: The path to the file relative to the server root.
         #
         # ==== Returns
         # Boolean:: True if file exists under the server root and is readable.
+        #
+        # @api private
         def file_exist?(path)
           full_path = ::File.join(@static_server.root, ::Merb::Parse.unescape(path))
           ::File.file?(full_path) && ::File.readable?(full_path)
@@ -39,6 +43,8 @@ module Merb
 
         # ==== Parameters
         # env<Hash>:: Environment variables to pass on to the server.
+        #
+        # @api private
         def serve_static(env)
           env[Merb::Const::PATH_INFO] = ::Merb::Parse.unescape(env[Merb::Const::PATH_INFO])
           @static_server.call(env)

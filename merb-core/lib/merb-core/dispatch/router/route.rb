@@ -10,10 +10,14 @@ module Merb
       JUST_BRACKETS                = /\[(\d+)\]/
       SEGMENT_CHARACTERS           = "[^\/.,;?]".freeze
 
+      # @api private
       attr_reader :conditions, :params, :segments
+      # @api private
       attr_reader :index, :variables, :name
+      # @api private
       attr_accessor :fixation, :resource_identifiers
 
+      # @api private
       def initialize(conditions, params, deferred_procs, options = {})
         @conditions, @params = conditions, params
 
@@ -35,18 +39,22 @@ module Merb
         compile
       end
 
+      # @api private
       def regexp?
         @regexp
       end
-      
+    
+      # @api private  
       def generatable?
         @generatable && !regexp?
       end
 
+      # @api private
       def allow_fixation?
         @fixation
       end
       
+      # @api private
       def to_s
         regexp? ?
           "/#{conditions[:path].source}/" :
@@ -56,6 +64,8 @@ module Merb
       alias_method :inspect, :to_s
 
       # Appends self to Merb::Router.routes
+
+      # @api private
       def register
         @index = Merb::Router.routes.size
         Merb::Router.routes << self
@@ -63,6 +73,7 @@ module Merb
       end
       
       # Inserts self to Merb::Router.routes at the specified index.
+      # @api private      
       def register_at(index)
         @index = index
         Merb::Router.routes.insert(index, self)
@@ -71,11 +82,13 @@ module Merb
       
       # Sets the route as a resource route with the given key as the 
       # lookup key.
+      # @api private      
       def resource=(key)
         Router.resource_routes[key] = self
         key
       end
       
+      # @api private
       def name=(name)
         @name = name.to_sym
         Router.named_routes[@name] = self
@@ -102,6 +115,8 @@ module Merb
       #
       # ==== Returns
       # String:: The generated URL.
+      #
+      # @api private
       def generate(args = [], defaults = {}, resource = false)
         unless generatable?
           raise GenerationError, "Cannot generate regexp Routes" if regexp?
@@ -144,6 +159,8 @@ module Merb
       #
       # param_keys that end in _id are treated slightly differently in order
       # to get nested resources to work correctly.
+      #
+      # @api private
       def identify(obj, param_key = nil)
         identifier = identifier_for(obj)
         if identifier.is_a?(Array)
@@ -161,6 +178,8 @@ module Merb
       # Returns the identifier for the passed object. Built in core ruby classes are
       # always identified with to_s. The method will return nil in that case (since
       # to_s is the default for objects that do not have identifiers.)
+      #
+      # @api private
       def identifier_for(obj)
         return if obj.is_a?(String)    || obj.is_a?(Symbol)     || obj.is_a?(Numeric)  ||
                   obj.is_a?(TrueClass) || obj.is_a?(FalseClass) || obj.is_a?(NilClass) ||
@@ -175,6 +194,8 @@ module Merb
 
       # Returns the if statement and return value for for the main
       # Router.match compiled method.
+      #
+      # @api private
       def compiled_statement(first)
         els_if = first ? '  if ' : '  elsif '
 
@@ -197,6 +218,7 @@ module Merb
       
     # === Compilation ===
 
+      # @api private
       def compile
         compile_conditions
         compile_params
@@ -206,7 +228,8 @@ module Merb
       # The Generator class handles compiling the route down to a lambda that
       # can generate the URL from a params hash and a default params hash.
       class Generator #:nodoc:
-        
+
+        # @api private        
         def initialize(segments, symbol_conditions, identifiers)
           @segments          = segments
           @symbol_conditions = symbol_conditions
@@ -216,6 +239,8 @@ module Merb
           @opt_segment_stack = [[]]
         end
         
+        #
+        # @api private
         def compiled
           ruby  = ""
           ruby << "lambda do |params, defaults|\n"
@@ -242,6 +267,8 @@ module Merb
       
         # Cleans up methods a bunch. We don't need to pass the current segment
         # level around everywhere anymore. It's kept track for us in the stack.
+        #
+        # @api private
         def with(segments, &block)
           @stack.push(segments)
           retval = yield
@@ -249,22 +276,27 @@ module Merb
           retval
         end
   
+        # @api private  
         def segments
           @stack.last || []
         end
-        
+
+        # @api private        
         def symbol_segments
           segments.flatten.select { |s| s.is_a?(Symbol)  }
         end
-        
+
+        # @api private
         def current_segments
           segments.select { |s| s.is_a?(Symbol) }
         end
-        
+
+        # @api private        
         def nested_segments
           segments.select { |s| s.is_a?(Array) }.flatten.select { |s| s.is_a?(Symbol) }
         end
-      
+
+        # @api private      
         def block_for_level
           ruby  = ""
           ruby << "if #{segment_level_matches_conditions}\n"
@@ -273,7 +305,8 @@ module Merb
           ruby << %{ "#{combine_required_and_optional_segments}"\n}
           ruby << "end"
         end
-        
+
+        # @api private        
         def check_if_defaults_should_be_included
           ruby = ""
           ruby << "include_defaults = "
@@ -282,6 +315,7 @@ module Merb
         end
 
         # --- Not so pretty ---
+        # @api private        
         def segment_level_matches_conditions
           conditions = current_segments.map do |segment|
             condition = "(cached_#{segment} = params[#{segment.inspect}] || include_defaults && defaults[#{segment.inspect}])"
@@ -299,10 +333,12 @@ module Merb
           conditions.join(" && ")
         end
 
+        # @api private
         def remove_used_segments_in_query_path
           "#{current_segments.inspect}.each { |s| query_params.delete(s) }"
         end
 
+        # @api private
         def generate_optional_segments
           optionals = []
 
@@ -321,6 +357,7 @@ module Merb
           optionals.join("\n")
         end
 
+        # @api private
         def combine_required_and_optional_segments
           bits = ""
 
@@ -340,6 +377,7 @@ module Merb
 
     # === Conditions ===
 
+      # @api private
       def compile_conditions
         @original_conditions = conditions.dup
         
@@ -360,6 +398,8 @@ module Merb
       # to concat all the parts together, then parse the path and extract the
       # variables. However, if any of the parts are a regular expression, then
       # we abort the parsing and just convert it to a regexp.
+      #
+      # @api private      
       def compile_path(path)
         @segments = []
         compiled  = ""
@@ -397,6 +437,8 @@ module Merb
       end
 
       # Simple nested parenthesis parser
+      #
+      # @api private      
       def segments_with_optionals_from_string(path, nest_level = 0)
         segments = []
 
@@ -425,6 +467,7 @@ module Merb
         segments
       end
 
+      # @api private
       def segments_from_string(path)
         segments = []
 
@@ -441,6 +484,7 @@ module Merb
       end
 
       # --- Yeah, this could probably be refactored
+      # @api private
       def compile_path_segments(compiled, segments)
         segments.each do |segment|
           case segment
@@ -463,6 +507,7 @@ module Merb
       end
 
       # Handles anchors in Regexp conditions
+      # @api private
       def compile_segment_condition(condition)
         return "(#{SEGMENT_CHARACTERS}+)" unless condition
         return "(#{condition})"           unless condition.is_a?(Regexp)
@@ -484,6 +529,7 @@ module Merb
         "(#{condition})"
       end
 
+      # @api private
       def compile_params
         # Loop through each param and compile it
         @defaults.merge(@params).each do |key, value|
@@ -498,6 +544,7 @@ module Merb
       end
 
       # This was pretty much a copy / paste from the old router
+      # @api private
       def compile_param(value)
         result = []
         match  = true
@@ -531,6 +578,7 @@ module Merb
         result.join(' + ').gsub("\\_", "_")
       end
 
+      # @api private
       def condition_statements
         statements = []
 
@@ -576,6 +624,7 @@ module Merb
       end
       
       # (request.matched? || ((block_result = process(proc.call))))
+      # @api private      
       def deferred_condition_statement(deferred)
         if current = deferred.first
           html  = " && (request.matched? || ("
@@ -589,6 +638,7 @@ module Merb
         end
       end
 
+      # @api private
       def params_as_string
         elements = params.keys.map do |k|
           "#{k.inspect} => #{params[k]}"
@@ -598,6 +648,7 @@ module Merb
 
     # ---------- Utilities ----------
       
+      # @api private      
       def arrays_to_regexps(condition)
         return condition unless condition.is_a?(Array)
         
@@ -613,6 +664,7 @@ module Merb
         Regexp.compile(source.join('|'))
       end
     
+      # @api private    
       def segment_level_to_s(segments)
         (segments || []).inject('') do |str, seg|
           str << case seg
@@ -623,6 +675,7 @@ module Merb
         end
       end
 
+      # @api private
       def capturing_parentheses_count(regexp)
         regexp = regexp.source if regexp.is_a?(Regexp)
         regexp.scan(/(?!\\)[(](?!\?[#=:!>-imx])/).length

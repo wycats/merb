@@ -21,11 +21,13 @@ module Merb
     self.session_store_type = :memory
     
     # Bypass normal implicit class attribute reader - see below.
+    # @api private    
     def store
       self.class.store
     end
     
     # Lazy load/setup of MemorySessionStore.
+    # @api private
     def self.store
       @_store ||= MemorySessionStore.new(Merb::Config[:memory_session_ttl])
     end

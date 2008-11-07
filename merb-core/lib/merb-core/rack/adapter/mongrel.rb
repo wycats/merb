@@ -14,6 +14,7 @@ module Merb
 
     class Mongrel < Merb::Rack::AbstractAdapter
 
+      # @api plugin
       def self.stop(status = 0)
         if @server
           begin
@@ -25,11 +26,13 @@ module Merb
           true
         end
       end
-      
+
+      # @api plugin
       def self.new_server(port)
         @server = ::Mongrel::HttpServer.new(@opts[:host], port)
       end
       
+      # @api plugin
       def self.start_server
         @server.register('/', ::Merb::Rack::Handler::Mongrel.new(@opts[:app]))
         @server.run.join

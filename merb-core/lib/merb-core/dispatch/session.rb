@@ -61,6 +61,8 @@ module Merb
     #
     # ==== Returns
     # SessionContainer:: The session that was extracted from the request object.
+    #
+    # @api public
     def session(session_store = nil)
       request.session(session_store)
     end
@@ -69,6 +71,8 @@ module Merb
     
     # ==== Returns
     # String:: A random 32 character string for use as a unique session ID.
+    #
+    # @api private
     def rand_uuid
       values = [
         rand(0x0010000),
@@ -106,6 +110,8 @@ module Merb
       # Adds class methods to Merb::Request object.
       # Sets up repository of session store types.
       # Sets the session ID key and expiry values.
+      #
+      # @api private
       def self.included(base)
         base.extend ClassMethods
         

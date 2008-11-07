@@ -1,6 +1,6 @@
 module Merb
   class Router
-    
+
     module Resources
       # Behavior#+resources+ is a route helper for defining a collection of
       # RESTful resources. It yields to a block for child routes.
@@ -271,7 +271,7 @@ module Merb
       
     protected
     
-      #api private
+      # @api private
       def register_resource(*key)
         options     = extract_options_from_args!(key) || {}
         key         = [ @options[:resource_prefix], key ].flatten.compact
@@ -281,7 +281,7 @@ module Merb
         self
       end
 
-      #api private
+      # @api private
       def resource_block(builders, &block)
         behavior = ResourceBehavior.new(builders, @proxy, @conditions, @params, @defaults, @identifiers, @options, @blocks)
         with_behavior_context(behavior, &block)
@@ -301,14 +301,14 @@ module Merb
     # Adding the collection and member methods to behavior
     class ResourceBehavior < Behavior #:nodoc:
       
-      #api private
+      # @api private
       def initialize(builders, *args)
         super(*args)
         @collection = builders[:collection]
         @member     = builders[:member]
       end
       
-      #api private
+      # @api private
       def collection(action, options = {})
         action = action.to_s
         method = options[:method]

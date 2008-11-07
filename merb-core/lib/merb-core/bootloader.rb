@@ -321,6 +321,8 @@ class Merb::BootLoader::BuildFramework < Merb::BootLoader
     #
     # ==== Returns
     # nil
+    #
+    # @api plugin
     def run
       $:.push Merb.root unless Merb.root == File.expand_path(Dir.pwd)
       build_framework
@@ -1042,6 +1044,8 @@ class Merb::BootLoader::Router < Merb::BootLoader
     #
     # ==== Returns
     # String:: The path to the router file if it exists, nil otherwise.
+    #
+    # @api private
     def router_file
       @router_file ||= begin
         if File.file?(router = Merb.dir_for(:router) / Merb.glob_for(:router))

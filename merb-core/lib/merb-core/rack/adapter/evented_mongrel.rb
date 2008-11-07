@@ -4,6 +4,7 @@ module Merb
   module Rack
 
     class EventedMongrel < Mongrel
+      # @api plugin
       def self.new_server(port)
         Merb::Dispatcher.use_mutex = false
         super

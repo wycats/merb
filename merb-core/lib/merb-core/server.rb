@@ -62,6 +62,7 @@ module Merb
         Merb.fatal!("You don't have access to the PID file at #{pidfile}: #{e.message}")
       end
 
+      # @api private
       def pid_in_file(pidfile)
         File.read(pidfile).chomp.to_i
       end

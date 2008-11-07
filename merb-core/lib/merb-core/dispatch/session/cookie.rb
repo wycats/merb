@@ -30,6 +30,7 @@ module Merb
     MAX = 4096
     DIGEST = OpenSSL::Digest::Digest.new('SHA1') # or MD5, RIPEMD160, SHA256?
     
+    # @api private
     attr_accessor :_original_session_data
     
     # The session store type

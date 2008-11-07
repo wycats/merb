@@ -1,6 +1,7 @@
 module Merb
   class Worker
     
+    # @api private
     attr_accessor :thread
     
     class << self

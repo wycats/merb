@@ -3,8 +3,12 @@ require 'tempfile'
 module Merb
 
   class Request
-    # def env def exceptions def route_params
-    attr_accessor :env, :exceptions, :route
+    
+    # @api private
+    attr_accessor :env, :route
+    # @api public
+    attr_accessor :exceptions
+    # @api private
     attr_reader :route_params
 
     # by setting these to false, auto-parsing is disabled; this way you can

@@ -53,6 +53,8 @@ module Merb
     
     # ==== Parameters
     # session_id<String>:: ID of the session to delete.
+    #
+    # @api private
     def delete_session(session_id)
       delete("session:#{session_id}")
     end

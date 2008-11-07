@@ -31,6 +31,8 @@ module Merb
         # :Host<String>::
         #   The hostname on which the app should run. Defaults to "0.0.0.0"
         # :Port<Fixnum>:: The port for the app. Defaults to 8080.
+        #
+        # @api plugin
         def self.run(app, options={})
           @server = ::Mongrel::HttpServer.new(options[:Host] || '0.0.0.0',
                                              options[:Port] || 8080)
@@ -39,12 +41,15 @@ module Merb
           @server.run.join
         end
   
+        # @api private
         def self.stop(block = true)
           @server.stop
         end
   
         # ==== Parameters
         # app<Merb::Rack::Application>:: The app that Mongrel should handle.
+        #
+        # @api plugin
         def initialize(app)
           @app = app
         end
@@ -52,6 +57,8 @@ module Merb
         # ==== Parameters
         # request<Merb::Request>:: The HTTP request to handle.
         # response<HTTPResponse>:: The response object to write response to.
+        #
+        # @api plugin
         def process(request, response)
           env = {}.replace(request.params)
           env.delete Merb::Const::HTTP_CONTENT_TYPE

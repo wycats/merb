@@ -2,6 +2,7 @@ require 'rubygems/dependency'
 
 module Gem
   class Dependency
+    # @api private
     attr_accessor :require_block, :require_as
   end
 end

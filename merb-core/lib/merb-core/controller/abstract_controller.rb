@@ -95,20 +95,20 @@
 class Merb::AbstractController
   include Merb::RenderMixin
   include Merb::InlineTemplates
-  
+
   class_inheritable_accessor :_layout, :_template_root, :template_roots
   class_inheritable_accessor :_before_filters, :_after_filters
   class_inheritable_accessor :_before_dispatch_callbacks, :_after_dispatch_callbacks
 
   cattr_accessor :_abstract_subclasses
 
-  #---
-  # @api semipublic
-  attr_accessor :body
-  attr_accessor :action_name
-  attr_accessor :_benchmarks, :_thrown_content  
+  # @api plugin
+  attr_accessor :body, :action_name, :_benchmarks
+  # @api private
+  attr_accessor :_thrown_content  
 
   # Stub so content-type support in RenderMixin doesn't throw errors
+  # @api private
   attr_accessor :content_type
 
   FILTER_OPTIONS = [:only, :exclude, :if, :unless, :with]
@@ -205,7 +205,7 @@ class Merb::AbstractController
   #   Template roots as pairs of template root path and template location
   #   method.
   #
-  # @api unknown
+  # @api plugin
   def self._template_roots
     self.template_roots || _reset_template_roots
   end
@@ -215,7 +215,7 @@ class Merb::AbstractController
   #   Template roots as pairs of template root path and template location
   #   method.
   #
-  # @api unknown
+  # @api plugin
   def self._template_roots=(roots)
     self.template_roots = roots
   end
@@ -248,7 +248,7 @@ class Merb::AbstractController
   # ==== Parameters
   # *args:: The args are ignored in this class, but we need this so that subclassed initializes can have parameters
   #
-  # @overridable
+  # @api private
   def initialize(*args)
     @_benchmarks = {}
     @_caught_content = {}

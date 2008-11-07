@@ -8,6 +8,7 @@ class Merb::Controller < Merb::AbstractController
   cattr_accessor :_subclasses
   self._subclasses = Set.new
 
+  # @api private
   def self.subclasses_list() _subclasses end
 
   include Merb::ResponderMixin
@@ -195,6 +196,7 @@ class Merb::Controller < Merb::AbstractController
     self
   end
 
+  # @api public
   attr_reader :request, :headers
 
   # ==== Returns

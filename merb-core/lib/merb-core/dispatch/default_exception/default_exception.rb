@@ -1,10 +1,14 @@
 module Merb
   class Dispatcher
+    # @api private
     module DefaultExceptionHelper
+      
+      # @api private
       def humanize_exception(e)
         e.class.name.split("::").last.gsub(/([a-z])([A-Z])/, '\1 \2')
       end
 
+      # @api private
       def error_codes(exception)
         if @show_details
           message, message_details = exception.message.split("\n", 2)
@@ -14,6 +18,7 @@ module Merb
         end
       end
 
+      # @api private
       def frame_details(line)
         filename, lineno, location = line.split(":")
         if filename.index(Merb.framework_root)
@@ -32,6 +37,7 @@ module Merb
         [type, shortname, filename, lineno, location]
       end
 
+      # @api private
       def listing(key, value, arr)
         ret   =  []
         ret   << "<table class=\"listing\" style=\"display: none\">"
@@ -51,10 +57,12 @@ module Merb
         ret.join("\n")
       end
       
+      # @api private
       def textmate_url(filename, line)
         "<a href='txmt://open?url=file://#{filename}&amp;line=#{line}'>#{line}</a>"
       end
       
+      # @api private
       def render_source(filename, line)
         line = line.to_i
         ret   =  []
@@ -76,13 +84,16 @@ module Merb
       end
     end
     
+    # @api private
     class DefaultException < Merb::Controller
       self._template_root = File.dirname(__FILE__) / "views"
       
+      # @api private
       def _template_location(context, type = nil, controller = controller_name)
         "#{context}.#{type}"
-      end    
+      end
       
+      # @api private
       def index
         @exceptions = request.exceptions
         @show_details = Merb::Config[:exception_details]
