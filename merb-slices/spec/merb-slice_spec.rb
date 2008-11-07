@@ -48,7 +48,7 @@ describe "The Merb::Router::Behavior methods" do
     )
   end
   
-  before :all do
+  before :each do
     Merb::Router.prepare do 
       add_slice(:FullTestSlice, :path_prefix => 'full') do |scope|
         scope.match('/dashboard').to(:controller => 'main', :action => 'index').name(:dashboard)
@@ -58,7 +58,7 @@ describe "The Merb::Router::Behavior methods" do
     end    
   end
   
-  after :all do
+  after :each do
     Merb::Router.reset!
   end
   
@@ -76,6 +76,14 @@ describe "The Merb::Router::Behavior methods" do
   it "should add a slice's routes and provide a shortcut for setting the url prefix/path using #add_slice" do
     Merb::Router.named_routes[:thin_test_slice_default].inspect.should == '/thin/:controller(/:action(/:id))(.:format)'
     Merb::Router.named_routes[:thin_test_slice_default].should == ThinTestSlice.named_routes[:default]
+  end
+  
+  it "should allow you to set the path" do
+    Merb::Router.prepare do
+      slice(:FullTestSlice, :path => "hi")
+    end
+    
+    Merb::Router.named_routes[:full_test_slice_default].inspect.should == "/hi/:controller(/:action(/:id))(.:format)"
   end
   
   it "should mount a slice directly at the root using #slice" do

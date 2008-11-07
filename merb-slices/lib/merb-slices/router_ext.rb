@@ -65,7 +65,8 @@ Merb::Router.extensions do
   #
   # This will still setup a namespace, but doesn't set a path prefix. Only for special cases.
   def slice(slice_module, options = {}, &block)
-    add_slice(slice_module, options.merge(:path => '', :reset_controller_prefix => true), &block)
+    options[:path] ||= ""
+    add_slice(slice_module, options.merge(:reset_controller_prefix => true), &block)
   end
 
 end
