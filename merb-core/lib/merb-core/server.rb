@@ -19,7 +19,7 @@ module Merb
       # If cluster is left out, then one process will be started. This process
       # will be daemonized if Merb::Config[:daemonize] is true.
       #
-      # @api private
+      # :api: private
       def start(port, cluster=nil)
 
         @port = port
@@ -50,7 +50,7 @@ module Merb
       # Boolean::
       #   True if Merb is running on the specified port.
       #
-      # @api private
+      # :api: private
       def alive?(port)
         pidfile = pid_file(port)
         pid     = pid_in_file(pidfile)
@@ -62,7 +62,7 @@ module Merb
         Merb.fatal!("You don't have access to the PID file at #{pidfile}: #{e.message}")
       end
 
-      # @api private
+      # :api: private
       def pid_in_file(pidfile)
         File.read(pidfile).chomp.to_i
       end
@@ -84,7 +84,7 @@ module Merb
       # ==== Alternatives
       # If you pass "all" as the port, the signal will be sent to all Merb processes.
       #
-      # @api private
+      # :api: private
       def kill(port, sig = "INT")
         if sig.is_a?(Integer)
           sig = Signal.list.invert[sig]
@@ -104,7 +104,7 @@ module Merb
       end
 
       # Sends the provided signal to the process pointed at by the provided pid file.
-      # @api private
+      # :api: private
       def kill_pid(sig, file)
         begin
           pid = pid_in_file(file)
@@ -137,7 +137,7 @@ module Merb
       # ==== Parameters
       # port<~to_s>:: The port of the Merb process to daemonize.
       #
-      # @api private
+      # :api: private
       def daemonize(port)
         Merb.logger.warn! "About to fork..." if Merb::Config[:verbose]
         fork do
@@ -164,7 +164,7 @@ module Merb
 
       # Starts up Merb by running the bootloader and starting the adapter.
       #
-      # @api private
+      # :api: private
       def bootup
         Merb.trap("TERM") { shutdown }
 
@@ -176,7 +176,7 @@ module Merb
 
       # Shut down Merb, reap any workers if necessary.
       #
-      # @api private
+      # :api: private
       def shutdown(status = 0)
         # reap_workers does exit but may not be called...
         Merb::BootLoader::LoadClasses.reap_workers(status) if Merb::Config[:fork_for_class_load]
@@ -186,7 +186,7 @@ module Merb
 
       # Change process user/group to those specified in Merb::Config.
       #
-      # @api private
+      # :api: private
       def change_privilege
         if Merb::Config[:user] && Merb::Config[:group]
           Merb.logger.verbose! "About to change privilege to group " \
@@ -213,7 +213,7 @@ module Merb
       # If Merb::Config[:pid_file] has been specified, that will be used
       # instead of the port/socket based PID file.
       #
-      # @api private
+      # :api: private
       def remove_pid_file(port)
         pidfile = pid_file(port)
         if File.exist?(pidfile)
@@ -234,14 +234,14 @@ module Merb
       # If Merb::Config[:pid_file] has been specified, that will be used
       # instead of the port/socket based PID file.
       #
-      # @api private
+      # :api: private
       def store_pid(port)
         store_details(port)
       end
 
       # Delete the pidfile for the specified port/socket.
       #
-      # @api private
+      # :api: private
       def remove_pid(port)
         FileUtils.rm(pid_file(port)) if File.file?(pid_file(port))
       end
@@ -258,7 +258,7 @@ module Merb
       # If Merb::Config[:pid_file] has been specified, that will be used
       # instead of the port/socket based PID file.
       #
-      # @api private
+      # :api: private
       def store_details(port = nil)
         file = pid_file(port)
         begin
@@ -286,7 +286,7 @@ module Merb
       #   Location of pid file for specified port. If clustered and pid_file option
       #   is specified, it adds the port/socket value to the path.
       #
-      # @api private
+      # :api: private
       def pid_file(port)
         pidfile = Merb::Config[:pid_file] || (Merb.log_path / "merb.%s.pid")
         pidfile % port
@@ -298,7 +298,7 @@ module Merb
       # Array::
       #   List of pid file paths. If not running clustered, the array contains a single path.
       #
-      # @api private
+      # :api: private
       def pid_files
         if Merb::Config[:pid_file]
           if Merb::Config[:cluster]
@@ -320,7 +320,7 @@ module Merb
       # ==== Alternatives
       # If group is left out, the user will be used as the group.
       # 
-      # @api private
+      # :api: private
       def _change_privilege(user, group=user)
         Merb.logger.warn! "Changing privileges to #{user}:#{group}"
 
@@ -354,7 +354,7 @@ module Merb
       
       # Add trap to enter IRB on SIGINT. Process exit if second SIGINT is received.
       #
-      # @api private
+      # :api: private
       def add_irb_trap
         Merb.trap("INT") do
           if @interrupted

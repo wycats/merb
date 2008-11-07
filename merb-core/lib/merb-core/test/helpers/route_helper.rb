@@ -56,7 +56,7 @@ module Merb
       #
       # url(:articles, 2008, 10, "test_article")
       #
-      # @api public
+      # :api: public
       def url(*args)
         args << (@request_params || {})
         Merb::Router.url(*args)

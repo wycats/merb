@@ -6,7 +6,7 @@ class Exception
   # String:: The name of the action in the Exceptions controller which will get invoked
   #   when this exception is raised during a request.
   # 
-  # @api public
+  # :api: public
   # @overridable
   def action_name() self.class.action_name end
   
@@ -14,7 +14,7 @@ class Exception
   # ==== Returns
   # Boolean:: Whether or not this exception is the same as another.
   #
-  # @api public
+  # :api: public
   def same?(other)
     self.class == other.class &&
     self.message == other.message &&
@@ -28,7 +28,7 @@ class Exception
   # String:: The name of the action in the Exceptions controller which will get invoked
   #   when an instance of this Exception sub/class is raised by an action.
   # 
-  # @api public
+  # :api: public
   # @overridable
   def self.action_name
     if self == Exception
@@ -46,7 +46,7 @@ class Exception
   # ==== Returns
   # Integer:: The status code to send in the response. Defaults to 500.
   #
-  # @api public
+  # :api: public
   # @overridable
   def self.status
     500
@@ -156,7 +156,7 @@ module Merb
       # Integer:: The status-code of the error.
       # 
       # @overridable
-      # @api plugin
+      # :api: plugin
       def status; self.class.status; end
       alias :to_i :status
 
@@ -170,7 +170,7 @@ module Merb
         # ==== Returns
         # Fixnum:: The status code of this exception.
         #
-        # @api public
+        # :api: public
         def status
           const_get(:STATUS) rescue 0
         end
@@ -187,7 +187,7 @@ module Merb
         # ==== Returns
         # (Integer, nil):: The status set on this exception, or nil if a status was already set.
         #
-        # @api private
+        # :api: private
         def status=(num)
           unless self.status?
             register_status_code(self, num)
@@ -200,7 +200,7 @@ module Merb
         # ==== Returns
         # Boolean:: Whether a status code has been set
         #
-        # @api private
+        # :api: private
         def status?
           self.const_defined?(:STATUS)
         end
@@ -216,7 +216,7 @@ module Merb
         # subclass<Merb::ControllerExceptions::Base>::
         #   The Exception class that is inheriting from Merb::ControllerExceptions::Base
         #
-        # @api public
+        # :api: public
         def inherited(subclass)
           # don't set the constant yet - any class methods will be called after self.inherited
           # unless self.status = ... is set explicitly, the status code will be inherited
@@ -230,7 +230,7 @@ module Merb
         # ==== Parameters
         # num<~to_i>:: The status code
         #
-        # @api privaate
+        # :api: privaate
         def register_status_code(klass, code)
           name = self.to_s.split('::').last.snake_case
           STATUS_CODES[name.to_sym] = code.to_i
@@ -342,7 +342,7 @@ module Merb
   #
   # e<Exception>:: The exception that a message is being generated for
   #
-  # @api plugin
+  # :api: plugin
   def self.exception(e)
     "#{ e.message } - (#{ e.class })\n" <<  
     "#{(e.backtrace or []).join("\n")}" 

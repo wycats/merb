@@ -3,19 +3,19 @@ module Merb
     class Middleware
       
       # @overridable
-      # @api plugin
+      # :api: plugin
       def initialize(app)
         @app = app
       end
 
       # @overridable
-      # @api plugin
+      # :api: plugin
       def deferred?(env)
         @app.deferred?(env)
       end
   
       # @overridable
-      # @api plugin  
+      # :api: plugin  
       def call(env)
         @app.call(env)
       end

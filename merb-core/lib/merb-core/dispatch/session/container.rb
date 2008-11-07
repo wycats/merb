@@ -5,9 +5,9 @@ module Merb
     cattr_accessor :subclasses 
     self.subclasses = []
     
-    # @api private
+    # :api: private
     attr_reader :session_id
-    # @api private
+    # :api: private
     attr_accessor :needs_new_cookie
     
     class << self
@@ -23,7 +23,7 @@ module Merb
       # ==== Returns
       # SessionContainer:: The new session.
       # 
-      # @api private
+      # :api: private
       def generate
       end
       
@@ -36,7 +36,7 @@ module Merb
       # ==== Returns
       # SessionContainer:: a SessionContainer.
       # 
-      # @api private
+      # :api: private
       def setup(request)
       end
       
@@ -45,7 +45,7 @@ module Merb
     # ==== Parameters
     # session_id<String>:: A unique identifier for this session.
     # 
-    # @api private
+    # :api: private
     def initialize(session_id)
       @_destroy = false
       self.session_id = session_id
@@ -56,7 +56,7 @@ module Merb
     # Recreates the cookie with the default expiration time. Useful during log
     # in for pushing back the expiration date.
     # 
-    # @api private
+    # :api: private
     def session_id=(sid)
       self.needs_new_cookie = (@session_id && @session_id != sid)
       @session_id = sid
@@ -70,13 +70,13 @@ module Merb
     # ==== Parameters
     # request<Merb::Request>:: The Merb::Request that came in from Rack.
     # 
-    # @api private
+    # :api: private
     def finalize(request)
     end
     
     # Destroy the current session - clears data and removes session cookie.
     # 
-    # @api private
+    # :api: private
     def clear!
       @_destroy = true
       self.clear
@@ -84,7 +84,7 @@ module Merb
     
     # Regenerate the session_id.
     # 
-    # @api private
+    # :api: private
     def regenerate
     end
     

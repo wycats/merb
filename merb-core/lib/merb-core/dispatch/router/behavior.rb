@@ -10,14 +10,14 @@ module Merb
       # This allows building routes without constantly having to catching the
       # yielded behavior object
       # 
-      # @api private
+      # :api: private
       class Proxy
         
         # Undefine as many methods as possible so that everything can be proxied
         # along to the behavior
         instance_methods.each { |m| undef_method m unless %w[ __id__ __send__ class kind_of? respond_to? assert_kind_of should should_not instance_variable_set instance_variable_get instance_eval].include?(m) }
         
-        # @api private
+        # :api: private
         def initialize
           @behaviors = []
         end
@@ -27,7 +27,7 @@ module Merb
         # ==== Notes
         # The behaviors keep track of nested scopes.
         # 
-        # @api private
+        # :api: private
         def push(behavior)
           @behaviors.push(behavior)
         end
@@ -37,7 +37,7 @@ module Merb
         # ==== Notes
         # This occurs at the end of a nested scope (namespace, etc).
         # 
-        # @api private
+        # :api: private
         def pop
           @behaviors.pop
         end
@@ -47,7 +47,7 @@ module Merb
         # ==== Notes
         # Behaviors contain the actual functionality of the proxy.
         # 
-        # @api private
+        # :api: private
         def respond_to?(*args)
           super || @behaviors.last.respond_to?(*args)
         end
@@ -124,7 +124,7 @@ module Merb
         #
         # url(:articles, 2008, 10, "test_article")
         #
-        # @api public
+        # :api: public
         def url(name, *args)
           args << {}
           Merb::Router.url(name, *args)
@@ -135,7 +135,7 @@ module Merb
         # ==== Notes
         # Refer to Merb::Rack::Helpers.redirect for documentation.
         # 
-        # @api public
+        # :api: public
         def redirect(url, opts = {})
           Merb::Rack::Helpers.redirect(url, opts)
         end
@@ -148,7 +148,7 @@ module Merb
         # Please refer to:
         # http://ruby-doc.org/core/classes/Kernel.html#M005951
         # 
-        # @api private
+        # :api: private
         def method_missing(method, *args, &block)
           behavior = @behaviors.last
           
@@ -185,7 +185,7 @@ module Merb
       # ==== Returns
       # Behavior:: The initialized Behavior object
       # 
-      # @api private
+      # :api: private
       def initialize(proxy = nil, conditions = {}, params = {}, defaults = {}, identifiers = {}, options = {}, blocks = []) #:nodoc:
         @proxy       = proxy
         @conditions  = conditions
@@ -276,7 +276,7 @@ module Merb
       #     match("/guides/:action/:id").to(:controller => "tour_guides")
       #   end
       # 
-      # @api public
+      # :api: public
       def match(path = {}, conditions = {}, &block)
         path, conditions = path[:path], path if path.is_a?(Hash)
         
@@ -313,7 +313,7 @@ module Merb
       #     match('/other').to(:action => 'other')
       #   end
       # 
-      # @api public
+      # :api: public
       def to(params = {}, &block)
         raise Error, "The route has already been committed. Further params cannot be specified" if @route
         
@@ -361,7 +361,7 @@ module Merb
       # ==== Block parameters
       # r<Behavior>:: +optional+ - The defaults behavior object.
       # 
-      # @api public
+      # :api: public
       def default(defaults = {}, &block)
         behavior = Behavior.new(@proxy, @conditions, @params, @defaults.merge(defaults), @identifiers, @options, @blocks)
         with_behavior_context(behavior, &block)
@@ -390,7 +390,7 @@ module Merb
       #   # of nil.
       #   match("/users(/:group)").default(:group => "registered")
       # 
-      # @api public
+      # :api: public
       def options(opts = {}, &block)
         options = @options.dup
         
@@ -435,7 +435,7 @@ module Merb
       #     resources :accounts
       #   end
       # 
-      # @api public
+      # :api: public
       def namespace(name_or_path, opts = {}, &block)
         name = name_or_path.to_s # We don't want this modified ever
         path = opts.has_key?(:path) ? opts[:path] : name
@@ -471,7 +471,7 @@ module Merb
       # ==== Block parameters
       # r<Behavior>:: The identify behavior object. This is optional
       # 
-      # @api public
+      # :api: public
       def identify(identifiers = {}, &block)
         identifiers = if Hash === identifiers
           @identifiers.merge(identifiers)
@@ -511,7 +511,7 @@ module Merb
       #     end
       #   end
       # 
-      # @api public
+      # :api: public
       def default_routes(params = {}, &block)
         match("/:controller(/:action(/:id))(.:format)").to(params, &block).name(:default)
       end
@@ -534,7 +534,7 @@ module Merb
       #       :action => 'there' if request.xhr?
       #   end
       # 
-      # @api public
+      # :api: public
       def defer_to(params = {}, &block)
         defer(block).to(params)
       end
@@ -551,7 +551,7 @@ module Merb
       #     resources :comments
       #   end
       # 
-      # @api public
+      # :api: public
       def defer(deferred_block, &block)
         blocks = @blocks + [CachedProc.new(deferred_block)]
         behavior = Behavior.new(@proxy, @conditions, @params, @defaults, @identifiers, @options, blocks)
@@ -566,7 +566,7 @@ module Merb
       # ==== Raises
       # ArgumentError:: symbol is not a Symbol.
       # 
-      # @api public
+      # :api: public
       def name(prefix, name = nil)
         unless name
           name, prefix = prefix, nil
@@ -584,7 +584,7 @@ module Merb
       # ==== Raises
       # ArgumentError:: symbol is not a Symbol.
       # 
-      # @api private
+      # :api: private
       def full_name(name)
         raise Error, ":this is reserved. Please pick another name." if name == :this
         
@@ -601,7 +601,7 @@ module Merb
       # ==== Parameters
       # enabled<Boolean>:: True enables fixation on the route.
       # 
-      # @api public
+      # :api: public
       def fixatable(enable = true)
         @route.fixation = enable
         self
@@ -620,7 +620,7 @@ module Merb
       #   Whether or not the redirect should be permanent.
       #   The default value is false.
       # 
-      # @api public
+      # :api: public
       def redirect(url, opts = {})
         raise Error, "The route has already been committed." if @route
         
@@ -637,7 +637,7 @@ module Merb
       #
       # &block:: A context in which routes are generated.
       # 
-      # @api public
+      # :api: public
       def capture(&block)
         captured_routes = {}
         name_prefix     = [@options[:name_prefix]].flatten.compact.map { |p| "#{p}_"}
@@ -659,7 +659,7 @@ module Merb
       # ==== Parameters
       # &block:: defines routes within the provided context.
       # 
-      # @api private
+      # :api: private
       def _with_proxy(&block)
         proxy = Proxy.new
         proxy.push Behavior.new(proxy, @conditions, @params, @defaults, @identifiers, @options, @blocks)
@@ -674,7 +674,7 @@ module Merb
       # ==== Returns
       # Route:: the route.
       # 
-      # @api private
+      # :api: private
       def _route
         @route
       end
@@ -684,7 +684,7 @@ module Merb
       # ==== Returns
       # Route:: the route generated.
       # 
-      # @api private
+      # :api: private
       def to_route
         raise Error, "The route has already been committed." if @route
         
@@ -723,7 +723,7 @@ module Merb
       # route<Route>:: the route to insert before.
       # &block:: the route definition to insert.
       # 
-      # @api plugin
+      # :api: plugin
       def before(route, &block)
         options(:before => route, &block)
       end
@@ -733,7 +733,7 @@ module Merb
       # Takes @conditions and turns values into strings (except for Regexp and
       # Array values).
       # 
-      # @api private
+      # :api: private
       def stringify_condition_values # :nodoc:
         @conditions.each do |key, value|
           unless value.nil? || Regexp === value || Array === value
@@ -752,7 +752,7 @@ module Merb
       # ==== Returns
       # Behavior:: the behavior wrapping.
       # 
-      # @api private
+      # :api: private
       def with_behavior_context(behavior, &block) # :nodoc:
         if block_given?
           @proxy.push(behavior)
@@ -775,7 +775,7 @@ module Merb
       # An array of ['a', 'b'] (the 'a' namespace with the 'b' action) will
       # produce a name of :a_b.
       # 
-      # @api private
+      # :api: private
       def merge_paths(path) # :nodoc:
         [@conditions[:path], path.freeze].flatten.compact
       end

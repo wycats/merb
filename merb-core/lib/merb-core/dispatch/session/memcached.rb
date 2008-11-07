@@ -37,7 +37,7 @@ module Merb
     # ==== Returns
     # ContainerSession:: The session corresponding to the ID.
     # 
-    # @api private
+    # :api: private
     def retrieve_session(session_id)
       get("session:#{session_id}")
     end
@@ -46,7 +46,7 @@ module Merb
     # session_id<String>:: ID of the session to set.
     # data<ContainerSession>:: The session to set.
     # 
-    # @api private
+    # :api: private
     def store_session(session_id, data)
       set("session:#{session_id}", data)
     end
@@ -54,7 +54,7 @@ module Merb
     # ==== Parameters
     # session_id<String>:: ID of the session to delete.
     #
-    # @api private
+    # :api: private
     def delete_session(session_id)
       delete("session:#{session_id}")
     end

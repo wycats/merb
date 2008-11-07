@@ -3,7 +3,7 @@ module Merb
 
     class ContentLength < Merb::Rack::Middleware
 
-      # @api plugin
+      # :api: plugin
       def call(env)
         status, headers, body = @app.call(env)
 

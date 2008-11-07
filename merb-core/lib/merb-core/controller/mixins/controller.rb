@@ -13,7 +13,7 @@ module Merb
     #   SomeBackgroundTask.run
     # end
     # 
-    # @api public
+    # :api: public
     def run_later(&blk)
       Merb::Dispatcher.work_queue << blk
     end
@@ -46,7 +46,7 @@ module Merb
     #     end
     #   end
     # 
-    # @api public
+    # :api: public
     def render_chunked(&blk)
       must_support_streaming!
       headers['Transfer-Encoding'] = 'chunked'
@@ -65,7 +65,7 @@ module Merb
     # ==== Parameters
     # data<String>:: a chunk of data to return.
     # 
-    # @api public
+    # :api: public
     def send_chunk(data)
       only_runs_on_mongrel!
       @response.write('%x' % data.size + "\r\n")
@@ -82,7 +82,7 @@ module Merb
     #   A block that the server can call later, allowing Merb to release the
     #   thread lock and render another request.
     # 
-    # @api public
+    # :api: public
     def render_deferred(&blk)
       Proc.new do |response|
         response.write(blk.call)
@@ -100,7 +100,7 @@ module Merb
     # Proc::
     #   A block that Mongrel can call after returning the string to the user.
     # 
-    # @api public
+    # :api: public
     def render_then_call(str, &blk)
       Proc.new do |response|
         response.write(str)
@@ -128,7 +128,7 @@ module Merb
     #   redirect("http://www.merbivore.com/")
     #   redirect("http://www.merbivore.com/", :permanent => true)
     # 
-    # @api public
+    # :api: public
     def redirect(url, opts = {})
       default_redirect_options = { :message => nil, :permanent => false }
       opts = default_redirect_options.merge(opts)
@@ -144,7 +144,7 @@ module Merb
     
     # Retreives the redirect message either locally or from the request.
     # 
-    # @api public
+    # :api: public
     def message
       @_message = defined?(@_message) ? @_message : request.message
     end
@@ -166,7 +166,7 @@ module Merb
     # ==== Returns
     # IO:: An I/O stream for the file.
     # 
-    # @api public
+    # :api: public
     def send_file(file, opts={})
       opts.update(Merb::Const::DEFAULT_SEND_FILE_OPTIONS.merge(opts))
       disposition = opts[:disposition].dup || 'attachment'
@@ -199,7 +199,7 @@ module Merb
     #   The name to use for the file. Defaults to the filename of file.
     # :type<String>:: The content type.
     # 
-    # @api public
+    # :api: public
     def send_data(data, opts={})
       opts.update(Merb::Const::DEFAULT_SEND_FILE_OPTIONS.merge(opts))
       disposition = opts[:disposition].dup || 'attachment'
@@ -235,7 +235,7 @@ module Merb
     #     end
     #   end
     # 
-    # @api public
+    # :api: public
     def stream_file(opts={}, &stream)
       opts.update(Merb::Const::DEFAULT_SEND_FILE_OPTIONS.merge(opts))
       disposition = opts[:disposition].dup || 'attachment'
@@ -277,7 +277,7 @@ module Merb
     # ==== Return
     # String:: precisely a single space.
     # 
-    # @api public
+    # :api: public
     def nginx_send_file(path, content_type = "")
       # Let Nginx detect content type unless it is explicitly set
       headers['Content-Type']        = content_type
@@ -297,7 +297,7 @@ module Merb
     # value<~to_s>:: A value for the cookie.
     # expires<~gmtime:~strftime, Hash>:: An expiration time for the cookie, or a hash of cookie options.
     # 
-    # @api public
+    # :api: public
     def set_cookie(name, value, expires)
       options = expires.is_a?(Hash) ? expires : {:expires => expires}
       cookies.set_cookie(name, value, options)
@@ -311,7 +311,7 @@ module Merb
     # ==== Parameters
     # name<~to_s>:: A name for the cookie to delete.
     # 
-    # @api public
+    # :api: public
     def delete_cookie(name)
       set_cookie(name, nil, Merb::Const::COOKIE_EXPIRED_TIME)
     end
@@ -324,7 +324,7 @@ module Merb
     # ==== Returns
     # String:: The escaped object.
     # 
-    # @api public
+    # :api: public
     def escape_xml(obj)
       Erubis::XmlHelper.escape_xml(obj.to_s)
     end
@@ -338,7 +338,7 @@ module Merb
     # ==== Raises
     # NotImplemented:: The Rack adapter is not mongrel.
     # 
-    # @api private
+    # :api: private
     def only_runs_on_mongrel!
       unless Merb::Config[:log_stream] == 'mongrel'
         raise(Merb::ControllerExceptions::NotImplemented, "Current Rack adapter is not mongrel. cannot support this feature")

@@ -11,7 +11,7 @@ module Merb
       # ==== Returns
       # Hash:: The defaults for the config.
       #
-      # @api private
+      # :api: private
       def defaults
         @defaults ||= {
           :host                   => "0.0.0.0",
@@ -47,7 +47,7 @@ module Merb
       # ==== Returns
       # nil
       #
-      # @api public
+      # :api: public
       def use
         @configuration ||= {}
         yield @configuration
@@ -62,7 +62,7 @@ module Merb
       # ==== Returns
       # Boolean:: True if the key exists in the config.
       #
-      # @api public
+      # :api: public
       def key?(key)
         @configuration.key?(key)
       end
@@ -75,7 +75,7 @@ module Merb
       # ==== Returns
       # Object:: The value of the configuration parameter.
       #
-      # @api public
+      # :api: public
       def [](key)
         (@configuration ||= setup)[key]
       end
@@ -86,7 +86,7 @@ module Merb
       # key<Object>:: The key to set the parameter for.
       # val<Object>:: The value of the parameter.
       #
-      # @api public
+      # :api: public
       def []=(key, val)
         (@configuration ||= setup)[key] = val
       end
@@ -99,7 +99,7 @@ module Merb
       # ==== Returns
       # Object:: The value of the removed entry.
       #
-      # @api public
+      # :api: public
       def delete(key)
         @configuration.delete(key)
       end
@@ -114,7 +114,7 @@ module Merb
       # ==== Returns
       # Object:: The value of the configuration parameter or the default.
       #
-      # @api public
+      # :api: public
       def fetch(key, default)
         @configuration.fetch(key, default)
       end
@@ -124,7 +124,7 @@ module Merb
       # ==== Returns
       # Hash:: The config as a hash.
       #
-      # @api public
+      # :api: public
       def to_hash
         @configuration
       end
@@ -134,7 +134,7 @@ module Merb
       # ==== Returns
       # String:: The config as YAML.
       #
-      # @api public
+      # :api: public
       def to_yaml
         require "yaml"
         @configuration.to_yaml
@@ -149,7 +149,7 @@ module Merb
       # ==== Returns
       # The configuration as a hash.
       #
-      # @api private
+      # :api: private
       def setup(settings = {})
         config = defaults.merge(settings)
         
@@ -177,7 +177,7 @@ module Merb
       # ==== Returns
       # The configuration as a hash.
       #
-      # @api private
+      # :api: private
       def parse_args(argv = ARGV)
         @configuration ||= {}
         # Our primary configuration hash for the length of this method
@@ -404,7 +404,7 @@ module Merb
         Merb::Config.setup(options)
       end
 
-      # @api private
+      # :api: private
       attr_accessor :configuration
 
       # Set configuration parameters from a code block, where each method
@@ -424,7 +424,7 @@ module Merb
       # ==== Returns
       # nil
       #
-      # @api public
+      # :api: public
       def configure(&block)
         ConfigBlock.new(self, &block) if block_given?
         nil
@@ -440,7 +440,7 @@ module Merb
       # ==== Returns
       # The value of the entry fetched or assigned to.
       #
-      # @api public
+      # :api: public
       def method_missing(method, *args)
         if method.to_s[-1,1] == '='
           @configuration[method.to_s.tr('=','').to_sym] = *args
@@ -464,7 +464,7 @@ module Merb
       # ==== Returns
       # nil
       #
-      # @api private
+      # :api: private
       def initialize(klass, &block)
         @klass = klass
         instance_eval(&block)
@@ -472,7 +472,7 @@ module Merb
 
       # Assign args as the value of the entry keyed by method.
       #
-      # @api private
+      # :api: private
       def method_missing(method, *args)
         @klass[method] = *args
       end

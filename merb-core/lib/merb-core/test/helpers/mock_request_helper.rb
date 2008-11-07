@@ -74,7 +74,7 @@ module Merb
       # ==== Notes
       # If you pass a post body, the content-type will be set to URL-encoded.
       #
-      # @api public
+      # :api: public
       # @deprecated
       def fake_request(env = {}, opt = {})
         if opt[:post_body]
@@ -111,7 +111,7 @@ module Merb
       # ==== Notes
       # Does not use routes.
       #
-      # @api public
+      # :api: public
       # @deprecated
       def dispatch_to(controller_klass, action, params = {}, env = {}, &blk)
         params = merge_controller_and_action(controller_klass, action, params)
@@ -125,7 +125,7 @@ module Merb
       # *controller_classes:: Controller classes to operate on in the context of the block.
       # &blk:: The context to operate on; optionally accepts the cookie jar as an argument.
       #
-      # @api public
+      # :api: public
       # @deprecated
       def with_cookies(*controller_classes, &blk)
         cookie_jar = CookieJar.new
@@ -169,7 +169,7 @@ module Merb
       # ==== Notes
       # Does not use routes.
       #
-      # @api public
+      # :api: public
       # @deprecated
       def dispatch_with_basic_authentication_to(controller_klass, action, username, password, params = {}, env = {}, &blk)
         env["X_HTTP_AUTHORIZATION"] = "Basic #{Base64.encode64("#{username}:#{password}")}"
@@ -178,7 +178,7 @@ module Merb
         dispatch_request(build_request(params, env), controller_klass, action.to_s, &blk)
       end
       
-      # @api private
+      # :api: private
       def merge_controller_and_action(controller_klass, action, params)
         params[:controller] = controller_klass.name.to_const_path
         params[:action]     = action.to_s
@@ -207,7 +207,7 @@ module Merb
       # ==== Notes
       # Does not use routes.
       #
-      # @api public    
+      # :api: public    
       # @deprecated  
       def build_request(params = {}, env = {})
         params             = Merb::Parse.params_to_query_string(params)
@@ -232,7 +232,7 @@ module Merb
       #   The controller is yielded to the block provided for actions *prior* to
       #   the action being dispatched.
       #
-      # @api public  
+      # :api: public  
       # @deprecated    
       def get(path, params = {}, env = {}, &block)
         env[:request_method] = "GET"
@@ -252,7 +252,7 @@ module Merb
       #   The controller is yielded to the block provided for actions *prior* to
       #   the action being dispatched.
       #
-      # @api public  
+      # :api: public  
       # @deprecated    
       def post(path, params = {}, env = {}, &block)
         env[:request_method] = "POST"
@@ -272,7 +272,7 @@ module Merb
       #   The controller is yielded to the block provided for actions *prior* to
       #   the action being dispatched.
       #
-      # @api public      
+      # :api: public      
       def put(path, params = {}, env = {}, &block)
         env[:request_method] = "PUT"
         mock_request(path, params, env, &block)
@@ -291,7 +291,7 @@ module Merb
       #   The controller is yielded to the block provided for actions *prior* to
       #   the action being dispatched.
       #
-      # @api public
+      # :api: public
       # @deprecated
       def delete(path, params = {}, env = {}, &block)
         env[:request_method] = "DELETE"
@@ -320,7 +320,7 @@ module Merb
       # ==== Notes
       # Uses Routes.
       #
-      # @api plugin
+      # :api: plugin
       # @deprecated
       def mock_request(path, params = {}, env= {}, &block)
         env[:request_method] ||= "GET"
@@ -359,7 +359,7 @@ module Merb
       # ==== Notes
       # Does not use routes.
       #
-      # @api public
+      # :api: public
       # @deprecated
       def dispatch_request(request, controller_klass, action, &blk)
         controller = controller_klass.new(request)
@@ -385,7 +385,7 @@ module Merb
       # ==== Returns
       # Hash:: The parameters built based on the matching route.
       #
-      # @api plugin
+      # :api: plugin
       # @deprecated
       def check_request_for_route(request)
         match =  ::Merb::Router.match(request)

@@ -20,7 +20,7 @@ module Merb::RenderMixin
     # ==== Returns
     # Hash:: An options hash
     #
-    # @api public
+    # :api: public
     def default_render_options
       self._default_render_options ||= {}
     end
@@ -30,7 +30,7 @@ module Merb::RenderMixin
     # ==== Parameters
     # opts<Hash>:: An options hash
     #
-    # @api public
+    # :api: public
     def render_options(opts)
       self._default_render_options = opts
     end
@@ -47,7 +47,7 @@ module Merb::RenderMixin
     # ==== Returns
     # Hash:: The default render options.
     #
-    # @api public
+    # :api: public
     def layout(layout)
       self.default_render_options.update(:layout => (layout || false))
     end
@@ -57,7 +57,7 @@ module Merb::RenderMixin
     # ==== Returns
     # ~to_s:: The layout that was previously set.
     #
-    # @api public
+    # :api: public
     def default_layout
       self.default_render_options.delete(:layout)
     end
@@ -96,7 +96,7 @@ module Merb::RenderMixin
   # If you pass a Hash as the first parameter, it will be moved to opts and
   # "thing" will be the current action
   #
-  # @api public
+  # :api: public
   def render(thing = nil, opts = {})
     # render :format => :xml means render nil, :format => :xml
     opts, thing = thing, nil if thing.is_a?(Hash)
@@ -201,7 +201,7 @@ module Merb::RenderMixin
   # The transformed object will not be used in a layout unless a :layout is
   # explicitly passed in the opts.
   #
-  # @api public
+  # :api: public
   def display(object, thing = nil, opts = {})
     template_opt = thing.is_a?(Hash) ? thing.delete(:template) : opts.delete(:template)
 
@@ -283,7 +283,7 @@ module Merb::RenderMixin
   # In this case, "one" will be available in the partial through the local
   # variable named +number+.
   #
-  # @api public
+  # :api: public
   def partial(template, opts={})
 
     # partial :foo becomes "#{controller_name}/_foo"
@@ -340,7 +340,7 @@ module Merb::RenderMixin
   # ==== Returns
   # Hash:: The options hash that was passed in.
   #
-  # @api private
+  # :api: private
   def _handle_options!(opts)
     self.status = opts.delete(:status).to_i if opts[:status]
     headers["Location"] = opts.delete(:location) if opts[:location]
@@ -365,7 +365,7 @@ module Merb::RenderMixin
   #   one in to this method), and not found. No error will be raised if no
   #   layout was specified, and the default layouts were not found.
   #
-  # @api private
+  # :api: private
   def _get_layout(layout = nil)
     return false if layout == false
     
@@ -406,7 +406,7 @@ module Merb::RenderMixin
   # Array[Symbol, String]::
   #   A pair consisting of the template method and location.
   #
-  # @api private
+  # :api: private
   def _template_for(context, content_type, controller=nil, template=nil, locals=[])
     template_method, template_location = nil, nil
 
@@ -442,7 +442,7 @@ module Merb::RenderMixin
   # ==== Returns
   # String:: The method, if it exists. Otherwise return nil.
   #
-  # @api private
+  # :api: private
   def _template_method_for(template_location, locals)
     meth = Merb::Template.template_for(template_location, [], locals)
     meth && self.respond_to?(meth) ? meth : nil
@@ -456,7 +456,7 @@ module Merb::RenderMixin
   # ==== Parameters
   # obj<Object>:: The key in the thrown_content hash. Defaults to :for_layout.
   #
-  # @api public
+  # :api: public
   def catch_content(obj = :for_layout)
     @_caught_content[obj] || ''
   end
@@ -466,7 +466,7 @@ module Merb::RenderMixin
   # ==== Parameters
   # obj<Object>:: The key in the thrown_content hash. Defaults to :for_layout.
   #
-  # @api public
+  # :api: public
   def thrown_content?(obj = :for_layout)
     @_caught_content.key?(obj)
   end
@@ -488,7 +488,7 @@ module Merb::RenderMixin
   #   throw_content(:foo, "Foo")
   #   catch_content(:foo) #=> "Foo"
   #
-  # @api public
+  # :api: public
   def throw_content(obj, string = nil, &block)
     unless string || block_given?
       raise ArgumentError, "You must pass a block or a string into throw_content"
@@ -508,7 +508,7 @@ module Merb::RenderMixin
   # @raise [ArgumentError]
   #   Neither string nor block given
   #
-  # @api public
+  # :api: public
   def append_content(obj, string = nil, &block)
     unless string || block_given?
       raise ArgumentError, "You must pass a block or a string into append_content"
@@ -524,7 +524,7 @@ module Merb::RenderMixin
   # ==== Parameters
   # obj<Object>:: The key in the thrown_content hash. Defaults to :for_layout.
   #
-  # @api public
+  # :api: public
   def clear_content(obj = :for_layout)
     @_caught_content.delete(obj) unless @_caught_content[obj].nil?
   end

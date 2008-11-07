@@ -12,7 +12,7 @@ module Merb
         # ==== Returns.
         # Class:: The adapter class.
         #
-        # @api private
+        # :api: private
         def get(id)
           if @adapters[id.to_s]
             Object.full_const_get(@adapters[id.to_s])
@@ -27,7 +27,7 @@ module Merb
         # ids<Array>:: Identifiers by which this adapter is recognized by.
         # adapter_class<Class>:: The Rack adapter class.
         #
-        # @api plugin
+        # :api: plugin
         def register(ids, adapter_class)
           @adapters ||= Hash.new
           ids.each { |id| @adapters[id] = "Merb::Rack::#{adapter_class}" }

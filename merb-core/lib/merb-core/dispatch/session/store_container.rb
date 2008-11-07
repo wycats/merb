@@ -3,7 +3,7 @@ module Merb
   class SessionStoreContainer < SessionContainer
     
     class_inheritable_accessor :store
-    # @api private
+    # :api: private
     attr_accessor  :_fingerprint
     
     # The class attribute :store holds a reference to an object that implements 
@@ -52,7 +52,7 @@ module Merb
       # ==== Returns
       # SessionStoreContainer:: The new session.
       # 
-      # @api private
+      # :api: private
       def generate
         session = new(Merb::SessionMixin.rand_uuid)
         session.needs_new_cookie = true
@@ -70,7 +70,7 @@ module Merb
       # ==== Returns
       # SessionContainer:: a SessionContainer.
       # 
-      # @api private
+      # :api: private
       def setup(request)
         session = retrieve(request.session_id)
         request.session = session
@@ -92,7 +92,7 @@ module Merb
       # If there are persisted exceptions callbacks to execute, they all get executed
       # when Memcache library raises an exception.
       # 
-      # @api private
+      # :api: private
       def retrieve(session_id)
         unless session_id.blank?
           begin
@@ -131,7 +131,7 @@ module Merb
     # choose to do a full Marshal on the data, which would make it persist 
     # attributes like 'needs_new_cookie', which it shouldn't.
     # 
-    # @api private
+    # :api: private
     def finalize(request)
       if @_destroy
         store.delete_session(self.session_id)
@@ -152,7 +152,7 @@ module Merb
     
     # Regenerate the session ID.
     # 
-    # @api private
+    # :api: private
     def regenerate
       store.delete_session(self.session_id)
       self.session_id = Merb::SessionMixin.rand_uuid

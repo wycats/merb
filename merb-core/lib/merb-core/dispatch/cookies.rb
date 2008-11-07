@@ -2,7 +2,7 @@ module Merb
 
   class Cookies < Mash
   
-    # @api private
+    # :api: private
     def initialize(constructor = {})
       @_options_lookup  = Mash.new
       @_cookie_defaults = { "domain" => Merb::Controller._default_cookie_domain, "path" => '/' }
@@ -19,7 +19,7 @@ module Merb
     # By using this method, a cookie key is marked for being
     # included in the Set-Cookie response header.
     #
-    # @api public
+    # :api: public
     def []=(key, value)
       @_options_lookup[key] ||= {}
       super
@@ -42,7 +42,7 @@ module Merb
     # By using this method, a cookie key is marked for being
     # included in the Set-Cookie response header.
     #
-    # @api private
+    # :api: private
     def set_cookie(name, value, options = {})
       @_options_lookup[name] = options
       self[name] = value
@@ -55,7 +55,7 @@ module Merb
     # name<~to_s>:: Name of the cookie to delete.
     # options<Hash>:: Additional options to pass to +set_cookie+.
     #
-    # @api public
+    # :api: public
     def delete(name, options = {})
       set_cookie(name, "", options.merge("expires" => Time.at(0)))
     end
@@ -65,7 +65,7 @@ module Merb
     # ==== Returns
     # Hash:: The headers to set, or an empty array if no cookies are set.
     #
-    # @api private
+    # :api: private
     def extract_headers(controller_defaults = {})
       defaults = @_cookie_defaults.merge(controller_defaults)
       cookies = []
@@ -111,7 +111,7 @@ module Merb
     # Headers are passed into the cookie object so that you can do:
     #   cookies[:foo] = "bar"
     #
-    # @api public
+    # :api: public
     def cookies
       request.cookies
     end
@@ -126,7 +126,7 @@ module Merb
       # be used for session fixation purposes for example. The method returns
       # a Hash of key => value pairs.
       #
-      # @api public
+      # :api: public
       def cookies
         @cookies ||= begin
           values  = Merb::Parse.query(@env[Merb::Const::HTTP_COOKIE], ';,')

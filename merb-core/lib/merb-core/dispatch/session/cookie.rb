@@ -14,7 +14,7 @@ module Merb
   #
   # To use Cookie Sessions, set in config/merb.yml
   #  :session_secret_key - your secret digest key
-  #  :session_store: cookie
+  #  :session_store - cookie
   class CookieSession < SessionContainer
     # TODO (maybe):
     # include request ip address
@@ -30,7 +30,7 @@ module Merb
     MAX = 4096
     DIGEST = OpenSSL::Digest::Digest.new('SHA1') # or MD5, RIPEMD160, SHA256?
     
-    # @api private
+    # :api: private
     attr_accessor :_original_session_data
     
     # The session store type
@@ -42,7 +42,7 @@ module Merb
       # ==== Returns
       # SessionContainer:: The new session.
       # 
-      # @api private
+      # :api: private
       def generate
         self.new(Merb::SessionMixin.rand_uuid, "", Merb::Request._session_secret_key)
       end
@@ -56,7 +56,7 @@ module Merb
       # SessionContainer:: a SessionContainer. If no sessions were found,
       # a new SessionContainer will be generated.
       # 
-      # @api private
+      # :api: private
       def setup(request)
         session = self.new(Merb::SessionMixin.rand_uuid,
           request.session_cookie_value, request._session_secret_key)
@@ -74,7 +74,7 @@ module Merb
     # ==== Raises
     # ArgumentError:: blank or insufficiently long secret.
     # 
-    # @api private
+    # :api: private
     def initialize(session_id, cookie, secret)
       super session_id
       if secret.blank? || secret.length < 16
@@ -94,7 +94,7 @@ module Merb
     # ==== Parameters
     # request<Merb::Request>:: request object created from Rack environment.
     # 
-    # @api private
+    # :api: private
     def finalize(request)
       if @_destroy
         request.destroy_session_cookie
@@ -105,7 +105,7 @@ module Merb
     
     # Regenerate the session_id.
     # 
-    # @api private
+    # :api: private
     def regenerate
       self.session_id = Merb::SessionMixin.rand_uuid
     end
@@ -123,7 +123,7 @@ module Merb
     # choose to marshal it, which would make it persist
     # attributes like 'needs_new_cookie', which it shouldn't.
     # 
-    # @api private
+    # :api: private
     def to_cookie
       unless self.empty?
         data = self.serialize
@@ -144,7 +144,7 @@ module Merb
     # ==== Returns
     # String:: an HMAC digest of the cookie data.
     # 
-    # @api private
+    # :api: private
     def generate_digest(data)
       OpenSSL::HMAC.hexdigest(DIGEST, @secret, data)
     end
@@ -160,7 +160,7 @@ module Merb
     # ==== Returns
     # Hash:: The stored session data.
     # 
-    # @api private
+    # :api: private
     def unmarshal(cookie)
       if cookie.blank?
         {}
@@ -185,7 +185,7 @@ module Merb
     # ==== Returns
     # String:: Base64 encoded dump of the session hash.
     # 
-    # @api private
+    # :api: private
     def serialize
       Base64.encode64(Marshal.dump(self.to_hash)).chop
     end
@@ -195,7 +195,7 @@ module Merb
     # ==== Returns
     # Hash:: the session hash Base64 decoded from the data dump.
     # 
-    # @api private
+    # :api: private
     def unserialize(data)
       Marshal.load(Base64.decode64(data)) rescue {}
     end

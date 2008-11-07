@@ -75,7 +75,7 @@ module Merb::AuthenticationMixin
   #    end 
   #
   #
-  # @api public
+  # :api: public
   def basic_authentication(realm = "Application", &authenticator)
     @_basic_authentication ||= BasicAuthentication.new(self, realm, &authenticator)
   end
@@ -84,7 +84,7 @@ module Merb::AuthenticationMixin
     # So we can have access to the status codes
     include Merb::ControllerExceptions
 
-    # @api private
+    # :api: private
     def initialize(controller, realm = "Application", &authenticator)
       @controller = controller
       @realm = realm
@@ -103,7 +103,7 @@ module Merb::AuthenticationMixin
     # Object:: False if basic auth is not provided, otherwise the return value of the authenticator block.
     # 
     # @overridable
-    # @api public
+    # :api: public
     def authenticate(&authenticator)
       if @auth.provided? and @auth.basic?
         authenticator.call(*@auth.credentials)
@@ -117,7 +117,7 @@ module Merb::AuthenticationMixin
     # ==== Throws
     # :halt with an "HTTP Basic: Access denied." message with no layout, and sets the status to Unauthorized.
     #
-    # @api public
+    # :api: public
     def request
       request!
       throw :halt, @controller.render("HTTP Basic: Access denied.\n", :status => Unauthorized.status, :layout => false)
@@ -128,7 +128,7 @@ module Merb::AuthenticationMixin
     # ==== Returns
     # String:: Returns the empty string to provide a response body.
     #
-    # @api public
+    # :api: public
     def request!
       @controller.status = Unauthorized.status
       @controller.headers['WWW-Authenticate'] = 'Basic realm="%s"' % @realm
@@ -138,7 +138,7 @@ module Merb::AuthenticationMixin
     # ==== Returns
     # Boolean:: Whether there has been any basic authentication credentials provided
     #
-    # @api public
+    # :api: public
     def provided?
       @auth.provided?
     end
@@ -146,7 +146,7 @@ module Merb::AuthenticationMixin
     # ==== Returns
     # String:: The username provided in the request.
     #
-    # @api public
+    # :api: public
     def username
       provided? ? @auth.credentials.first : nil
     end
@@ -154,14 +154,14 @@ module Merb::AuthenticationMixin
     # ==== Returns
     # String:: The password provided in the request.
     #
-    # @api public
+    # :api: public
     def password
       provided? ? @auth.credentials.last : nil
     end
     
     protected
     
-    # @api private
+    # :api: private
     def authenticate_or_request(&authenticator)
       authenticate(&authenticator) || request
     end

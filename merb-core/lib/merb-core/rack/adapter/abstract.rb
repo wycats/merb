@@ -6,7 +6,7 @@ module Merb
       # will be called to start a server created with the new_server method.
       # This is called from the AbstractAdapter start method.
       #
-      # @api plugin
+      # :api: plugin
       # @overridable
       def self.start_server
         raise NotImplemented
@@ -20,7 +20,7 @@ module Merb
       # ==== Parameters
       # port<Integer>:: The port the server should listen on
       #
-      # @api plugin
+      # :api: plugin
       # @overridable
       def self.new_server(port)
         raise NotImplemented
@@ -35,7 +35,7 @@ module Merb
       # ==== Returns
       # Boolean:: True if the server was properly stopped.  
       #
-      # @api plugin
+      # :api: plugin
       # @overridable
       def self.stop(status)
         raise NotImplemented
@@ -46,7 +46,7 @@ module Merb
       # ==== Parameters
       # port<Integer>:: The port to start the worker process on. 
       #
-      # @api private
+      # :api: private
       def self.spawn_worker(port)
         worker_pid = Kernel.fork
         start_at_port(port, @opts) unless worker_pid
@@ -69,7 +69,7 @@ module Merb
       #   port: the port to bind to
       #   cluster: the number 
       #
-      # @api private
+      # :api: private
       def self.start(opts={})
         @opts = opts
         $WORKERS ||= []
@@ -148,7 +148,7 @@ module Merb
       # opts<Hash>:: The hash of options, defaults to the @opts 
       #   instance variable.  
       #
-      # @api private
+      # :api: private
       def self.start_at_port(port, opts = @opts)
         at_exit do
           Merb::Server.remove_pid(port)
@@ -240,7 +240,7 @@ module Merb
       # ==== Parameters
       # status<Integer>:: The exit code of the process.
       # 
-      # @api private
+      # :api: private
       def self.exit_process(status = 0)
         exit(status)
       end
@@ -252,7 +252,7 @@ module Merb
       #   processes. 
       # port<Integer>:: The base port that the app is running on. 
       #
-      # @api private
+      # :api: private
       def self.process_title(whoami, port)
         name = Merb::Config[:name]
         app  = "merb#{" : #{name}" if (name && name != "merb")}"

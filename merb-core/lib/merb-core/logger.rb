@@ -1,12 +1,12 @@
 # Merb::Logger = Extlib::Logger
 
 class Merb::Logger < Extlib::Logger
-  # @api public
+  # :api: public
   def verbose!(message, level = :warn)
     send("#{level}!", message) if Merb::Config[:verbose]
   end
 
-  # @api public
+  # :api: public
   def verbose(message, level = :warn)
     send(level, message) if Merb::Config[:verbose]
   end

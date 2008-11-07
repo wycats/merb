@@ -15,7 +15,7 @@ module Merb
       # ==== Returns
       # <Array>:: A rack response to redirect to the specified url.  
       #
-      # @api plugin
+      # :api: plugin
       def self.redirect(url, options = {})
         # Build the rack array
         status   = options.delete(:status)

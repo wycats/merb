@@ -8,7 +8,7 @@ module Merb
       # ==== Options (opts)
       # :app<String>>:: The application name.
       #
-      # @api plugin
+      # :api: plugin
       def self.start(opts={})
         Merb.logger.warn!("Using FastCGI adapter")
         Merb::Server.change_privilege

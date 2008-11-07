@@ -2,18 +2,18 @@ module Merb
   
   class Router
     # Cache procs for future reference in eval statement
-    # @api private
+    # :api: private
     class CachedProc
       @@index = 0
       @@list = []
 
-      # @api private
+      # :api: private
       attr_accessor :cache, :index
 
       # ==== Parameters
       # cache<Proc>:: The block of code to cache.
       #
-      # @api private
+      # :api: private
       def initialize(cache)
         @cache, @index = cache, CachedProc.register(self)
       end
@@ -21,7 +21,7 @@ module Merb
       # ==== Returns
       # String:: The CachedProc object in a format embeddable within a string.
       #
-      # @api private
+      # :api: private
       def to_s
         "CachedProc[#{@index}].cache"
       end
@@ -34,7 +34,7 @@ module Merb
         # ==== Returns
         # Fixnum:: The index of the newly registered CachedProc.
         #
-        # @api private
+        # :api: private
         def register(cached_code)
           CachedProc[@@index] = cached_code
           @@index += 1
@@ -47,7 +47,7 @@ module Merb
         # index<Fixnum>:: The index of the cached code to set.
         # code<CachedProc>:: The cached code to set.
         #
-        # @api private
+        # :api: private
         def []=(index, code) @@list[index] = code end
 
         # ==== Parameters
@@ -56,7 +56,7 @@ module Merb
         # ==== Returns
         # CachedProc:: The cached code at index.
         #
-        # @api private
+        # :api: private
         def [](index) @@list[index] end
       end
     end # CachedProc

@@ -11,7 +11,7 @@ module Merb
       # ==== Returns
       # <Array>:: A rack response of [status<Integer>, headers<Hash>, body<String, Stream>]
       #
-      # @api private
+      # :api: private
       def call(env) 
         begin
           rack_response = ::Merb::Dispatcher.handle(Merb::Request.new(env))
@@ -39,7 +39,7 @@ module Merb
       # Boolean::
       #   True if the request should be deferred.  
       #
-      # @api private
+      # :api: private
       def deferred?(env)
         path = env[Merb::Const::PATH_INFO] ? env[Merb::Const::PATH_INFO].chomp(Merb::Const::SLASH) : Merb::Const::EMPTY_STRING
         if path =~ Merb.deferred_actions

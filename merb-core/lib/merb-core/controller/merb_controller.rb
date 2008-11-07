@@ -8,7 +8,7 @@ class Merb::Controller < Merb::AbstractController
   cattr_accessor :_subclasses
   self._subclasses = Set.new
 
-  # @api private
+  # :api: private
   def self.subclasses_list() _subclasses end
 
   include Merb::ResponderMixin
@@ -20,7 +20,7 @@ class Merb::Controller < Merb::AbstractController
   # klass<Merb::Controller>::
   #   The Merb::Controller inheriting from the base class.
   #
-  # @api private
+  # :api: private
   def self.inherited(klass)
     _subclasses << klass.to_s
     super
@@ -36,7 +36,7 @@ class Merb::Controller < Merb::AbstractController
   # Array[String]::
   #   An array of actions that should not be possible to dispatch to.
   #
-  # @api public
+  # :api: public
   def self.hide_action(*names)
     self._hidden_actions = self._hidden_actions | names.map { |n| n.to_s }
   end
@@ -67,7 +67,7 @@ class Merb::Controller < Merb::AbstractController
   #     end
   #   end
   #
-  # @api public
+  # :api: public
   def self.show_action(*names)
     self._shown_actions = self._shown_actions | names.map {|n| n.to_s}
   end
@@ -79,7 +79,7 @@ class Merb::Controller < Merb::AbstractController
   # ==== Returns
   # SimpleSet[String]:: A set of actions that should be callable.
   #
-  # @api public
+  # :api: public
   def self.callable_actions
     @callable_actions ||= Extlib::SimpleSet.new(_callable_methods)
   end
@@ -92,7 +92,7 @@ class Merb::Controller < Merb::AbstractController
   # ==== Returns
   # Hash{Symbol => String}:: A new list of params, filtered as desired
   # 
-  # @api plugin
+  # :api: plugin
   # @overridable
   def self._filter_params(params)
     params
@@ -103,7 +103,7 @@ class Merb::Controller < Merb::AbstractController
   # ==== Returns
   # Array:: A list of method names that are also actions
   #
-  # @api private
+  # :api: private
   def self._callable_methods
     callables = []
     klass = self
@@ -130,7 +130,7 @@ class Merb::Controller < Merb::AbstractController
   # By default, this renders ":controller/:action.:type". To change this,
   # override it in your application class or in individual controllers.
   #
-  # @api public
+  # :api: public
   # @overridable
   def _template_location(context, type, controller)
     _conditionally_append_extension(controller ? "#{controller}/#{context}" : "#{context}", type)
@@ -148,7 +148,7 @@ class Merb::Controller < Merb::AbstractController
   # type<~to_s>::
   #    The mime-type of the template that will be rendered. Defaults to nil.
   #
-  # @api public
+  # :api: public
   def _absolute_template_location(template, type)
     _conditionally_append_extension(template, type)
   end
@@ -165,7 +165,7 @@ class Merb::Controller < Merb::AbstractController
   #   A hash of headers to start the controller with. These headers can be
   #   overridden later by the #headers method.
   # 
-  # @api plugin
+  # :api: plugin
   # @overridable
   def initialize(request, status=200, headers={'Content-Type' => 'text/html; charset=utf-8'})
     super()
@@ -183,7 +183,7 @@ class Merb::Controller < Merb::AbstractController
   # ==== Raises
   # ActionNotFound:: The requested action was not found in class.
   #
-  # @api plugin
+  # :api: plugin
   def _dispatch(action=:index)
     Merb.logger.info("Params: #{self.class._filter_params(request.params).inspect}")
     start = Time.now
@@ -196,13 +196,13 @@ class Merb::Controller < Merb::AbstractController
     self
   end
 
-  # @api public
+  # :api: public
   attr_reader :request, :headers
 
   # ==== Returns
   # Fixnum:: The response status code
   #
-  # @api public
+  # :api: public
   def status
     @_status
   end
@@ -212,7 +212,7 @@ class Merb::Controller < Merb::AbstractController
   # ==== Parameters
   # s<Fixnum, Symbol>:: A status-code or named http-status
   #
-  # @api public
+  # :api: public
   def status=(s)
     if s.is_a?(Symbol) && STATUS_CODES.key?(s)
       @_status = STATUS_CODES[s]
@@ -226,7 +226,7 @@ class Merb::Controller < Merb::AbstractController
   # ==== Returns
   # Hash:: The parameters from the request object
   # 
-  # @api public
+  # :api: public
   def params()  request.params  end
     
   # There are three possible ways to use this method.  First, if you have a named route, 
@@ -282,7 +282,7 @@ class Merb::Controller < Merb::AbstractController
   #
   # url(:articles, 2008, 10, "test_article")
   #
-  # @api public
+  # :api: public
   def url(name, *args)
     args << params
     name = request.route if name == :this
@@ -317,7 +317,7 @@ class Merb::Controller < Merb::AbstractController
   # resource(:users, :new)      # => /users/new
   # resource(:@user, :edit)     # => /users/10/edit
   #
-  # @api public
+  # :api: public
   def resource(*args)
     args << params
     Merb::Router.resource(*args)
@@ -331,7 +331,7 @@ class Merb::Controller < Merb::AbstractController
   # This uses the same arguments as the url method, with added requirements 
   # of protocol and host options. 
   #
-  # @api public
+  # :api: public
   def absolute_url(*args)
     options  = extract_options_from_args!(args) || {}
     options[:protocol] ||= request.protocol
@@ -346,7 +346,7 @@ class Merb::Controller < Merb::AbstractController
   # Array[Integer, Hash, String]::
   #   The controller's status code, headers, and body
   #
-  # @api private
+  # :api: private
   def rack_response
     [status, headers, Merb::Rack::StreamWrapper.new(body)]
   end
@@ -355,7 +355,7 @@ class Merb::Controller < Merb::AbstractController
   # This controller will not be able to be routed to
   # and is used for super classing only
   #
-  # @api public
+  # :api: public
   def self.abstract!
     @_abstract = true
   end
@@ -366,7 +366,7 @@ class Merb::Controller < Merb::AbstractController
   # Boolean
   #  true if the controller has been set as abstract
   #
-  # @api public
+  # :api: public
   def self.abstract?
     !!@_abstract 
   end
@@ -385,7 +385,7 @@ class Merb::Controller < Merb::AbstractController
   # type<~to_s> ::
   #   The extension to append to the template path conditionally
   #
-  # @api private
+  # :api: private
   def _conditionally_append_extension(template, type)
     type && !template.match(/\.#{type.to_s.escape_regexp}$/) ? "#{template}.#{type}" : template
   end

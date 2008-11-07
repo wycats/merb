@@ -38,14 +38,14 @@ module Merb
       # An array containing all the application routes in order of
       # priority.
       # ---
-      # @api private
+      # :api: private
       attr_accessor :routes
       
       # A hash containing all the named application routes. The names
       # are absolute (as in, all routes named in a namespace will
       # contain the name of the namespace).
       # ---
-      # @api private
+      # :api: private
       attr_accessor :named_routes
       
       # A hash of all the application resource routes. The key of the hash
@@ -58,7 +58,7 @@ module Merb
       #
       # The show comment route will have a key of ["User", "Comment"]
       # ---
-      # @api private
+      # :api: private
       attr_accessor :resource_routes
       
       # The starting point for route definition. Any route defined in a
@@ -74,13 +74,13 @@ module Merb
       # routes are defined in order for the behavior to be applied to the
       # routes.
       # ---
-      # @api plugin
+      # :api: plugin
       attr_accessor :root_behavior
       
       # A block that will be run around route matching. This block must yield
       # in order for the actual matching to happen.
       # ---
-      # @api plugin
+      # :api: plugin
       attr_accessor :around_match
       
       # Creates a route building context and evaluates the block in it. A
@@ -99,7 +99,7 @@ module Merb
       # Merb::Router::
       #   Returns self to allow chaining of methods.
       # ---
-      # @api public
+      # :api: public
       def prepare(first = [], last = [], &block)
         @routes = []
         root_behavior._with_proxy(&block)
@@ -111,7 +111,7 @@ module Merb
       # Clears the routing table. Route generation and request matching
       # won't work anymore until a new routing table is built.
       # 
-      # @api private
+      # :api: private
       def reset!
         class << self
           alias_method :match, :match_before_compilation
@@ -131,7 +131,7 @@ module Merb
       #   Two-tuple: route index and route parameters. Route parameters
       #   are :controller, :action and all the named segments of the route.
       # 
-      # @api private
+      # :api: private
       def route_for(request)
         index, params = if @around_match
           send(@around_match, request) { match(request) }
@@ -157,7 +157,7 @@ module Merb
       # ==== Raises
       # NotCompiledError:: routes have not been compiled yet.
       # 
-      # @api private
+      # :api: private
       def match_before_compilation(request) #:nodoc:
         raise NotCompiledError, "The routes have not been compiled yet"
       end
@@ -217,7 +217,7 @@ module Merb
       #
       # url(:articles, 2008, 10, "test_article")
       # ---
-      # @api plugin
+      # :api: plugin
       def url(name, *args)
         if name.is_a?(Route)
           route = name
@@ -251,7 +251,7 @@ module Merb
       # ==== Returns
       # String:: The generated URL
       # ---
-      # @api plugin
+      # :api: plugin
       def resource(*args)
         defaults = args.pop
         options  = extract_options_from_args!(args) || {}
@@ -306,7 +306,7 @@ module Merb
       #   end
       # end
       # ---
-      # @api public
+      # :api: public
       def extensions(&block)
         Router::Behavior.class_eval(&block)
       end
@@ -315,7 +315,7 @@ module Merb
     
       # Compiles the routes and creates the +match+ method.
       # ---
-      # @api private
+      # :api: private
       def compile
         if routes.any?
           eval(compiled_statement, binding, "Generated Code for Router", 1)
@@ -327,7 +327,7 @@ module Merb
       # Generates the method for evaluation defining a +match+ method to match
       # a request with the defined routes.
       # ---
-      # @api private
+      # :api: private
       def compiled_statement
         @compiler_mutex.synchronize do
           condition_keys, if_statements = Set.new, ""

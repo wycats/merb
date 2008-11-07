@@ -1,14 +1,14 @@
 module Merb
   class Worker
     
-    # @api private
+    # :api: private
     attr_accessor :thread
     
     class << self
       # ==== Returns
       # Merb::Worker:: instance of a worker.
       # 
-      # @api private
+      # :api: private
       def start
         @worker ||= new
         Merb.at_exit do 
@@ -25,7 +25,7 @@ module Merb
     
     # Creates a new worker thread that loops over the work queue.
     # 
-    # @api private
+    # :api: private
     def initialize
       @thread = Thread.new do
         loop do
@@ -37,7 +37,7 @@ module Merb
     
     # Processes tasks in the Merb::Dispatcher.work_queue.
     # 
-    # @api private
+    # :api: private
     def process_queue
       begin
         while blk = Merb::Dispatcher.work_queue.pop

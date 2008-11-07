@@ -13,7 +13,7 @@ module Merb
     #   Merb::Parse.query("bar=nik&post[body]=heya")
     #     # => { :bar => "nik", :post => { :body => "heya" } }
     #
-    # @api plugin
+    # :api: plugin
     def self.query(query_string, delimiter = '&;', preserve_order = false)
       query = preserve_order ? Dictionary.new : {}
       for pair in (query_string || '').split(/[#{delimiter}] */n)
@@ -45,7 +45,7 @@ module Merb
     # ==== Returns
     # Hash:: The parsed request.
     #
-    # @api plugin
+    # :api: plugin
     def self.multipart(request, boundary, content_length)
       boundary = "--#{boundary}"
       paramhsh = {}
@@ -152,7 +152,7 @@ module Merb
     #   params_to_query_string([ "ice-cream", "cake" ], "shopping_list")
     #     # => "shopping_list[]=ice-cream&shopping_list[]=cake"
     #
-    # @api plugin
+    # :api: plugin
     def self.params_to_query_string(value, prefix = nil)
       case value
       when Array
@@ -174,7 +174,7 @@ module Merb
     # ==== returns
     # String:: The escaped string.
     #
-    # @api public
+    # :api: public
     def self.escape(s)
       s.to_s.gsub(/([^ a-zA-Z0-9_.-]+)/n) {
         '%'+$1.unpack('H2'*$1.size).join('%').upcase
@@ -187,7 +187,7 @@ module Merb
     # ==== returns
     # String:: The unescaped string.
     #
-    # @api public
+    # :api: public
     def self.unescape(s)
       s.tr('+', ' ').gsub(/((?:%[0-9a-fA-F]{2})+)/n){
         [$1.delete('%')].pack('H*')
@@ -207,7 +207,7 @@ module Merb
     # ==== Returns
     # Hash:: Normalized parameters
     #
-    # @api private
+    # :api: private
     def self.normalize_params(parms, name, val=nil)
       name =~ %r([\[\]]*([^\[\]]+)\]*)
       key = $1 || ''

@@ -2,25 +2,25 @@ module Merb
   module Rack
     class PathPrefix < Merb::Rack::Middleware
 
-      # @api private
+      # :api: private
       def initialize(app, path_prefix = nil)
         super(app)
         @path_prefix = /^#{Regexp.escape(path_prefix)}/
       end
       
-      # @api plugin
+      # :api: plugin
       def deferred?(env)
         strip_path_prefix(env) 
         @app.deferred?(env)
       end
       
-      # @api plugin
+      # :api: plugin
       def call(env)
         strip_path_prefix(env) 
         @app.call(env)
       end
 
-      # @api private
+      # :api: private
       def strip_path_prefix(env)
         ['PATH_INFO', 'REQUEST_URI'].each do |path_key|
           if env[path_key] =~ @path_prefix

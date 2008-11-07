@@ -21,13 +21,13 @@ module Merb
     self.session_store_type = :memory
     
     # Bypass normal implicit class attribute reader - see below.
-    # @api private    
+    # :api: private    
     def store
       self.class.store
     end
     
     # Lazy load/setup of MemorySessionStore.
-    # @api private
+    # :api: private
     def self.store
       @_store ||= MemorySessionStore.new(Merb::Config[:memory_session_ttl])
     end
@@ -40,7 +40,7 @@ module Merb
     # ==== Parameters
     # ttl<Fixnum>:: Session validity time in seconds. Defaults to 1 hour.
     # 
-    # @api private
+    # :api: private
     def initialize(ttl=nil)
       @sessions = Hash.new
       @timestamps = Hash.new
@@ -55,7 +55,7 @@ module Merb
     # ==== Returns
     # ContainerSession:: The session corresponding to the ID.
     # 
-    # @api private
+    # :api: private
     def retrieve_session(session_id)
       @mutex.synchronize {
         @timestamps[session_id] = Time.now
@@ -67,7 +67,7 @@ module Merb
     # session_id<String>:: ID of the session to set.
     # data<ContainerSession>:: The session to set.
     # 
-    # @api private
+    # :api: private
     def store_session(session_id, data)
       @mutex.synchronize {
         @timestamps[session_id] = Time.now
@@ -78,7 +78,7 @@ module Merb
     # ==== Parameters
     # session_id<String>:: ID of the session to delete.
     # 
-    # @api private
+    # :api: private
     def delete_session(session_id)
       @mutex.synchronize {
         @timestamps.delete(session_id)
@@ -88,7 +88,7 @@ module Merb
     
     # Deletes any sessions that have reached their maximum validity.
     # 
-    # @api private
+    # :api: private
     def reap_expired_sessions
       @timestamps.each do |session_id,stamp|
         delete_session(session_id) if (stamp + @session_ttl) < Time.now 
@@ -98,7 +98,7 @@ module Merb
     
     # Starts the timer that will eventually reap outdated sessions.
     # 
-    # @api private
+    # :api: private
     def start_timer
       Thread.new do
         loop {

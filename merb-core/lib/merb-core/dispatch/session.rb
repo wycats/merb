@@ -7,7 +7,7 @@ module Merb
     # configured session stores (:session_stores config option)
     # or default one (:session_store config option).
     # 
-    # @api private
+    # :api: private
     def self.session_stores
       @session_stores ||= begin
         config_stores = Array(
@@ -49,7 +49,7 @@ module Merb
     # Raised when storing more data than the available space reserved.
     class SessionOverflow < StandardError; end
     
-    # @api private
+    # :api: private
     def self.included(base)
       # Register a callback to finalize sessions - needs to run before the cookie
       # callback extracts Set-Cookie headers from request.cookies.
@@ -62,7 +62,7 @@ module Merb
     # ==== Returns
     # SessionContainer:: The session that was extracted from the request object.
     #
-    # @api public
+    # :api: public
     def session(session_store = nil)
       request.session(session_store)
     end
@@ -72,7 +72,7 @@ module Merb
     # ==== Returns
     # String:: A random 32 character string for use as a unique session ID.
     #
-    # @api private
+    # :api: private
     def rand_uuid
       values = [
         rand(0x0010000),
@@ -88,7 +88,7 @@ module Merb
     
     # Marks this session as needing a new cookie.
     # 
-    # @api private
+    # :api: private
     def needs_new_cookie!
       @_new_cookie = true
     end
@@ -98,7 +98,7 @@ module Merb
     # ==== Returns
     # Boolean:: true if a new cookie is needed, false otherwise.
     # 
-    # @api private
+    # :api: private
     def needs_new_cookie?
       @_new_cookie
     end
@@ -111,7 +111,7 @@ module Merb
       # Sets up repository of session store types.
       # Sets the session ID key and expiry values.
       #
-      # @api private
+      # :api: private
       def self.included(base)
         base.extend ClassMethods
         
@@ -135,7 +135,7 @@ module Merb
         # === Notres
         # This is automatically called when Merb::SessionContainer is subclassed.
         # 
-        # @api private
+        # :api: private
         def register_session_type(name, class_name)
           self.registered_session_types[name.to_sym] = class_name
         end
@@ -144,7 +144,7 @@ module Merb
       
       # The default session store type.
       # 
-      # @api private
+      # :api: private
       def default_session_store
         Merb::Config[:session_store] && Merb::Config[:session_store].to_sym
       end
@@ -152,7 +152,7 @@ module Merb
       # ==== Returns
       # Hash:: All active session stores by type.
       # 
-      # @api private
+      # :api: private
       def session_stores
         @session_stores ||= {}
       end
@@ -172,7 +172,7 @@ module Merb
       # SessionContainer::
       #   an instance of a session store extending Merb::SessionContainer.
       # 
-      # @api public
+      # :api: public
       def session(session_store = nil)
         session_store ||= default_session_store
         if class_name = self.class.registered_session_types[session_store]
@@ -194,7 +194,7 @@ module Merb
       # === Notes
       # The session is assigned internally by its session_store_type key.
       # 
-      # @api private
+      # :api: private
       def session=(new_session)
         if self.session?(new_session.class.session_store_type)
           original_session_id = self.session(new_session.class.session_store_type).session_id
@@ -210,7 +210,7 @@ module Merb
       # ==== Returns
       # Boolean:: true if the session is part of the session stores configured.
       # 
-      # @api private
+      # :api: private
       def session?(session_store = nil)
         (session_store ? [session_store] : session_stores).any? do |type, store|
           store.is_a?(Merb::SessionContainer)
@@ -219,7 +219,7 @@ module Merb
       
       # Teardown and/or persist the current sessions.
       # 
-      # @api private
+      # :api: private
       def finalize_session
         session_stores.each { |name, store| store.finalize(self) }
       end
@@ -227,7 +227,7 @@ module Merb
       
       # Assign default cookie values
       # 
-      # @api private
+      # :api: private
       def default_cookies
         defaults = {}
         if route && route.allow_fixation? && params.key?(_session_id_key)
@@ -243,7 +243,7 @@ module Merb
       # value<String>:: The value of the session cookie; either the session id or the actual encoded data.
       # options<Hash>:: Cookie options like domain, path and expired.
       # 
-      # @api private
+      # :api: private
       def set_session_cookie_value(value, options = {})
         defaults = {}
         defaults[:expires] = Time.now + _session_expiry if _session_expiry > 0
@@ -254,7 +254,7 @@ module Merb
       # ==== Returns
       # String:: The value of the session cookie; either the session id or the actual encoded data.
       # 
-      # @api private
+      # :api: private
       def session_cookie_value
         cookies[_session_id_key]
       end
@@ -262,7 +262,7 @@ module Merb
       
       # Destroy the session cookie.
       # 
-      # @api private
+      # :api: private
       def destroy_session_cookie
         cookies.delete(_session_id_key)
       end

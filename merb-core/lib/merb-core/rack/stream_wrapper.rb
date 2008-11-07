@@ -2,12 +2,12 @@ module Merb
   module Rack
 
     class StreamWrapper
-      # @api private
+      # :api: private
       def initialize(body)
          @body = body
       end
       
-      # @api private
+      # :api: private
       def each(&callback)
         if Proc === @body
           @writer = lambda { |x| callback.call(x) }
@@ -19,23 +19,23 @@ module Merb
         end
       end
       
-      # @api private
+      # :api: private
       def write(str)
         @writer.call str.to_s
         str
       end
       
-      # @api private
+      # :api: private
       def to_s
         @body.to_s
       end
             
-      # @api private
+      # :api: private
       def ==(other)
         @body == other
       end
 
-      # @api private
+      # :api: private
       def method_missing(sym, *args, &blk)
         @body.send(sym, *args, &blk)
       end

@@ -5,7 +5,7 @@ module Merb
     class << self
       include Merb::ControllerExceptions
       
-      # @api private
+      # :api: private
       attr_accessor :use_mutex
       
       @@work_queue = Queue.new
@@ -13,7 +13,7 @@ module Merb
       # ==== Returns
       # Queue:: the current queue of dispatch jobs.
       # 
-      # @api private
+      # :api: private
       def work_queue
         @@work_queue
       end  
@@ -31,7 +31,7 @@ module Merb
       # Merb::Controller::
       #   The Merb::Controller that was dispatched to
       # 
-      # @api private
+      # :api: private
       def handle(request)
         request.handle
       end
@@ -48,7 +48,7 @@ module Merb
     # ==== Returns
     # Merb::Controller:: the controller that handled the action dispatch.
     # 
-    # @api private
+    # :api: private
     def handle
       start = Time.now
       Merb.logger.info "Started request handling: #{start.to_s}"
@@ -92,7 +92,7 @@ module Merb
     # Merb::Controller::
     #   The Merb::Controller that was dispatched to.
     # 
-    # @api private
+    # :api: private
     def dispatch_action(klass, action, status=200)
       # build controller
       controller = klass.new(self, status)
@@ -122,7 +122,7 @@ module Merb
     # Exceptions::
     #   The Merb::Controller that was dispatched to. 
     # 
-    # @api private
+    # :api: private
     def dispatch_exception(exception)
       if(exception.is_a?(Merb::ControllerExceptions::Base) &&
          !exception.is_a?(Merb::ControllerExceptions::ServerError))

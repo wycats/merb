@@ -3,7 +3,7 @@ module Erubis
   # This adds support for embedding the return value of a block call:
   #   <%= foo do %>...<% end =%>
   #
-  # @api private
+  # :api: private
   module Basic::Converter
     def convert_input(src, input)
       pat = @pattern
@@ -76,7 +76,7 @@ module Erubis
   #   The binding to use when evaluating the ERB tags. Defaults to the current
   #   binding.
   #
-  # @api private
+  # :api: private
   def self.load_yaml_file(file, binding = binding)
     YAML::load(Erubis::MEruby.new(IO.read(File.expand_path(file))).result(binding))
   end

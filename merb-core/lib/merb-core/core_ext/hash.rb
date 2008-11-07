@@ -7,7 +7,7 @@ class Hash
   # ==== Returns
   # Array[Object]:: The values of the provided arguments in corresponding order.
   #
-  # @api public
+  # :api: public
   def extract!(*args)
     args.map do |arg|
       self.delete(arg)
