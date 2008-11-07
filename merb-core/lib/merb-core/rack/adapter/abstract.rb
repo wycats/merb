@@ -25,7 +25,7 @@ module Merb
       def self.new_server(port)
         raise NotImplemented
       end
-      
+            
       # This method is designed to be overridden in a rack adapter.  It will
       # be called to stop the adapter server.  
       #
@@ -237,6 +237,7 @@ module Merb
       # 
       # @api private
       def self.exit_process(status = 0)
+        Merb.at_exit_procs.each {|prc| prc.call }
         exit(status)
       end
 

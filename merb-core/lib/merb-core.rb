@@ -42,12 +42,41 @@ module Merb
   class << self
     attr_reader :exiting
 
+    # The list of procs that have been registered with Merb to run when
+    # Merb exits gracefully.
+    #
+    # ==== Returns
+    # Array:: The current list of procs
+    #
+    # @api private
+    def at_exit_procs
+      @at_exit_procs ||= []
+    end
+    
+    # Set the current exiting state of Merb. Setting this state to true
+    # also alerts Extlib to exit and clean up its state.
+    #
+    # ==== Returns
+    # Boolean:: The current exiting state of Merb
+    #
+    # @api private
     def exiting=(bool)
       Extlib.exiting = bool
       if bool && Extlib.const_defined?("Pooling") && Extlib::Pooling.scavenger
         Extlib::Pooling.scavenger.wakeup
       end
       @exiting = bool
+    end
+    
+    # Register a proc to run when Merb is exiting gracefully. It will *not*
+    # be run when Merb exits quickly.
+    #
+    # ==== Returns
+    # Array:: The current list of procs to run when Merb exits gracefully
+    #
+    # @api plugin
+    def at_exit(&blk)
+      self.at_exit_procs << blk
     end
 
     # Merge environment settings
