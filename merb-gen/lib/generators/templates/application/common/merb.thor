@@ -802,7 +802,7 @@ module Merb
       require 'tempfile' # for Dir::tmpdir access
       if gem_dir && File.directory?(cache_dir = File.join(gem_dir, 'cache'))
         specs = local_gemspecs
-        message "Recreating #{specs.length} from cache..."
+        message "Recreating #{specs.length} gems from cache..."
         puts "This may take a while..."
         specs.each do |gemspec|
           if File.exists?(gem_file = File.join(cache_dir, "#{gemspec.full_name}.gem"))
