@@ -86,9 +86,8 @@ end
 
 desc "Install all gems"
 task :install do
-  %x{sudo gem install gems/merb-core-#{Merb::VERSION}.gem}
   merb_more_gems.each do |gem|
-    %x{sudo gem install gems/#{gem}-#{Merb::VERSION}.gem}
+    Merb::RakeHelper.install(gem, :version => Merb::VERSION)
   end
   %x{sudo gem install gems/merb-more-#{Merb::VERSION}.gem}
   %x{sudo gem install gems/merb-#{Merb::VERSION}.gem}
