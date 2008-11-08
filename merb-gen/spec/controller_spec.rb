@@ -19,7 +19,7 @@ describe Merb::Generators::ControllerGenerator do
   describe "with rspec" do
     
     it "should create a controller spec" do
-      @generator.should create('/tmp/spec/controllers/stuff_spec.rb')
+      @generator.should create('/tmp/spec/requests/stuff_spec.rb')
     end
     
     it "should render templates successfully" do
@@ -35,7 +35,7 @@ describe Merb::Generators::ControllerGenerator do
     end
     
     it "should create a controller test" do
-      @generator.should create('/tmp/test/controllers/stuff_test.rb')
+      @generator.should create('/tmp/test/requests/stuff_test.rb')
     end
     
     it "should render templates successfully" do

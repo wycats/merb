@@ -28,13 +28,13 @@ module Merb::Generators
     end
     
     template :controller_spec, :testing_framework => :rspec do |template|
-      template.source = 'spec/controllers/%file_name%_spec.rb'
-      template.destination = "spec/controllers" / base_path / "#{file_name}_spec.rb"
+      template.source = 'spec/requests/%file_name%_spec.rb'
+      template.destination = "spec/requests" / base_path / "#{file_name}_spec.rb"
     end
     
     template :controller_test_unit, :testing_framework => :test_unit do |template|
-      template.source = 'test/controllers/%file_name%_test.rb'
-      template.destination = "test/controllers" / base_path / "#{file_name}_test.rb"
+      template.source = 'test/requests/%file_name%_test.rb'
+      template.destination = "test/requests" / base_path / "#{file_name}_test.rb"
     end
 
     def after_generation
