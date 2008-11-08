@@ -71,7 +71,7 @@ spec = Gem::Specification.new do |s|
   # for now. RubyGems need some love.
   #s.add_development_dependency "libxml-ruby"
   #s.add_development_dependency "memcache-client"
-  s.add_development_dependency "webrat", ">= 0.3.0"
+  s.add_development_dependency "webrat", ">= 0.3.1"
   # Requirements
   s.requirements << "install the json gem to get faster json parsing"
   s.required_ruby_version = ">= 1.8.6"
