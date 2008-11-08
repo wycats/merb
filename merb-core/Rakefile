@@ -103,7 +103,7 @@ task :gemspec do
   end
 end
 
-CLEAN.include ["**/.*.sw?", "pkg", "lib/*.bundle", "lib/*.so", "*.gem", "doc/rdoc", ".config", "coverage", "cache", "spec/**/*.log"]
+CLEAN.include ["**/.*.sw?", "pkg", "lib/*.bundle", "lib/*.so", "*.gem", "doc/rdoc", ".config", "coverage", "cache", "spec/**/*.log", "**/gems/*"]
 
 desc "Run the specs."
 task :default => :specs
@@ -186,7 +186,7 @@ def setup_specs(name, spec_cmd='spec', run_opts = "-c")
   except = []
   except += Dir["spec/**/memcache*_spec.rb"] if ENV['MEMCACHED'] == 'no'
 
-  public_globs = Dir["#{Dir.pwd}/spec/public/**/*_spec.rb"]
+  public_globs = Dir["#{Dir.pwd}/spec/public/**/*_spec.rb"].reject{|file| file.include?('/gems/')}
 
   private_globs = Dir["#{Dir.pwd}/spec/private/**/*_spec.rb"]
 

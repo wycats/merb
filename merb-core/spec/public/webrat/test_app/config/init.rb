@@ -1,8 +1,9 @@
 # Go to http://wiki.merbivore.com/pages/init-rb
  
+::Gem.clear_paths; ::Gem.path.unshift(File.dirname(__FILE__) + "/../gems/")
+ 
 require 'config/dependencies.rb'
  
-use_orm :datamapper
 use_test :rspec
 use_template_engine :erb
 
