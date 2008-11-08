@@ -187,6 +187,8 @@ def setup_specs(name, spec_cmd='spec', run_opts = "-c")
   except += Dir["spec/**/memcache*_spec.rb"] if ENV['MEMCACHED'] == 'no'
 
   public_globs = Dir["#{Dir.pwd}/spec/public/**/*_spec.rb"].reject{|file| file.include?('/gems/')}
+  public_globs_10 = 
+    Dir["#{Dir.pwd}/spec10/public/**/*_spec.rb"].reject{|file| file.include?('/gems/')}
 
   private_globs = Dir["#{Dir.pwd}/spec/private/**/*_spec.rb"]
 
@@ -194,6 +196,12 @@ def setup_specs(name, spec_cmd='spec', run_opts = "-c")
   task "specs:#{name}" do
     require "lib/merb-core/test/run_specs"
     globs = public_globs + private_globs
+    run_specs(globs, spec_cmd, ENV['RSPEC_OPTS'] || run_opts, except)
+  end
+  
+  task "specs:oneoh" do
+    require "lib/merb-core/test/run_specs"
+    globs = public_globs_10
     run_specs(globs, spec_cmd, ENV['RSPEC_OPTS'] || run_opts, except)
   end
   

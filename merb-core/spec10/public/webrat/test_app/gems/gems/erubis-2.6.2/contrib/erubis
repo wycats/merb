@@ -1,0 +1,11 @@
+#!/usr/bin/ruby
+
+###
+### $Rev: 77 $
+### $Release: 2.6.2 $
+### copyright(c) 2006-2008 kuwata-lab.com all rights reserved.
+###
+
+require 'erubis/main'
+
+Erubis::Main.main(ARGV)
