@@ -3,6 +3,7 @@ require "spec"
 require "merb-core"
 require File.join(File.dirname(__FILE__),"..",'lib',"merb-helpers")
 require "date"
+require "webrat"
 
 # Please read merb_helpers_form_spec.rb
 # for more info on how to test helpers
@@ -145,8 +146,9 @@ end
 Spec::Runner.configure do |config|
   config.include Merb::Test::Helper
   config.include Merb::Test::RspecMatchers
-  config.include Merb::Test::Rspec::ViewMatchers
   config.include Merb::Test::RequestHelper
+  config.include Webrat::Matchers
+  config.include Webrat::HaveTagMatcher
 
   def with_level(level)
     Merb.logger = Merb::Logger.new(StringIO.new, level)

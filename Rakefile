@@ -10,6 +10,7 @@ include FileUtils
 merb_more_gem_paths = %w[
   merb-action-args 
   merb-assets 
+  merb-slices
   merb-auth
   merb-cache 
   merb-exceptions
@@ -18,7 +19,6 @@ merb_more_gem_paths = %w[
   merb-helpers 
   merb-mailer 
   merb-param-protection
-  merb-slices
   merb_datamapper
 ]
 
@@ -63,6 +63,7 @@ namespace :install do
     merb_more_gems.each do |gem|
       Merb::RakeHelper.install(gem, :version => Merb::VERSION)
     end
+    Merb::RakeHelper.install("merb", :version => Merb::VERSION)
   end
   
 end
@@ -84,7 +85,14 @@ namespace :uninstall do
 end
 
 desc "Install all gems"
-task :install => ['install:core', 'install:more']
+task :install do
+  %x{sudo gem install gems/merb-core-#{Merb::VERSION}.gem}
+  merb_more_gems.each do |gem|
+    %x{sudo gem install gems/#{gem}-#{Merb::VERSION}.gem}
+  end
+  %x{sudo gem install gems/merb-more-#{Merb::VERSION}.gem}
+  %x{sudo gem install gems/merb-#{Merb::VERSION}.gem}
+end
 
 desc "Uninstall all gems"
 task :uninstall => ['uninstall:core', 'uninstall:more']

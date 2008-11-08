@@ -1,5 +1,5 @@
 module DataMapper
   module MerbDataMapper
-    VERSION = "0.9.10"
+    VERSION = "1.0"
   end
 end
