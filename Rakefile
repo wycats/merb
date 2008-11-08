@@ -183,7 +183,7 @@ namespace :release do
     require 'rubyforge'
     require 'rake/contrib/rubyforgepublisher'
 
-    packages = %w( gem tgz zip ).collect{ |ext| "pkg/merb-#{PKG_VERSION}.#{ext}" }
+    packages = %w( gem tgz zip ).collect{ |ext| "gems/merb-#{PKG_VERSION}.#{ext}" }
 
     begin
       sh %{rubyforge login}
