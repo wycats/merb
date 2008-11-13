@@ -13,7 +13,7 @@ Merb::Config.use do |c|
   
   # cookie session store configuration
   c[:session_secret_key]  = '<%= SHA1.new(rand(100000000000).to_s).to_s %>'  # required for cookie session store
-  # c[:session_id_key] = '_session_id' # cookie session id key, defaults to "_session_id"
+  c[:session_id_key] = '_<%= base_name  %>_session_id' # cookie session id key, defaults to "_session_id"
 end
  
 Merb::BootLoader.before_app_loads do

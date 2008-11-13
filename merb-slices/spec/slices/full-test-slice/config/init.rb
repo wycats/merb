@@ -22,22 +22,22 @@
 #
 
 Merb::Config.use do |c|
-
-  # Sets up a custom session id key which is used for the session persistence
-  # cookie name.  If not specified, defaults to '_session_id'.
-  # c[:session_id_key] = '_session_id'
   
   # The session_secret_key is only required for the cookie session store.
-  c[:session_secret_key]  = '780af855b5f47a1033726be3fabad8113a3d34a4'
+  c[:session_secret_key]  = '<%= SHA1.new(rand(100000000000).to_s).to_s %>'
   
   # There are various options here, by default Merb comes with 'cookie', 
   # 'memory', 'memcache' or 'container'.  
   # You can of course use your favorite ORM instead: 
   # 'datamapper', 'sequel' or 'activerecord'.
   c[:session_store] = 'cookie'
+  c[:session_id_key] = '_<%= base_name  %>_session_id'
   
   # When running a slice standalone, you're usually developing it,
-  # so enable template reloading by default.
+  # so enable template/class reloading by default.
   c[:reload_templates] = true
+  c[:exception_details] = true
+  c[:reload_classes] = true
+  c[:reload_time] = 0.5
   
 end
