@@ -1,3 +1,6 @@
+== 1.0.1
+* generate unique session_id_key with new apps
+
 == 0.9.3 "We Sold Our Soul for Rock 'n' Roll" 2008-05-03
 * Add mongrel as dependency of merb meta gem
 * make merb.fcgi executable
