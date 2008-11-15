@@ -7,6 +7,9 @@ require 'spec'
 Merb::Plugins.config[:merb_slices][:auto_register] = true
 Merb::Plugins.config[:merb_slices][:search_path]   = File.join(File.dirname(__FILE__), '..', 'lib', '<%= base_name %>.rb')
 
+# Require <%= base_name %>.rb explicitly so any dependencies are loaded
+require Merb::Plugins.config[:merb_slices][:search_path]
+
 # Using Merb.root below makes sure that the correct root is set for
 # - testing standalone, without being installed as a gem and no host application
 # - testing from within the host application; its root will be used

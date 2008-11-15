@@ -442,6 +442,8 @@ module Merb
       #   Whether to add app-level paths using Merb.push_path; defaults to true.
       def collect_load_paths(modify_load_path = true, push_merb_path = true)
         self.collected_slice_paths.clear; self.collected_app_paths.clear
+        Merb.push_path(:"#{self.name.snake_case}_file", File.dirname(self.file), File.basename(self.file))
+        self.collected_app_paths << self.file
         self.slice_paths.each do |component, path|
           if File.directory?(component_path = path.first)
             $LOAD_PATH.unshift(component_path) if modify_load_path && component.in?(:model, :controller, :lib) && !$LOAD_PATH.include?(component_path)
