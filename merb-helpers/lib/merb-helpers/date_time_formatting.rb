@@ -17,7 +17,7 @@ module DateAndTimeFormatting
     # format<Symbol>:: of the format key from Date.date_formats
     #
     # ==== Returns
-    # String:: formattred string
+    # String:: formatted string
     #
     # ==== Example
     #   Time.now.formatted(:rfc822) # => "Sun, 16 Nov 2007 00:21:16 -0800"
