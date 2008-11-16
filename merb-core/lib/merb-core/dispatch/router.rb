@@ -37,14 +37,14 @@ module Merb
     class << self
       # An array containing all the application routes in order of
       # priority.
-      # ---
+      # 
       # :api: private
       attr_accessor :routes
       
       # A hash containing all the named application routes. The names
       # are absolute (as in, all routes named in a namespace will
       # contain the name of the namespace).
-      # ---
+      # 
       # :api: private
       attr_accessor :named_routes
       
@@ -57,7 +57,7 @@ module Merb
       # end
       #
       # The show comment route will have a key of ["User", "Comment"]
-      # ---
+      # 
       # :api: private
       attr_accessor :resource_routes
       
@@ -73,13 +73,13 @@ module Merb
       # It is important to note that this attribute must be set before any
       # routes are defined in order for the behavior to be applied to the
       # routes.
-      # ---
+      # 
       # :api: plugin
       attr_accessor :root_behavior
       
       # A block that will be run around route matching. This block must yield
       # in order for the actual matching to happen.
-      # ---
+      # 
       # :api: plugin
       attr_accessor :around_match
       
@@ -98,7 +98,7 @@ module Merb
       # ==== Returns
       # Merb::Router::
       #   Returns self to allow chaining of methods.
-      # ---
+      # 
       # :api: public
       def prepare(first = [], last = [], &block)
         @routes = []
@@ -216,7 +216,7 @@ module Merb
       # end
       #
       # url(:articles, 2008, 10, "test_article")
-      # ---
+      # 
       # :api: plugin
       def url(name, *args)
         if name.is_a?(Route)
@@ -250,7 +250,7 @@ module Merb
       #
       # ==== Returns
       # String:: The generated URL
-      # ---
+      # 
       # :api: plugin
       def resource(*args)
         defaults = args.pop
@@ -289,23 +289,23 @@ module Merb
       # nil
       #
       # ==== Example
-      # Merb::Router.extensions do
-      #   def domain(name, domain, options={}, &block)
-      #     match(:domain => domain).namespace(name, :path => nil, &block)
+      #   Merb::Router.extensions do
+      #     def domain(name, domain, options={}, &block)
+      #       match(:domain => domain).namespace(name, :path => nil, &block)
+      #     end
       #   end
-      # end
       #
       # In this case, a method 'domain' will be available to the route builder
       # which will create namespaces around domains instead of path prefixes.
       #
       # This can then be used as follows.
       #
-      # Merb::Router.prepare do
-      #   domain(:admin, "my-admin.com") do
-      #     # ... routes come here ...
+      #   Merb::Router.prepare do
+      #     domain(:admin, "my-admin.com") do
+      #       # ... routes come here ...
+      #     end
       #   end
-      # end
-      # ---
+      #
       # :api: public
       def extensions(&block)
         Router::Behavior.class_eval(&block)
@@ -314,7 +314,7 @@ module Merb
     private
     
       # Compiles the routes and creates the +match+ method.
-      # ---
+      # 
       # :api: private
       def compile
         if routes.any?
@@ -326,7 +326,7 @@ module Merb
       
       # Generates the method for evaluation defining a +match+ method to match
       # a request with the defined routes.
-      # ---
+      # 
       # :api: private
       def compiled_statement
         @compiler_mutex.synchronize do
