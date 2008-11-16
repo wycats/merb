@@ -18,6 +18,15 @@ module DateAndTimeFormatting
     #
     # ==== Returns
     # String:: formattred string
+    #
+    # ==== Example
+    #   Time.now.formatted(:rfc822) # => "Sun, 16 Nov 2007 00:21:16 -0800"
+    #   Time.now.formatted(:db) # => "2008-11-16 00:22:09"
+    #
+    # You can also add your own formats using +Date.add_format+
+    #
+    #   Date.add_format(:matt, "%H:%M:%S %Y-%m-%d")
+    #   Time.now.formatted(:matt) # => "00:00:00 2007-11-02"
     # 
     #--
     # @public
@@ -56,6 +65,12 @@ module DateAndTimeFormatting
     #
     # ==== Returns
     # Hash:: a hash with all formats available
+    #
+    # ==== Example
+    #
+    #   Date.add_format(:matt, "%H:%M:%S %Y-%m-%d")
+    #   Time.now.formatted(:matt) # => "00:00:00 2007-11-02"
+    #
     # --
     # @public
     def add_format(key, format)

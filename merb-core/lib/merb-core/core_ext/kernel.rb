@@ -41,24 +41,41 @@ module Kernel
   #
   # If that has already happened, the gem will be activated
   # immediately, but it will still be registered.
+  #
+  # Using this method is like using Rubygem gem method
+  # plus require on the loaded gem. You can call a gem by a name
+  # and require it with a different name using the :require_as
+  # option.
+  #
+  # Finally, you can also load a dependency immediatly, without
+  # deferring its load by using :immediate
   # 
   # ==== Parameters
   # name<String> The name of the gem to load.
-  # *ver<Gem::Requirement, Gem::Version, Array, #to_str>
+  # *opts<Gem::Requirement, Gem::Version, Array, #to_str>
   #   Version requirements to be passed to Gem::Dependency.new.
   #   If the last argument is a Hash, extract the :immediate option,
+  #   and the :require_as option
   #   forcing a dependency to load immediately.
   #
   # ==== Returns
   # Gem::Dependency:: The dependency information.
   #
+  # ==== Example
+  # dependency "dm-core"
+  # dependency "mattetti-awesome", "~>1.0",  :require_as => "awesome"
+  # dependency('jchris-couchrest', ">= 0.5", :require_as => "couchrest") do
+  #   require "lib/custom_hack.rb"
+  # end
+  # dependency "nokogiri", "~>0.5", :immediate => true
+  #
   # :api: public
-  def dependency(name, *ver, &blk)
-    immediate = ver.last.delete(:immediate) if ver.last.is_a?(Hash)
+  def dependency(name, *opts, &blk)
+    immediate = opts.last.delete(:immediate) if opts.last.is_a?(Hash)
     if immediate || Merb::BootLoader.finished?(Merb::BootLoader::Dependencies)
-      load_dependency(name, *ver, &blk)
+      load_dependency(name, *opts, &blk)
     else
-      track_dependency(name, *ver, &blk)
+      track_dependency(name, *opts, &blk)
     end
   end
 
