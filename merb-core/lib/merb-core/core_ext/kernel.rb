@@ -34,40 +34,77 @@ module Kernel
 
     new_dep
   end
-  
+
   # Loads the given string as a gem. Execution is deferred until
   # after the logger has been instantiated and the framework directory
   # structure is defined.
   #
   # If that has already happened, the gem will be activated
   # immediately, but it will still be registered.
-  #
-  # Using this method is like using Rubygem gem method
-  # plus require on the loaded gem. You can call a gem by a name
-  # and require it with a different name using the :require_as
-  # option.
-  #
-  # Finally, you can also load a dependency immediatly, without
-  # deferring its load by using :immediate
   # 
   # ==== Parameters
   # name<String> The name of the gem to load.
-  # *opts<Gem::Requirement, Gem::Version, Array, #to_str>
+  # *ver<Gem::Requirement, Gem::Version, Array, #to_str>
   #   Version requirements to be passed to Gem::Dependency.new.
   #   If the last argument is a Hash, extract the :immediate option,
-  #   and the :require_as option
   #   forcing a dependency to load immediately.
+  #
+  # ==== Options
+  #
+  # :immediate   when true, gem is loaded immediately even if framework is not yet ready.
+  # :require_as  file name to require for this gem.
+  #
+  # See examples below.
+  #
+  # ==== Notes
+  #
+  # If block is given, it is called after require is called. If you use a block to
+  # require multiple files, require first using :require_as option and the rest
+  # in the block.
+  #
+  # ==== Examples
+  #
+  # Usage scenario is typically one of the following:
+  #
+  # 1. Gem name and loaded file names are the same (ex.: amqp gem uses amqp.rb).
+  #    In this case no extra options needed.
+  #
+  # dependency "amqp"
+  #
+  # 2. Gem name is different from the file needs to be required
+  #    (ex.: ParseTree gem uses parse_tree.rb as main file).
+  #
+  # dependency "ParseTree", :require_as => "parse_tree"
+  #
+  # 3. You need to require a number of files from the library explicitly
+  #    (ex.: cherry pick features from xmpp4r). Pass a n array to :require_as.
+  #
+  # dependency "xmpp4r", :require_as => %w(xmpp4r/client xmpp4r/sasl xmpp4r/vcard)
+  #
+  # 4. You need to require a specific version of the gem.
+  #
+  # dependency "RedCloth", "3.0.4"
+  #
+  # 5. You want to load dependency as soon as the method is called.
+  #
+  # dependency "syslog", :immediate => true
+  #
+  # 6. You need to execute some arbitraty code after dependency is loaded:
+  #
+  # dependency "ruby-growl" do
+  #   g = Growl.new "localhost", "ruby-growl",
+  #              ["ruby-growl Notification"]
+  #   g.notify "ruby-growl Notification", "Ruby-Growl is set up",
+  #         "Ruby-Growl is set up"
+  # end
+  #
+  # When specifying a gem version to use, you can use the same syntax RubyGems
+  # support, for instance, >= 3.0.2 or >~ 1.2.
+  #
+  # See rubygems.org/read/chapter/16 for a complete reference.
   #
   # ==== Returns
   # Gem::Dependency:: The dependency information.
-  #
-  # ==== Example
-  # dependency "dm-core"
-  # dependency "mattetti-awesome", "~>1.0",  :require_as => "awesome"
-  # dependency('jchris-couchrest', ">= 0.5", :require_as => "couchrest") do
-  #   require "lib/custom_hack.rb"
-  # end
-  # dependency "nokogiri", "~>0.5", :immediate => true
   #
   # :api: public
   def dependency(name, *opts, &blk)
