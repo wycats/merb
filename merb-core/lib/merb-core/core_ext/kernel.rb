@@ -77,7 +77,7 @@ module Kernel
   # dependency "ParseTree", :require_as => "parse_tree"
   #
   # 3. You need to require a number of files from the library explicitly
-  #    (ex.: cherry pick features from xmpp4r). Pass a n array to :require_as.
+  #    (ex.: cherry pick features from xmpp4r). Pass an array to :require_as.
   #
   # dependency "xmpp4r", :require_as => %w(xmpp4r/client xmpp4r/sasl xmpp4r/vcard)
   #
