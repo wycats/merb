@@ -15,7 +15,7 @@ module Merb
     # 
     # :api: public
     def run_later(&blk)
-      Merb::Dispatcher.work_queue << blk
+      Merb.run_later(&blk)
     end
     
     # Renders the block given as a parameter using chunked encoding.

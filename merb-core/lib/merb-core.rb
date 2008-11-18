@@ -780,6 +780,9 @@ module Merb
       RUBY_PLATFORM =~ Merb::Const::WIN_PLATFORM_REGEXP
     end
 
+    def run_later(&blk)
+      Merb::Dispatcher.work_queue << blk
+    end
   end
 end
 
