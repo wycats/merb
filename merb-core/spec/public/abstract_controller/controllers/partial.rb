@@ -136,5 +136,19 @@ module Merb::Test::Fixtures
         render
       end
     end
+    
+    class PartialWithMultipleLocals < RenderIt
+      def first
+        partial :foo, :bar => "baz"
+      end
+      
+      def second
+        partial :foo, :baz => "bat"
+      end
+      
+      def third
+        partial :foo, :bar => "bat"
+      end
+    end
   end
 end

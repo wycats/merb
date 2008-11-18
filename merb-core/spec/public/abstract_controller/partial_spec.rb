@@ -3,6 +3,11 @@ startup_merb
 
 describe Merb::AbstractController, " Partials" do
   
+  def dispatch(klass, *args)
+    k = Merb::Test::Fixtures::Abstract.const_get(klass)
+    dispatch(k, *args)
+  end
+  
   it "should work with no options" do
     dispatch_should_make_body("BasicPartial", "Index Partial")
   end
@@ -67,4 +72,10 @@ describe Merb::AbstractController, " Partials" do
     dispatch_should_make_body("WithAbsolutePartial", "Index Absolute Partial")
   end
   
+  it "should handle partials compiled with different locals" do
+    dispatch_should_make_body("PartialWithMultipleLocals", "Bar: \"baz\"; Baz: \"\"", :first)
+    dispatch_should_make_body("PartialWithMultipleLocals", "Bar: \"\"; Baz: \"bat\"", :second)
+    dispatch_should_make_body("PartialWithMultipleLocals", "Bar: \"bat\"; Baz: \"\"", :third)
+  end
+    
 end

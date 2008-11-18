@@ -129,9 +129,10 @@ module Merb::Template
       full_file_path = File.expand_path(io.path)
       engine_neutral_path = full_file_path.gsub(/\.[^\.]*$/, "")
       
-      SUPPORTED_LOCALS_LIST[engine_neutral_path] |= locals unless locals.empty?
+      local_list = (SUPPORTED_LOCALS_LIST[engine_neutral_path] |= locals)
       ret = METHOD_LIST[engine_neutral_path] =
-        engine_for(full_file_path).compile_template(io, template_name(full_file_path), locals, mod)
+        engine_for(full_file_path).compile_template(io, 
+        template_name(full_file_path), local_list, mod)
         
       io.close
       ret
