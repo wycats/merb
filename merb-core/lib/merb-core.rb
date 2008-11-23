@@ -38,6 +38,7 @@ $MINIGEMS_SKIPPABLE = ['encoding/character/utf-8']
 module Merb
   # Create stub module for global controller helpers.
   module GlobalHelpers; end
+  class ReservedError < StandardError; end
   
   class << self
     attr_reader :exiting

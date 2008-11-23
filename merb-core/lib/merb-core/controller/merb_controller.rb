@@ -1,9 +1,12 @@
 class Merb::Controller < Merb::AbstractController
 
-  class_inheritable_accessor :_hidden_actions, :_shown_actions
+  class_inheritable_accessor :_hidden_actions, :_shown_actions, 
+                             :_overridable, :_override_bang
 
   self._hidden_actions ||= []
   self._shown_actions  ||= []
+  self._overridable    ||= []
+  self._override_bang  ||= []
 
   cattr_accessor :_subclasses
   self._subclasses = Set.new
@@ -25,6 +28,61 @@ class Merb::Controller < Merb::AbstractController
     _subclasses << klass.to_s
     super
     klass._template_root = Merb.dir_for(:view) unless self._template_root
+  end
+
+  # ==== Parameters
+  # *names<Array[Symbol]>::
+  #   an Array of method names that should be overridable in application
+  #   controllers.
+  # 
+  # ==== Returns
+  # Array:: The list of methods that are overridable
+  #
+  # :api: plugin
+  def self.overridable(*names)
+    self._overridable.push(*names)
+  end
+  
+  # In an application controller, call override! before a method to indicate
+  # that you want to override a method in Merb::Controller that is not
+  # normally overridable.
+  #
+  # Doing this may potentially break your app in a future release of Merb,
+  # and this is provided for users who are willing to take that risk.
+  # Without using override!, Merb will raise an error if you attempt to
+  # override a method defined on Merb::Controller.
+  #
+  # This is to help users avoid a common mistake of defining an action
+  # that overrides a core method on Merb::Controller.
+  #
+  # ==== Parameters
+  # *names<Array[Symbol]>:: 
+  #   An Array of methods that will override Merb core classes on purpose
+  #
+  # ==== Example
+  #     
+  #     class Kontroller < Application
+  #       def status
+  #         render
+  #       end
+  #     end
+  # 
+  # will raise a Merb::ReservedError, because #status is a method on
+  # Merb::Controller.
+  # 
+  #     class Kontroller < Application
+  #       override! :status
+  #       def status
+  #         some_code || super
+  #       end
+  #     end
+  #
+  # will not raise a Merb::ReservedError, because the user specifically
+  # decided to override the status method.
+  #
+  # :api: public
+  def self.override!(*names)
+    self._overrride_bang.push(*names)
   end
 
   # Hide each of the given methods from being callable as actions.
@@ -97,6 +155,7 @@ class Merb::Controller < Merb::AbstractController
   def self._filter_params(params)
     params
   end
+  overridable :_filter_params
 
   # All methods that are callable as actions.
   #
@@ -135,6 +194,7 @@ class Merb::Controller < Merb::AbstractController
   def _template_location(context, type, controller)
     _conditionally_append_extension(controller ? "#{controller}/#{context}" : "#{context}", type)
   end
+  overridable :_template_location
 
   # The location to look for a template and mime-type. This is overridden
   # from AbstractController, which defines a version of this that does not
@@ -171,6 +231,7 @@ class Merb::Controller < Merb::AbstractController
     super()
     @request, @_status, @headers = request, status, headers
   end
+  overridable :initialize
 
   # Dispatch the action.
   #
@@ -388,5 +449,36 @@ class Merb::Controller < Merb::AbstractController
   # :api: private
   def _conditionally_append_extension(template, type)
     type && !template.match(/\.#{type.to_s.escape_regexp}$/) ? "#{template}.#{type}" : template
+  end
+  
+  # When a method is added to a subclass of Merb::Controller (i.e. an app controller) that
+  # is defined on Merb::Controller, raise a Merb::ReservedError. An error will not be raised
+  # if the method is defined as overridable in the Merb API.
+  #
+  # This behavior can be overridden by using override! method_name before attempting to
+  # override the method.
+  #
+  # ==== Parameters
+  # meth<~to_sym> The method that is being added
+  #
+  # ==== Raises
+  # Merb::ReservedError::
+  #   If the method being added is in a subclass of Merb::Controller,
+  #   the method is defined on Merb::Controller, it is not defined
+  #   as overridable in the Merb API, and the user has not specified
+  #   that it can be overridden.
+  #
+  # ==== Returns
+  # nil
+  # 
+  # :api: private
+  def self.method_added(meth)
+    if self < Merb::Controller && Merb::Controller.method_defined?(meth) && 
+      !self._overridable.include?(meth.to_sym) && !self._override_bang.include?(meth.to_sym)
+
+      raise Merb::ReservedError, "You tried to define #{meth} on " \
+        "#{self.name} but it was already defined on Merb::Controller. " \
+        "If you meant to override a core method, use override!"
+    end
   end
 end

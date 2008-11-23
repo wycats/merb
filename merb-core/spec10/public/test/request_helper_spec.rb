@@ -18,7 +18,7 @@ describe Merb::Test::RequestHelper do
   end
   
   it "should dispatch a request using GET by defalt" do
-    request("/method").should have_body("Method - GET")
+    request("/request_method").should have_body("Method - GET")
   end
   
   it "should work with have_selector" do
@@ -30,7 +30,7 @@ describe Merb::Test::RequestHelper do
   end
   
   it "should work with have_content" do
-    request("/method").should contain("Method")
+    request("/request_method").should contain("Method")
   end
   
   it "should persist cookies across sequential cookie setting requests" do

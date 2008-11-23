@@ -1,7 +1,7 @@
 module Merb::Test
   class RequestController < Merb::Controller
     
-    def method
+    def request_method
       "Method - #{request.method.to_s.upcase}"
     end
     
