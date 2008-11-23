@@ -1,3 +1,3 @@
 module Merb
-  VERSION = '1.0.1' unless defined?(Merb::VERSION)
+  VERSION = '1.0.2' unless defined?(Merb::VERSION)
 end
