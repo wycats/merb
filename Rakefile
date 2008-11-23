@@ -133,10 +133,6 @@ end
 # This task is only for releasing edge gems on edge.merbivore.com
 
 task :release_edge => :package do
-  Dir.chdir("..") do
-    FileUtils.rm_rf("gems")
-    FileUtils.mkdir_p("gems")
-  end
   FileUtils.cp(Dir["gems/*.gem"], "../gems")
   Dir.chdir("..") do
     `gem generate_index`
