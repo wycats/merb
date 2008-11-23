@@ -434,7 +434,7 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
     if Merb::Config[:log_file]
       raise "log file should be a string, got: #{Merb::Config[:log_file].inspect}" unless Merb::Config[:log_file].is_a?(String)
       STDOUT.puts "Logging to file at #{Merb::Config[:log_file]}" unless Merb.testing?
-      Merb::Config[:log_stream] = File.open(Merb::Config[:log_file], "w+")
+      Merb::Config[:log_stream] = File.open(Merb::Config[:log_file], "a")
     # but if it's not given, fallback to log stream or stdout
     else
       Merb::Config[:log_stream] ||= STDOUT
