@@ -18,20 +18,21 @@ GEM_EMAIL  = EMAIL
 GEM_NAME    = NAME
 PKG_BUILD   = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
 GEM_VERSION = Merb::VERSION  + PKG_BUILD
+DM_VERSION  = Merb::DM_VERSION
 
 RELEASE_NAME    = "REL #{GEM_VERSION}"
 
 gems = [
   ["merb-core", "~> #{GEM_VERSION}"],
   ["merb-more", "~> #{GEM_VERSION}"],
-  ["dm-core", "~> 0.9.6"],
-  ["do_sqlite3", "~> 0.9.6"],
-  ["dm-timestamps", "~> 0.9.6"],
-  ["dm-types", "~> 0.9.6"],
-  ["dm-aggregates", "~> 0.9.6"],
-  ["dm-migrations", "~> 0.9.6"],
-  ["dm-validations", "~> 0.9.6"],
-  ["dm-sweatshop", "~> 0.9.6"]
+  ["dm-core", "~> #{DM_VERSION}"],
+  ["do_sqlite3", "~> #{DM_VERSION}"],
+  ["dm-timestamps", "~> #{DM_VERSION}"],
+  ["dm-types", "~> #{DM_VERSION}"],
+  ["dm-aggregates", "~> #{DM_VERSION}"],
+  ["dm-migrations", "~> #{DM_VERSION}"],
+  ["dm-validations", "~> #{DM_VERSION}"],
+  ["dm-sweatshop", "~> #{DM_VERSION}"]
 ]
 
 merb_spec = Gem::Specification.new do |s|
