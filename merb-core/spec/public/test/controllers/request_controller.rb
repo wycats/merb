@@ -56,6 +56,12 @@ module Merb::Test
       cookies[:cookie]
     end
     
+    def multiple
+      cookies[:one] = (cookies[:one] || 0).to_i + 1
+      cookies[:two] = (cookies[:two] || 0).to_i + 1
+      "#{cookies[:one]} - #{cookies[:two]}"
+    end
+    
     # Don't actually set any cookies
     def void
       "Void"

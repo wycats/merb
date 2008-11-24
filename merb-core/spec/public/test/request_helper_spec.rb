@@ -115,6 +115,11 @@ describe Merb::Test::RequestHelper do
     request("http://test.com/domain_get").should have_body("test.com")
   end
   
+  it "should be able to handle multiple cookies" do
+    request("/multiple").should have_body("1 - 1")
+    request("/multiple").should have_body("2 - 2")
+  end
+  
   it "should respect the expiration" do
     request("/expires").should have_body("1")
     sleep(1)

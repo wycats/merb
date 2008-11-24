@@ -112,7 +112,7 @@ module Merb
           cookies[cookie.name] = cookie.raw if cookie.matches?(uri)
         end
         
-        cookies.values.join
+        cookies.values.join(';')
       end
       
     end
