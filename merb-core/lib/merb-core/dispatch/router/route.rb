@@ -321,9 +321,9 @@ module Merb
             condition = "(cached_#{segment} = params[#{segment.inspect}] || include_defaults && defaults[#{segment.inspect}])"
 
             if @symbol_conditions[segment] && @symbol_conditions[segment].is_a?(Regexp)
-              condition << " =~ #{@symbol_conditions[segment].inspect}"
+              condition << " && cached_#{segment}.to_s =~ #{@symbol_conditions[segment].inspect}"
             elsif @symbol_conditions[segment]
-              condition << " == #{@symbol_conditions[segment].inspect}"
+              condition << " && cached_#{segment}.to_s == #{@symbol_conditions[segment].inspect}"
             end
 
             condition

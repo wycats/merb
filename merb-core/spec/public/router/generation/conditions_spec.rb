@@ -35,6 +35,15 @@ describe "When generating URLs," do
 
       lambda { url(:condition, :account => "29") }.should raise_error(Merb::Router::GenerationError)
     end
+    
+    it "should work with numbers" do
+      Merb::Router.prepare do
+        match("/hello/:id", :id => /^\d+$/).name(:number)
+      end
+      
+      url(:number, :id => 10).should == "/hello/10"
+      lambda { url(:number, :id => true) }.should raise_error(Merb::Router::GenerationError)
+    end
 
     it "should respect Regexp anchors" do
       Merb::Router.prepare do
