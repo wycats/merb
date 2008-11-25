@@ -45,7 +45,7 @@ merb_more_spec = Gem::Specification.new do |s|
   end
 end
 
-CLEAN.include ["**/.*.sw?", "pkg", "lib/*.bundle", "*.gem", "doc/rdoc", ".config", "coverage", "cache", "lib/merb-more.rb"]
+CLEAN.include ["**/.*.sw?", "pkg", "lib/*.bundle", "*.gem", "doc/rdoc", ".config", "coverage", "cache", "lib/merb-more.rb", "gems/*"]
 
 Rake::GemPackageTask.new(merb_more_spec) do |package|
   package.gem_spec = merb_more_spec

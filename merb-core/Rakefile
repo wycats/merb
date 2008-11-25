@@ -103,7 +103,7 @@ task :gemspec do
   end
 end
 
-CLEAN.include ["**/.*.sw?", "pkg", "lib/*.bundle", "lib/*.so", "*.gem", "doc/rdoc", ".config", "coverage", "cache", "spec/**/*.log", "**/gems/*"]
+CLEAN.include ["**/.*.sw?", "pkg", "lib/*.bundle", "lib/*.so", "*.gem", "doc/rdoc", ".config", "coverage", "cache", "spec/**/*.log", "gems/*"]
 
 desc "Run the specs."
 task :default => :specs

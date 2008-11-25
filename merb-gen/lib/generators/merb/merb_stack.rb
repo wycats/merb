@@ -95,7 +95,7 @@ module Merb
       end
 
       def dm_gems_version
-        MERB::DM_VERSION
+        Merb::DM_VERSION
       end
       
       # empty array means all files are considered to be just
