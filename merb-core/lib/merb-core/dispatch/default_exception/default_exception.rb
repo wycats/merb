@@ -57,6 +57,10 @@ module Merb
         ret.join("\n")
       end
       
+      def jar?(filename)
+        filename.match(/jar\!/)
+      end
+      
       # :api: private
       def textmate_url(filename, line)
         "<a href='txmt://open?url=file://#{filename}&amp;line=#{line}'>#{line}</a>"

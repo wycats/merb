@@ -79,10 +79,10 @@
               <% end %>
             </td>
             <td class="line">
-              <%= textmate_url(filename, lineno) %>
+              <%= textmate_url(filename, lineno) unless jar?(filename) %>
             </td>
           </tr>
-          <%= render_source(filename, lineno) %>
+          <%= render_source(filename, lineno) unless jar?(filename) %>
         </tbody>
       <% end %>
     </table>
