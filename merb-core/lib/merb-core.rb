@@ -438,6 +438,9 @@ module Merb
     #
     # :api: private
     def fatal!(str, e = nil)
+      Merb::Config[:log_stream] = STDOUT if STDOUT.tty?
+      Merb.reset_logger!
+      
       Merb.logger.fatal!
       Merb.logger.fatal!("\e[1;31;47mFATAL: #{str}\e[0m")
       Merb.logger.fatal!
