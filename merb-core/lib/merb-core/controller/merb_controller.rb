@@ -82,7 +82,7 @@ class Merb::Controller < Merb::AbstractController
   #
   # :api: public
   def self.override!(*names)
-    self._overrride_bang.push(*names)
+    self._override_bang.push(*names)
   end
 
   # Hide each of the given methods from being callable as actions.

@@ -22,6 +22,6 @@ describe "attempting to override a method in Merb::Controller" do
       override! :status
       def status
       end
-    end }.should_not raise_error(Merb::ReservedError)
+    end }.should_not raise_error
   end
 end
