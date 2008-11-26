@@ -1,5 +1,8 @@
 class <%= class_name %> < Merb::Controller
 
+  # Templates go in: views/index.html.<%= template_engine %>
+  # Layouts go in: views/layout.application.html.<%= template_engine %>
+  # Modify this method to use another location.
   def _template_location(action, type = nil, controller = controller_name)
     controller == "layout" ? "layout.#{action}.#{type}" : "#{action}.#{type}"
   end
