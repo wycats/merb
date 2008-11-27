@@ -40,7 +40,6 @@ class Time
   end
   
   def to_time; self; end
-  public :to_date
 end
 
 # Truncates a string to the given length and appends the given suffix if the string is, in fact, truncated.
