@@ -144,7 +144,7 @@ task "lib/merb-more.rb" do
     file.puts "### AUTOMATICALLY GENERATED. DO NOT EDIT!"
     merb_more_gems.each do |gem|
       next if gem == "merb-gen"
-      file.puts "require '#{gem}'"
+      file.puts "require \"#{gem}\""
     end
   end
 end
