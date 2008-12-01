@@ -72,7 +72,7 @@ module Merb::ConditionalGetMixin
   #
   # :api: public
   def last_modified
-    Time.rfc2822(headers[Merb::Const::LAST_MODIFIED])
+    Time.rfc2822(headers[Merb::Const::LAST_MODIFIED]) if headers[Merb::Const::LAST_MODIFIED]
   end
 
   # ==== Returns
