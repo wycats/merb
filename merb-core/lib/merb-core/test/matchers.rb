@@ -7,7 +7,9 @@ require "merb-core/test/matchers/request_matchers"
 Merb::Test::ControllerHelper.send(:include, Merb::Test::Rspec::ControllerMatchers)
 Merb::Test::RouteHelper.send(:include, Merb::Test::Rspec::RouteMatchers)
 
-module Merb::Test::ViewHelper
-  include ::Webrat::Matchers
-  include ::Webrat::HaveTagMatcher
+if defined?(::Webrat)
+  module Merb::Test::ViewHelper
+    include ::Webrat::Matchers
+    include ::Webrat::HaveTagMatcher
+  end
 end

@@ -149,6 +149,7 @@ module Merb
       def self.start(opts={})
         m = Merb::Rack::Console.new
         m.extend Merb::Test::RequestHelper
+        m.extend ::Webrat::Methods if defined?(::Webrat)
         Object.send(:define_method, :merb) { m }
         ARGV.clear # Avoid passing args to IRB
         m.open_sandbox! if sandboxed?

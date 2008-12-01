@@ -43,7 +43,10 @@ module Merb
       include ::Merb::Test::Matchers
       include ::Merb::Test::RouteHelper
       include ::Merb::Test::ControllerHelper
-      include ::Webrat::Methods
+      
+      if defined?(::Webrat)
+        include ::Webrat::Methods
+      end
       
       class << self
         # This is a copy of the method in rspec, so we can have
