@@ -596,6 +596,7 @@ end
 class Merb::BootLoader::LoadClasses < Merb::BootLoader
   LOADED_CLASSES = {}
   MTIMES = {}
+  FILES_LOADED = {}
 
   class << self
 
@@ -834,10 +835,26 @@ class Merb::BootLoader::LoadClasses < Merb::BootLoader
     # nil
     #
     # :api: private
-    def load_file(file)
-      # Don't do this expensive operation unless we need to
-      unless Merb::Config[:fork_for_class_load]
+    def load_file(file, reload = false)
+      puts "#{reload ? "re" : ""}loading #{file}"
+      
+      # If we're going to be reloading via constant remove,
+      # keep track of what constants were loaded and what files
+      # have been added, so that the constants can be removed
+      # and the files can be removed from $LOADED_FEAUTRES
+      if !Merb::Config[:fork_for_class_load]
+        if FILES_LOADED[file]
+          FILES_LOADED[file].each {|lf| $LOADED_FEATURES.delete(lf)}
+        end
+        
         klasses = ObjectSpace.classes.dup
+        files_loaded = $LOADED_FEATURES.dup
+      end
+
+      # If we're in the midst of a reload, remove the file
+      # itself from $LOADED_FEATURES so it will get reloaded
+      if reload
+        $LOADED_FEATURES.delete(file) if reload
       end
 
       # Ignore the file for syntax errors. The next time
@@ -852,9 +869,11 @@ class Merb::BootLoader::LoadClasses < Merb::BootLoader
         end
       end
 
-      # Don't do this expensive operation unless we need to
+      # If we're reloading via constant remove, store off the details
+      # after the file has been loaded
       unless Merb::Config[:fork_for_class_load]
         LOADED_CLASSES[file] = ObjectSpace.classes - klasses
+        FILES_LOADED[file] = $LOADED_FEATURES - files_loaded
       end
 
       nil
@@ -903,7 +922,7 @@ class Merb::BootLoader::LoadClasses < Merb::BootLoader
       if Merb::Config[:fork_for_class_load]
         reap_workers(128)
       else
-        remove_classes_in_file(file) { |f| load_file(f) }
+        remove_classes_in_file(file) { |f| load_file(f, true) }
       end
     end
 
