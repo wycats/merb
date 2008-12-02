@@ -450,7 +450,10 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
   #
   # :api: private
   def self.set_encoding
-    $KCODE = 'UTF8' if $KCODE == 'NONE' || $KCODE.blank?
+    unless Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("1.9")
+      $KCODE = 'UTF8' if $KCODE == 'NONE' || $KCODE.blank?
+    end
+    
     nil
   end
 
