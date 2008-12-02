@@ -36,12 +36,12 @@ module Merb
         
         def failure_message
           "expected to find `#{@expected}' in the log but got:\n" <<
-          @text.map {|s| "  #{s}" }.join
+          @text.split("\n").map {|s| "  #{s}" }.join
         end
         
         def negative_failure_message
           "exected not to find `#{@expected}' in the log but got:\n" <<
-          @text.map {|s| "  #{s}" }.join
+          @text.split("\n").map {|s| "  #{s}" }.join
         end
         
         def description
