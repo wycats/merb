@@ -513,7 +513,7 @@ module Merb::RenderMixin
     unless string || block_given?
       raise ArgumentError, "You must pass a block or a string into append_content"
     end
-    @_caught_content[obj] = [] if @_caught_content[obj].nil?
+    @_caught_content[obj] = "" if @_caught_content[obj].nil?
     @_caught_content[obj] << string.to_s << (block_given? ? capture(&block) : "")
   end
 
