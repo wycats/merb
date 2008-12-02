@@ -16,18 +16,24 @@ environment if you need to).
 
 # create a fundamental memcache store named :memcached for localhost
 
-Merb::Cache.setup do
-  register(:memcached, MemcachedStore, :namespace => "my_app", :servers => ["127.0.0.1:11211"])
+dependency "merb-cache" do
+  Merb::Cache.setup do
+    register(:memcached, MemcachedStore, :namespace => "my_app", :servers => ["127.0.0.1:11211"])
+  end
 end
 
 # a default FileStore
-Merb::Cache.setup do
-  register(FileStore)
+dependency "merb-cache" do
+  Merb::Cache.setup do
+    register(FileStore)
+  end
 end
 
 # another FileStore
-Merb::Cache.setup do
-  register(:tmp_cache, FileStore, :dir => "/tmp")
+dependency "merb-cache" do
+  Merb::Cache.setup do
+    register(:tmp_cache, FileStore, :dir => "/tmp")
+  end
 end
 
 Now lets see how we can use stores in the application:
