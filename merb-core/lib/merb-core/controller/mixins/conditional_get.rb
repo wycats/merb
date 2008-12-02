@@ -63,6 +63,8 @@ module Merb::ConditionalGetMixin
   #
   # :api: public
   def last_modified=(time)
+    time = time.to_time if time.is_a?(DateTime)
+    # time.utc.strftime("%a, %d %b %Y %X") if we could rely on locale being American
     headers[Merb::Const::LAST_MODIFIED] = time.httpdate
   end
 
@@ -72,7 +74,8 @@ module Merb::ConditionalGetMixin
   #
   # :api: public
   def last_modified
-    Time.rfc2822(headers[Merb::Const::LAST_MODIFIED]) if headers[Merb::Const::LAST_MODIFIED]
+    last_mod = headers[Merb::Const::LAST_MODIFIED]
+    Time.rfc2822(last_mod) if last_mod
   end
 
   # ==== Returns
