@@ -160,7 +160,7 @@ module Merb::Test::Fixtures
     end
     
     class TestConditionalFilterWithProc < Testing
-      after   :foo, :unless => lambda { |x| x.bar == "bar" }
+      after   :foo, :unless => proc { self.bar == "bar" }
       
       attr_accessor :bar
       
