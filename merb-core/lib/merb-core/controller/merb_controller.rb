@@ -170,7 +170,7 @@ class Merb::Controller < Merb::AbstractController
       callables << (klass.public_instance_methods(false) + klass._shown_actions) - klass._hidden_actions
       klass = klass.superclass
     end until klass == Merb::AbstractController || klass == Object
-    callables.flatten.reject{|action| action =~ /^_.*/}
+    callables.flatten.reject{|action| action =~ /^_.*/}.map {|x| x.to_s}
   end
 
   # The location to look for a template for a particular controller, context,
