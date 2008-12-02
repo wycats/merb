@@ -318,7 +318,12 @@ module Merb
       # :api: private
       def compile
         if routes.any?
-          eval(compiled_statement, binding, "Generated Code for Router", 1)
+          begin
+            eval(compiled_statement, binding, "Generated Code for Router", 1)
+          rescue SyntaxError => e
+            puts "\nGenerated code failed:\n #{compiled_statement}"
+            raise e
+          end
         else
           reset!
         end
