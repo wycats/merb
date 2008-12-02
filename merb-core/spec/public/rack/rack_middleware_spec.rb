@@ -12,8 +12,8 @@ class RackyController < Merb::Controller
   end
 end
 
-Merb::Router.prepare do |r|
-  r.match("/heavy/lifting").to(:controller => "racky_controller")
+Merb::Router.prepare do
+  match("/heavy/lifting").to(:controller => "racky_controller")
 end
 
 

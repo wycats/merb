@@ -1,7 +1,7 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 startup_merb
 
-require "sha1"
+require "digest/sha1"
 
 class ConditionalGetTestController < Merb::Controller
   def with_etag
@@ -26,14 +26,14 @@ class ConditionalGetTestController < Merb::Controller
 end
 
 
-Merb::Router.prepare do |r|
-  r.match("/with_etag").to(
+Merb::Router.prepare do
+  match("/with_etag").to(
     :controller => "conditional_get_test_controller", :action => "with_etag"
   )
-  r.match("/with_last_modified").to(
+  match("/with_last_modified").to(
     :controller => "conditional_get_test_controller", :action => "with_last_modified"
   )
-  r.match("/without").to(
+  match("/without").to(
     :controller => "conditional_get_test_controller", :action => "without"
   )
 end
