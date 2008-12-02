@@ -37,7 +37,7 @@ describe Merb::AbstractController, " Partials" do
   end
   
   it "should work with key/value pairs of locals that override helpers" do
-    dispatch_should_make_body("PartialWithLocalsOverridingHelpers", "Partial with local")
+    dispatch_should_make_body("PartialWithLocalsOverridingHelpers", "Partial with [\"local\"]")
   end
   
   it "should work with different calls to the same partial having different sets of locals" do
