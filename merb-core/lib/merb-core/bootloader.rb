@@ -402,7 +402,7 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
   #
   # :api: private
   def self.load_dependencies
-    dependencies.each { |dependency| Kernel.load_dependency(dependency) }
+    dependencies.each { |dependency| Kernel.load_dependency(dependency, nil) }
     nil
   end
 

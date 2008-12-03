@@ -1,9 +1,11 @@
 require 'rubygems/dependency'
+gem "ruby-debug"
+require "ruby-debug"
 
 module Gem
   class Dependency
     # :api: private
-    attr_accessor :require_block, :require_as
+    attr_accessor :require_block, :require_as, :original_caller
   end
 end
 
@@ -18,11 +20,12 @@ module Kernel
   # @return <Gem::Dependency> Dependency information
   #
   # :api: private
-  def track_dependency(name, *ver, &blk)
+  def track_dependency(name, clr, *ver, &blk)
     options = ver.pop if ver.last.is_a?(Hash)
     new_dep = Gem::Dependency.new(name, ver.empty? ? nil : ver)
     new_dep.require_block = blk
     new_dep.require_as = (options && options[:require_as]) || name
+    new_dep.original_caller = clr
     
     deps = Merb::BootLoader::Dependencies.dependencies
 
@@ -110,9 +113,9 @@ module Kernel
   def dependency(name, *opts, &blk)
     immediate = opts.last.delete(:immediate) if opts.last.is_a?(Hash)
     if immediate || Merb::BootLoader.finished?(Merb::BootLoader::Dependencies)
-      load_dependency(name, *opts, &blk)
+      load_dependency(name, caller, *opts, &blk)
     else
-      track_dependency(name, *opts, &blk)
+      track_dependency(name, caller, *opts, &blk)
     end
   end
 
@@ -134,15 +137,19 @@ module Kernel
   # @return <Gem::Dependency> The dependency information.
   #
   # :api: private
-  def load_dependency(name, *ver, &blk)
-    dep = name.is_a?(Gem::Dependency) ? name : track_dependency(name, *ver, &blk)
-    gem(dep)
-  rescue Gem::LoadError => e
-    Merb.fatal! "The gem #{name}, #{ver.inspect} was not found", e
-  ensure
+  def load_dependency(name, clr, *ver, &blk)
+    begin
+      dep = name.is_a?(Gem::Dependency) ? name : track_dependency(name, clr, *ver, &blk)
+      Gem.activate(dep)
+    rescue Gem::LoadError => e
+      e.set_backtrace dep.original_caller
+      Merb.fatal! "The gem #{name}, #{ver.inspect} was not found", e
+    end
+  
     begin
       require dep.require_as
     rescue LoadError => e
+      e.set_backtrace dep.original_caller
       Merb.fatal! "The file #{dep.require_as} was not found", e
     end
 

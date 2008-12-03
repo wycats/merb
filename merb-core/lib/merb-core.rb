@@ -457,9 +457,9 @@ module Merb
     # Print a colorized backtrace to the merb logger.
     #
     # :api: private
-    def print_colorized_backtrace(e)
+    def print_colorized_backtrace(e)      
       e.backtrace.map! do |line|
-        line.gsub!(/^#{Merb.framework_root}/, "\e[34mFRAMEWORK_ROOT\e[31m")
+        line.gsub(/^#{Merb.framework_root}/, "\e[34mFRAMEWORK_ROOT\e[31m")
       end
       
       Merb.logger.fatal! "\e[34mFRAMEWORK_ROOT\e[0m = #{Merb.framework_root}"
