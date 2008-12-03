@@ -18,10 +18,12 @@ class SpecHelperController < Merb::Controller
   
   def create
     Merb::Test::ControllerAssertionMock.called(:create)
+    params.to_json
   end
   
   def update
     Merb::Test::ControllerAssertionMock.called(:update)
+    params.to_json
   end
   
   def destroy
