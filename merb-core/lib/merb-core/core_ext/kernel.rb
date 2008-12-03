@@ -1,6 +1,4 @@
 require 'rubygems/dependency'
-gem "ruby-debug"
-require "ruby-debug"
 
 module Gem
   class Dependency
