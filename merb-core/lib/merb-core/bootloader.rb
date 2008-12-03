@@ -836,7 +836,7 @@ class Merb::BootLoader::LoadClasses < Merb::BootLoader
     #
     # :api: private
     def load_file(file, reload = false)
-      puts "#{reload ? "re" : ""}loading #{file}"
+      Merb.logger.verbose! "#{reload ? "re" : ""}loading #{file}"
       
       # If we're going to be reloading via constant remove,
       # keep track of what constants were loaded and what files
