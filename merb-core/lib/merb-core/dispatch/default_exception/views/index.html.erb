@@ -53,6 +53,8 @@
         <sup class="error_<%= exception.class.status %>"><%= exception.class.status %></sup>
       </h1>
       <%= error_codes(exception) %>
+    
+    <% if @show_details %>
       <p class="options">
         <label class="all">All<input type="checkbox" autocomplete="off" /></label>
         <span class="all">
@@ -63,7 +65,6 @@
         </span>
       </p>
 
-    <% if @show_details %>
     <table class="trace">
       <% exception.backtrace.each_with_index do |line, index| %>
         <% type, shortname, filename, lineno, location = frame_details(line) %>
