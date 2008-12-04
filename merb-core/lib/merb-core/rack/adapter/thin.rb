@@ -13,7 +13,8 @@ module Merb
         
         if (@opts[:socket] || @opts[:socket_file])
           socket = port.to_s
-          socket_file = @opts[:socket_file] || "#{Merb.log_path}/#{Merb::Config[:name]}.#{socket}.sock"
+          socket_file = @opts[:socket_file] || "#{Merb.log_path}/#{Merb::Config[:name]}.%s.sock"
+          socket_file = socket_file % port
           Merb.logger.warn!("Using Thin adapter with socket file #{socket_file}.")
           @server = ::Thin::Server.new(socket_file, @opts[:app], @opts)
         else

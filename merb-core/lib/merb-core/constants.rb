@@ -26,6 +26,9 @@ module Merb
     COOKIE_SPLIT             = /[;,] */n.freeze
     COOKIE_REGEXP            = /\s*(.+)=(.*)\s*/.freeze
     COOKIE_EXPIRED_TIME      = Time.at(0).freeze
+    ACCEPT_SPLIT             = /,/.freeze
+    SLASH_SPLIT              = %r{/}.freeze
+    MEDIA_RANGE              = /\s*([^;\s]*)\s*(;\s*q=\s*(.*))?/.freeze
     HOUR                     = 60 * 60
     DAY                      = HOUR * 24
     WEEK                     = DAY * 7

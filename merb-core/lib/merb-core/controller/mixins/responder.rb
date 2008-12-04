@@ -99,6 +99,8 @@ module Merb
     
     TYPES = Dictionary.new
     MIMES = {}
+    MIME_MUTEX = Mutex.new
+    ACCEPT_RESULTS = {}
 
     class ContentTypeAlreadySet < StandardError; end
     
@@ -257,6 +259,35 @@ module Merb
       @_provided_formats -= formats.flatten
     end
     
+    def _accept_types
+      accept = request.accept
+      
+      MIME_MUTEX.synchronize do
+        return ACCEPT_RESULTS[accept] if ACCEPT_RESULTS[accept]
+      end
+      
+      types = request.accept.split(Merb::Const::ACCEPT_SPLIT).map do |entry|
+        entry =~ Merb::Const::MEDIA_RANGE
+        media_range, quality = $1, $3
+        
+        kind, sub_type = media_range.split(Merb::Const::SLASH_SPLIT)
+        mime_sym = Merb.available_accepts[media_range]
+        mime = Merb.available_mime_types[mime_sym]
+        (quality ||= 0.0) if media_range == "*/*"          
+        quality = quality ? (quality.to_f * 100).to_i : 100
+        quality *= (mime && mime[:default_quality] || 1)
+        [quality, mime_sym, media_range, kind, sub_type, mime]
+      end
+    
+      accepts = types.sort_by {|x| x.first }.reverse!.map! {|x| x[1]}      
+      
+      MIME_MUTEX.synchronize do
+        ACCEPT_RESULTS[accept] = accepts.freeze
+      end
+      
+      accepts
+    end
+    
     # Do the content negotiation:
     # 1. if params[:format] is there, and provided, use it
     # 2. Parse the Accept header
@@ -266,16 +297,12 @@ module Merb
     #
     # :api: private
     def _perform_content_negotiation
-      if (fmt = params[:format]) && !fmt.empty?
+      if fmt = params[:format]
         accepts = [fmt.to_sym]
-      elsif request.accept =~ %r{^(text/html|\*/\*)} && _provided_formats.first == :html
-        # Handle the common case of text/html and :html provided after checking :format
-        return :html
       else
-        accepts = Responder.parse(request.accept).map {|t| t.to_sym}.compact
+        accepts = _accept_types
       end
-      
-      # no need to make a bunch of method calls to _provided_formats
+
       provided_formats = _provided_formats
       
       specifics = accepts & provided_formats
@@ -289,6 +316,8 @@ module Merb
       raise Merb::ControllerExceptions::NotAcceptable,
         (message % [accepts.join(', '), provided_formats.join(', ')])
     end
+    
+    
 
     # Returns the output format for this request, based on the 
     # provided formats, <tt>params[:format]</tt> and the client's HTTP

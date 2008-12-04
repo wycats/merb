@@ -163,7 +163,10 @@ module Merb
       # ==== Returns
       # self:: The logger object for chaining.
       def #{name}(message = nil)
-        self << message if #{number} >= level
+        if #{number} >= level
+          message = block_given? ? yield : message
+          self << message if #{number} >= level
+        end
         self
       end
 
@@ -177,8 +180,11 @@ module Merb
       # ==== Returns
       # self:: The logger object for chaining.
       def #{name}!(message = nil)
-        self << message if #{number} >= level
-        flush if #{number} >= level
+        if #{number} >= level
+          message = block_given? ? yield : message
+          self << message if #{number} >= level
+          flush if #{number} >= level
+        end
         self
       end
 

@@ -51,13 +51,13 @@ module Merb
     # :api: private
     def handle
       start = Time.now
-      Merb.logger.info "Started request handling: #{start.to_s}"
+      Merb.logger.info { "Started request handling: #{start.to_s}" }
       
       find_route!
       return rack_response if handled?
       
       klass = controller
-      Merb.logger.debug("Routed to: #{params.inspect}")
+      Merb.logger.debug { "Routed to: #{params.inspect}" }
       
       unless klass < Controller
         raise NotFound, 
@@ -73,7 +73,7 @@ module Merb
       
       controller = dispatch_action(klass, params[:action])
       controller._benchmarks[:dispatch_time] = Time.now - start
-      Merb.logger.info controller._benchmarks.inspect
+      Merb.logger.info { controller._benchmarks.inspect }
       Merb.logger.flush
       controller.rack_response
     rescue Object => exception
