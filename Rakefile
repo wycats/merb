@@ -19,7 +19,6 @@ merb_more_gem_paths = %w[
   merb-helpers 
   merb-mailer 
   merb-param-protection
-  merb_datamapper
 ]
 
 merb_release = {
@@ -48,7 +47,7 @@ merb_release = {
     ]
 }
 
-merb_gem_paths = %w[merb merb-core] + merb_more_gem_paths
+merb_gem_paths = %w[merb merb-core merb_datamapper] + merb_more_gem_paths
 
 merb_gems = merb_gem_paths.map { |p| File.basename(p) }
 merb_more_gems = merb_more_gem_paths.map { |p| File.basename(p) }
@@ -67,7 +66,7 @@ merb_more_spec = Gem::Specification.new do |s|
   s.required_rubygems_version = ">= 1.3.0"
   s.add_dependency "merb-core", ">= #{Merb::VERSION}"
   merb_more_gems.each do |gem|
-    s.add_dependency gem, ">= #{Merb::VERSION}"
+    s.add_dependency gem, "= #{Merb::VERSION}"
   end
 end
 
@@ -115,8 +114,8 @@ task :install do
   merb_more_gems.each do |gem|
     Merb::RakeHelper.install(gem, :version => Merb::VERSION)
   end
-  %x{sudo gem install gems/merb-more-#{Merb::VERSION}.gem}
-  %x{sudo gem install gems/merb-#{Merb::VERSION}.gem}
+  puts %x{sudo gem install pkg/merb-more-#{Merb::VERSION}.gem}
+  puts %x{sudo gem install merb/pkg/merb-#{Merb::VERSION}.gem}
 end
 
 desc "Uninstall all gems"

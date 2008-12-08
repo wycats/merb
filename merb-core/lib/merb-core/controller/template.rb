@@ -51,7 +51,8 @@ module Merb::Template
     # :api: plugin
     # @overridable
     def load_template_io(path)
-      File.open(path, "r")
+      file = Dir["#{path}.{#{template_extensions.join(',')}}"].first
+      File.open(file, "r") if file
     end
 
     # Get the name of the template method for a particular path.
@@ -69,8 +70,8 @@ module Merb::Template
       path = File.expand_path(path)
       
       if needs_compilation?(path, locals)
-        file = Dir["#{path}.{#{template_extensions.join(',')}}"].first
-        METHOD_LIST[path] = file ? inline_template(load_template_io(file), locals) : nil
+        template_io = load_template_io(path)
+        METHOD_LIST[path] = inline_template(template_io, locals) if template_io
       end
       
       METHOD_LIST[path]
