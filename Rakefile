@@ -111,11 +111,10 @@ end
 
 desc "Install all gems"
 task :install do
-  merb_more_gems.each do |gem|
+  merb_gems.each do |gem|
     Merb::RakeHelper.install(gem, :version => Merb::VERSION)
   end
   puts %x{sudo gem install pkg/merb-more-#{Merb::VERSION}.gem}
-  puts %x{sudo gem install merb/pkg/merb-#{Merb::VERSION}.gem}
 end
 
 desc "Uninstall all gems"
