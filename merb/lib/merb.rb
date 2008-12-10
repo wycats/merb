@@ -1,4 +1,5 @@
 ### AUTOMATICALLY GENERATED. DO NOT EDIT!
+require 'merb_datamapper'
 require 'merb-core'
 require 'merb-more'
 require 'dm-core'
