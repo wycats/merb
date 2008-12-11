@@ -2,7 +2,7 @@ if defined?(Merb::Plugins)
 
   $:.unshift File.dirname(__FILE__)
 
-  load_dependency 'merb-slices'
+  dependency 'merb-slices', :immediate => true
   Merb::Plugins.add_rakefiles "<%= base_name %>/merbtasks", "<%= base_name %>/slicetasks"
 
   # Register the Slice for the current host application
@@ -18,7 +18,7 @@ if defined?(Merb::Plugins)
     # Slice metadata
     self.description = "<%= module_name %> is a thin Merb slice!"
     self.version = "0.0.1"
-    self.author = "Engine Yard"
+    self.author = "Your Name"
     
     # Stub classes loaded hook - runs before LoadClasses BootLoader
     # right after a slice's classes have been loaded internally.
