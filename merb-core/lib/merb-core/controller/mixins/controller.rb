@@ -326,7 +326,7 @@ module Merb
     # 
     # :api: public
     def escape_xml(obj)
-      Erubis::XmlHelper.escape_xml(obj.to_s)
+      Merb::Parse.escape_xml(obj.to_s)
     end
     alias h escape_xml
     alias escape_html escape_xml

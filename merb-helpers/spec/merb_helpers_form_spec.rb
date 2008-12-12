@@ -2,9 +2,9 @@ require File.dirname(__FILE__) + '/spec_helper'
 
 # Quick rundown of how these specs work
 # please read before hacking on this plugin
-# 
+#
 # helpers must be tested through then entire stack
-# what that means is that each spec must 
+# what that means is that each spec must
 # send a request to a controller and render a template
 #
 # Start by creating a spec controller subclassing SpecController
@@ -14,7 +14,7 @@ require File.dirname(__FILE__) + '/spec_helper'
 # Create a new controller in the spec/fixture/app/controllers/ if you are adding a new helper
 #
 # To test your helper, start by initializing a controller
-# 
+#
 #    @controller = CustomHelperSpecs.new(Merb::Request.new({}))
 #
 # Note that we are sending a real request to the controller, feel free to use the request as needed
@@ -24,7 +24,7 @@ require File.dirname(__FILE__) + '/spec_helper'
 #
 #    @obj = FakeModel.new # FaKeModel is defined in spec/fixture/models/first_generic_fake_model.rb check it out!
 #    @controller.instance_variable_set(:@obj, @obj)
-# 
+#
 # To test a helper, you need to render a view:
 #
 #    result = @controller.render :view_name
@@ -82,17 +82,17 @@ describe "error_messages_for" do
     errs = @c.error_messages_for(@dm_obj, :error_class => "foo")
     errs.should include("<div class='foo'>")
   end
-  
+
   it "should accept a custom header block" do
     errs = @c.error_messages_for(@dm_obj, :header => "<h3>Failure: %s issue%s</h3>")
     errs.should include("<h3>Failure: 2 issues</h3>")
   end
-  
+
 #  it "should put the error messages inside a form if :before is false" do
 #    ret = @c.form_for @dm_obj do
 #      _buffer << error_messages
 #    end
-#    ret.should =~ /\A\s*<form.*<div class='error'>/    
+#    ret.should =~ /\A\s*<form.*<div class='error'>/
 #  end
 
 end
@@ -128,22 +128,22 @@ describe "form" do
     ret = @c.render(:get_if_set)
     ret.should have_selector("form[method=get]")
   end
-  
+
   it "should fake out the put method if set" do
     ret = @c.render(:fake_put_if_set)
     ret.should have_selector("form[method=post]")
     ret.should have_selector("input[type=hidden][name=_method][value=put]")
   end
-  
+
   it "should fake out the delete method if set" do
     ret = @c.render(:fake_delete_if_set)
     ret.should have_selector("form[method=post]")
     ret.should have_selector("input[type=hidden][name=_method][value=delete]")
   end
-  
+
   # TODO: Why is this required?
   # ---------------------------
-  # 
+  #
   # it "should silently set method to post if an unsupported method is used" do
   #     form_tag :method => :dodgy do
   #       _buffer << "CONTENT"
@@ -151,13 +151,13 @@ describe "form" do
   #     _buffer.should match_tag(:form, :method => "post")
   #     _buffer.should_not match_tag(:input, :type => "hidden", :name => "_method", :value => "dodgy")
   # end
-  
+
   it "should take create a form" do
     ret = @c.render(:create_a_form)
     ret.should have_selector("form[action=foo][method=post]")
     ret.should include("Hello")
   end
-  
+
   it "should set a form to be multipart" do
     ret = @c.render(:create_a_multipart_form)
     ret.should have_selector("form[action=foo][method=post][enctype='multipart/form-data']")
@@ -196,7 +196,7 @@ describe "form_for" do
 end
 
 
-describe "fields_for" do  
+describe "fields_for" do
 
   before :each do
     @c = FieldsForSpecs.new(Merb::Request.new({}))
@@ -248,7 +248,7 @@ describe "text_field" do
     r = @c.render :class
     r.should == "<input type=\"text\" class=\"awesome foobar text\"/>"
   end
-  
+
   it "should be disabled if :disabled => true is passed in" do
     r = @c.render :disabled
     r.should have_selector("input[type=text][disabled=disabled]")
@@ -258,7 +258,7 @@ describe "text_field" do
     r = @c.render :label
     r.should match(/<label class="cool">LABEL<\/label>/)
   end
-  
+
 end
 
 describe "bound_text_field" do
@@ -305,7 +305,7 @@ describe "bound_text_field" do
 end
 
 describe "bound_radio_button" do
-  
+
   before :each do
     @c = BoundRadioButtonSpecs.new(Merb::Request.new({}))
     @c.instance_variable_set(:@obj, FakeModel.new)
@@ -348,7 +348,7 @@ describe "bound_radio_button" do
 end
 
 describe "password_field" do
-  
+
   before :each do
     @c = PasswordFieldSpecs.new(Merb::Request.new({}))
   end
@@ -362,7 +362,7 @@ describe "password_field" do
     r = @c.render :basic
     r.should have_selector("label:contains('LABEL')")
   end
-  
+
   it "should be disabled if :disabled => true is passed in" do
     r = @c.render :disabled
     r.should match_tag(:input, :type => "password", :disabled => "disabled")
@@ -420,7 +420,7 @@ describe "check_box" do
   before :each do
     @c = CheckBoxSpecs.new(Merb::Request.new({}))
   end
-  
+
   it "should return a basic checkbox based on the values passed in" do
     r = @c.render :basic
     r.should match_tag(:input, :class => "checkbox", :name => "foo", :checked => "checked")
@@ -432,12 +432,12 @@ describe "check_box" do
     res = result.scan(/<[^>]*>/)
     res[0].should_not match_tag(:input, :label => "LABEL")
   end
-  
+
   it 'should remove the checked="checked" attribute if :checked is false or nil' do
     r = @c.render :unchecked
     r.should_not   include('checked="')
   end
-  
+
   it 'should have the checked="checked" attribute if :checked => true is passed in' do
     r = @c.render :basic
     r.should include('checked="checked"')
@@ -453,7 +453,7 @@ describe "check_box" do
     r.should have_tag(:input, :type => "checkbox", :value => "1")
     r.should have_tag(:input, :type => "hidden",   :value => "0")
     r.should match(/<input.*?type="hidden"[^>]*>[^<]*<input.*?type="checkbox"[^>]*>/)
-    
+
   end
 
   it "should not allow a :value param if boolean" do
@@ -476,7 +476,7 @@ describe "check_box" do
     lambda { @c.render :raise_unless_both_on_and_off }.should raise_error(ArgumentError, /must be specified/)
     lambda { @c.render :raise_unless_both_on_and_off }.should raise_error(ArgumentError, /must be specified/)
   end
-  
+
   it "should convert :value to a string on a non-boolean checkbox" do
     r = @c.render :to_string
     r.should match_tag(:input, :value => "")
@@ -487,12 +487,12 @@ describe "check_box" do
     r.should match_tag(:input, :value => "1")
     r.should match_tag(:input, :value => "true")
   end
-  
+
   it "should be disabled if :disabled => true is passed in" do
     r = @c.render :disabled
     r.should match_tag(:input, :type => "checkbox", :disabled => "disabled")
   end
-  
+
   it "should be possible to call with just check_box" do
     r = @c.render :simple
     r.should match_tag(:input, :type => "checkbox", :class => "checkbox")
@@ -507,7 +507,7 @@ describe "bound_check_box" do
   end
 
   it "should take a string and return a useful checkbox control" do
-    r = @c.render :basic  
+    r = @c.render :basic
     r.should match_tag(:input, :type =>"checkbox", :name => "fake_model[baz]", :class => "checkbox", :value => "1", :checked => "checked", :id => "fake_model_baz")
     r.should match_tag(:input, :type =>"hidden",   :name => "fake_model[baz]", :value => "0")
   end
@@ -526,8 +526,8 @@ describe "bound_check_box" do
                                               :value   => "1",
                                               :checked => "checked",
                                               :id      => "fake_dm_model_baz")
-    
-    r.should match_tag(:input, :type =>"hidden",   :name => "fake_dm_model[bat]", :value => "0")                                          
+
+    r.should match_tag(:input, :type =>"hidden",   :name => "fake_dm_model[bat]", :value => "0")
     r.should match_tag(:input, :type =>"checkbox", :name => "fake_dm_model[bat]", :class => "checkbox", :value => "1")
   end
 
@@ -538,7 +538,7 @@ describe "bound_check_box" do
   end
 
   it "should render controls with errors if their attribute contains an error" do
-    r = @c.render :errors  
+    r = @c.render :errors
     r.should match_tag(:input, :type =>"checkbox", :name => "fake_model[bazbad]", :class => "error checkbox", :value => "1", :checked => "checked")
     r.should match_tag(:input, :type =>"hidden",   :name => "fake_model[batbad]", :value => "0")
   end
@@ -570,13 +570,13 @@ describe "bound_check_box" do
     r = @c.render :basic
     r.should match_tag(:input, :type => "checkbox", :class => "error checkbox")
   end
-  
+
   it "should be boolean" do
     r = @c.render :basic
     r.should have_tag(:input, :type => "checkbox", :value => "1")
     r.should have_tag(:input, :type => "hidden",   :value => "0")
   end
-  
+
   it "should be checked if the value of the model's attribute is equal to the value of :on" do
     r = @c.render :checked
     r.should match_tag(:input, :type =>"checkbox", :value => "foowee", :checked => "checked")
@@ -586,7 +586,7 @@ describe "bound_check_box" do
 end
 
 describe "hidden_field" do
-  
+
   before :each do
     @c = HiddenFieldSpecs.new(Merb::Request.new({}))
   end
@@ -601,7 +601,7 @@ describe "hidden_field" do
     res.should_not match(/<label>LABEL/)
     res.should_not match_tag(:input, :label=> "LABEL")
   end
-  
+
   it "should be disabled if :disabled => true is passed in" do
     r = @c.render :disabled
     r.should match_tag(:input, :type => "hidden", :disabled => "disabled")
@@ -654,7 +654,7 @@ describe "bound_hidden_field" do
 end
 
 describe "radio_button" do
-  
+
   before :each do
     @c = RadioButtonSpecs.new(Merb::Request.new({}))
   end
@@ -681,7 +681,7 @@ describe "radio_button" do
 end
 
 describe "radio_group" do
-  
+
   before :each do
     @c = RadioGroupSpecs.new(Merb::Request.new({}))
   end
@@ -728,7 +728,7 @@ end
 
 
 describe "bound_radio_group" do
-  
+
   before do
     @c = BoundRadioGroupSpecs.new(Merb::Request.new({}))
     @c.instance_variable_set(:@obj, FakeModel.new)
@@ -746,7 +746,7 @@ describe "bound_radio_group" do
     r.scan( /<input.*?><label.*?>(foowee|baree)<\/label>/ ).size.should == 2
     radio = r.scan(/<[^>]*>/)[2..-2]
     radio[0].should_not match_tag(:input, :label => "LABEL")
-    radio[3].should_not match_tag(:input, :label => "LABEL")  
+    radio[3].should_not match_tag(:input, :label => "LABEL")
   end
 
   it "should accept array of hashes as options" do
@@ -782,7 +782,7 @@ end
 
 
 describe "text_area" do
-  
+
   before do
     @c = TextAreaSpecs.new(Merb::Request.new({}))
   end
@@ -800,7 +800,7 @@ describe "text_area" do
 
   # TODO: Why is this required?
   # ---------------------------
-  # 
+  #
   # it "should handle a nil attributes hash" do
   #   text_area("CONTENT", nil).should == "<textarea>CONTENT</textarea>"
   # end
@@ -810,14 +810,14 @@ describe "text_area" do
     result.should match(/<label.*>LABEL<\/label><textarea/)
     result.should_not match_tag(:textarea, :label => "LABEL")
   end
-  
+
   it "should be disabled if :disabled => true is passed in" do
     r = @c.render :disabled
     r.should match_tag(:textarea, :disabled => "disabled")
   end
 end
 
-describe "bound_text_area" do 
+describe "bound_text_area" do
 
   before do
     @c = BoundTextAreaSpecs.new(Merb::Request.new({}))
@@ -833,11 +833,11 @@ describe "bound_text_area" do
 end
 
 describe "select" do
- 
+
   before do
     @c = SelectSpecs.new(Merb::Request.new({}))
   end
-  
+
   it "should provide a blank option if you :include_blank" do
     r = @c.render :blank
     r.should =~ /<option.*>\s*<\/option>/
@@ -854,7 +854,7 @@ describe "bound_select" do
   before do
     @c = BoundSelectSpecs.new(Merb::Request.new({}))
     @c.instance_variable_set(:@obj, FakeModel.new)
-  end 
+  end
 
   it "should render the select tag with the correct id and name" do
     r = @c.render :basic
@@ -904,7 +904,7 @@ describe "bound_select" do
 end
 
 describe "bound option tags" do
-  
+
   before do
     @c = BoundOptionTagSpecs.new(Merb::Request.new({}))
     @c.instance_variable_set(:@obj, FakeModel.new)
@@ -912,9 +912,9 @@ describe "bound option tags" do
 
 
   it "should use text_method and value_method for tag generation" do
-    r = @c.render :text_and_value  
+    r = @c.render :text_and_value
     r.should match_tag( :option, :content => "foowee", :value => "7" )
-    r.should match_tag( :option, :content => "foowee2", :value => "barbar" ) 
+    r.should match_tag( :option, :content => "foowee2", :value => "barbar" )
 
     # content = options_from_collection_for_select( [FakeModel.new, FakeModel2.new], :text_method => 'foo', :value_method => 'bar' )
     # content.should match_tag( :option, :content => "foowee", :value => "7" )
@@ -966,7 +966,7 @@ end
 require "hpricot"
 
 describe "option tags" do
-  
+
   before do
     @c = OptionTagSpecs.new(Merb::Request.new({}))
     @c.instance_variable_set(:@collection, [['rabbit','Rabbit'],['horse','Horse'],['bird','Bird']])
@@ -1067,12 +1067,12 @@ describe "file_field" do
     r = @c.render :with_label
     r.should have_selector("label:contains('LABEL') + input.file[type=file]")
   end
-  
+
   it "should be disabled if :disabled => true is passed in" do
     r = @c.render :disabled
     r.should have_selector("input[type=file][disabled=disabled]")
   end
-  
+
   it "should make the surrounding form multipart" do
     r = @c.render :makes_multipart
     r.should have_selector("form[enctype='multipart/form-data']")
@@ -1107,8 +1107,8 @@ describe "submit" do
 
   before :each do
     @c = SubmitSpecs.new(Merb::Request.new({}))
-  end  
-  
+  end
+
   it "should return a basic submit input based on the values passed in" do
     r = @c.render :submit_with_values
     r.should have_selector("input[type=submit][name=foo][value=Done]")
@@ -1119,11 +1119,11 @@ describe "submit" do
     r.should have_selector("input[type=submit][name=submit][value=Done]")
     r.should have_selector("label:contains('LABEL')")
   end
-  
+
   it "should be disabled if :disabled => true is passed in" do
     r = @c.render :disabled_submit
     r.should have_selector("input[type=submit][value=Done][disabled=disabled]")
-  end  
+  end
 end
 
 describe "button" do
@@ -1131,7 +1131,7 @@ describe "button" do
   before :each do
     @c = ButtonSpecs.new(Merb::Request.new({}))
   end
-  
+
   it "should return a button based on the values passed in" do
     r = @c.render :button_with_values
     r.should have_selector("button[type=button][name=foo][value=bar]:contains('Click Me')")
@@ -1151,7 +1151,7 @@ end
 
 
 class MyBuilder < Merb::Helpers::Form::Builder::Base
-  
+
   def update_bound_controls(method, attrs, type)
     super
     attrs[:bound] = type
@@ -1161,16 +1161,16 @@ class MyBuilder < Merb::Helpers::Form::Builder::Base
     super
     attrs[:unbound] = type
   end
-  
+
 end
 
 describe "custom builder" do
- 
+
   before :each do
     @c = CustomBuilderSpecs.new(Merb::Request.new({}))
     @c.instance_variable_set(:@obj, FakeModel.new)
-  end 
-  
+  end
+
   it "should let you override update_bound_controls" do
     r = @c.render :everything
     r.should =~ / bound="file"/
@@ -1180,7 +1180,7 @@ describe "custom builder" do
     r.should =~ / bound="radio"/
     r.should =~ / bound="text_area"/
   end
-  
+
   it "should let you override update_unbound_controls" do
     r = @c.render :everything
     r.should have_selector("button[unbound=button]")
@@ -1196,7 +1196,7 @@ describe 'delete_button' do
     @controller = DeleteButtonSpecs.new(Merb::Request.new({}))
     @controller.instance_variable_set(:@obj, FakeModel.new)
   end
-  
+
   it "should have a default submit button text" do
     result = @controller.render :simple_delete # <%= delete_button @obj %>
     result.should have_selector("input[type=submit][value=Delete]")
@@ -1212,26 +1212,59 @@ describe 'delete_button' do
     result = @controller.render :delete_with_label # <%= delete_button(@obj, "Delete moi!") %>
     result.should have_selector("input[type=submit][value='Delete moi!']")
   end
-  
+
   it "should allow you to pass some extra params like a class" do
     result = @controller.render :delete_with_extra_params
     result.should have_selector("input.custom-class[type=submit][value=Delete]")
   end
-  
+
   it "should allow to pass an explicit url as a string" do
     result = @controller.render :delete_with_explicit_url # <%= delete_button('/test/custom_url') %>
     result.should have_selector("form[action='/test/custom_url'][method=post]")
   end
-  
+
 end
 
-# describe "control_value" do
-#   
-# 
-#   it 'should escape [&"<>]' do
-#     @obj.vin = '&"<>'
-#     f = form_for :obj do
-#       control_value(:vin).should == '&amp;&quot;&lt;&gt;'
-#     end
-#   end
-# end
+describe "escaping values" do
+
+  before :each do
+    @c = Hacker.new(Merb::Request.new({}))
+    @c.instance_variable_set(:@obj, HackerModel.new)
+  end
+
+  it "should escape bound text field values" do
+    r = @c.render :text_field
+    r.should =~ /&amp;&quot;&lt;&gt;/
+  end
+
+  it "should escape bound hidden field values" do
+    r = @c.render :hidden_field
+    r.should =~ /&amp;&quot;&lt;&gt;/
+  end
+
+  it "should escape bound password field values" do
+    r = @c.render :password_field
+    r.should =~ /&amp;&quot;&lt;&gt;/
+  end
+
+  it "should escape bound text area values" do
+    r = @c.render :text_area
+    r.should =~ /&amp;&quot;&lt;&gt;/
+  end
+
+  it "should escape bound file field values" do
+    r = @c.render :file_field
+    r.should =~ /&amp;&quot;&lt;&gt;/
+  end
+
+  it "should escape bound option tag values" do
+    r = @c.render :option_tag
+    r.should =~ /&amp;&quot;&lt;&gt;/
+  end
+
+  it "should escape bound radio button values" do
+    r = @c.render :radio_button
+    r.should =~ /&amp;&quot;&lt;&gt;/
+  end
+
+end

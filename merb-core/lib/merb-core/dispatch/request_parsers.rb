@@ -194,6 +194,17 @@ module Merb
       }
     end
 
+    # ==== Parameters
+    # s<String>:: String to XML escape.
+    #
+    # ==== returns
+    # String:: The escaped string.
+    #
+    # :api: public
+    def self.escape_xml(s)
+      Erubis::XmlHelper.escape_xml(s)
+    end
+
     private
 
     # Converts a query string snippet to a hash and adds it to existing
