@@ -6,10 +6,10 @@ describe  "/<%= base_name %>/" do
     mount_slice
   end
   
-  describe "GET /<%= base_name %>/" do
+  describe "GET /" do
     
     before(:each) do
-      @response = request("/")
+      @response = request("/<%= base_name %>/")
     end
     
     it "should be successful" do
