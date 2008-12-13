@@ -30,8 +30,8 @@ describe Merb::Generators::FullSliceGenerator do
         "testing/LICENSE", "testing/public", "testing/public/javascripts", 
         "testing/public/javascripts/master.js", "testing/public/stylesheets", 
         "testing/public/stylesheets/master.css", "testing/Rakefile", 
-        "testing/README", "testing/spec", "testing/spec/controllers", 
-        "testing/spec/controllers/main_spec.rb", "testing/spec/spec_helper.rb", 
+        "testing/README", "testing/spec", "testing/spec/requests", 
+        "testing/spec/requests/main_spec.rb", "testing/spec/spec_helper.rb", 
         "testing/spec/testing_spec.rb", "testing/stubs", "testing/stubs/app", 
         "testing/stubs/app/controllers", "testing/stubs/app/controllers/application.rb", 
         "testing/stubs/app/controllers/main.rb", "testing/TODO"

@@ -4,8 +4,6 @@ describe "<%= module_name %> (module)" do
   
   # Implement your <%= module_name %> specs here
   
-  it "should have proper specs"
-  
   # To spec <%= module_name %> you need to hook it up to the router like this:
   
   # before :all do
@@ -15,5 +13,8 @@ describe "<%= module_name %> (module)" do
   # after :all do
   #   Merb::Router.reset! if standalone?
   # end
+  #
+  #
+  # it "should have proper specs"
   
 end

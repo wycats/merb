@@ -2,7 +2,7 @@ Merb-Slices
 ===========
 
 Merb-Slices is a Merb plugin for using and creating application 'slices' which
-help you modularize your application. Usually these are reuseable extractions
+help you modularize your application. Usually these are reusable extractions
 from your main app. In effect, a Slice is just like a regular Merb MVC
 application, both in functionality as well as in structure.
 
@@ -19,7 +19,7 @@ mount a Slice multiple times and give extra parameters to customize an
 instance's behaviour.
 
 A Slice's Application controller uses controller_for_slice to setup slice
-specific behaviour, which mainly affects cascaded view handling. Additionaly,
+specific behaviour, which mainly affects cascaded view handling. Additionally,
 this method is available to any kind of controller, so it can be used for
 Merb Mailer too for example.
 

@@ -30,25 +30,13 @@ namespace :slices do
         end
       end
 
-      desc "Run all controller specs, run a spec for a specific Controller with CONTROLLER=MyController"
-      Spec::Rake::SpecTask.new('controller') do |t|
+      desc "Run all request specs, run a spec for a specific request with REQUEST=MyRequest"
+      Spec::Rake::SpecTask.new('request') do |t|
         t.spec_opts = ["--format", "specdoc", "--colour"]
-        if(ENV['CONTROLLER'])
-          t.spec_files = Dir["#{slice_root}/spec/controllers/**/#{ENV['CONTROLLER']}_spec.rb"].sort
+        if(ENV['REQUEST'])
+          t.spec_files = Dir["#{slice_root}/spec/requests/**/#{ENV['REQUEST']}_spec.rb"].sort
         else    
-          t.spec_files = Dir["#{slice_root}/spec/controllers/**/*_spec.rb"].sort
-        end
-      end
-
-      desc "Run all view specs, run specs for a specific controller (and view) with CONTROLLER=MyController (VIEW=MyView)"
-      Spec::Rake::SpecTask.new('view') do |t|
-        t.spec_opts = ["--format", "specdoc", "--colour"]
-        if(ENV['CONTROLLER'] and ENV['VIEW'])
-          t.spec_files = Dir["#{slice_root}/spec/views/**/#{ENV['CONTROLLER']}/#{ENV['VIEW']}*_spec.rb"].sort
-        elsif(ENV['CONTROLLER'])
-          t.spec_files = Dir["#{slice_root}/spec/views/**/#{ENV['CONTROLLER']}/*_spec.rb"].sort
-        else
-          t.spec_files = Dir["#{slice_root}/spec/views/**/*_spec.rb"].sort
+          t.spec_files = Dir["#{slice_root}/spec/requests/**/*_spec.rb"].sort
         end
       end
 

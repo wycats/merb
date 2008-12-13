@@ -44,3 +44,15 @@ Spec::Runner.configure do |config|
   config.include(Merb::Test::ControllerHelper)
   config.include(Merb::Test::SliceHelper)
 end
+
+# You can add your own helpers here
+#
+Merb::Test.add_helpers do
+  def mount_slice
+    Merb::Router.prepare { add_slice(:<%= module_name %>, "<%= base_name %>") } if standalone?
+  end
+
+  def dismount_slice
+    Merb::Router.reset! if standalone?
+  end
+end
