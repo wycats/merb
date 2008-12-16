@@ -14,6 +14,7 @@ module Thor::Tasks
       end
 
       def dependency(name, *versions)
+        versions.pop if versions.last.is_a?(Hash)
         @dependencies << [name, versions]
       end
     end

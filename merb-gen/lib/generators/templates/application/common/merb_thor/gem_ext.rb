@@ -34,7 +34,7 @@ class ::Gem::Uninstaller
     yield
     
     class << Gem::DefaultUserInteraction.ui
-      undef :say
+      remove_method :say
     end 
   end
   
