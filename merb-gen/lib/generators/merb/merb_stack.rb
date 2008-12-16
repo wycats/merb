@@ -49,11 +49,6 @@ module Merb
       #
 
       empty_directory :gems, 'gems'
-      file :thorfile do |file|
-        file.source      = File.join(common_templates_dir, "merb.thor")
-        file.destination = "tasks/merb.thor"
-      end
-
       template :rakefile do |template|
         template.source = File.join(common_templates_dir, "Rakefile")
         template.destination = "Rakefile"
@@ -77,6 +72,11 @@ module Merb
       file :jquery do |file|
         file.source = File.join(common_templates_dir, 'jquery.js')
         file.destination = 'public/javascripts/jquery.js'
+      end
+
+      directory :thor_file do |directory|
+        directory.source = File.join(common_templates_dir, "merb_thor")
+        directory.destination = File.join("tasks", "merb.thor")
       end
 
       directory :test_dir do |directory|

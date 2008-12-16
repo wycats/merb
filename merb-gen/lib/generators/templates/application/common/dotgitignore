@@ -16,3 +16,7 @@ src/*
 .hgignore
 .hg/*
 .svn/*
+gems/gems/*/
+gems/specifications/*
+!gems/gems/thor*/
+!gems/specifications/thor*

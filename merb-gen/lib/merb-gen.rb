@@ -6,6 +6,7 @@ require 'templater'
 
 path = File.join(File.dirname(__FILE__))
 
+require path / "merb-gen"   / "templater"
 require path / "merb-gen"   / "generator"
 require path / "merb-gen"   / "named_generator"
 require path / "merb-gen"   / "namespaced_generator"
@@ -24,6 +25,7 @@ require path / "generators" / "model"
 require path / "generators" / "resource_controller"
 require path / "generators" / "resource"
 require path / "generators" / "layout"
+require path / "generators" / "thor"
 
 Templater::Discovery.discover!("merb-gen")
 

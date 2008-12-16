@@ -49,14 +49,14 @@ module Merb
         directory.destination = dir
       end
 
+      directory :thor_file do |directory|
+        directory.source = File.join(common_templates_dir, "merb_thor")
+        directory.destination = File.join("tasks", "merb.thor")
+      end
+
       template :rakefile do |template|
         template.source = File.join(common_templates_dir, "Rakefile")
         template.destination = "Rakefile"
-      end
-
-      file :thorfile do |file|
-        file.source      = File.join(common_templates_dir, "merb.thor")
-        file.destination = "merb.thor"
       end
 
       def class_name

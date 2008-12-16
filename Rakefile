@@ -31,7 +31,6 @@ merb_release = {
     ],
   "merb" =>
     [
-      "merb",
       "merb-action-args",
       "merb-assets",
       "merb-slices",
@@ -42,9 +41,10 @@ merb_release = {
       "merb-haml",
       "merb-helpers",
       "merb-mailer",
-      "merb-more",
       "merb-param-protection",
       "merb_datamapper",
+      "merb",
+      "merb-more"
     ]
 }
 
