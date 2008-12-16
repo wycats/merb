@@ -24,13 +24,14 @@ module Thor::Tasks
         @idx.load_gems_in("gems/specifications")
 
         @list.map do |name, versions|
-          dep = @idx.find_name(name).last
-          unless dep
+          dep = ::Gem::Dependency.new(name, versions)
+          spec = @idx.search(dep).last
+          unless spec
             self.class.error "A required dependency #{dep} was not found"
             self.class.rollback_trans
           end
-          deps = dep.recursive_dependencies(dep, @idx)
-          [dep] + deps
+          deps = spec.recursive_dependencies(dep, @idx)
+          [spec] + deps
         end.flatten.uniq
       end
       
@@ -69,6 +70,9 @@ module Thor::Tasks
       
       private
       def _install(dep)
+        @idx.load_gems_in("gems/specifications")
+        return if @idx.search(dep).last
+        
         installer = ::Gem::DependencyInstaller.new(
           :bin_dir => Dir.pwd / "bin",
           :install_dir => Dir.pwd / "gems",

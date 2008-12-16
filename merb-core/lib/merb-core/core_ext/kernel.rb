@@ -19,10 +19,10 @@ module Kernel
   #
   # :api: private
   def track_dependency(name, clr, *ver, &blk)
-    options = ver.pop if ver.last.is_a?(Hash)
+    options = ver.last.is_a?(Hash) ? ver.pop : {}
     new_dep = Gem::Dependency.new(name, ver.empty? ? nil : ver)
     new_dep.require_block = blk
-    new_dep.require_as = (options && options[:require_as]) || name
+    new_dep.require_as = options.key?(:require_as) ? options[:require_as] : name
     new_dep.original_caller = clr
     
     deps = Merb::BootLoader::Dependencies.dependencies
@@ -138,6 +138,7 @@ module Kernel
   def load_dependency(name, clr, *ver, &blk)
     begin
       dep = name.is_a?(Gem::Dependency) ? name : track_dependency(name, clr, *ver, &blk)
+      return unless dep.require_as
       Gem.activate(dep)
     rescue Gem::LoadError => e
       e.set_backtrace dep.original_caller
