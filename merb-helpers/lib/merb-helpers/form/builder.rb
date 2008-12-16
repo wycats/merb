@@ -243,9 +243,14 @@ module Merb::Helpers::Form::Builder
       ([b] + col.map do |item|
         text_meth = text_meth && item.respond_to?(text_meth) ? text_meth : :last
         value_meth = value_meth && item.respond_to?(value_meth) ? value_meth : :first
+
+        text  = item.is_a?(String) ? item : item.send(text_meth)
+        value = item.is_a?(String) ? item : item.send(value_meth)
         
-        text  = item.is_a?(String) ? item : Merb::Parse.escape_xml(item.send(text_meth))
-        value = item.is_a?(String) ? item : Merb::Parse.escape_xml(item.send(value_meth))
+        unless Merb.disabled?(:merb_helper_escaping)
+          text  = Merb::Parse.escape_xml(text)
+          value = Merb::Parse.escape_xml(value)
+        end
 
         option_attrs = {:value => value}
         if sel.is_a?(Array)
@@ -272,7 +277,11 @@ module Merb::Helpers::Form::Builder
     
     def control_value(method)
       value = @obj ? @obj.send(method) : @origin.params[method]
-      Merb::Parse.escape_xml(value.to_s)
+      if Merb.disabled?(:merb_helper_escaping)
+        value.to_s
+      else
+        Merb::Parse.escape_xml(value.to_s)
+      end
     end
 
     def add_css_class(attrs, new_class)
