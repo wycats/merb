@@ -1050,6 +1050,17 @@ describe "label" do
     r = @c.render :basic
     r.should have_selector("label[for=user_first_name]:contains('First Name')")
   end
+
+  it "should render a label tag with a :class attribute set" do
+    r = @c.render :basic_with_class
+    r.should have_selector("label[class=name_class]")
+  end
+
+  it "should render a label tag with both rel and style attributes set" do
+    r = @c.render :basic_with_attributes
+    r.should have_selector("label[rel=tooltip][style='display:none']")
+  end
+
 end
 
 describe "file_field" do

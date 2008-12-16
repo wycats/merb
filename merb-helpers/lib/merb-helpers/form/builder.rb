@@ -291,33 +291,44 @@ module Merb::Helpers::Form::Builder
 
   class Form < Base
     def label(contents, attrs = {})
-      if contents.is_a?(Hash)
-        attrs    = contents
-        contents = attrs.delete(:label)
-      end
       if contents
-        for_attr = attrs[:id] ? {:for => attrs[:id]} : {}
         if contents.is_a?(Hash)
-          attrs = contents
-          contents = attrs.delete(:title)
-          for_attr = for_attr.merge(attrs)
+          label_attrs = contents
+          contents = label_attrs.delete(:title)
+        else
+          label_attrs = attrs
         end
-        tag(:label, contents, for_attr)
+        tag(:label, contents, label_attrs)
       else
         ""
       end
     end
-
+    
     %w(text password file).each do |kind|
       self.class_eval <<-RUBY, __FILE__, __LINE__ + 1
         def unbound_#{kind}_field(attrs = {})
-          label(attrs) + super
+          unbound_label(attrs) + super
         end
       RUBY
     end
+    
+    def unbound_label(attrs = {})
+      if attrs[:id]
+        label_attrs = {:for => attrs[:id]}
+      else
+        label_attrs = {}
+      end
+
+      label_option = attrs.delete(:label)
+      if label_option.is_a? Hash
+        label(label_attrs.merge(label_option))
+      else
+        label(label_option, label_attrs)
+      end
+    end
 
     def unbound_check_box(attrs = {})
-      label_text = label(attrs)
+      label_text = unbound_label(attrs)
       super + label_text
     end
 
@@ -327,24 +338,24 @@ module Merb::Helpers::Form::Builder
     end
 
     def unbound_radio_button(attrs = {})
-      label_text = label(attrs)
+      label_text = unbound_label(attrs)
       super + label_text
     end
 
     def unbound_select(attrs = {})
-      label(attrs) + super
+      unbound_label(attrs) + super
     end
 
     def unbound_text_area(contents, attrs = {})
-      label(attrs) + super
+      unbound_label(attrs) + super
     end
 
     def button(contents, attrs = {})
-      label(attrs) + super
+      unbound_label(attrs) + super
     end
 
     def submit(value, attrs = {})
-      label(attrs) + super
+      unbound_label(attrs) + super
     end
 
     private
