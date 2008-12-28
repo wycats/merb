@@ -111,8 +111,9 @@ class ::Gem::Specification
     specs = self.runtime_dependencies.map do |dep|
       spec = index.search(dep).last
       unless spec
+        from_name = from.is_a?(::Gem::Specification) ? from.full_name : from.to_s
         wider_net = index.find_name(dep.name).last
-        ThorUI.error "Needed #{dep} for #{from.full_name}, but could not find it"
+        ThorUI.error "Needed #{dep} for #{from_name}, but could not find it"
         ThorUI.error "Found #{wider_net.full_name}" if wider_net
         ::Thor::Tasks::Merb::Gem.rollback_trans
       end
