@@ -47,7 +47,7 @@ Merb::Mailer.config = {
 }
 </code></pre>  
 
-* require "smtp_tls":http://www.rubyinside.com/how-to-use-gmails-smtp-server-with-rails-394.html
+* require the gem "smtptls"
 * Use :text option instead of :body when deliver.
 
 <pre><code class="ruby">
@@ -153,10 +153,7 @@ end
 This will look for app/mailers/views/resource_shortage_mailer/hdd_space_shortage_detailed.html.erb for
 html and app/mailers/views/resource_shortage_mailer/hdd_space_shortage.text.erb for text.
 
-See "render_mail documentation":http://merbivore.com/documentation/merb-more/0.9.3/merb-mailer/index.html?a=M000019&name=render_mail
-for more examples, this method has a lot of options how you can use it.
-
-
+See Merb::MailerMixin#render_mail documentation for more examples, this method has a lot of options how you can use it.
 
 h2. Using Merb mailer to send emails outside of controllers.
 
