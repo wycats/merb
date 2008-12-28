@@ -21,3 +21,6 @@ dependency "dm-migrations", dm_gems_version
 dependency "dm-timestamps", dm_gems_version   
 dependency "dm-types", dm_gems_version        
 dependency "dm-validations", dm_gems_version  
+
+dependency "merb_datamapper", merb_gems_version
+dependency "do_sqlite3" # If using another database, replace this
