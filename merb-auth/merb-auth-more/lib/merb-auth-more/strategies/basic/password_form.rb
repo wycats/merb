@@ -16,11 +16,12 @@ class Merb::Authentication
       class Form < Base
         
         def run!
-          if request.params[login_param] && request.params[password_param]
-            user = user_class.authenticate(request.params[login_param], request.params[password_param])
+          if login = request.params[login_param] && password = request.params[password_param]
+            user = user_class.authenticate(login, password)
             if !user
-              request.session.authentication.errors.clear!
-              request.session.authentication.errors.add(login_param, strategy_error_message)
+              errors = request.session.authentication.errors
+              errors.clear!
+              error.add(login_param, strategy_error_message)
             end
             user
           end
