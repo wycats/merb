@@ -255,7 +255,7 @@ class Merb::BootLoader::DropPidFile < Merb::BootLoader
     #
     # :api: plugin
     def run
-      Merb::Server.store_pid("main") #if Merb::Config[:daemonize] || Merb::Config[:cluster]
+      Merb::Server.store_pid("main") if Merb::Config[:daemonize] || Merb::Config[:cluster]
       nil
     end
   end
