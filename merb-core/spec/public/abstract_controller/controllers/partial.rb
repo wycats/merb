@@ -150,5 +150,12 @@ module Merb::Test::Fixtures
         partial :foo, :bar => "bat"
       end
     end
+    
+    class PartialWithAbsolutePath < RenderIt
+      def index
+        partial "#{File.expand_path(File.dirname(__FILE__))}/views/partial/basic_partial/partial2",
+          :with => "Hello world"
+      end
+    end
   end
 end

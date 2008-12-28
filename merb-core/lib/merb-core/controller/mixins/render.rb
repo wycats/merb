@@ -297,8 +297,8 @@ module Merb::RenderMixin
       template_path = File.dirname(template) / "_#{File.basename(template)}"
     else
       kontroller = (m = template.match(/.*(?=\/)/)) ? m[0] : controller_name
-      template = "_#{File.basename(template)}"
     end
+    template = "_#{File.basename(template)}"
 
     # This handles no :with as well
     with = [opts.delete(:with)].flatten

@@ -77,5 +77,9 @@ describe Merb::AbstractController, " Partials" do
     dispatch_should_make_body("PartialWithMultipleLocals", "Bar: \"\"; Baz: \"bat\"", :second)
     dispatch_should_make_body("PartialWithMultipleLocals", "Bar: \"bat\"; Baz: \"\"", :third)
   end
+  
+  it "should handle partials with absolute paths" do
+    dispatch_should_make_body("PartialWithAbsolutePath", "Hello world", :index)
+  end
     
 end
