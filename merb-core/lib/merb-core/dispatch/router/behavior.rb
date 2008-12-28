@@ -528,6 +528,15 @@ module Merb
       # ==== Returns
       # Route :: The default route.
       # 
+      # ==== Note
+      # The block takes two parameters, request and params. The params that
+      # are passed into the block are *just* the placeholder params from the
+      # route. If you want the full parsed params, use request.params.
+      #
+      # The rationale for this is that request.params is a fairly slow
+      # operation, and if the full params parsing is not required, we would
+      # rather not do the full parsing.
+      # 
       # ==== Examples
       #   defer_to do |request, params|
       #     params.merge :controller => 'here',
