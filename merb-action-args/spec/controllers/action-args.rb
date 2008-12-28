@@ -47,4 +47,8 @@ class ActionArgs < Merb::Controller
     "#{foo} #{bar}"
   end
   
+  def with_default_array(foo, bar = [])
+    "#{foo} #{bar.inspect}"
+  end
+  
 end

@@ -15,6 +15,7 @@ unless RUBY_PLATFORM == "java"
         end
         sexp = ParseTree.translate(klass, args.last) if klass
       end
+      sexp = Unifier.new.process(sexp)
       self.new(sexp)
     end
   

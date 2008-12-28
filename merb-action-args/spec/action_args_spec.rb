@@ -50,4 +50,8 @@ describe Merb::AbstractController do
     dispatch_to(ActionArgs, :with_default_nil, :foo => "bar").body.should == "bar "
   end
   
+  it "should be able to handle [] defaults" do
+    dispatch_to(ActionArgs, :with_default_array, :foo => "bar").body.should == "bar []"
+  end
+  
 end
