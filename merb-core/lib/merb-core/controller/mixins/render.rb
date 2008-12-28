@@ -15,6 +15,10 @@ module Merb::RenderMixin
 
   module ClassMethods
 
+    def _templates_for
+      @_templates_for ||= {}
+    end
+
     # Return the default render options.
     #
     # ==== Returns
@@ -408,28 +412,31 @@ module Merb::RenderMixin
   #
   # :api: private
   def _template_for(context, content_type, controller=nil, template=nil, locals=[])
-    template_method, template_location = nil, nil
+    self.class._templates_for[[context, content_type, controller, template, locals]] ||= begin
+    
+      template_method, template_location = nil, nil
 
-    # absolute path to a template (:template => "/foo/bar")
-    if template.is_a?(String) && template =~ %r{^/}
-      template_location = self._absolute_template_location(template, content_type)
-      return [_template_method_for(template_location, locals), template_location]
-    end
-
-    self.class._template_roots.reverse_each do |root, template_meth|
-      # :template => "foo/bar.html" where root / "foo/bar.html.*" exists
-      if template
-        template_location = root / self.send(template_meth, template, content_type, nil)
-      # :layout => "foo" where root / "layouts" / "#{controller}.html.*" exists        
-      else
-        template_location = root / self.send(template_meth, context, content_type, controller)
+      # absolute path to a template (:template => "/foo/bar")
+      if template.is_a?(String) && template =~ %r{^/}
+        template_location = self._absolute_template_location(template, content_type)
+        return [_template_method_for(template_location, locals), template_location]
       end
-      
-      break if template_method = _template_method_for(template_location.to_s, locals)
-    end
 
-    # template_location is a Pathname
-    [template_method, template_location.to_s]
+      self.class._template_roots.reverse_each do |root, template_meth|
+        # :template => "foo/bar.html" where root / "foo/bar.html.*" exists
+        if template
+          template_location = root / self.send(template_meth, template, content_type, nil)
+        # :layout => "foo" where root / "layouts" / "#{controller}.html.*" exists        
+        else
+          template_location = root / self.send(template_meth, context, content_type, controller)
+        end
+      
+        break if template_method = _template_method_for(template_location.to_s, locals)
+      end
+
+      # template_location is a Pathname
+      [template_method, template_location.to_s]
+    end
   end
   
   # Return the template method for a location, and check to make sure the current controller
