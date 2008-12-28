@@ -37,7 +37,7 @@ module Merb
           env["HTTP_COOKIE"] = @__cookie_jar__.for(jar, uri)
         end
         
-        app = Merb::Rack::Application.new
+        app = Merb::Config[:app]
         rack = app.call(::Rack::MockRequest.env_for(uri.to_s, env))
 
         rack = Struct.new(:status, :headers, :body, :url, :original_env).

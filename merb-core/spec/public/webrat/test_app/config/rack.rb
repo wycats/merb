@@ -1,3 +1,21 @@
+module Merb
+  module Rack
+
+    class DummyWare < Merb::Rack::Middleware
+
+      def call(env)
+        if env["PATH_INFO"] =~ /^\/dummy/
+          [200, "", "This is a dummy content"]
+        else
+          @app.call(env)
+        end
+      end
+    end
+  end
+end
+
+use Merb::Rack::DummyWare
+
 # use PathPrefix Middleware if :path_prefix is set in Merb::Config
 if prefix = ::Merb::Config[:path_prefix]
   use Merb::Rack::PathPrefix, prefix

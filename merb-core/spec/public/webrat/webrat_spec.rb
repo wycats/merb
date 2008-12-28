@@ -72,4 +72,11 @@ describe "an app tested using the webrat proxies" do
     end
   end
   
+  describe "runs through defined Rack middle ware" do
+    it "returns the response in the rack middleware" do
+      resp = visit "/dummy"
+      resp.body.to_s.should == "This is a dummy content"
+    end
+  end
+  
 end
