@@ -49,6 +49,10 @@ module Gem
   end
   
   class MultiSourceIndex
+    # Used by merb.thor to confirm; not needed when MSI is in use
+    def load_gems_in(*args)
+    end
+    
     def search(*args)
       try = MAIN_INDEX.search(*args)
       return try unless try.empty?

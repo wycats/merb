@@ -10,7 +10,7 @@ module Merb
       end
 
       def destination_root
-        File.join(@destination_root, 'tasks')
+        File.join(@destination_root)
       end
 
       def common_templates_dir
@@ -18,9 +18,14 @@ module Merb
                                    'templates', 'application', 'common'))
       end
 
+      file :common_file do |file|
+        file.source = File.join(common_templates_dir, "merb_thor", "common.rb")
+        file.destination = File.join("bin", "common.rb")
+      end
+
       directory :thor_file do |directory|
         directory.source = File.join(common_templates_dir, "merb_thor")
-        directory.destination = File.join("merb.thor")
+        directory.destination = File.join("tasks", "merb.thor")
       end
     end
     add :thor,   ThorGenerator

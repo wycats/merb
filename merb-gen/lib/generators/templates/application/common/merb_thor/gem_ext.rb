@@ -1,8 +1,6 @@
 require "erb"
 
 Gem.pre_install_hooks.push(proc do |installer|
-  $INSTALLING << installer.spec
-  
   unless File.file?(installer.bin_dir / "common.rb")
     FileUtils.mkdir_p(installer.bin_dir)
     FileUtils.cp(File.dirname(__FILE__) / "common.rb", installer.bin_dir / "common.rb")
@@ -14,7 +12,7 @@ Gem.pre_install_hooks.push(proc do |installer|
     dep = Gem::Dependency.new(name, versions)
     unless dep.version_requirements.satisfied_by?(installer.spec.version)
       error "Cannot install #{installer.spec.full_name} " \
-            "for #{$INSTALLING.map {|x| x.full_name}.join(", ")}; " \
+            "for #{$INSTALLING}; " \
             "you required #{dep}"
       ::Thor::Tasks::Merb::Gem.rollback_trans
       exit!
@@ -58,7 +56,6 @@ class ::Gem::Uninstaller
 end
 
 Gem.post_install_hooks.push(proc do |installer|
-  $INSTALLING.pop
   source_index = installer.instance_variable_get("@source_index")
   ::Gem::Uninstaller._uninstall_others(
     source_index, installer.spec.name, installer.spec.version
@@ -84,7 +81,11 @@ class ::Gem::SpecFetcher
   def fetch(dependency, all = false, matching_platform = true)
     idx = Gem::SourceIndex.from_installed_gems
     
-    dep = idx.search(dependency).sort.last
+    reqs = dependency.version_requirements.requirements
+    
+    if reqs.size == 1 && reqs[0][0] == "="
+      dep = idx.search(dependency).sort.last
+    end
     
     if dep
       file = dep.loaded_from.dup

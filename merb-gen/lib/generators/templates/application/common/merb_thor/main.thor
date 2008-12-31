@@ -119,7 +119,7 @@ module Merb
         end
         
         rescue_failures do
-          $INSTALLING = []
+          $INSTALLING = dep
           _install(dep)
         end
       end
