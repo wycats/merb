@@ -63,6 +63,12 @@ describe Merb::Test::RequestHelper do
     request("/counter", :jar => :one).should have_body("2")
     request("/counter", :jar => :two).should have_body("2")
   end
+
+  it 'should allow a cookie to be set' do
+    cookie = request("/counter").headers['Set-Cookie']
+    request("/delete")
+    request("/counter", :cookie => cookie).should have_body("2")
+  end
   
   it "should respect cookie domains when no domain is explicitly set" do
     request("http://example.org/counter").should     have_body("1")
