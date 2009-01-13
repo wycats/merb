@@ -11,11 +11,8 @@ module Merb::Template
     # mod<Class, Module>::
     #   The class or module wherein this method should be defined.
     def self.compile_template(io, name, locals, mod)
-      path = File.expand_path(io.path)
-      config = (Merb::Plugins.config[:haml] || {}).inject({}) do |c, (k, v)|
-        c[k.to_sym] = v
-        c
-      end.merge :filename => path
+      path     = File.expand_path(io.path)
+      config   = Mash.new(Merb::Plugins.config[:haml].merge(:filename => path))
       template = ::Haml::Engine.new(io.read, config)
       template.def_method(mod, name, *locals)
       name
