@@ -10,8 +10,6 @@ begin
   require 'webrat/merb'
 rescue LoadError => e
   if Merb.testing?
-    Merb.fatal! "Couldn't load Webrat. You should run: sudo gem install webrat", e
-  else
     Merb.logger.warn! "Couldn't load Webrat, so some features, like `visit' will not " \
                       "be available. Please install webrat if you want these features."
   end
