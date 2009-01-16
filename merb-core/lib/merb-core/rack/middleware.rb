@@ -11,7 +11,7 @@ module Merb
       # @overridable
       # :api: plugin
       def deferred?(env)
-        @app.deferred?(env)
+        @app.deferred?(env) if @app.respond_to?(:deferred?)
       end
   
       # @overridable
