@@ -1,5 +1,3 @@
-Merb::Generators::ModelGenerator.option :migration, :as => :boolean, :desc => 'Also generate a dm-migration for the model'
-
 class Merb::Generators::ModelGenerator
   ##
   # Corrects case of common datamapper arguments.
