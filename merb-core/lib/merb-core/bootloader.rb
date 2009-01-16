@@ -704,7 +704,7 @@ class Merb::BootLoader::LoadClasses < Merb::BootLoader
         @writer.close
 
         # master process stores pid to merb.main.pid
-        Merb::Server.store_pid("main")
+        Merb::Server.store_pid("main") if Merb::Config[:daemonize] || Merb::Config[:cluster]
 
         if Merb::Config[:console_trap]
           Merb.trap("INT") {}
