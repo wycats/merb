@@ -53,6 +53,17 @@ if defined?(Merb::Plugins)
     end
   end
 
+  # wrap action in repository block to enable identity map
+  class Application < Merb::Controller
+    override! :_call_action
+    def _call_action(*)
+      repository do |r|
+        Merb.logger.debug "In repository block #{r.name}"
+        super
+      end
+    end
+  end
+
   generators = File.join(File.dirname(__FILE__), 'generators')
   Merb.add_generators generators / 'data_mapper_model'
   Merb.add_generators generators / 'data_mapper_resource_controller'
