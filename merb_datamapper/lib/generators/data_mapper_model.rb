@@ -7,7 +7,7 @@ class Merb::Generators::ModelGenerator
   end
   
   def after_generation
-     STDOUT << message("Don't forget to define the model schema in your #{file_name.capitalize} class")
+     STDOUT << message("Don't forget to define the model schema in your #{ Extlib::Inflection.camelize(file_name) } class")
   end
   
 end
