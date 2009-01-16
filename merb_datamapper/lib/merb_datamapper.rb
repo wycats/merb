@@ -42,7 +42,7 @@ if defined?(Merb::Plugins)
 
       # make sure all relationships are initialized after loading
       descendants = DataMapper::Resource.descendants.dup
-      descendants.each do |model|
+      descendants.dup.each do |model|
         descendants.merge(model.descendants) if model.respond_to?(:descendants)
       end
       descendants.each do |model|
