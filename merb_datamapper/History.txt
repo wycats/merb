@@ -1,1 +1,7 @@
+=== 1.0.8 / 2009-01-16
 
+* _call_action is now wrapped in a repository block
+
+* removed useless generator option
+
+* minor message cleanup

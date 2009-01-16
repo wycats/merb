@@ -1,5 +1,3 @@
-Merb::Generators::ModelGenerator.option :migration, :as => :boolean, :desc => 'Also generate a dm-migration for the model'
-
 class Merb::Generators::ModelGenerator
   ##
   # Corrects case of common datamapper arguments.
@@ -9,7 +7,7 @@ class Merb::Generators::ModelGenerator
   end
   
   def after_generation
-     STDOUT << message("Don't forget to define the model schema in your #{file_name.capitalize} class")
+     STDOUT << message("Don't forget to define the model schema in your #{ Extlib::Inflection.camelize(file_name) } class")
   end
   
 end
