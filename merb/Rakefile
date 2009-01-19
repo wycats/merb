@@ -33,7 +33,8 @@ gems = [
   ["dm-aggregates", "~> #{DM_VERSION}"],
   ["dm-migrations", "~> #{DM_VERSION}"],
   ["dm-validations", "~> #{DM_VERSION}"],
-  ["dm-sweatshop", "~> #{DM_VERSION}"]
+  ["dm-sweatshop", "~> #{DM_VERSION}"],
+  ["dm-serializer", "~> #{DM_VERSION}"]
 ]
 
 merb_spec = Gem::Specification.new do |s|
