@@ -68,4 +68,22 @@ if defined?(Merb::Plugins)
   Merb.add_generators generators / 'data_mapper_model'
   Merb.add_generators generators / 'data_mapper_resource_controller'
   Merb.add_generators generators / 'data_mapper_migration'
+  
+  # Override bug in DM::Timestamps
+  Merb::BootLoader.after_app_loads do
+    module DataMapper
+      module Timestamp
+        private
+        
+        def set_timestamps
+          return unless dirty? || new_record?
+          TIMESTAMP_PROPERTIES.each do |name,(_type,proc)|
+            if model.properties.has_property?(name)
+              model.properties[name].set(self, proc.call(self, model.properties[name])) unless attribute_dirty?(name)
+            end
+          end
+        end
+      end
+    end
+  end
 end
