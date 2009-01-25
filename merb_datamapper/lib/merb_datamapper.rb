@@ -5,6 +5,21 @@ if defined?(Merb::Plugins)
   require File.dirname(__FILE__) / "merb" / "session" / "data_mapper_session"
   Merb::Plugins.add_rakefiles "merb_datamapper" / "merbtasks"
 
+  # conditionally assign things, so as not to override previously set options.
+  # This is most relevent for :use_repository_block, which is used later in this file.
+  unless Merb::Plugins.config[:merb_datamapper].has_key?(:use_repository_block)
+    Merb::Plugins.config[:merb_datamapper][:use_repository_block] = true
+  end
+
+  unless Merb::Plugins.config[:merb_datamapper].has_key?(:session_storage_name)
+    Merb::Plugins.config[:merb_datamapper][:session_storage_name] = 'sessions'
+  end
+
+  unless Merb::Plugins.config[:merb_datamapper].has_key?(:session_repository_name)
+    Merb::Plugins.config[:merb_datamapper][:session_repository_name] = :default
+  end
+
+
   class Merb::Orms::DataMapper::Connect < Merb::BootLoader
     after BeforeAppLoads
 
@@ -53,13 +68,15 @@ if defined?(Merb::Plugins)
     end
   end
 
-  # wrap action in repository block to enable identity map
-  class Application < Merb::Controller
-    override! :_call_action
-    def _call_action(*)
-      repository do |r|
-        Merb.logger.debug "In repository block #{r.name}"
-        super
+  if Merb::Plugins.config[:merb_datamapper][:use_repository_block]
+    # wrap action in repository block to enable identity map
+    class Application < Merb::Controller
+      override! :_call_action
+      def _call_action(*)
+        repository do |r|
+          Merb.logger.debug "In repository block #{r.name}"
+          super
+        end
       end
     end
   end
