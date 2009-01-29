@@ -678,6 +678,16 @@ describe "radio_button" do
     r = @c.render :disabled
     r.should match_tag(:input, :type => "radio", :disabled => "disabled")
   end
+  
+  it "should be checked if :checked => true is passed in" do
+    r = @c.render :checked
+    r.should match_tag(:input, :type => "radio", :checked => "checked")
+  end
+  
+  it "should be unchecked if :checked => false is passed in" do
+    r = @c.render :unchecked
+    r.should_not include("checked=")
+  end
 end
 
 describe "radio_group" do
@@ -723,6 +733,11 @@ describe "radio_group" do
     radio = radio.scan(/<[^>]*>/)
     radio[0].should match_tag(:input, :type => "radio", :value => "foowee", :class => "CLASS radio")
     radio[3].should match_tag(:input, :type => "radio", :value => "baree", :class => "BAREE radio")
+  end
+  
+  it "should allow specifying a checked radio button" do
+    r = @c.render :checked
+    r.should match_tag(:input, :value => "bar", :checked => "checked")
   end
 end
 

@@ -171,6 +171,8 @@ module Merb::Helpers::Form::Builder
       case type
       when "checkbox"
         update_unbound_check_box(attrs)
+      when "radio"
+        update_unbound_radio_button(attrs)
       when "file"
         @multipart = true
       end
@@ -197,6 +199,10 @@ module Merb::Helpers::Form::Builder
       attrs[:checked] = "checked" if attrs.delete(:checked)
     end
 
+    def update_unbound_radio_button(attrs)
+      attrs[:checked] = "checked" if attrs.delete(:checked)
+    end
+    
     # Accepts a collection (hash, array, enumerable, your type) and returns a string of option tags. 
     # Given a collection where the elements respond to first and last (such as a two-element array), 
     # the "lasts" serve as option values and the "firsts" as option text. Hashes are turned into
