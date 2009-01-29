@@ -581,7 +581,13 @@ describe "bound_check_box" do
     r = @c.render :checked
     r.should match_tag(:input, :type =>"checkbox", :value => "foowee", :checked => "checked")
     r.should match_tag(:input, :type =>"checkbox", :value => "YES")
+  end
 
+  it "should render false attributes as not checked" do
+    @c.instance_variable_set(:@obj, FakeDMModel.new)
+    r = @c.render :basic_unchecked
+    r.should match_tag(:input, :type =>"checkbox", :name => "fake_dm_model[bat]")
+    r.should_not include("checked=")
   end
 end
 
