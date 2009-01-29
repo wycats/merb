@@ -1,4 +1,4 @@
 module Merb
-  VERSION = '1.0.8.1' unless defined?(Merb::VERSION)
-  DM_VERSION = '0.9.9' unless defined?(Merb::DM_VERSION)
+  VERSION = '1.0.9' unless defined?(Merb::VERSION)
+  DM_VERSION = '0.9.10' unless defined?(Merb::DM_VERSION)
 end

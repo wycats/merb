@@ -1,4 +1,47 @@
 module Merb
+  module System
+    class PortablePoller
+      def initialize(pid)
+        @pid = pid
+      end
+      # Memory usage in kilobytes (resident set size)
+      def memory
+        ps_int('rss')
+      end
+      
+      # Percentage memory usage
+      def percent_memory
+        ps_float('%mem')
+      end
+      
+      # Percentage CPU usage
+      def percent_cpu
+        ps_float('%cpu')
+      end
+      
+      private
+      
+      def ps_int(keyword)
+        `ps -o #{keyword}= -p #{@pid}`.to_i
+      end
+      
+      def ps_float(keyword)
+        `ps -o #{keyword}= -p #{@pid}`.to_f
+      end
+      
+      def ps_string(keyword)
+        `ps -o #{keyword}= -p #{@pid}`.strip
+      end
+      
+      def time_string_to_seconds(text)
+        _, minutes, seconds, useconds = *text.match(/(\d+):(\d{2}).(\d{2})/)
+        (minutes.to_i * 60) + seconds.to_i
+      end
+    end
+  end
+end
+
+module Merb
   module Rack
     class AbstractAdapter
 
@@ -106,10 +149,27 @@ module Merb
           Thread.new do
             catch(:new_worker) do
               loop do
-                pid = @pids[port + i]
+                pid, status = @pids[port + i], nil
+                poller = Merb::System::PortablePoller.new(pid)
                 begin
-                  # Watch for the pid to exit.
-                  _, status = Process.wait2(pid)
+                  loop do                    
+                    # Watch for the pid to exit.
+                    _, status = Process.wait2(pid, Process::WNOHANG)
+                    break if status
+                    
+                    if Merb::Config[:max_memory] && poller.memory > Merb::Config[:max_memory]
+                      Process.kill("INT", pid)
+                      if Process.kill(0, pid) rescue false
+                        sleep Merb::Config[:hang_time] || 5
+                        Process.kill(9, pid)
+                        Process.wait2(pid) if (Process.kill(0, pid) rescue false)
+                      end
+                      
+                      status = Struct.new(:exitstatus).new(nil)
+                      break
+                    end
+                    sleep 0.25
+                  end
 
                   # If the pid doesn't exist, we want to silently exit instead of
                   # raising here.
