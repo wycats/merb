@@ -3,8 +3,7 @@ if defined?(Merb)
   require "haml"
   require "merb-haml/template"
   Merb::Plugins.add_rakefiles(File.join(File.dirname(__FILE__) / "merb-haml" / "merbtasks"))
-
-  Merb::Plugins.config[:haml] ||= {}
+  
   Merb::Plugins.config[:sass] ||= {}
 
   Merb::BootLoader.after_app_loads do
