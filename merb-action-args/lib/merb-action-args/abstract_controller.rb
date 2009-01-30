@@ -32,9 +32,11 @@ class Merb::AbstractController
     arguments, defaults = self.class.action_argument_list[action]
     
     args = arguments.map do |arg, default|
-      arg = arg
       p = params.key?(arg.to_sym)
-      raise BadRequest unless p || (defaults && defaults.include?(arg))
+      unless p || (defaults && defaults.include?(arg))
+        missing = arguments.reject {|arg| params.key?(arg[0].to_sym || arg[1])}
+        raise BadRequest, "Your parameters (#{params.inspect}) were missing #{missing.join(", ")}"
+      end
       p ? params[arg.to_sym] : default
     end
     __send__(action, *args)

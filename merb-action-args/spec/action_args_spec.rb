@@ -54,4 +54,14 @@ describe Merb::AbstractController do
     dispatch_to(ActionArgs, :with_default_array, :foo => "bar").body.should == "bar []"
   end
   
+  it "should print out the missing parameters if all are required" do
+    lambda { dispatch_to(ActionArgs, :multi) }.should raise_error(
+      Merb::ControllerExceptions::BadRequest, /were missing foo, bar/)
+  end
+  
+  it "should only print out missing parameters" do
+    lambda { dispatch_to(ActionArgs, :multi, :foo => "Hello") }.should raise_error(
+      Merb::ControllerExceptions::BadRequest, /were missing bar/)          
+  end
+  
 end
