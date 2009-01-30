@@ -159,7 +159,7 @@ module Merb
                     
                     if Merb::Config[:max_memory] && poller.memory > Merb::Config[:max_memory]
                       Process.kill("INT", pid)
-                      if Process.kill(0, pid) rescue false
+                      if (Process.kill(0, pid) rescue false)
                         sleep Merb::Config[:hang_time] || 5
                         Process.kill(9, pid)
                         Process.wait2(pid) if (Process.kill(0, pid) rescue false)
