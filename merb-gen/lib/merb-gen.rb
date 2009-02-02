@@ -1,6 +1,6 @@
 require 'rubygems'
 require 'merb-core'
-require 'sha1'
+require 'digest/sha1'
 gem 'templater', '>= 0.3.2'
 require 'templater'
 
