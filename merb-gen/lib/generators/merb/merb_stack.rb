@@ -98,6 +98,10 @@ module Merb
         Merb::DM_VERSION
       end
       
+      def do_gems_version
+        Merb::DO_VERSION
+      end
+      
       # empty array means all files are considered to be just
       # files, not templates
       glob! "app"
