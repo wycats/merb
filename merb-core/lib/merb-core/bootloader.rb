@@ -90,9 +90,9 @@ module Merb
       def run
         Merb.started = true
         subklasses = subclasses.dup
-        until subklasses.empty?
+        until subclasses.empty?
           time = Time.now.to_i
-          bootloader = subklasses.shift
+          bootloader = subclasses.shift
           if (ENV['DEBUG'] || $DEBUG || Merb::Config[:verbose]) && Merb.logger
             Merb.logger.debug!("Loading: #{bootloader}")
           end
@@ -102,6 +102,7 @@ module Merb
           end
           self.finished << bootloader
         end
+        self.subclasses = subklasses
         nil
       end
 
