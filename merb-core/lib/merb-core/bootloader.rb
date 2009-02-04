@@ -359,7 +359,7 @@ end
 class Merb::BootLoader::Dependencies < Merb::BootLoader
 
   # ==== Returns
-  # Array[Gem::Dependency]:: The dependencies regiestered in init.rb.
+  # Array[Gem::Dependency]:: The dependencies registered in init.rb.
   #
   # :api: plugin
   cattr_accessor :dependencies
@@ -515,9 +515,11 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
     #
     # :api: private
     def self.load_initfile
+      return nil if Merb.const_defined?("INIT_RB_LOADED")
       if File.exists?(initfile)
         STDOUT.puts "Loading init file from #{initfile}" unless Merb.testing?
         load(initfile)
+        Merb.const_set("INIT_RB_LOADED", true)
       elsif !Merb.testing?
         Merb.fatal! "You are not in a Merb application, or you are in " \
           "a flat application and have not specified the init file. If you " \

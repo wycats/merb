@@ -153,6 +153,8 @@ module Kernel
     end
 
     if block = dep.require_block
+      # reset the require block so it doesn't get called a second time
+      dep.require_block = nil
       block.call
     end
 
