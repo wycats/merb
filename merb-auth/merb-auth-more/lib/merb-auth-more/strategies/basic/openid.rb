@@ -45,7 +45,8 @@ class Merb::Authentication
             begin
               openid_request = consumer.begin(identity_url)
               openid_reg = ::OpenID::SReg::Request.new
-              openid_reg.request_fields(required_reg_fields)
+              openid_reg.request_fields(required_reg_fields, true)
+              openid_reg.request_fields(optional_reg_fields)
               openid_request.add_extension(openid_reg)
               customize_openid_request!(openid_request)
               redirect!(openid_request.redirect_url("#{request.protocol}://#{request.host}", openid_callback_url))
@@ -118,6 +119,12 @@ class Merb::Authentication
         # @api overwritable
         def required_reg_fields
           ['nickname', 'email']
+        end
+        
+        #
+        # @api overwritable
+        def optional_reg_fields
+          ['fullname']
         end
         
         # Overwrite this to support an ORM other than DataMapper
