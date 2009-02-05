@@ -236,14 +236,9 @@ describe "text_field" do
 
   it "should return a basic text field based on the values passed in" do
     r = @c.render :basic
-    r.should have_selector("input[type=text][name=foo][value=bar]")
+    r.should have_selector("input[type=text][id=foo][name=foo][value=bar]")
   end
-
-  it "should provide an additional label tag if the :label option is passed in" do
-    r = @c.render :basic
-    r.should match(/<label>LABEL<\/label>/)
-  end
-
+  
   it "should update an existing :class with a new class" do
     r = @c.render :class
     r.should == "<input type=\"text\" class=\"awesome foobar text\"/>"
@@ -256,9 +251,14 @@ describe "text_field" do
 
   it "should provide an additional label tag if the :label option is passed in as a hash" do
     r = @c.render :label
-    r.should match(/<label class="cool">LABEL<\/label>/)
+    r.should have_selector("label[class=cool][for=foo]:contains('LABEL')")
   end
-
+  
+  it "should allow a symbolized name" do
+    r = @c.render :symbolized_name
+    r.should have_selector("input[type=text][name=foo][value=bar]")
+    r.should have_selector("label[for=foo]:contains('LABEL')")
+  end
 end
 
 describe "bound_text_field" do
@@ -270,7 +270,7 @@ describe "bound_text_field" do
 
   it "should take a string object and return a useful text control" do
     r = @c.render :basic
-    r.should have_selector("input[type=text][name='fake_model[foo]'][value=foowee]")
+    r.should have_selector("input[type=text][id=fake_model_foo][name='fake_model[foo]'][value=foowee]")
   end
 
   it "should take additional attributes and use them" do
@@ -282,6 +282,11 @@ describe "bound_text_field" do
     form = @c.render :basic
     form.should match(/<label.*>LABEL<\/label><input/)
     form.should_not have_selector("input[label=LABEL]")
+  end
+  
+  it "should render the label tag with the proper for= atttribute" do
+    form = @c.render :basic
+    form.should have_selector("label[for=fake_model_foo]:contains('LABEL')")
   end
 
   it "should not errorify the field for a new object" do
@@ -313,7 +318,7 @@ describe "bound_radio_button" do
 
   it "should take a string object and return a useful text control" do
     r = @c.render :basic
-    r.should have_selector("input[type=radio][name='fake_model[foo]'][value=foowee]")
+    r.should have_selector("input[type=radio][id=fake_model_foo][name='fake_model[foo]'][value=foowee]")
   end
 
   it "should take additional attributes and use them" do
@@ -325,6 +330,11 @@ describe "bound_radio_button" do
     form = @c.render :basic
     form.should have_selector("input + label:contains('LABEL')")
     form.should_not have_selector("input[label]")
+  end
+  
+  it "should render the label tag with the proper for= atttribute" do
+    form = @c.render :basic
+    form.should have_selector("label[for=fake_model_foo]:contains('LABEL')")
   end
 
   it "should not errorify the field for a new object" do
@@ -355,12 +365,12 @@ describe "password_field" do
 
   it "should return a basic password field, but omit the value" do
     r = @c.render :basic
-    r.should have_selector("input[type=password][name=foo]")
+    r.should have_selector("input[type=password][id=foo][name=foo]")
   end
 
   it "should provide an additional label tag if the :label option is passed in" do
     r = @c.render :basic
-    r.should have_selector("label:contains('LABEL')")
+    r.should have_selector("label[for=foo]:contains('LABEL')")
   end
 
   it "should be disabled if :disabled => true is passed in" do
@@ -379,7 +389,7 @@ describe "bound_password_field" do
 
   it "should take a string object and return a useful password control, but omit the value" do
     r = @c.render :basic
-    r.should match_tag(:input, :type => "password", :name => "fake_model[foo]")
+    r.should match_tag(:input, :type => "password", :id => "fake_model_foo", :name => "fake_model[foo]")
   end
 
   it "should take additional attributes and use them" do
@@ -391,6 +401,11 @@ describe "bound_password_field" do
     r = @c.render :basic
     r.should match(/<label.*>LABEL<\/label><input/)
     r.should_not match_tag(:input, :label => "LABEL")
+  end
+  
+  it "should render the label tag with the proper for= atttribute" do
+    form = @c.render :basic
+    form.should have_selector("label[for=fake_model_foo]:contains('LABEL')")
   end
 
   it "should not errorify the field for a new object" do
@@ -423,12 +438,14 @@ describe "check_box" do
 
   it "should return a basic checkbox based on the values passed in" do
     r = @c.render :basic
-    r.should match_tag(:input, :class => "checkbox", :name => "foo", :checked => "checked")
+    r.should match_tag(:input, :class => "checkbox", :id => "foo", :name => "foo", :checked => "checked")
   end
 
   it "should provide an additional label tag if the :label option is passed in" do
     result = @c.render :label
-    result.should match(/<input.*><label>LABEL<\/label>/)
+    result.should have_selector("label[for=foo]:contains('LABEL')")
+
+    result.should match(/<input.*><label/)
     res = result.scan(/<[^>]*>/)
     res[0].should_not match_tag(:input, :label => "LABEL")
   end
@@ -508,8 +525,8 @@ describe "bound_check_box" do
 
   it "should take a string and return a useful checkbox control" do
     r = @c.render :basic
-    r.should match_tag(:input, :type =>"checkbox", :name => "fake_model[baz]", :class => "checkbox", :value => "1", :checked => "checked", :id => "fake_model_baz")
-    r.should match_tag(:input, :type =>"hidden",   :name => "fake_model[baz]", :value => "0")
+    r.should match_tag(:input, :type =>"checkbox", :id => "fake_model_baz", :name => "fake_model[baz]", :class => "checkbox", :value => "1", :checked => "checked", :id => "fake_model_baz")
+    r.should match_tag(:input, :type =>"hidden",  :name => "fake_model[baz]", :value => "0")
   end
 
   it "should raise an error if you try to use :value" do
@@ -547,6 +564,11 @@ describe "bound_check_box" do
     form = @c.render :label
     form.should match( /<input.*><label.*>LABEL<\/label>/ )
     form.should_not match_tag(:input, :label => "LABEL")
+  end
+  
+  it "should render the label tag with the proper for= atttribute" do
+    form = @c.render :label
+    form.should have_selector("label[for=fake_model_foo]:contains('LABEL')")
   end
 
   it "should not errorify the field for a new object" do
@@ -599,7 +621,7 @@ describe "hidden_field" do
 
   it "should return a basic checkbox based on the values passed in" do
     r = @c.render :basic
-    r.should match_tag(:input, :type => "hidden", :name => "foo", :value => "bar")
+    r.should match_tag(:input, :type => "hidden", :id => "foo", :name => "foo", :value => "bar")
   end
 
   it "should not render a label if the :label option is passed in" do
@@ -623,7 +645,7 @@ describe "bound_hidden_field" do
 
   it "should take a string and return a hidden field control" do
     r = @c.render :basic
-    r.should match_tag(:input, :type =>"hidden", :name => "fake_model[foo]", :value => "foowee")
+    r.should match_tag(:input, :type =>"hidden", :id => "fake_model_foo", :name => "fake_model[foo]", :value => "foowee")
   end
 
   it "should render controls with errors if their attribute contains an error" do
@@ -636,7 +658,7 @@ describe "bound_hidden_field" do
     r.should_not match(/<label>LABEL/)
     r.should_not match_tag(:input, :label=> "LABEL")
   end
-
+  
   it "should not errorify the field for a new object" do
     r = @c.render :basic
     r.should_not match_tag(:input, :type => "hidden", :class => "error")
@@ -672,13 +694,15 @@ describe "radio_button" do
 
   it "should provide an additional label tag if the :label option is passed in" do
     result = @c.render :label
-    # result.should match(/<label.*>LABEL<\/label><input/)
-    # res = result.scan(/<[^>]*>/)
-    # res[2].should_not match_tag(:input, :label => "LABEL")
     result.should match(/<input.*><label.*>LABEL<\/label>/)
     res = result.scan(/<[^>]*>/)
     res[0].should_not match_tag(:input, :label => "LABEL")
   end
+
+  it "should render the label tag with the proper for= atttribute" do
+    form = @c.render :label
+    form.should have_selector("label[for='foo']:contains('LABEL')")
+  end  
 
   it "should be disabled if :disabled => true is passed in" do
     r = @c.render :disabled
@@ -704,9 +728,9 @@ describe "radio_group" do
 
   it "should return a group of radio buttons" do
     radio = @c.render :basic
-    radio = radio.scan(/<[^>]*>/)
-    radio[0].should match_tag(:input, :type => "radio", :value => "foowee")
-    radio[3].should match_tag(:input, :type => "radio", :value => "baree")
+    radio_tags = radio.scan(/<[^>]*>/)
+    radio_tags[0].should match_tag(:input, :type => "radio", :value => "foowee")
+    radio_tags[3].should match_tag(:input, :type => "radio", :value => "baree")
   end
 
   it "should provide an additional label tag for each option in array-based options" do
@@ -726,7 +750,12 @@ describe "radio_group" do
     radio.should match_tag(:input, :value => 'bar', :id => 'bar_id')
     radio.should match_tag(:label, :for => 'bar_id')
   end
-
+  
+  it "should render the label tags on each radio button with the proper for= atttribute" do
+    form = @c.render :hash
+    form.should have_selector("label[for='bar_id']:contains('Bar')")
+  end  
+  
   it "should apply attributes to each element" do
     radio = @c.render :attributes
     radio = radio.scan(/<[^>]*>/)
@@ -757,8 +786,8 @@ describe "bound_radio_group" do
 
   it "should return a group of radio buttons" do
     r = @c.render :basic
-    r.should match_tag(:input, :type => "radio", :name => "fake_model[foo]", :value => "foowee", :checked => "checked")
-    r.should match_tag(:input, :type => "radio", :name => "fake_model[foo]", :value => "baree")
+    r.should match_tag(:input, :type => "radio", :id => "fake_model_foo_foowee", :name => "fake_model[foo]", :value => "foowee", :checked => "checked")
+    r.should match_tag(:input, :type => "radio", :id => "fake_model_foo_baree", :name => "fake_model[foo]", :value => "baree")
     r.should_not match_tag(:checked => "checked")
   end
 
@@ -768,6 +797,12 @@ describe "bound_radio_group" do
     radio = r.scan(/<[^>]*>/)[2..-2]
     radio[0].should_not match_tag(:input, :label => "LABEL")
     radio[3].should_not match_tag(:input, :label => "LABEL")
+  end
+  
+  it "should render the label tags on each radio option with the proper for= atttribute" do
+    form = @c.render :basic
+    form.should have_selector("label[for=fake_model_foo_foowee]:contains('foowee')")
+    form.should have_selector("label[for=fake_model_foo_baree]:contains('baree')")
   end
 
   it "should accept array of hashes as options" do
@@ -810,12 +845,12 @@ describe "text_area" do
 
   it "should should return a basic text area based on the values passed in" do
     r = @c.render :basic
-    r.should match_tag(:textarea, :name => "foo")
+    r.should match_tag(:textarea, :name => "foo", :id => "foo")
   end
 
   it "should handle a nil content" do
     r = @c.render :nil
-    r.should == "<textarea name=\"foo\"></textarea>"
+    r.should == "<textarea name=\"foo\" id=\"foo\"></textarea>"
   end
 
 
@@ -826,10 +861,12 @@ describe "text_area" do
   #   text_area("CONTENT", nil).should == "<textarea>CONTENT</textarea>"
   # end
 
-  it "should render a label when the label is passed in" do
+  it "should render a label when the :label option is passed in" do
     result = @c.render :label
     result.should match(/<label.*>LABEL<\/label><textarea/)
     result.should_not match_tag(:textarea, :label => "LABEL")
+
+    result.should have_selector("label[for=foo]:contains('LABEL')")
   end
 
   it "should be disabled if :disabled => true is passed in" do
@@ -851,6 +888,11 @@ describe "bound_text_area" do
     r.should match_tag(:textarea, :id => 'fake_model_foo', :name => "fake_model[foo]")
     r.should =~ />\s*#{@obj.foo}\s*</
   end
+  
+  it "should render the label tag with the proper for= atttribute" do
+    form = @c.render :label
+    form.should have_selector("label[for='fake_model_foo']:contains('LABEL')")
+  end
 end
 
 describe "select" do
@@ -863,10 +905,30 @@ describe "select" do
     r = @c.render :blank
     r.should =~ /<option.*>\s*<\/option>/
   end
+  
+  it "should render the select tag proper attributes" do
+    r = @c.render :basic
+    r.should match_tag( :select, :name => "foo", :id => "foo")
+    r.should have_selector("select[name=foo] option:contains('one')")
+    r.should have_selector("select[name=foo] option:contains('two')")
+    r.should have_selector("select[name=foo] option:contains('three')")
+  end
+  
+  it "should allow selecting an option by passing in :selected => 'three'" do
+    r = @c.render :selected
+    r.should_not have_selector("select[name=foo] option[selected]:contains('one')")
+    r.should_not have_selector("select[name=foo] option[selected]:contains('two')")
+    r.should have_selector("select[name=foo] option[selected]:contains('three')")
+  end
 
   it "should render the select tag with suffix '[]' to name when :multiple => true" do
     r = @c.render :multiple
-    r.should match_tag( :select, :name => "foo[]" )
+    r.should match_tag( :select, :name => "foo[]")
+  end
+  
+  it "should render a label when the :label option is passed in" do
+    result = @c.render :label
+    result.should have_selector("label[for=foo]:contains('LABEL')")
   end
 end
 
@@ -910,6 +972,11 @@ describe "bound_select" do
     r.should match_tag( :select, :title => "TITLE" )
     r.should match_tag( :option, :value => '' )
     r.should =~ /<option.*>\s*<\/option>/
+  end
+  
+  it "should render the label tag with the proper for= atttribute" do
+    form = @c.render :label
+    form.should have_selector("label[for=fake_model_foo]:contains('LABEL')")
   end
 
   # Not sure how this makes any sense
@@ -1092,12 +1159,12 @@ describe "file_field" do
 
   it "should return a basic file field based on the values passed in" do
     r = @c.render :with_values
-    r.should have_selector("input[type=file][name=foo][value=bar]")
+    r.should have_selector("input[type=file][id=foo][name=foo][value=bar]")
   end
 
   it "should wrap the field in a label if the :label option is passed to the file" do
     r = @c.render :with_label
-    r.should have_selector("label:contains('LABEL') + input.file[type=file]")
+    r.should have_selector("label[for=foo]:contains('LABEL') + input.file[type=file]")
   end
 
   it "should be disabled if :disabled => true is passed in" do
@@ -1120,7 +1187,7 @@ describe "bound_file_field" do
 
   it "should take a string object and return a useful file control" do
     r  = @c.render :takes_string
-    r.should have_selector("input[type=file][name='fake_model[foo]'][value=foowee]")
+    r.should have_selector("input[type=file][id=fake_model_foo][name='fake_model[foo]'][value=foowee]")
   end
 
   it "should take additional attributes and use them" do
@@ -1130,7 +1197,7 @@ describe "bound_file_field" do
 
   it "should wrap the file_field in a label if the :label option is passed in" do
     r = @c.render :with_label
-    r.should have_selector("label:contains('LABEL')")
+    r.should have_selector("label[for=fake_model_foo]:contains('LABEL')")
     r.should_not have_selector("input[label=LABEL]")
   end
 end

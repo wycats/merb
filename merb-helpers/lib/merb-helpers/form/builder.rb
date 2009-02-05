@@ -321,6 +321,8 @@ module Merb::Helpers::Form::Builder
     def unbound_label(attrs = {})
       if attrs[:id]
         label_attrs = {:for => attrs[:id]}
+      elsif attrs[:name]
+        label_attrs = {:for => attrs[:name]}
       else
         label_attrs = {}
       end
@@ -372,6 +374,8 @@ module Merb::Helpers::Form::Builder
     end
 
     def update_unbound_controls(attrs, type)
+      attrs.merge!(:id => attrs[:name]) if attrs[:name] && !attrs[:id]
+
       case type
       when "text", "radio", "password", "hidden", "checkbox", "file"
         add_css_class(attrs, type)
