@@ -24,7 +24,7 @@
 Merb::Config.use do |c|
   
   # The session_secret_key is only required for the cookie session store.
-  c[:session_secret_key]  = '<%= SHA1.new(rand(100000000000).to_s).to_s %>'
+  c[:session_secret_key]  = '<%= Digest::SHA1.hexdigest(rand(100000000000).to_s).to_s %>'
   
   # There are various options here, by default Merb comes with 'cookie', 
   # 'memory', 'memcache' or 'container'.  
