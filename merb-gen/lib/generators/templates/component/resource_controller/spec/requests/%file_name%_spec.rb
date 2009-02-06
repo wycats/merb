@@ -113,7 +113,7 @@ describe "resource(@<%= singular_model %>)", :given => "a <%= singular_model %> 
         :params => { :<%= singular_model %> => {:id => @<%= singular_model %>.id} })
     end
   
-    it "redirect to the article show action" do
+    it "redirect to the <%= singular_model %> show action" do
       @response.should redirect_to(resource(@<%= singular_model %>))
     end
   end
