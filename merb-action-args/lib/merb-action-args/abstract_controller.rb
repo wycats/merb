@@ -11,7 +11,7 @@ class Merb::AbstractController
     #   The controller that is being inherited from Merb::AbstractController.
     def inherited(klass)
       klass.action_argument_list = Hash.new do |h,k|
-        args = klass.instance_method(k).get_args
+        args = klass.new({}).method(k).get_args
         arguments = args[0]
         defaults = []
         arguments.each {|a| defaults << a[0] if a.size == 2} if arguments

@@ -96,8 +96,8 @@ if defined?(Merb::Plugins)
                 # If the key exists on the opposite method, raise exception
                 if self.send(params_method).include?(key)
                   case method
-                  when :accessible_params_args : raise "Cannot make accessible a controller (#{self}) that is already protected"
-                  when :protected_params_args : raise "Cannot protect controller (#{self}) that is already accessible"
+                  when :accessible_params_args then raise "Cannot make accessible a controller (#{self}) that is already protected"
+                  when :protected_params_args then raise "Cannot protect controller (#{self}) that is already accessible"
                   end
                 end
               end

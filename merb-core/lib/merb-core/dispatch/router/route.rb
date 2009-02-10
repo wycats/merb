@@ -589,9 +589,7 @@ module Merb
             captures = ""
 
             if (max = capturing_parentheses_count(value)) > 0
-              captures << (1..max).to_a.map { |n| "#{key}#{n}" }.join(", ")
-              captures << " = "
-              captures << (1..max).to_a.map { |n| "$#{n}" }.join(", ")
+              captures << (1..max).to_a.map { |n| "#{key}#{n} = $#{n}" }.join("; ")
             end
 
             # Note: =~ is slightly faster than .match

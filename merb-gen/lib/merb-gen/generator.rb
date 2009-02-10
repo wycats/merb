@@ -58,7 +58,7 @@ module Merb
         modules.each_with_index do |mod, i|
           concat(("  " * (indent + i)) + "module #{mod}\n", block.binding)
         end
-        text = text.to_a.map{ |line| ("  " * modules.size) + line }.join
+        text = Array(text).map{ |line| ("  " * modules.size) + line }.join
         concat(text, block.binding)
         modules.reverse.each_with_index do |mod, i|
           concat(("  " * (indent + modules.size - i - 1)) + "end # #{mod}\n", block.binding)
