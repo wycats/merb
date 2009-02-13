@@ -272,14 +272,14 @@ module Erubis
     # :api: private
     def add_stmt2(src, code, tailch)
       src << code
-      src << " ).to_s; " if tailch == "="
+      src << ") ).to_s; " if tailch == "="
       src << ';' unless code[-1] == ?\n
     end
     
     # :api: private
     def add_expr_literal(src, code)
       if code =~ /(do|\{)(\s*\|[^|]*\|)?\s*\Z/
-        src << ' @_erb_buf.concat( ' << code << "; "
+        src << ' @_erb_buf.concat( (' << code << "; "
       else
         src << ' @_erb_buf.concat((' << code << ').to_s);'
       end
