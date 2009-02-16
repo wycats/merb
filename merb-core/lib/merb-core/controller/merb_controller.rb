@@ -167,7 +167,7 @@ class Merb::Controller < Merb::AbstractController
     callables = []
     klass = self
     begin
-      callables << (klass.public_instance_methods(false) + klass._shown_actions).map(&:to_s) - klass._hidden_actions
+      callables << (klass.public_instance_methods(false) + klass._shown_actions).map{|m| m.to_s} - klass._hidden_actions
       klass = klass.superclass
     end until klass == Merb::AbstractController || klass == Object
     callables.flatten.reject{|action| action =~ /^_.*/}.map {|x| x.to_s}
