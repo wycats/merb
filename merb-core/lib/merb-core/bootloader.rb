@@ -1306,6 +1306,19 @@ class Merb::BootLoader::RackUpApplication < Merb::BootLoader
   end
 end
 
+class Merb::BootLoader::BackgroundServices < Merb::BootLoader
+  # Start background services, such as the run_later worker thread.
+  #
+  # ==== Returns
+  # nil
+  #
+  # :api: plugin
+  def self.run
+    Merb::Worker.start unless Merb.testing? || Merb::Worker.started?
+    nil
+  end
+end
+
 class Merb::BootLoader::ReloadClasses < Merb::BootLoader
 
   class TimedExecutor

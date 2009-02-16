@@ -21,6 +21,14 @@ module Merb
         end
         @worker
       end      
+      
+      # ==== Returns
+      # Whether the Merb::Worker instance is already started.
+      #
+      # :api: private
+      def started?
+        !@worker.nil?
+      end
     end
     
     # Creates a new worker thread that loops over the work queue.
