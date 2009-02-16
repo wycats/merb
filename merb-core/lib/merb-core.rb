@@ -465,7 +465,7 @@ module Merb
       Merb.logger.fatal! "\e[34mFRAMEWORK_ROOT\e[0m = #{Merb.framework_root}"
       Merb.logger.fatal!
       Merb.logger.fatal! "\e[31m#{e.class}: \e[1;31;47m#{e.message}\e[0m"
-      e.backtrace.each do |line|
+      e.backtrace.each_line do |line|
         Merb.logger.fatal! "\e[31m#{line}\e[0m"
       end      
     end
