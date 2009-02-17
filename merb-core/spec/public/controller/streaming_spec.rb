@@ -6,8 +6,8 @@ describe Merb::Controller, "#nginx_send_file" do
   
   before do
     Merb.push_path(:layout, File.dirname(__FILE__) / "controllers" / "views" / "layouts")    
-    Merb::Router.prepare do |r|
-      r.default_routes
+    Merb::Router.prepare do
+      default_routes
     end
 
     @controller = dispatch_to(Merb::Test::Fixtures::Controllers::Streaming, :x_accel_redirect)

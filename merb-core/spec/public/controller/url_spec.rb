@@ -293,23 +293,23 @@ end
 
 describe Merb::Controller, "absolute_url" do
   before do
-    Merb::Router.prepare do |r|
+    Merb::Router.prepare do
       identify :to_param do
-        r.resources :monkeys do |m|
+        resources :monkeys do |m|
           m.resources :blues do |b|
             b.resources :pinks
           end
         end
-        r.resources :donkeys do |d|
+        resources :donkeys do |d|
           d.resources :blues
         end
-        r.resource :red do |red|
+        resource :red do |red|
           red.resources :blues
         end
-        r.match(%r{/foo/(\d+)/}).to(:controller => 'asdf').name(:regexp)
-        r.match('/people(/:name)(.:format)').to(:controller => 'people', :action => 'show').name(:person)
-        r.match('/argstrs').to(:controller => "args").name(:args)
-        r.default_routes
+        match(%r{/foo/(\d+)/}).to(:controller => 'asdf').name(:regexp)
+        match('/people(/:name)(.:format)').to(:controller => 'people', :action => 'show').name(:person)
+        match('/argstrs').to(:controller => "args").name(:args)
+        default_routes
       end
     end
     

@@ -3,8 +3,8 @@ require File.join(File.dirname(__FILE__), "spec_helper")
 describe Merb::Controller, " displaying objects based on mime type" do
 
   before do
-    Merb::Router.prepare do |r|
-      r.default_routes
+    Merb::Router.prepare do
+      default_routes
     end
   end
 
