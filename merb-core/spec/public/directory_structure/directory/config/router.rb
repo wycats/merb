@@ -1,3 +1,3 @@
-Merb::Router.prepare do |r|
-  r.default_routes
+Merb::Router.prepare do
+  default_routes
 end
