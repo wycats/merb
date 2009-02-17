@@ -20,12 +20,12 @@ module Spec
   end
 end
 
-def run_spec(spec, base_dir)
+def run_spec(spec, base_dir, run_opts = "-fs")
 
   $VERBOSE = nil
   err, out = StringIO.new, StringIO.new
   def out.tty?() true end
-  options = Spec::Runner::OptionParser.parse(%W(#{spec} -fs --color), err, out)
+  options = Spec::Runner::OptionParser.parse(%W(#{spec} --color #{run_opts}), err, out)
   options.filename_pattern = File.expand_path(spec)
   failure = ! Spec::Runner::CommandLine.run(options)
   File.open(base_dir / "results" / "#{File.basename(spec)}_out", "w") do |file|

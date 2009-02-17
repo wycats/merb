@@ -111,7 +111,7 @@ def run_specs(globs, spec_cmd='spec', run_opts = "-c", except = [])
       Dir[glob].each do |spec|
         if forking
           Kernel.fork do
-            run_spec(spec, base_dir)
+            run_spec(spec, base_dir, run_opts)
           end
           Process.wait
         else
