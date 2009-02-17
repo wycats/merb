@@ -6,8 +6,8 @@ describe Merb::Controller, "#etag=" do
   
   before do
     Merb.push_path(:layout, File.dirname(__FILE__) / "controllers" / "views" / "layouts")    
-    Merb::Router.prepare do |r|
-      r.default_routes
+    Merb::Router.prepare do
+      default_routes
     end
   end
 
@@ -22,8 +22,8 @@ end
 describe Merb::Controller, "#last_modified=" do
   before do
     Merb.push_path(:layout, File.dirname(__FILE__) / "controllers" / "views" / "layouts")    
-    Merb::Router.prepare do |r|
-      r.default_routes
+    Merb::Router.prepare do
+      default_routes
     end
   end
 
