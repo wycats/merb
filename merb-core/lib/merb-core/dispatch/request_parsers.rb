@@ -59,8 +59,8 @@ module Merb
       status = input.read(boundary_size)
       return {} if status == nil || status.empty?
       raise ControllerExceptions::MultiPartParseError, "bad content body:\n'#{status}' should == '#{boundary + EOL}'"  unless status == boundary + EOL
-      # second argument to Regexp.quote is for KCODE
-      rx = /(?:#{EOL})?#{Regexp.quote(boundary,'n')}(#{EOL}|--)/
+
+      rx = /(?:#{EOL})?#{Regexp.quote(boundary)}(#{EOL}|--)/
       loop {
         head      = nil
         body      = ''
