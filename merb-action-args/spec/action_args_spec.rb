@@ -63,5 +63,9 @@ describe Merb::AbstractController do
     lambda { dispatch_to(ActionArgs, :multi, :foo => "Hello") }.should raise_error(
       Merb::ControllerExceptions::BadRequest, /were missing bar/)          
   end
-  
+
+  it "should raise NotImplemented on a controller that returns nil" do
+    lambda { dispatch_to(ActionArgs, :zilch) }.should raise_error(
+      Merb::ControllerExceptions::NotImplemented)
+  end
 end

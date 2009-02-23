@@ -39,6 +39,6 @@ class Merb::AbstractController
       end
       p ? params[arg.to_sym] : default
     end
-    __send__(action, *args)
+    __send__(action, *args) || raise(NotImplemented, "Actions must return a string result. Did you forget to call render?")
   end
 end
