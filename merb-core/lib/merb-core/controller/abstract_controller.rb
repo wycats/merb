@@ -312,7 +312,7 @@ module Merb
     # :api: plugin
     # @overridable
     def _call_action(action)
-      send(action)
+      send(action) || raise(NotImplemented, "Actions must return a string result. Did you forget to call render?")
     end
   
     # Calls a filter chain. 
