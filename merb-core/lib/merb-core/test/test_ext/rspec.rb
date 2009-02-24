@@ -57,7 +57,9 @@ module Merb
           params = args.last.is_a?(Hash) ? args.last : {}
           if example_group_block
             params[:when] = params[:when] || params[:given]
-            ret.module_eval %{it_should_behave_like "#{params[:when]}"} if params[:when]
+            [params[:when]].flatten.compact.each do |w|
+              ret.module_eval %{it_should_behave_like "#{w}"}
+            end
           end
         end
         alias context describe
