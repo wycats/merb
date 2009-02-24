@@ -271,4 +271,34 @@ describe "External JavaScript and Stylesheets" do
     result.should match(%r{/stylesheets/style.css})
     result.should match(%r{/stylesheets/layout.css})
   end
+  
+  it 'should create a js include tag with a prefix' do
+    result = js_include_tag('jquery.js', :effects, :prefix => "http://cdn.example.com")
+    result.scan(/<script/).should have(2).things
+    result.should match(%r{http://cdn.example.com/javascripts/jquery.js})
+    result.should match(%r{http://cdn.example.com/javascripts/effects.js})
+  end
+
+  it 'should create a js include tag with a suffix' do
+    @js_version = "3.0.1"
+    result = js_include_tag('jquery.js', :effects, :suffix => ".#{@js_version}")
+    result.scan(/<script/).should have(2).things
+    result.should match(%r{/javascripts/jquery.3.0.1.js})
+    result.should match(%r{/javascripts/effects.3.0.1.js})
+  end
+
+  it 'should create a css include tag with a prefix' do
+    result = css_include_tag('style.css', :layout, :prefix => "http://cdn.example.com")
+    result.scan(/<link/).should have(2).things
+    result.should match(%r{http://cdn.example.com/stylesheets/style.css})
+    result.should match(%r{http://cdn.example.com/stylesheets/layout.css})
+  end
+
+  it 'should create a css include tag with a suffix' do
+    @css_version = "0.1.3"
+    result = css_include_tag('style.css', :layout, :suffix => ".#{@css_version}")
+    result.scan(/<link/).should have(2).things
+    result.should match(%r{/stylesheets/style.0.1.3.css})
+    result.should match(%r{/stylesheets/layout.0.1.3.css})
+  end
 end

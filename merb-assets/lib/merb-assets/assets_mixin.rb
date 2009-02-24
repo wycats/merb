@@ -407,6 +407,10 @@ module Merb
     # ==== Options
     # :bundle<~to_s>::
     #   The name of the bundle the scripts should be combined into.
+    # :prefix<~to_s>::
+    #   prefix to add to include tag, overrides any set in Merb::Plugins.config[:asset_helpers][:js_prefix]
+    # :suffix<~to_s>::
+    #   suffix to add to include tag, overrides any set in Merb::Plugins.config[:asset_helpers][:js_suffix]
     #
     # ==== Returns
     # String:: The JavaScript include tag(s).
@@ -426,12 +430,21 @@ module Merb
     #   # => <script src="/javascripts/jquery.js" type="text/javascript"></script>
     #   #    <script src="/javascripts/validation.js" type="text/javascript"></script>
     #
+    #   js_include_tag :application, :validation, :prefix => "http://cdn.example.com"
+    #   # => <script src="http://cdn.example.com/javascripts/application.js" type="text/javascript"></script>
+    #   #    <script src="http://cdn.example.com/javascripts/validation.js" type="text/javascript"></script>
+    #
+    #   js_include_tag :application, :validation, :suffix => ".#{MyApp.version}"
+    #   # => <script src="/javascripts/application.1.0.3.js" type="text/javascript"></script>
+    #   #    <script src="/javascripts/validation.1.0.3.js" type="text/javascript"></script>
     def js_include_tag(*scripts)
       options = scripts.last.is_a?(Hash) ? scripts.pop : {}
       return nil if scripts.empty?
       
       reload = options[:reload] || Merb::Config[:reload_templates]
-
+      js_prefix = options[:prefix] || Merb::Plugins.config[:asset_helpers][:js_prefix]
+      js_suffix = options[:suffix] || Merb::Plugins.config[:asset_helpers][:js_suffix]
+      
       if (bundle_name = options[:bundle]) && Merb::Assets.bundle? && scripts.size > 1
         bundler = Merb::Assets::JavascriptAssetBundler.new(bundle_name, *scripts)
         bundled_asset = bundler.bundle!
@@ -441,7 +454,13 @@ module Merb
       tags = ""
 
       for script in scripts
-        src = asset_path(:javascript, script)
+        src = js_prefix.to_s + asset_path(:javascript, script)
+        
+        if js_suffix
+          ext_length = ASSET_FILE_EXTENSIONS[:javascript].length + 1
+          src.insert(-ext_length,js_suffix)
+        end
+        
         src += src.include?('?') ? "&#{random_query_string}" : "?#{random_query_string}" if reload
         attrs = {
           :src => src,
@@ -464,6 +483,10 @@ module Merb
     #   The name of the bundle the stylesheets should be combined into.
     # :media<~to_s>::
     #   The media attribute for the generated link element. Defaults to :all.
+    # :prefix<~to_s>::
+    #   prefix to add to include tag, overrides any set in Merb::Plugins.config[:asset_helpers][:css_prefix]
+    # :suffix<~to_s>::
+    #   suffix to add to include tag, overrides any set in Merb::Plugins.config[:asset_helpers][:css_suffix]
     #
     # ==== Returns
     # String:: The CSS include tag(s).
@@ -488,11 +511,19 @@ module Merb
     #
     #  css_include_tag :style, :charset => 'iso-8859-1'
     #  # => <link href="/stylesheets/style.css" media="print" rel="Stylesheet" type="text/css" charset="iso-8859-1" />
+    #
+    #  css_include_tag :style, :prefix => "http://static.example.com"
+    #  # => <link href="http://static.example.com/stylesheets/style.css" media="print" rel="Stylesheet" type="text/css" />
+    #
+    #  css_include_tag :style, :suffix => ".#{MyApp.version}"
+    #  # => <link href="/stylesheets/style.1.0.0.css" media="print" rel="Stylesheet" type="text/css" />
     def css_include_tag(*stylesheets)
       options = stylesheets.last.is_a?(Hash) ? stylesheets.pop : {}
       return nil if stylesheets.empty?
 
       reload = options[:reload] || Merb::Config[:reload_templates]
+      css_prefix = options[:prefix] || Merb::Plugins.config[:asset_helpers][:css_prefix]
+      css_suffix = options[:suffix] || Merb::Plugins.config[:asset_helpers][:css_suffix]
 
       if (bundle_name = options[:bundle]) && Merb::Assets.bundle? && stylesheets.size > 1
         bundler = Merb::Assets::StylesheetAssetBundler.new(bundle_name, *stylesheets)
@@ -503,7 +534,13 @@ module Merb
       tags = ""
 
       for stylesheet in stylesheets
-        href = asset_path(:stylesheet, stylesheet)
+        href = css_prefix.to_s + asset_path(:stylesheet, stylesheet)
+        
+        if css_suffix
+          ext_length = ASSET_FILE_EXTENSIONS[:stylesheet].length + 1
+          href.insert(-ext_length,css_suffix)
+        end
+        
         href += href.include?('?') ? "&#{random_query_string}" : "?#{random_query_string}" if reload
         attrs = {
           :href => href,
