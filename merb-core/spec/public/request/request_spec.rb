@@ -122,6 +122,11 @@ describe Merb::Request, "#remote_ip" do
     request = fake_request({:remote_addr => "www.example.com"})
     request.remote_ip.should == "www.example.com"    
   end
+  
+  it "filters private IPs from X_FORWARDED_FOR" do
+    request = fake_request({:http_x_forwarded_for => "10.0.0.0,10.255.255.255,172.16.0.0,172.24.0.0,172.31.255.255,192.168.0.0,192.168.255.255,www.example.com"})
+    request.remote_ip.should == 'www.example.com'
+  end
 end
 
 describe Merb::Request, "#cookies" do
