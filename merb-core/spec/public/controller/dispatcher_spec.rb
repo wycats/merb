@@ -526,7 +526,7 @@ describe Merb::Dispatcher do
     end
     
     it "should have Application marked as abstract" do
-      Application.should be_abstract
+      ::Application.should be_abstract
     end
     
     it "should have AbstractOne marked as abstract" do
