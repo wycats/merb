@@ -38,7 +38,7 @@ module Merb::Test::MultipartRequestHelper
     # String::
     #   The file parameter in a form suitable for a multipart request.
     def to_multipart
-      return %(Content-Disposition: form-data; name="#{key}"; filename="#{filename}"\r\n) + "Content-Type: #{MIME::Types.type_for(@filename)}\r\n\r\n" + content + "\r\n"
+      return %(Content-Disposition: form-data; name="#{key}"; filename="#{filename}"\r\n) + "Content-Type: #{MIME::Types.type_for(@filename).first}\r\n\r\n" + content + "\r\n"
     end
   end
 
