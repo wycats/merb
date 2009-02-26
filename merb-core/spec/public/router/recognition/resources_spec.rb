@@ -275,7 +275,7 @@ describe "When recognizing requests," do
   
   describe "a resource an identify" do
     
-    class Email ; end
+    class ::Email ; end
     
     it "should set the keys for the resource when the identify wraps the resource declaration" do
       Merb::Router.prepare do
