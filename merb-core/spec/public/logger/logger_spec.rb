@@ -62,7 +62,7 @@ describe Merb::Logger do
     end
 
     it 'allows level value be specified as a String' do
-      Merb::Config[:log_level] = 'warn'
+      Merb::Config[:log_level] = :warn
       Merb.reset_logger!
       Merb.logger.level.should == 4
     end

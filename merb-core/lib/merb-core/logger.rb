@@ -119,7 +119,7 @@ module Merb
     def flush
       return unless @buffer.size > 0
       @mutex.synchronize do
-        @log.write(@buffer.slice!(0..-1).to_s)
+        @log.write(@buffer.slice!(0..-1).join(''))
       end
     end
 
