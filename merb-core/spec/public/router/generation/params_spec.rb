@@ -44,7 +44,7 @@ describe "When generating URLs," do
   
   describe "passing params anonymously to resource routes with identifiers" do
     
-    module AP
+    module ::AP
       class ORM ; end
       class User    < ORM ; def id ; 10 ; end ; end
       class Comment < ORM ; def id ; 25 ; end ; end
