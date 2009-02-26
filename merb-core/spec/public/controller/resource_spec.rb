@@ -4,12 +4,12 @@ require 'ostruct'
 
 describe Merb::Controller, " #resource" do
   
-  class Orm     < OpenStruct ; def id ; @table[:id] ; end ; end
-  class User    < Orm ; end
-  class Comment < Orm ; end
-  class Forum   < Orm ; end
+  class ::Orm     < ::OpenStruct ; def id ; @table[:id] ; end ; end
+  class ::User    < Orm ; end
+  class ::Comment < Orm ; end
+  class ::Forum   < Orm ; end
 
-  module Namespaced
+  module ::Namespaced
     class User < Orm ; end
   end
   
