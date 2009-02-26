@@ -41,7 +41,7 @@ module ID
 
     before(:each) do
       Merb::Router.prepare do
-        identify Account => :url, User => :name, ORM => :id, Resource => :identifier do
+        identify ::ID::Account => :url, ::ID::User => :name, ::ID::ORM => :id, ::ID::Resource => :identifier do
           match("/:account") do
             resources :users
           end
@@ -93,7 +93,7 @@ module ID
       
       it "should be able to specify an array of identifiers" do
         Merb::Router.prepare do
-          identify(User => [:last_name, :first_name]) do
+          identify(::ID::User => [:last_name, :first_name]) do
             match("/users/:last_name/:first_name").name(:users)
           end
         end
@@ -103,58 +103,58 @@ module ID
       
       it "should be able to specify an array of identifiers when the params are anonymous" do
         Merb::Router.prepare do
-          identify(User => [:last_name, :first_name]) do
+          identify(::ID::User => [:last_name, :first_name]) do
             match("/users/:last_name/:first_name").name(:users)
           end
         end
         
-        url(:users, User.new).should == "/users/doe/john"
+        url(:users, ::ID::User.new).should == "/users/doe/john"
       end
       
       it "should be able to treat :id correctly with Array identifiers" do
         Merb::Router.prepare do
-          identify(User => [:name, :id]) do
+          identify(::ID::User => [:name, :id]) do
             resources :users, :keys => [:name, :id] do
               resources :comments
             end
           end
         end
         
-        url(:user_comments, :name => User.new, :user_id => User.new).should == "/users/carl/10/comments"
+        url(:user_comments, :name => ::ID::User.new, :user_id => ::ID::User.new).should == "/users/carl/10/comments"
       end
 
       it "should not require a block" do
         Merb::Router.prepare do
-          identify(Account => :url).match("/:account").name(:account)
+          identify(::ID::Account => :url).match("/:account").name(:account)
         end
 
-        url(:account, :account => Account.new).should == "/awesome"
+        url(:account, :account => ::ID::Account.new).should == "/awesome"
       end
 
       it "should combine identifiers when nesting" do
         Merb::Router.prepare do
-          identify Account => :url do
-            identify User => :name do
+          identify ::ID::Account => :url do
+            identify ::ID::User => :name do
               match("/:account").resources :users
             end
           end
         end
 
-        url(:user, :account => Account.new, :id => User.new).should == "/awesome/users/carl"
+        url(:user, :account => ::ID::Account.new, :id => ::ID::User.new).should == "/awesome/users/carl"
       end
 
       it "should retain previously set conditions" do
         Merb::Router.prepare do
           match("/:account") do
             register.name(:account)
-            identify Account => :url do
+            identify ::ID::Account => :url do
               resources :users
             end
           end
         end
 
-        url(:account, :account => Account.new).should == "/account"
-        url(:user, :account => Account.new, :id => User.new).should == "/awesome/users/user"
+        url(:account, :account => ::ID::Account.new).should == "/account"
+        url(:user, :account => ::ID::Account.new, :id => User.new).should == "/awesome/users/user"
       end
 
     end
