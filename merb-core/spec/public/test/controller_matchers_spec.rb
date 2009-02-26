@@ -396,7 +396,7 @@ module Merb::Test::Rspec
     end
 
     describe Provide do
-      class TestController < Merb::Controller
+      class ::TestController < Merb::Controller
         provides :xml
       end
 
