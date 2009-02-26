@@ -16,10 +16,10 @@ end
 describe Merb::Test::Rspec::ControllerMatchers do
   include Merb::Test::ControllerHelper
   before(:each) do
-    Merb::Router.prepare do |r|
-      r.match("/redirect").to(:controller => "test_controller", :action => "redirect_action")
-      r.match("/success").to(:controller => "test_controller", :action => "success_action")
-      r.match("/missing").to(:controller => "test_controller", :action => "missing_action")
+    Merb::Router.prepare do
+      match("/redirect").to(:controller => "test_controller", :action => "redirect_action")
+      match("/success").to(:controller => "test_controller", :action => "success_action")
+      match("/missing").to(:controller => "test_controller", :action => "missing_action")
     end
   end
   
