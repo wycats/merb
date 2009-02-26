@@ -43,8 +43,8 @@ describe Merb::Test::MultipartRequestHelper do
 
   describe "#multipart_post" do
     before(:each) do
-      Merb::Router.prepare do |r|
-        r.resources :spec_helper_controller
+      Merb::Router.prepare do
+        resources :spec_helper_controller
       end
     end
   
@@ -76,8 +76,8 @@ describe Merb::Test::MultipartRequestHelper do
 
   describe "#multipart_put" do
     before(:each) do
-      Merb::Router.prepare do |r|
-        r.resources :spec_helper_controller
+      Merb::Router.prepare do
+        resources :spec_helper_controller
       end
     end
     it "should put to the update action multipart" do

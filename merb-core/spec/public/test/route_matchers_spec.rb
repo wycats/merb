@@ -20,12 +20,12 @@ describe Merb::Test::Rspec::RouteMatchers do
   include Merb::Test::RouteHelper
 
   before(:each) do
-    Merb::Router.prepare do |r|
-      r.match(%r"/v(\d+\.\d+)", :method => :post).to(:controller => "test_controller", :action => "post", :version => "[1]")
-      r.match("/", :method => :get).to(:controller => "test_controller", :action => "get").name(:getter)
-      r.match("/", :method => :post).to(:controller => "test_controller", :action => "post")
+    Merb::Router.prepare do
+      match(%r"/v(\d+\.\d+)", :method => :post).to(:controller => "test_controller", :action => "post", :version => "[1]")
+      match("/", :method => :get).to(:controller => "test_controller", :action => "get").name(:getter)
+      match("/", :method => :post).to(:controller => "test_controller", :action => "post")
       identify :id do
-        r.match("/:id").to(:controller => "test_controller", :action => "get").name(:with_id)
+        match("/:id").to(:controller => "test_controller", :action => "get").name(:with_id)
       end
     end
   end

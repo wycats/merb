@@ -109,9 +109,9 @@ describe Merb::Test::RequestHelper do
 
   describe "#get" do
     before(:each) do 
-      Merb::Router.prepare do |r| 
-        r.resources :spec_helper_controller
-        r.match("/:controller/:action/:custom").to(:controller => ":controller") 
+      Merb::Router.prepare do
+        resources :spec_helper_controller
+        match("/:controller/:action/:custom").to(:controller => ":controller") 
       end
     end
 
@@ -154,8 +154,8 @@ describe Merb::Test::RequestHelper do
 
   describe "#post" do
     before(:each) do
-      Merb::Router.prepare do |r|
-        r.resources :spec_helper_controller
+      Merb::Router.prepare do
+        resources :spec_helper_controller
       end
     end
 
@@ -173,8 +173,8 @@ describe Merb::Test::RequestHelper do
 
   describe "#put" do
     before(:each) do
-      Merb::Router.prepare do |r|
-        r.resources :spec_helper_controller
+      Merb::Router.prepare do
+        resources :spec_helper_controller
       end
     end
     it "should put to the update action" do
@@ -192,8 +192,8 @@ describe Merb::Test::RequestHelper do
 
   describe "#delete" do
     before(:each) do
-      Merb::Router.prepare do |r|
-        r.resources :spec_helper_controller
+      Merb::Router.prepare do
+        resources :spec_helper_controller
       end
     end
     it "should put to the update action" do
@@ -211,8 +211,8 @@ describe Merb::Test::RequestHelper do
   
   describe "#request" do
     before(:each) do 
-      Merb::Router.prepare do |r| 
-        r.namespace :namespaced do |namespaced|
+      Merb::Router.prepare do
+        namespace :namespaced do |namespaced|
           namespaced.resources :spec_helper_controller
         end
       end
@@ -230,8 +230,8 @@ describe Merb::Test::RequestHelper do
     end
 
     it "should make the post body available in the request on deferred routing" do
-      Merb::Router.prepare do |r|
-        r.match('/xmlrpc').defer_to do |request, params|
+      Merb::Router.prepare do
+        match('/xmlrpc').defer_to do |request, params|
           request.raw_post.should == 'XMLRPC request body'
           {:controller => 'spec_helper_controller', :action => :index}
         end

@@ -343,7 +343,7 @@ module Merb
             if_statements << route.compiled_statement(i == 0)
           end
           
-          statement =  "def match(request)\n"
+          statement =  "public\ndef match(request)\n"
           statement << condition_keys.inject("") do |cached, key|
             cached << "  cached_#{key} = request.#{key}.to_s\n"
           end
