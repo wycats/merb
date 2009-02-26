@@ -656,7 +656,7 @@ module Merb
         with_behavior_context(behavior, &block)
         
         Merb::Router.named_routes.reject { |k,v| current_names.include?(k) }.each do |name, route|
-          name = route.name.to_s.sub("#{name_prefix}", '').to_sym unless name_prefix.empty?
+          name = route.name.to_s.sub(/^#{name_prefix.join('|')}/, '').to_sym unless name_prefix.empty?
           captured_routes[name] = route
         end
         
