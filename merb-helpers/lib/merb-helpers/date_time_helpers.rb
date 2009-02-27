@@ -80,13 +80,13 @@ module Merb
           relative_date(times.first)
         else
           first = times.first; last = times.last; now = DateAndTime.time_class.now
-          arr = [first.strftime_ordinalized('%b %d')]
-          arr << ", #{first.year}" unless first.year == last.year
-          arr << ' - '
-          arr << last.strftime('%b') << ' ' unless first.year == last.year && first.month == last.month
-          arr << last.day.ordinalize
-          arr << ", #{last.year}" unless first.year == last.year && last.year == now.year
-          arr.to_s
+          str = first.strftime_ordinalized('%b %d')
+          str << ", #{first.year}" unless first.year == last.year
+          str << ' - '
+          str << last.strftime('%b') << ' ' unless first.year == last.year && first.month == last.month
+          str << last.day.ordinalize
+          str << ", #{last.year}" unless first.year == last.year && last.year == now.year
+          str
         end
       end
       
@@ -114,17 +114,17 @@ module Merb
       
         else
           first = times.first; last = times.last; now = DateAndTime.time_class.now        
-          arr = [prettier_time(first)]
-          arr << ' '
-          arr << first.strftime_ordinalized('%b %d')
-          arr << ", #{first.year}" unless first.year == last.year
-          arr << ' - '
-          arr << prettier_time(last)
-          arr << ' '
-          arr << last.strftime('%b') << ' ' unless first.year == last.year && first.month == last.month
-          arr << last.day.ordinalize
-          arr << ", #{last.year}" unless first.year == last.year && last.year == now.year
-          arr.to_s
+          str = prettier_time(first)
+          str << ' '
+          str << first.strftime_ordinalized('%b %d')
+          str << ", #{first.year}" unless first.year == last.year
+          str << ' - '
+          str << prettier_time(last)
+          str << ' '
+          str << last.strftime('%b') << ' ' unless first.year == last.year && first.month == last.month
+          str << last.day.ordinalize
+          str << ", #{last.year}" unless first.year == last.year && last.year == now.year
+          str.to_s
         end
       end
       
