@@ -58,7 +58,8 @@ describe "merb-param-protection" do
             params_accessible :customer => [:name, :phone, :email]
             def index; end
           end
-        }.should raise_error("Cannot make accessible a controller (TestAccessibleController) that is already protected")
+        }.should raise_error(/Cannot make accessible a controller \(.*?TestAccessibleController\) that is already protected/)
+	# TODO "#<Class:0xa9c598c>::TestProtectedController" is generated in ruby 1.9
       end
 
       it "should raise an error 'cannot protect'" do
@@ -68,16 +69,17 @@ describe "merb-param-protection" do
             params_protected :customer => [:password]
             def index; end
           end
-        }.should raise_error("Cannot protect controller (TestProtectedController) that is already accessible")
+        }.should raise_error(/Cannot protect controller \(.*?TestProtectedController\) that is already accessible/)
+        # TODO "#<Class:0x92bfbd4>::TestProtectedController" is generated in ruby 1.9
       end
     end
   end
 
   describe "param filtering" do
     before(:each) do
-      Merb::Router.prepare do |r|
-        @test_route = r.match("/the/:place/:goes/here").to(:controller => "Test", :action => "show").name(:test)
-        @default_route = r.default_routes
+      Merb::Router.prepare do
+        @test_route = match("/the/:place/:goes/here").to(:controller => "Test", :action => "show").name(:test)
+        @default_route = default_routes
       end
     end
 
