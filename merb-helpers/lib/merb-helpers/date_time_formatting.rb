@@ -151,6 +151,6 @@ module OrdinalizedFormatting
   # ==== Examples
   #    5.days.ago.strftime_ordinalized('%b %d, %Y')     # => 
   def strftime_ordinalized(fmt, format=nil)
-    strftime(fmt.gsub(/(^|[^-])%d/, '\1_%d_')).gsub(/_(\d+)_/) { |s| s.to_i.ordinalize }
+    strftime(fmt.gsub(/(^|[^-])%d/, '\1_%d_')).gsub(/_(\d+)_/) { $1.to_i.ordinalize }
   end
 end
