@@ -237,11 +237,19 @@ describe "Date" do
   end
 
   it "Should do to_time conversion to utc by default" do
-    @date.to_time.to_s.should == 'Fri Nov 02 00:00:00 UTC 2007'
+    if RUBY_VERSION < "1.9"
+      @date.to_time.to_s.should == 'Fri Nov 02 00:00:00 UTC 2007'
+    else
+      @date.to_time.to_s.should == '2007-11-02 00:00:00 UTC'
+    end
   end
 
   it "Should do to_time conversion to utc when param :utc is given" do
-    @date.to_time(:utc).to_s.should == 'Fri Nov 02 00:00:00 UTC 2007'
+    if RUBY_VERSION < "1.9"
+      @date.to_time(:utc).to_s.should == 'Fri Nov 02 00:00:00 UTC 2007'
+    else
+      @date.to_time(:utc).to_s.should == '2007-11-02 00:00:00 UTC'
+    end
   end
 
   it "Should do to_time conversion to local time when param :local is given" do
