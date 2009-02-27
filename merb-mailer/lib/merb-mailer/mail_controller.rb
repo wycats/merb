@@ -241,7 +241,7 @@ module Merb
         rescue Merb::ControllerExceptions::TemplateNotFound => e
           # An error should be logged if no template is found instead of an error raised
           if @_missing_templates
-            Merb.logger.error(e)
+            Merb.logger.error(e.message)
           else
             @_missing_templates = true
           end
