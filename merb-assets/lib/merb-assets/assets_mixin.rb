@@ -579,7 +579,7 @@ module Merb
     #  #=>"http://assets1.my-awesome-domain.com/images/hostsexypicture.jpg"
     def uniq_path(*assets)
       paths = []
-      assets.collect.flatten.each do |filename|
+      assets.flatten.each do |filename|
         paths.push(Merb::Assets::UniqueAssetPath.build(filename))
       end
       paths.length > 1 ? paths : paths.first
@@ -601,7 +601,7 @@ module Merb
     #         "http://assets1.my-awesome-domain.com/javascripts/home/signup.js"]
     def uniq_js_path(*assets)
       paths = []
-      assets.collect.flatten.each do |filename|
+      assets.flatten.each do |filename|
         paths.push(Merb::Assets::UniqueAssetPath.build(asset_path(:javascript,filename)))
       end
       paths.length > 1 ? paths : paths.first
@@ -623,7 +623,7 @@ module Merb
     #         "http://assets1.my-awesome-domain.com/stylesheets/home/signup.css"]
     def uniq_css_path(*assets)
       paths = []
-      assets.collect.flatten.each do |filename|
+      assets.flatten.each do |filename|
         paths.push(Merb::Assets::UniqueAssetPath.build(asset_path(:stylesheet,filename)))
       end
       paths.length > 1 ? paths : paths.first
