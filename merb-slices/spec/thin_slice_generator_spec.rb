@@ -17,7 +17,7 @@ describe Merb::Generators::ThinSliceGenerator do
       @generator.invoke!
       files = Dir[slices_path / 'testing-thin' / '**' / '*'].map do |path| 
         path.relative_path_from(slices_path)
-      end
+      end.sort
       expected = [
         "testing-thin/application.rb", "testing-thin/lib", "testing-thin/lib/testing-thin", 
         "testing-thin/lib/testing-thin/merbtasks.rb", "testing-thin/lib/testing-thin/slicetasks.rb", 
@@ -28,7 +28,7 @@ describe Merb::Generators::ThinSliceGenerator do
         "testing-thin/stubs/application.rb", "testing-thin/TODO", "testing-thin/views", 
         "testing-thin/views/layout", "testing-thin/views/layout/testing_thin.html.erb", 
         "testing-thin/views/main", "testing-thin/views/main/index.html.erb"
-      ]
+      ].sort
       files.should == expected
     end
     
