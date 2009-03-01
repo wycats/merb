@@ -1,4 +1,4 @@
-# -*- coding: undecided -*-
+# -*- coding: utf-8 -*-
 module Merb::Cache
   # A strategy store wraps one or
   # more fundamental stores, acting as a middle man between caching
