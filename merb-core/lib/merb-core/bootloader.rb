@@ -894,7 +894,7 @@ class Merb::BootLoader::LoadClasses < Merb::BootLoader
     def load_classes(*paths)
       orphaned_classes = []
       paths.flatten.each do |path|
-        Dir[path].each do |file|
+        Dir[path].sort.each do |file|
           begin
             load_file file
           rescue NameError => ne
