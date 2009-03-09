@@ -65,7 +65,8 @@ spec = Gem::Specification.new do |s|
   s.add_dependency "json_pure"
   s.add_dependency "rspec"
   s.add_dependency "rack"
-  s.add_dependency "mime-types"
+  # require mimetypes 1.16 or greater to make sure we support Ruby 1.9.x
+  s.add_dependency "mime-types", ">= 1.16"
   s.add_dependency "thor", ">= 0.9.9"
   # this escalates to "regular" dependencies, comment it out
   # for now. RubyGems need some love.
