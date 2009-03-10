@@ -16,8 +16,8 @@ describe Merb::BootLoader::RackUpApplication do
     Merb::BootLoader::RackUpApplication.run
     app = Merb::Config[:app]
 
-    # TODO 1.9 returns "#<Class:0xa716858>::Rack::Adapter::BlackHole"
-    app.class.name.should be_include("Rack::Adapter::BlackHole")
+    # 1.9 returns "#<Class:0xa716858>::Rack::Adapter::BlackHole"
+    app.class.name.should include("Rack::Adapter::BlackHole")
 
     env = Rack::MockRequest.env_for("/black_hole")
     status, header, body = app.call(env)
