@@ -63,7 +63,7 @@ module Merb
       # Reloads classes using Merb::BootLoader::ReloadClasses.
       # :api: public
       def reload!
-        Merb::BootLoader::ReloadClasses.reload
+        Merb::BootLoader::ReloadClasses.reload!
       end
 
       # Prints all routes for the application.

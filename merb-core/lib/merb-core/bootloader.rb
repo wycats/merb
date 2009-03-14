@@ -1354,6 +1354,48 @@ class Merb::BootLoader::ReloadClasses < Merb::BootLoader
   def self.run
     return unless Merb::Config[:reload_classes]
 
+    TimedExecutor.every(Merb::Config[:reload_time] || 0.5) do
+      GC.start
+      reload!
+    end
+
+    nil
+  end
+
+  # Reloads all the files on the Merb application path
+  #
+  # ==== Returns
+  # nil
+  #
+  # :api: private
+  def self.reload!
+    reload(build_paths)
+  end
+
+  # Reloads all files which have been modified since they were last loaded.
+  #
+  # ==== Returns
+  # nil
+  #
+  # :api: private
+  def self.reload(paths = [])
+    paths.each do |file|
+      next if LoadClasses::MTIMES[file] &&
+        LoadClasses::MTIMES[file] == File.mtime(file)
+
+      LoadClasses.reload(file)
+    end
+
+    nil
+  end
+
+  # Returns a list of the paths on the merb application stack
+  #
+  # ==== Returns
+  # nil
+  #
+  # :api: private
+  def self.build_paths
     paths = []
     Merb.load_paths.each do |path_name, file_info|
       path, glob = file_info
@@ -1367,28 +1409,6 @@ class Merb::BootLoader::ReloadClasses < Merb::BootLoader
 
     paths.flatten!
 
-    TimedExecutor.every(Merb::Config[:reload_time] || 0.5) do
-      GC.start
-      reload(paths)
-    end
-
-    nil
-  end
-
-  # Reloads all files which have been modified since they were last loaded.
-  #
-  # ==== Returns
-  # nil
-  #
-  # :api: private
-  def self.reload(paths)
-    paths.each do |file|
-      next if LoadClasses::MTIMES[file] &&
-        LoadClasses::MTIMES[file] == File.mtime(file)
-
-      LoadClasses.reload(file)
-    end
-
-    nil
+    return paths
   end
 end
