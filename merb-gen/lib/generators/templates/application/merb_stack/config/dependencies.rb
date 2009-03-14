@@ -20,6 +20,7 @@ dependency "merb-auth-more", merb_gems_version
 dependency "merb-auth-slice-password", merb_gems_version
 dependency "merb-param-protection", merb_gems_version
 dependency "merb-exceptions", merb_gems_version
+dependency "merb-gen", merb_gems_version 
 
 dependency "data_objects", do_gems_version
 dependency "do_sqlite3", do_gems_version # If using another database, replace this
