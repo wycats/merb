@@ -3,7 +3,7 @@ require 'rubygems/dependency'
 module Gem
   class Dependency
     # :api: private
-    attr_accessor :require_block, :require_as, :original_caller
+    attr_accessor :require_block, :require_as, :original_caller, :source
   end
 end
 
@@ -24,6 +24,7 @@ module Kernel
     new_dep.require_block = blk
     new_dep.require_as = options.key?(:require_as) ? options[:require_as] : name
     new_dep.original_caller = clr
+    new_dep.source = options[:source]
     
     deps = Merb::BootLoader::Dependencies.dependencies
 
