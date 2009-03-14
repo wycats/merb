@@ -282,11 +282,14 @@ module Merb
         start = Time.now
         result = _call_filters(_before_filters)
         @_benchmarks[:before_filters_time] = Time.now - start if _before_filters
+
+        @body = _call_action(action_name) if result == :filter_chain_completed
+
         result
       end
   
       @body = case caught
-      when :filter_chain_completed  then _call_action(action_name)
+      when :filter_chain_completed  then @body
       when String                   then caught
       # return *something* if you throw halt with nothing
       when nil                      then "<html><body><h1>Filter Chain Halted!</h1></body></html>"
