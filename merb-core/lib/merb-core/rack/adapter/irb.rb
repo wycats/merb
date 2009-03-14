@@ -66,6 +66,14 @@ module Merb
         Merb::BootLoader::ReloadClasses.reload
       end
 
+      # Returns a request for a specific URL and method.
+      # :api: public
+      def route_to(url, method = :get, env_overrides = {})
+        request_env = ::Rack::MockRequest.env_for(url)
+        request_env["REQUEST_METHOD"] = method.to_s
+        Merb::Router.route_for(Merb::Request.new(request_env.merge(env_overrides)))
+      end
+
       # Prints all routes for the application.
       # :api: public
       def show_routes
