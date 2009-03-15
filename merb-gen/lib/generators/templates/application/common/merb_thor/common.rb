@@ -38,13 +38,18 @@ module Gem
     def find(path)
       try = @main_searcher.find(path)
       return try if try
-      @fallback_searcher.find(path)
+      @fallback_searcher.find(path) unless ignore_system_gems?
     end
     
     def find_all(path)
       try = @main_searcher.find_all(path)
       return try unless try.empty?
-      @fallback_searcher.find_all(path)
+      ignore_system_gems? ? [] : @fallback_searcher.find_all(path)
+    end
+    
+    private
+    def ignore_system_gems?
+      defined?(Merb) && Merb::Config[:ignore_system_gems]
     end
   end
   
@@ -54,15 +59,22 @@ module Gem
     end
     
     def search(*args)
-      try = MAIN_INDEX.search(*args)
-      return try unless try.empty?
-      FALLBACK_INDEX.search(*args)
+      load_gem_with_fallback(*args)
     end
     
     def find_name(*args)
+      load_gem_with_fallback(*args)
+    end
+    
+    private
+    def load_gem_with_fallback(*args)
       try = MAIN_INDEX.find_name(*args)
       return try unless try.empty?
-      FALLBACK_INDEX.find_name(*args)
+      ignore_system_gems? ? [] : FALLBACK_INDEX.find_name(*args)
+    end
+    
+    def ignore_system_gems?
+      defined?(Merb) && Merb::Config[:ignore_system_gems]
     end
   end
 end
