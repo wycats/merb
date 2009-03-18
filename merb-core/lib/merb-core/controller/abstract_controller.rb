@@ -241,6 +241,9 @@ module Merb
     def self.inherited(klass)
       _abstract_subclasses << klass.to_s
       helper_module_name = klass.to_s =~ /^(#|Merb::)/ ? "#{klass}Helper" : "Merb::#{klass}Helper"
+      # support for unnamed module like "#<Class:0xa2e5e50>::TestController"
+      helper_module_name.gsub!(/(::)|[:#<>]/, "\\1")
+
       Object.make_module helper_module_name
       klass.class_eval <<-HERE
         include Object.full_const_get("#{helper_module_name}") rescue nil
