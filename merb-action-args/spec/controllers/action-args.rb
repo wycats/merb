@@ -19,9 +19,6 @@ end
 class ActionArgs < Merb::Controller
   include ExtraActions
 
-  def zilch
-  end
-
   def nada
     "NADA"
   end
