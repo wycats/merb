@@ -73,7 +73,7 @@ if defined?(Merb::Plugins)
     class Application < Merb::Controller
       override! :_call_action
       def _call_action(*)
-        repository do |r|
+        DataMapper.repository do |r|
           Merb.logger.debug "In repository block #{r.name}"
           super
         end
