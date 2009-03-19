@@ -244,7 +244,8 @@ module Merb
         def compiled
           ruby  = ""
           ruby << "lambda do |params, defaults|\n"
-          ruby << "  fragment     = params.delete(:fragment)\n"
+          ruby << "  anchor       = params.delete(:anchor)\n"
+          ruby << "  fragment     = params.delete(:fragment) || anchor\n"
           ruby << "  query_params = params.dup\n"
           
           with(@segments) do
