@@ -98,6 +98,7 @@ module Merb
     #   image_tag('/dynamic/charts')
     #   # => <img src="/dynamic/charts">
     def image_tag(img, opts={})
+      return "" if img.blank?
       if img[0].chr == '/'
         opts[:src] = img
       else

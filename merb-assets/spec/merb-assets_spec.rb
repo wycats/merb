@@ -58,7 +58,14 @@ describe "Accessing Assets" do
     result = image_tag('foo.gif', :reload => true)
     result.should match(%r{<img src="/images/foo.gif\?\d+" />})
   end
-
+  
+  it "should not create image tag with nil image" do
+    image_tag(nil).should == ""
+  end
+  
+  it  "should not create image tag with empty string" do
+    image_tag('').should == ""
+  end
 end
 
 describe "JavaScript related functions" do
