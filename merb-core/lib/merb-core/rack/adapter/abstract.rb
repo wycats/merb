@@ -152,13 +152,14 @@ module Merb
                 pid, status = @pids[port + i], nil
                 poller = Merb::System::PortablePoller.new(pid)
                 begin
-                  i = 0
+                  tick = 1
                   loop do                    
                     # Watch for the pid to exit.
                     _, status = Process.wait2(pid, Process::WNOHANG)
                     break if status
                     
-                    if (i % 120 == 0) && Merb::Config[:max_memory] && poller.memory > Merb::Config[:max_memory]
+                    if (tick % 120 == 0) && Merb::Config[:max_memory] && poller.memory > Merb::Config[:max_memory]
+                      tick = 1
                       Process.kill("INT", pid)
                       if (Process.kill(0, pid) rescue false)
                         sleep Merb::Config[:hang_time] || 5
@@ -169,7 +170,7 @@ module Merb
                       status = Struct.new(:exitstatus).new(nil)
                       break
                     end
-                    i += 1
+                    tick += 1
                     sleep 0.25
                   end
 
