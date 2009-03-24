@@ -436,7 +436,7 @@ module Kernel
   #
   # :api: public
   def extract_options_from_args!(args)
-    args.pop if Hash === args.last
+    args.pop if (args.last.instance_of?(Hash) || args.last.instance_of?(Mash))
   end
 
   # Checks that the given objects quack like the given conditions.
