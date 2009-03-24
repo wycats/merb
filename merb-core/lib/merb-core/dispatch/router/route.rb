@@ -183,7 +183,7 @@ module Merb
       def identifier_for(obj)
         return if obj.is_a?(String)    || obj.is_a?(Symbol)     || obj.is_a?(Numeric)  ||
                   obj.is_a?(TrueClass) || obj.is_a?(FalseClass) || obj.is_a?(NilClass) ||
-                  obj.is_a?(Array)     || obj.is_a?(Hash)
+                  obj.is_a?(Array)     || obj.instance_of?(Hash)
         
         @identifiers.each do |klass, identifier|
           return identifier if obj.is_a?(klass)
