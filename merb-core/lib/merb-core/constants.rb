@@ -38,7 +38,7 @@ module Merb
     JSON_MIME_TYPE_REGEXP    = %r{^application/json|^text/x-json}.freeze
     XML_MIME_TYPE_REGEXP     = %r{^application/xml|^text/xml}.freeze
     FORM_URL_ENCODED_REGEXP  = %r{^application/x-www-form-urlencoded}.freeze
-    LOCAL_IP_REGEXP          = /^unknown$|^(127|10|172\.16|192\.168)\./i.freeze
+    LOCAL_IP_REGEXP          = /^unknown$|^(127|10|172\.16|192\.168)\.|^(172\.(1[6-9]|2[0-9]|3[0-1]))\.|^(169\.254)\./i.freeze
     XML_HTTP_REQUEST_REGEXP  = /XMLHttpRequest/i.freeze
     UPCASE_CONTENT_TYPE      = 'CONTENT_TYPE'.freeze
     CONTENT_TYPE             = "Content-Type".freeze
