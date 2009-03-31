@@ -745,7 +745,7 @@ describe "radio_group" do
     radio = @c.render :hash
     radio.scan( /<input.*?><label.*?>(Five|Bar)<\/label>/ ).size.should == 2
     radio.scan(/<[^>]*>/).size.should == 6
-    radio.should match_tag(:input, :value => 5)
+    radio.should match_tag(:input, :value => '5')
     radio.should match_tag(:label)
     radio.should match_tag(:input, :value => 'bar', :id => 'bar_id')
     radio.should match_tag(:label, :for => 'bar_id')
@@ -809,7 +809,7 @@ describe "bound_radio_group" do
     r = @c.render :hashes
     r.scan( /<input.*?><label.*?>(Five|Bar)<\/label>/ ).size.should == 2
     r.scan(/<[^>]*>/)[2..-2].size.should == 6
-    r.should match_tag(:input, :value => 5)
+    r.should match_tag(:input, :value => '5')
     r.should match_tag(:label)
     r.should match_tag(:input, :value => 'bar', :id => 'bar_id')
     r.should match_tag(:label, :for => 'bar_id')
@@ -1080,7 +1080,7 @@ describe "option tags" do
   it "should provide selected options by value" do
     r = @c.render :selected
     r.should match_tag( :option, :value => 'rabbit', :selected => 'selected', :content => 'Rabbit' )
-    r.should_not match_tag( :option, :value => 'chicken', :selected => nil, :content => 'Chicken' )
+    r.should_not match_tag( :option, :value => 'chicken', :selected => '', :content => 'Chicken' )
   end
 
   it "should handle arrays for selected when :multiple is true" do
