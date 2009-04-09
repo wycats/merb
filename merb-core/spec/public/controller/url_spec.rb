@@ -92,6 +92,10 @@ describe Merb::Controller, " url" do
   it "should match with a :fragment" do
     @controller.url(:person, :name => 'david', :fragment => :half_way).should eql("/people/david#half_way")
   end
+
+  it "should match with an :anchor (alias for :fragment)" do
+    @controller.url(:person, :name => 'david', :anchor => :half_way).should eql("/people/david#half_way")
+  end
   
   it "should match with an additional param and :format" do
     @controller.url(:person, :name => 'david', :color => 'blue', :format => :xml).should eql("/people/david.xml?color=blue")
