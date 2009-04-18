@@ -23,18 +23,6 @@ describe "Kernel#extract_options_from_args!" do
 end
 
 
-
-describe "Kernel#debugger" do
-  it "should throw a useful error if there's no debugger" do
-    Merb.logger.should_receive(:info!).with "\n***** Debugger requested, but was not " +
-      "available: Start server with --debugger " +
-      "to enable *****\n"
-    Kernel.debugger
-  end
-end
-
-
-
 describe "Kernel#dependencies" do
   it "deferres load of dependencies given as String" do
     self.should_receive(:dependency).with("hpricot").and_return(true)
