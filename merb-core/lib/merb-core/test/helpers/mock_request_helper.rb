@@ -16,6 +16,10 @@ module Merb
           super(DEFAULT_ENV.merge(env))
         end
 
+        def self.new(env = {}, req = StringIO.new)
+          super
+        end
+        
         private
         DEFAULT_ENV = Mash.new({
           'SERVER_NAME' => 'localhost',

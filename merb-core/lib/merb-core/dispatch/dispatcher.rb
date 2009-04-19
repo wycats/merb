@@ -46,11 +46,11 @@ module Merb
     # Handles request routing and action dispatch.
     # 
     # ==== Returns
-    # Merb::Controller:: the controller that handled the action dispatch.
+    # Array[Integer, Hash, #each]:: A Rack response
     # 
     # :api: private
     def handle
-      start = Time.now
+      start = env["merb.request_start"] = Time.now
       Merb.logger.info { "Started request handling: #{start.to_s}" }
       
       find_route!
@@ -71,13 +71,9 @@ module Merb
         raise NotFound, "The '#{klass}' controller has no public actions"
       end
       
-      controller = dispatch_action(klass, params[:action])
-      controller._benchmarks[:dispatch_time] = Time.now - start
-      Merb.logger.info { controller._benchmarks.inspect }
-      Merb.logger.flush
-      controller.rack_response
+      dispatch_action(klass, params[:action])
     rescue Object => exception
-      dispatch_exception(exception).rack_response
+      dispatch_exception(exception)
     end
     
     private
@@ -89,21 +85,20 @@ module Merb
     # status<Integer>:: The status code to respond with.
     #
     # ==== Returns
-    # Merb::Controller::
-    #   The Merb::Controller that was dispatched to.
+    # Array[Integer, Hash, #each]:: A Rack response
     # 
     # :api: private
-    def dispatch_action(klass, action, status=200)
-      # build controller
-      controller = klass.new(self, status)
+    def dispatch_action(klass, action_name, status=200)
+      @env["merb.status"] = status
+      @env["merb.action_name"] = action_name
+      
       if Dispatcher.use_mutex
-        @@mutex.synchronize { controller._dispatch(action) }
+        @@mutex.synchronize { klass.call(env) }
       else
-        controller._dispatch(action)
+        klass.call(env)
       end
-      controller
     end
-    
+        
     # Re-route the current request to the Exception controller if it is
     # available, and try to render the exception nicely.  
     #
@@ -119,8 +114,7 @@ module Merb
     #   original controller.
     #
     # ==== Returns
-    # Exceptions::
-    #   The Merb::Controller that was dispatched to. 
+    # Array[Integer, Hash, #each]:: A Rack response
     # 
     # :api: private
     def dispatch_exception(exception)
@@ -131,7 +125,7 @@ module Merb
         Merb.logger.error(Merb.exception(exception))
       end
       
-      self.exceptions = [exception]
+      exceptions = env["merb.exceptions"] = [exception]
       
       begin
         e = exceptions.first
@@ -139,11 +133,11 @@ module Merb
         if action_name = e.action_name
           dispatch_action(Exceptions, action_name, e.class.status)
         else
-          Merb::Dispatcher::DefaultException.new(self, e.class.status)._dispatch
+          dispatch_action(Dispatcher::DefaultException, :index, e.class.status)
         end
       rescue Object => dispatch_issue
         if e.same?(dispatch_issue) || exceptions.size > 5
-          Merb::Dispatcher::DefaultException.new(self, e.class.status)._dispatch
+          dispatch_action(Dispatcher::DefaultException, :index, e.class.status)
         else
           Merb.logger.error("Dispatching #{e.class} raised another error.")
           Merb.logger.error(Merb.exception(dispatch_issue))

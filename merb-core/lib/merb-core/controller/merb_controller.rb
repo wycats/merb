@@ -233,6 +233,39 @@ class Merb::Controller < Merb::AbstractController
   end
   overridable :initialize
 
+  # Call the controller as a Rack endpoint.
+  #
+  # Expects:
+  #   env["merb.status"]:: the default status code to be returned
+  #   env["merb.action_name"]:: the action name to dispatch
+  #   env["merb.request_start"]:: a Time object representing the
+  #     start of the request.
+  #
+  # ==== Parameters
+  # env<Hash>:: A rack environment
+  # 
+  # ==== Returns
+  # Array[Integer, Hash, #each]:: A standard Rack response
+  # 
+  # :api: public
+  def self.call(env)
+    new(Merb::Request.new(env), env["merb.status"])._call
+  end
+  
+  # Dispatches the action and records benchmarks
+  #
+  # ==== Returns
+  # Array[Integer, Hash, #each]:: A standard Rack response
+  # 
+  # :api: private
+  def _call
+    _dispatch(request.env["merb.action_name"])
+    _benchmarks[:dispatch_time] = Time.now - request.env["merb.request_start"]
+    Merb.logger.info { _benchmarks.inspect }
+    Merb.logger.flush
+    rack_response        
+  end
+
   # Dispatch the action.
   #
   # ==== Parameters
