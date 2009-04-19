@@ -223,7 +223,18 @@ module Merb::Test::Fixtures
         throw :halt, "Halt thrown"
       end      
     end
-        
+    
+    class ActionWithHaltInMethod < Testing
+      def index
+        get_user
+        "Halt not thrown"
+      end
+      private
+      def get_user
+        throw :halt, "Halt thrown"
+      end
+    end
+    
     class BeforeFilterWithThrowProc < Testing
       before do
         throw :halt, Proc.new { "Proc thrown" }
