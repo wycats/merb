@@ -1,0 +1,4 @@
+merb-actionorm
+==============
+
+A plugin for the Merb framework that provides agnosticity for ORM object methods. (simple wrapper around Rails' action ORM)
