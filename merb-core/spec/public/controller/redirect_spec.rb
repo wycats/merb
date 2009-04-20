@@ -7,6 +7,12 @@ describe Merb::Controller, " redirects" do
     @controller.headers["Location"].should == "/"
   end
 
+  it "redirects if passed in via throw :halt" do
+    @controller = dispatch_to(Merb::Test::Fixtures::Controllers::RedirectViaHalt, :index)
+    @controller.status.should == 302
+    @controller.headers["Location"].should == "/"
+  end
+
   it "permanently redirects" do
     @controller = dispatch_to(Merb::Test::Fixtures::Controllers::PermanentRedirect, :index)
     @controller.status.should == 301

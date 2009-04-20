@@ -106,6 +106,14 @@ describe Merb::AbstractController, " should support before and after filters" do
     dispatch_should_make_body("BeforeFilterWithThrowHalt", "Halt thrown")
   end
   
+  it "should support throwing :halt to block an action" do
+    dispatch_should_make_body("ActionWithThrowHalt", "Halt thrown")
+  end
+  
+  it "should support throwing :halt in an action method" do
+    dispatch_should_make_body("ActionWithHaltInMethod", "Halt thrown")
+  end
+
   it "should support throwing a proc in filters" do
     dispatch_should_make_body("BeforeFilterWithThrowProc", "Proc thrown")    
   end

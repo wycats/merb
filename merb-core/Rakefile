@@ -200,6 +200,7 @@ def setup_specs(name, spec_cmd='spec', run_opts = "-c")
     run_specs(globs, spec_cmd, ENV['RSPEC_OPTS'] || run_opts, except)
   end
   
+  desc "Run 1.0 frozen specs"
   task "specs:oneoh" do
     require "lib/merb-core/test/run_specs"
     globs = public_globs_10

@@ -6,8 +6,6 @@ module Merb
     
     # :api: private
     attr_accessor :env, :route
-    # :api: public
-    attr_accessor :exceptions
     # :api: private
     attr_reader :route_params
 
@@ -35,12 +33,31 @@ module Merb
     #   An object like an HTTP Request.
     #
     # :api: private
-    def initialize(rack_env)
+    def initialize(rack_env)      
       @env  = rack_env
       @body = rack_env[Merb::Const::RACK_INPUT]
       @route_params = {}
     end
-
+    
+    # Memoizes the new request object into env["merb.request"] so we
+    # can memoize things into ivars in the request
+    #
+    # ==== Parameters
+    # env<Hash>:: A rack environment
+    # *args<Array>:: Other arguments passed to the superclass
+    #
+    # ==== Returns
+    # Merb::Request:: The new Merb::Request
+    #
+    # :api: public
+    def self.new(env, *args)
+      if self == Merb::Request
+        env["merb.request"] ||= super
+      else
+        super
+      end
+    end    
+    
     # Returns the controller object for initialization and dispatching the
     # request.
     #
@@ -67,6 +84,10 @@ module Merb
         Merb.logger.warn!(msg)
         raise ControllerExceptions::NotFound, msg
       end
+    end
+
+    def exceptions
+      env["merb.exceptions"]
     end
 
     METHODS = %w{get post put delete head options}
