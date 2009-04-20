@@ -1,5 +1,7 @@
 require "digest/sha1"
+require 'merb-actionorm'
 require File.expand_path(File.dirname(__FILE__) / "..") / "strategies" / "abstract_password"
+
 
 class Merb::Authentication
   module Mixins
@@ -66,7 +68,7 @@ class Merb::Authentication
         
         def encrypt_password
           return if password.blank?
-          self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{Merb::Authentication::Strategies::Basic::Base.login_param}--") if new_record?
+          self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{Merb::Authentication::Strategies::Basic::Base.login_param}--") if ActionORM.for(self).new_record?
           self.crypted_password = encrypt(password)
         end
         

@@ -11,6 +11,7 @@ merb_more_gem_paths = %w[
   merb-action-args 
   merb-assets 
   merb-slices
+  merb-actionorm
   merb-auth
   merb-cache 
   merb-exceptions
@@ -44,7 +45,8 @@ merb_release = {
       "merb-param-protection",
       "merb_datamapper",
       "merb",
-      "merb-more"
+      "merb-more",
+      "merb-actionorm"
     ]
 }
 

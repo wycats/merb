@@ -1,5 +1,6 @@
 if defined?(Merb::Plugins)
   dependency 'dm-core'
+  require 'merb-actionorm'
 
   require File.dirname(__FILE__) / "merb" / "orms" / "data_mapper" / "connection"
   require File.dirname(__FILE__) / "merb" / "session" / "data_mapper_session"
@@ -93,7 +94,7 @@ if defined?(Merb::Plugins)
         private
         
         def set_timestamps
-          return unless dirty? || new_record?
+          return unless dirty? || ActionORM.for(self).new_record?
           TIMESTAMP_PROPERTIES.each do |name,(_type,proc)|
             if model.properties.has_property?(name)
               model.properties[name].set(self, proc.call(self, model.properties[name])) unless attribute_dirty?(name)

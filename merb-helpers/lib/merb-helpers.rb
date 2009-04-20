@@ -1,6 +1,7 @@
 module Merb
   
   module Helpers
+    require 'merb-actionorm'
     
     @@helpers_dir   = File.dirname(__FILE__) / 'merb-helpers'
     @@helpers_files = Dir["#{@@helpers_dir}/*_helpers.rb"].collect {|h| h.match(/\/(\w+)\.rb/)[1]}

@@ -55,3 +55,5 @@ class FakeModel
     'fake_model'
   end
 end
+
+ActionORM.use :driver => ActionORM::Drivers::AbstractDriver, :for => FakeModel

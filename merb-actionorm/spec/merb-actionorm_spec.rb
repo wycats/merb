@@ -93,4 +93,33 @@ describe "merb-actionorm" do
     end
   end
   
+  describe "FakeModel" do
+    before(:all) do
+      class FakeModel
+        def valid?
+          false
+        end
+        def new_record?
+          true
+        end
+        def errors
+          FakeErrors.new(self)
+        end
+        def to_s
+          'fake_model'
+        end
+      end
+      ActionORM.use :driver => ActionORM::Drivers::AbstractDriver, :for => FakeModel
+      @model_instance = FakeModel.new
+    end
+    
+    it "should support the orm" do
+      ActionORM.supports?(@model_instance).should be_true
+    end
+
+    it "should know if a record is a new record or not" do
+      ActionORM.for(@model_instance).new_record?.should be_true
+    end
+  end
+  
 end

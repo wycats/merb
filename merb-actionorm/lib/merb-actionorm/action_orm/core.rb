@@ -29,7 +29,7 @@ module ActionORM
   module Core
     module ClassMethods
       def supports?(obj)
-        find_key(obj)
+        !find_key(obj).nil?
       end
 
       def for(obj)

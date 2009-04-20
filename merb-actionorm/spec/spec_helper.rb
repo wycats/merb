@@ -3,6 +3,7 @@ require 'merb-actionorm'
 action_orm_path = File.join(File.dirname(__FILE__), '..', 'lib', 'merb-actionorm', 'action_orm')
 require File.join(action_orm_path, 'test_orm_model')
 require File.join(action_orm_path, 'drivers','test_orm_driver')
+require 'rubygems'
 
 begin
   gem 'sequel'

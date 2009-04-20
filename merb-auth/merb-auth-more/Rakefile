@@ -23,6 +23,7 @@ spec = Gem::Specification.new do |s|
   s.email = EMAIL
   s.homepage = HOMEPAGE
   s.add_dependency("merb-auth-core", ">= #{Merb::VERSION}")
+  s.add_dependency("merb-actionorm", ">= #{Merb::VERSION}")
   s.require_path = 'lib'
   s.files = %w(LICENSE README.textile Rakefile TODO) + Dir.glob("{lib,spec}/**/*")
   
