@@ -56,4 +56,4 @@ class FakeModel
   end
 end
 
-ActionORM.use :driver => ActionORM::Drivers::AbstractDriver, :for => FakeModel
+ActionORM.use :driver => :compliant, :for => FakeModel

@@ -23,3 +23,5 @@ class FakeDMModel
   end
   alias bat bat?
 end
+
+ActionORM.use :driver => :compliant, :for => FakeDMModel

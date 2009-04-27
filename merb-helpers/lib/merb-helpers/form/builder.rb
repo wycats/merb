@@ -131,7 +131,8 @@ module Merb::Helpers::Form::Builder
       attrs[:method] = :post unless attrs[:method] == :get
       # Use a fake PUT if the object is not new, otherwise use the method
       # passed in. Defaults to :post if no method is set.
-      method ||= (ActionORM.supports?(@obj) && !ActionORM.for(@obj).new_record?) || (@obj.respond_to?(:new?) && !@obj.new?) ? :put : :post
+      standardized_object = ActionORM.for(@obj)
+      method ||=  (!standardized_object.nil? && standardized_object.new_record?) || (@obj.respond_to?(:new?) && @obj.new?) ? :post : :put
 
       attrs[:enctype] = "multipart/form-data" if attrs.delete(:multipart) || @multipart
 

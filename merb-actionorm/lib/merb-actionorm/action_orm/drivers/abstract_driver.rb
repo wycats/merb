@@ -30,15 +30,27 @@ module ActionORM
       end
   
       def new_record?
-        model.new_record?
+        if !@model.respond_to?(:new_record?)
+          raise AbstractDriverMethod, "#{@model.class} doesn't define a way to check if a new record is new or not!"
+        else
+          @model.new_record?
+        end
       end
   
       def errors
-        raise AbstractDriverMethod
+        if !@model.respond_to?(:errors)
+          raise AbstractDriverMethod, "#{@model.class} doesn't define a way to look up errors!"
+        else
+          @model.errors
+        end
       end
   
       def valid?
-        model.valid?
+        if !@model.respond_to?(:valid?)
+          raise AbstractDriverMethod, "#{@model.class} doesn't define a way to check if an instance is valid!"
+        else
+          @model.valid?
+        end
       end
     end
   end

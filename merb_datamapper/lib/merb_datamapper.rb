@@ -5,6 +5,7 @@ if defined?(Merb::Plugins)
   require File.dirname(__FILE__) / "merb" / "orms" / "data_mapper" / "connection"
   require File.dirname(__FILE__) / "merb" / "session" / "data_mapper_session"
   Merb::Plugins.add_rakefiles "merb_datamapper" / "merbtasks"
+  ActionORM.use :driver => :compliant, :for => DataMapper::Resource
 
   # conditionally assign things, so as not to override previously set options.
   # This is most relevent for :use_repository_block, which is used later in this file.

@@ -28,13 +28,16 @@ module ActionORM
 
   module Core
     module ClassMethods
-      def supports?(obj)
-        !find_key(obj).nil?
-      end
 
       def for(obj)
+        return nil if obj.nil?
+        unless supports?(obj)
+          ActionORM.use :driver => ActionORM::Drivers::AbstractDriver, :for => obj.class
+        end
         driver = driver_registry[find_key(obj)]
         case driver
+        when :compliant
+          obj
         when NilClass
           obj
         else
@@ -52,7 +55,20 @@ module ActionORM
         ActionORM.register(options[:for], options[:driver])
       end
       
+      def find_key(obj)
+        return nil if obj.nil?
+        unless driver_key_cache.key?(obj.class)
+          driver_key_cache[obj.class] = driver_registry.keys.find {|k, v| obj.is_a? k }
+        end
+        driver_key_cache[obj.class]
+      end
+      
       protected
+      
+        def supports?(obj)
+          !find_key(obj).nil?
+        end
+      
         def driver_registry
           @_driver_registry ||= {}
         end
@@ -65,12 +81,6 @@ module ActionORM
           driver_registry[obj_class] = obj_driver_class
         end
         
-        def find_key(obj)
-          unless driver_key_cache.key?(obj.class)
-            driver_key_cache[obj.class] = driver_registry.keys.find {|k, v| obj.is_a? k }
-          end
-          driver_key_cache[obj.class]
-        end
     end
   end
 end

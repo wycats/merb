@@ -3,9 +3,6 @@ require File.dirname(__FILE__) + '/spec_helper'
 describe "merb-actionorm" do
   
    shared_examples_for "a supported ORM" do
-     it "should support the orm" do
-       ActionORM.supports?(@model_instance).should be_true
-     end
 
      it "should know if a record is a new record or not" do
        ActionORM.for(@model_instance).new_record?.should be_true
@@ -43,6 +40,12 @@ describe "merb-actionorm" do
       ActionORM.for(@model_instance).valid?.should be_true
       @model_instance.name = nil
       ActionORM.for(@model_instance).valid?.should be_false
+    end
+    
+    it "should have a list of errors on failed validation" do
+      @model_instance.name = nil
+      ActionORM.for(@model_instance).valid?.should be_false
+      @model_instance.errors.class.should_not be_nil
     end
   end
 
@@ -93,7 +96,7 @@ describe "merb-actionorm" do
     end
   end
   
-  describe "FakeModel" do
+  describe "Compliant model" do
     before(:all) do
       class FakeModel
         def valid?
@@ -103,22 +106,26 @@ describe "merb-actionorm" do
           true
         end
         def errors
-          FakeErrors.new(self)
+          {:name => "can't be empty"}
         end
         def to_s
           'fake_model'
         end
       end
-      ActionORM.use :driver => ActionORM::Drivers::AbstractDriver, :for => FakeModel
+      ActionORM.use :driver => :compliant, :for => FakeModel
       @model_instance = FakeModel.new
-    end
-    
-    it "should support the orm" do
-      ActionORM.supports?(@model_instance).should be_true
     end
 
     it "should know if a record is a new record or not" do
       ActionORM.for(@model_instance).new_record?.should be_true
+    end
+    
+    it "should know if a record is valid" do
+      ActionORM.for(@model_instance).new_record?.should be_true
+    end
+    
+    it "should know if a record is valid" do
+      ActionORM.for(@model_instance).errors.should be_true
     end
   end
   
