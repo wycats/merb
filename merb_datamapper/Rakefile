@@ -17,7 +17,7 @@ GEM_VERSION = Merb::VERSION + PKG_BUILD
 
 RELEASE_NAME    = "REL #{GEM_VERSION}"
 
-GEM_DEPENDENCIES = [["dm-core", ">=0.9.5"], ["dm-migrations", ">=0.9.5"], ["merb-core", "~> #{GEM_VERSION}"], ["merb-actionorm", "~> #{GEM_VERSION}"]]
+GEM_DEPENDENCIES = [["dm-core", ">=0.10.0"], ["dm-migrations", ">=0.10.0"], ["merb-core", "~> #{GEM_VERSION}"], ["merb-actionorm", "~> #{GEM_VERSION}"]]
 
 require "extlib/tasks/release"
 

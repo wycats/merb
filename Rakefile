@@ -43,14 +43,14 @@ merb_release = {
       "merb-helpers",
       "merb-mailer",
       "merb-param-protection",
+      "merb-actionorm",
       "merb_datamapper",
       "merb",
-      "merb-more",
-      "merb-actionorm"
+      "merb-more"
     ]
 }
 
-merb_gem_paths = %w[merb merb-core merb_datamapper] + merb_more_gem_paths
+merb_gem_paths = %w[merb merb-core] + merb_more_gem_paths + %w[merb_datamapper]
 
 merb_gems = merb_gem_paths.map { |p| File.basename(p) }
 merb_more_gems = merb_more_gem_paths.map { |p| File.basename(p) }
