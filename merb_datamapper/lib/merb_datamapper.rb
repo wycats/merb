@@ -21,6 +21,14 @@ if defined?(Merb::Plugins)
     Merb::Plugins.config[:merb_datamapper][:session_repository_name] = :default
   end
 
+  module DataMapper
+    module Resource
+
+      # actionorm compliance
+      alias new_record? new?
+
+    end
+  end
 
   class Merb::Orms::DataMapper::Connect < Merb::BootLoader
     after BeforeAppLoads
