@@ -66,7 +66,7 @@ namespace :db do
   desc "Drop the database (postgres only)"
   task :drop do
     config = Merb::Orms::DataMapper.config
-    puts "Droping database '#{config[:database]}'"
+    puts "Dropping database '#{config[:database]}'"
     case config[:adapter]
     when 'postgres'
       `dropdb -U #{config[:username]} #{config[:database]}`
