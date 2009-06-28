@@ -7,7 +7,6 @@ describe Merb::DataMapperSessionStore do
   end
 
   before(:each) do
-    Merb::Plugins.config[:merb_datamapper] = {}
     @session_container = Merb::DataMapperSessionStore
     @session_container.auto_migrate!
     @sess_id = 'a'*32
