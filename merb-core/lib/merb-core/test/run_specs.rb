@@ -14,12 +14,6 @@ require 'kconv'
 require 'rack'
 require 'fileutils'
 
-begin
-  require 'json'
-rescue
-  require 'json/pure'
-end
-
 Merb::Dispatcher
 
 module Merb

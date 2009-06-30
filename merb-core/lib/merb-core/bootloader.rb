@@ -418,6 +418,7 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
   rescue LoadError
     gem "json_pure"
     require "json/pure"
+    require "merb-core/core_ext/json_pure_fix"
   end
 
   # Resets the logger and sets the log_stream to Merb::Config[:log_file]
