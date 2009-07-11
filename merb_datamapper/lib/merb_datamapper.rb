@@ -63,18 +63,15 @@ if defined?(Merb::Plugins)
     after LoadClasses
 
     def self.run
-      Merb.logger.verbose! 'Merb::Orms::DataMapper::Associations block'
 
-      # make sure all relationships are initialized after loading
-      descendants = DataMapper::Resource.descendants.dup
-      descendants.dup.each do |model|
-        descendants.merge(model.descendants) if model.respond_to?(:descendants)
-      end
-      descendants.each do |model|
+      Merb.logger.verbose! 'Merb::Orms::DataMapper::Associations - defining lazy relationship properties'
+
+      DataMapper::Model.descendants.each do |model|
         model.relationships.each_value { |r| r.child_key }
       end
 
-      Merb.logger.verbose! 'Merb::Orms::DataMapper::Associations complete'
+      Merb.logger.verbose! 'Merb::Orms::DataMapper::Associations - complete'
+
     end
   end
 
