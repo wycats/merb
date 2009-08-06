@@ -56,7 +56,8 @@ module Merb
     def net_smtp
       Net::SMTP.start(config[:host], config[:port].to_i, config[:domain],
                       config[:user], config[:pass], config[:auth]) { |smtp|
-        smtp.send_message(@mail.to_s, @mail.from.first, @mail.to.to_s.split(/[,;]/))
+        to = @mail.to.is_a?(String) ? @mail.to.split(/[,;]/) : @mail.to
+        smtp.send_message(@mail.to_s, @mail.from.first, to)
       }
     end
 
