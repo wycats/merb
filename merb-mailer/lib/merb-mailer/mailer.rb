@@ -21,6 +21,7 @@ module Merb
   #     :pass   => 'pass',
   #     :auth   => :plain # :plain, :login, :cram_md5, the default is no auth
   #     :domain => "localhost.localdomain" # the HELO domain provided by the client to the server
+  #     :tls    => true/false/nil, true enables tls, default nil 
   #   }
   #
   #   or
@@ -54,8 +55,17 @@ module Merb
 
     # Sends the mail using SMTP.
     def net_smtp
-      Net::SMTP.start(config[:host], config[:port].to_i, config[:domain],
-                      config[:user], config[:pass], config[:auth]) { |smtp|
+      smtp = Net::SMTP.new(config[:host], config[:port].to_i)
+      if config[:tls]
+        if smtp.respond_to?(:enable_starttls) # 1.9.x
+          smtp.enable_starttls
+        elsif smtp.respond_to?(:enable_tls) && smtp.respond_to?(:use_tls?)
+          smtp.enable_tls(OpenSSL::SSL::VERIFY_NONE) # 1.8.x with tlsmail
+        else
+          raise 'Unable to enable TLS, for Ruby 1.8.x install tlsmail'
+        end
+      end
+      smtp.start(config[:domain], config[:user], config[:pass], config[:auth]) { |smtp|
         to = @mail.to.is_a?(String) ? @mail.to.split(/[,;]/) : @mail.to
         smtp.send_message(@mail.to_s, @mail.from.first, to)
       }
