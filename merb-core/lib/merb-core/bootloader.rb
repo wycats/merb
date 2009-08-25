@@ -402,7 +402,7 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
   #
   # :api: private
   def self.load_dependencies
-    dependencies.each { |dependency| Kernel.load_dependency(dependency, nil) }
+    Bundler.require_env(Merb.environment)
     nil
   end
 
@@ -413,10 +413,8 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
   #
   # :api: private
   def self.enable_json_gem
-    gem "json"
     require "json/ext"
   rescue LoadError
-    gem "json_pure"
     require "json/pure"
     require "merb-core/core_ext/json_pure_fix"
   end

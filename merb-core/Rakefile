@@ -56,9 +56,10 @@ spec = Gem::Specification.new do |s|
   s.has_rdoc         = true
   s.extra_rdoc_files = %w( README LICENSE TODO )
 
-  s.required_rubygems_version = ">= 1.3.0"
+  s.required_rubygems_version = ">= 1.3.5"
   
   # Dependencies
+  s.add_dependency "bundler"
   s.add_dependency "extlib", ">= 0.9.8"
   s.add_dependency "erubis", ">= 2.6.2"
   s.add_dependency "rake"
@@ -67,7 +68,6 @@ spec = Gem::Specification.new do |s|
   s.add_dependency "rack"
   # require mimetypes 1.16 or greater to make sure we support Ruby 1.9.x
   s.add_dependency "mime-types", ">= 1.16"
-  s.add_dependency "thor", ">= 0.9.9"
   # this escalates to "regular" dependencies, comment it out
   # for now. RubyGems need some love.
   #s.add_development_dependency "libxml-ruby"
