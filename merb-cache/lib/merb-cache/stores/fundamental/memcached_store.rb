@@ -89,8 +89,9 @@ module Merb::Cache
     #
     # Use :buffer_requests option to use bufferring,
     # :no_block to use non-blocking async I/O.
+    # :support_cas to support CAS
     def connect(config = {})
-      @memcached = ::Memcached.new(@servers, config.only(:buffer_requests, :no_block).merge(:namespace => @namespace))
+      @memcached = ::Memcached.new(@servers, config.only(:buffer_requests, :no_block, :support_cas).merge(:namespace => @namespace))
     end
 
     # Returns cache key calculated from base key
