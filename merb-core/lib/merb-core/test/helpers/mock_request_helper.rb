@@ -13,6 +13,7 @@ module Merb
         def initialize(env = {}, req = StringIO.new)
           env.environmentize_keys!
           env['rack.input'] = req
+          @start       = Time.now
           super(DEFAULT_ENV.merge(env))
         end
 
