@@ -151,6 +151,10 @@ module Merb
       #
       # :api: private
       def setup(settings = {})
+        # Merge new settings with any existing configuration settings
+        settings = @configuration.merge(settings) unless @configuration.nil?
+        
+        # Merge new settings with default settings
         config = defaults.merge(settings)
         
         unless config[:reload_classes]
