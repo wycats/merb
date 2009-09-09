@@ -1,8 +1,7 @@
 if defined?(Merb::Plugins)
-  dependency 'dm-core'
+  require 'dm-core'
 
   require File.dirname(__FILE__) / "merb" / "orms" / "data_mapper" / "connection"
-  require File.dirname(__FILE__) / "merb" / "session" / "data_mapper_session"
   Merb::Plugins.add_rakefiles "merb_datamapper" / "merbtasks"
 
   # conditionally assign things, so as not to override previously set options.
@@ -37,7 +36,7 @@ if defined?(Merb::Plugins)
 
       # if we use a datamapper session store, require it.
       Merb.logger.verbose! "Checking if we need to use DataMapper sessions"
-      if Merb::Config.session_stores.include?(:datamapper)
+      if Merb::Config.session_store == 'datamapper'
         Merb.logger.verbose! "Using DataMapper sessions"
         require File.dirname(__FILE__) / "merb" / "session" / "data_mapper_session"
       end
