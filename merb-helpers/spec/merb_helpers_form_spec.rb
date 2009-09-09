@@ -188,6 +188,13 @@ describe "form_for" do
     form.should_not have_selector("input[type=hidden][name=_method]")
   end
 
+  it "should use POST if the object passed in is nil" do
+    @c.instance_variable_set(:@obj, nil)
+    form = @c.render :advanced
+    form.should have_selector("form[method=post]")
+    form.should_not have_selector("input[type=hidden][value=put][name=_method]")
+  end
+
   it "should support PUT if the object passed in is not a new_record? via a hidden field" do
     form = @c.render :basic
     form.should have_selector("form[method=post]")
