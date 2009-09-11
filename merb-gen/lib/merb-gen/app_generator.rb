@@ -16,27 +16,54 @@ module Merb
         Merb::VERSION
       end
 
+      # ORM gem dependencies
+      #
+      # Adds ORM plugin dependency 'merb_#{orm}' if we use any ORM.
+      #
+      # ==== Params
+      # orm<Symbol>:: ORM to use 
+      #
+      # ==== Returns
+      # String:: Gem dependencies
       def gems_for_orm(orm)
-        orm.to_sym == :none ? '' : %Q{gem "merb_#{ orm }"}
+        orm.to_sym == :none ? '' : %Q{gem "merb_#{orm}"}
       end
 
+      # Template enging gem dependencies
+      #
+      # When using something else than erb we add merb plugin 
+      # dependency for the template engine.
+      #
+      # ==== Params
+      # template_engine<Symbol>:: Template engine to use 
+      #
+      # ==== Returns
+      # String:: Gem dependencies
       def gems_for_template_engine(template_engine)
+        gems = ''
         if template_engine != :erb
           if template_engine.in?(:haml, :builder)
             template_engine_plugin = "merb-#{template_engine}"
           else
             template_engine_plugin = "merb_#{template_engine}"
           end
-          %Q{gem "#{template_engine_plugin}"}
+          gems = %Q{gem "#{template_engine_plugin}"}
         end
+        gems
       end
 
-      def gems_for_testing_framework(test_framework)
-        if test_framework == :test_unit 
-          %Q{gem "#{test_framework}", :only => :test}
-        elsif test_framework == :rspec
-          %Q{gem "#{test_framework}", :require_as => "spec", :only => :test}
-        end
+      # Testing framework gem dependencies
+      #
+      # If we use any other test framework than RSpec we must add dependency 
+      # to the Gemfile. Merb depends on the RSpec so it's default dependency.
+      #
+      # ==== Params
+      # test_framework<Symbol>:: Testing framework to use 
+      #
+      # ==== Returns
+      # String:: Gem dependencies
+      def gems_for_testing_framework(testing_framework)
+        testing_framework == :rspec ? '' : %Q{gem "#{testing_framework}", :only => :test}  
       end
 
     end

@@ -9,6 +9,7 @@ describe Merb::Generators::MerbStackGenerator do
     end
 
     it_should_behave_like "named generator"
+    it_should_behave_like "app generator"
 
     it "should create an Gemfile" do
       @generator.should create('/tmp/testing/Gemfile')
@@ -16,10 +17,6 @@ describe Merb::Generators::MerbStackGenerator do
 
     it "should create config/init.rb" do
       @generator.should create('/tmp/testing/config/init.rb')
-    end
-
-    it "should create config/dependencies.rb" do
-      @generator.should create('/tmp/testing/config/dependencies.rb')
     end
 
     it "should create config/database.yml" do

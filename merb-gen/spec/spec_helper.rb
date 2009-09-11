@@ -1,4 +1,4 @@
-$:.push File.join(File.dirname(__FILE__), '..', 'lib')
+$:.unshift File.join(File.dirname(__FILE__), '..', 'lib')
 
 require 'spec'
 require 'merb-core'
@@ -9,6 +9,44 @@ Merb.disable(:initfile)
 
 Spec::Runner.configure do |config|
   config.include Templater::Spec::Helpers
+end
+
+describe "app generator", :shared => true do
+  
+  describe "#gems_for_orm" do
+    it "should generate DSL for ORM plugin" do
+      @generator.gems_for_orm(:sequel).should == 'gem "merb_sequel"'
+    end
+
+    it "should not generate DSL if we don't use ORM" do
+      @generator.gems_for_orm(:none).should  == ''
+    end
+  end
+
+  describe "#gems_for_template_engine" do
+    it "should generate DSL for template engine plugin" do
+      @generator.gems_for_template_engine(:haml).should == 'gem "merb-haml"'
+      @generator.gems_for_template_engine(:builder).should == 'gem "merb-builder"'
+    end
+
+    it "should generate DSL for template engine plugins other than haml and builder" do
+      @generator.gems_for_template_engine(:liquid).should == 'gem "merb_liquid"'
+    end
+
+    it "should not generate DSL if we use erb" do
+      @generator.gems_for_template_engine(:erb).should  == ''
+    end
+  end
+
+  describe "#gems_for_testing_framework" do
+    it "should generate DSL for testing framework plugin" do
+      @generator.gems_for_testing_framework(:test_unit).should == 'gem "test_unit", :only => :test'
+    end
+
+    it "should not generate DSL if we use rspec" do
+      @generator.gems_for_testing_framework(:rspec).should  == ''
+    end
+  end
 end
 
 describe "named generator", :shared => true do
