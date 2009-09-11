@@ -1,6 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "spec_helper"))
 
-Merb.start :environment => 'test', :log_level => :fatal
+startup_merb(:log_level => :fatal)
 
 Dir[File.join(File.dirname(__FILE__), "controllers/**/*.rb")].each do |f|
   require f

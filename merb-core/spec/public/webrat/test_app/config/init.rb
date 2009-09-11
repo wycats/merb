@@ -1,8 +1,10 @@
 # Go to http://wiki.merbivore.com/pages/init-rb
  
 ::Gem.clear_paths; ::Gem.path.unshift(File.dirname(__FILE__) + "/../gems/")
- 
-require 'config/dependencies.rb'
+
+Merb::BootLoader.before_app_loads do
+  require Merb.framework_root / ".." / ".." / "merb-helpers" / "lib" / "merb-helpers.rb"
+end
  
 use_test :rspec
 use_template_engine :erb

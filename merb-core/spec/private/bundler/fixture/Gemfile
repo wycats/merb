@@ -1,3 +1,0 @@
-source 'http://gems.github.com'
-gem 'merb-core'
-gem 'sequel'

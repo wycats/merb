@@ -8,12 +8,11 @@ module Spec
     module Formatter
       class BaseTextFormatter
         def dump_failure(counter, failure)
-          output = @options.error_stream
-          output.puts
-          output.puts "#{counter.to_s})"
-          output.puts colourise("#{failure.header}\n#{failure.exception.message}", failure)
-          output.puts format_backtrace(failure.exception.backtrace)
-          output.flush
+          @output.puts
+          @output.puts "#{counter.to_s})"
+          @output.puts colorize_failure("#{failure.header}\n#{failure.exception.message}", failure)
+          @output.puts format_backtrace(failure.exception.backtrace)
+          @output.flush
         end
       end
     end

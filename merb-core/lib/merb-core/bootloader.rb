@@ -362,6 +362,7 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
   # Array[Gem::Dependency]:: The dependencies registered in init.rb.
   #
   # :api: plugin
+  # FIXME: PK: This should go, there is no need for this anymore?
   cattr_accessor :dependencies
   self.dependencies = []
 
@@ -389,8 +390,8 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
       load_env_config
     end
     expand_ruby_path
-    enable_json_gem unless Merb::disabled?(:json)
     load_dependencies
+    enable_json_gem unless Merb::disabled?(:json)
     update_logger
     nil
   end
@@ -402,7 +403,21 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
   #
   # :api: private
   def self.load_dependencies
-    Bundler.require_env(Merb.environment)
+    begin
+      if (ENV['DEBUG'] || $DEBUG || Merb::Config[:verbose]) && Merb.logger
+        if Merb::Config[:gemfile]
+          Merb.logger.debug!("Loading Gemfile from #{Merb::Config[:gemfile]}")
+        else
+          Merb.logger.debug!("Loading default Gemfile from Merb.root/Gemfile")
+        end
+      end
+      
+      Bundler::Environment.load(Merb::Config[:gemfile]).require_env(Merb.environment)
+    rescue Bundler::DefaultManifestNotFound => e
+      Merb.fatal! "You didn't create Bundler Gemfile manifest or you are not " \
+                  "in a Merb application. If you are trying to create a new " \
+                  "merb application, use merb-gen app."
+    end
     nil
   end
 
@@ -416,6 +431,7 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
     require "json/ext"
   rescue LoadError
     require "json/pure"
+    # FIXME: PK: Remove this and add the json 1.1.7 dependency instead
     require "merb-core/core_ext/json_pure_fix"
   end
 

@@ -8,8 +8,6 @@ require File.expand_path(File.join(__DIR__, "controllers", "partial"))
 require File.expand_path(File.join(__DIR__, "controllers", "display"))
 require File.expand_path(File.join(__DIR__, "controllers", "helpers"))
 
-Merb.start :environment => 'test'
-
 module Merb::Test::Behaviors
   include Merb::Test::RequestHelper
   

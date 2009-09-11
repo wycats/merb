@@ -1,4 +1,3 @@
-require 'rubygems'
 require 'benchmark'
 require 'spec'
 require 'spec/runner/formatter/base_text_formatter'
@@ -111,9 +110,13 @@ def run_specs(globs, spec_cmd='spec', run_opts = "-c", except = [])
         else
           `NOW=1 #{Gem.ruby} #{File.dirname(__FILE__) / "run_spec.rb"} \"#{spec}\"`
         end
-        out = File.read(base_dir / "results" / "#{File.basename(spec)}_out")
-        err = File.read(base_dir / "results" / "#{File.basename(spec)}_err")
-        counter.add(spec, out, err)        
+        begin
+          out = File.read(base_dir / "results" / "#{File.basename(spec)}_out")
+          err = File.read(base_dir / "results" / "#{File.basename(spec)}_err")
+          counter.add(spec, out, err)        
+        rescue Errno::ENOENT => e
+          STDOUT.puts e.message
+        end
       end
     end
   end

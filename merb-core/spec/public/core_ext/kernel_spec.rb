@@ -15,8 +15,8 @@ describe Kernel, "#use_orm" do
     Merb.orm.should == :activerecord
   end
   
-  it "should add the the orm plugin as a dependency" do
-    Kernel.should_receive(:dependency).with('merb_activerecord')
+  it "should not add dependency" do
+    Kernel.should_not_receive(:dependency)
     Kernel.use_orm(:activerecord)
   end
 
@@ -26,7 +26,7 @@ describe Kernel, "#use_template_engine" do
   
   before do
     Kernel.stub!(:dependency)
-    Merb.template_engine = :erb # reset orm
+    Merb.template_engine = :erb # reset template engine
   end
   
   it "should set Merb.template_engine" do
@@ -34,33 +34,17 @@ describe Kernel, "#use_template_engine" do
     Merb.template_engine.should == :haml
   end
   
-  it "should add merb-haml as a dependency for :haml" do
-    Kernel.should_receive(:dependency).with('merb-haml')
+  it "should add no dependency" do
+    Kernel.should_not_receive(:dependency)
     Kernel.use_template_engine(:haml)
   end
-  
-  it "should add merb-builder as a dependency for :builder" do
-    Kernel.should_receive(:dependency).with('merb-builder')
-    Kernel.use_template_engine(:builder)
-  end
-  
-  it "should add no dependency for :erb" do
-    Kernel.should_not_receive(:dependency)
-    Kernel.use_template_engine(:erb)
-  end
-  
-  it "should add other plugins as a dependency" do
-    Kernel.should_receive(:dependency).with('merb_liquid')
-    Kernel.use_template_engine(:liquid)
-  end
-
 end
 
 describe Kernel, "#use_test" do
   
   before do
-    Merb.test_framework = :rspec # reset orm
     Merb.stub!(:dependencies)
+    Merb.test_framework = :rspec # reset test framework
   end
   
   it "should set Merb.test_framework" do
@@ -74,9 +58,9 @@ describe Kernel, "#use_test" do
     Merb.use_test(:test_unit, 'hpricot', 'webrat')
   end
   
-  it "should require test dependencies when in 'test' env" do
+  it "should nor require test dependencies when in 'test' env" do
     Merb.stub!(:env).and_return("test")
-    Kernel.should_receive(:dependencies).with(["hpricot", "webrat"])
+    Kernel.should_not_receive(:dependencies)
     Merb.use_test(:test_unit, 'hpricot', 'webrat')
   end
   

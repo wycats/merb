@@ -16,8 +16,8 @@ require __DIR__ + "/tools/annotation_extract"
 
 include FileUtils
 
-require "lib/merb-core/version"
-require 'lib/merb-core/tasks/merb_rake_helper'
+require __DIR__ + "/lib/merb-core/version"
+require __DIR__ + "/lib/merb-core/tasks/merb_rake_helper"
 
 ##############################################################################
 # Package && release

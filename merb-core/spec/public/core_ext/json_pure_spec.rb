@@ -1,3 +1,4 @@
+# FIXME: PK: Delete this when removing the json pure fix
 require File.join(File.dirname(__FILE__), "spec_helper")
 
 require "benchmark"

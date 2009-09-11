@@ -1,20 +1,19 @@
 # require 'merb' must happen after Merb::Config is instantiated
-require "rubygems"
 
 # Add the local gems dir if found within the app root; any dependencies loaded
 # hereafter will try to load from the local gems before loading system gems.
 root_key = %w[-m --merb-root].detect { |o| ARGV.index(o) }
 root = ARGV[ARGV.index(root_key) + 1] if root_key
 root = root.to_a.empty? ? Dir.getwd : root
-if File.directory?(gems_dir = File.join(root, "gems")) && !$BUNDLE
-  $BUNDLE = true; Gem.clear_paths; Gem.path.unshift(gems_dir)
+if File.directory?(gems_dir = File.join(root, "vendor", "gems")) && !$BUNDLE
   # Warn if local merb-core is available but not loaded.
   if File.expand_path($0).index(root) != 0 && 
     (local_mc = Dir[File.join(gems_dir, "specifications", "merb-core-*.gemspec")].last)
-    puts "Warning: please use bin/#{File.basename($0)} to load #{File.basename(local_mc, ".gemspec")} from ./gems"
+    puts "Warning: please use bin/#{File.basename($0)} to load #{File.basename(local_mc, ".gemspec")} from ./vendor/gems"
   end
 end
 
+require 'bundler'
 require "thread"
 require "set"
 require "fileutils"
