@@ -414,9 +414,9 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
       
       Bundler::Environment.load(Merb::Config[:gemfile]).require_env(Merb.environment)
     rescue Bundler::DefaultManifestNotFound => e
-      Merb.fatal! "You didn't create Bundler Gemfile manifest or you are not " \
-                  "in a Merb application. If you are trying to create a new " \
-                  "merb application, use merb-gen app."
+      Merb.logger.error! "You didn't create Bundler Gemfile manifest or you " \
+                         "are not in a Merb application. If you are trying to " \
+                         "create a new merb application, use merb-gen app."
     end
     nil
   end
