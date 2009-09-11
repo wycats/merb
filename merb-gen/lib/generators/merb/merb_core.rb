@@ -44,7 +44,13 @@ module Merb
       # ==== Common directories & files
       #
 
-      empty_directory :gems, 'gems'
+      empty_directory :vendor, 'vendor'
+
+      template :gemfile do |template|
+        template.source = File.join(common_templates_dir, "Gemfile")
+        template.destination = "Gemfile"
+      end
+
       template :rakefile do |template|
         template.source = File.join(common_templates_dir, "Rakefile")
         template.destination = "Rakefile"
@@ -66,11 +72,6 @@ module Merb
         directory.source      = File.join(source_root, dir)
         directory.destination = dir
       end
-      
-      directory :thor_file do |directory|
-        directory.source = File.join(common_templates_dir, "merb_thor")
-        directory.destination = File.join("tasks", "merb.thor")
-      end
 
       #
       # ==== Layout specific things
@@ -83,7 +84,7 @@ module Merb
       glob! "config"
       glob! "doc",      []
       glob! "public"      
-
+      
       invoke :layout do |generator|
         generator.new(destination_root, options, 'application')
       end

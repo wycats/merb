@@ -9,6 +9,10 @@ describe Merb::Generators::MerbFlatGenerator do
     end
     
     it_should_behave_like "named generator"
+
+    it "should create an Gemfile" do
+      @generator.should create('/tmp/testing/Gemfile')
+    end
     
     it "should create a number of views"
     

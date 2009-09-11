@@ -8,6 +8,12 @@ describe Merb::Generators::MerbStackGenerator do
       @generator = Merb::Generators::MerbStackGenerator.new('/tmp', {}, 'testing')
     end
 
+    it_should_behave_like "named generator"
+
+    it "should create an Gemfile" do
+      @generator.should create('/tmp/testing/Gemfile')
+    end
+
     it "should create config/init.rb" do
       @generator.should create('/tmp/testing/config/init.rb')
     end

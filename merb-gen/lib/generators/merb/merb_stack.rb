@@ -48,7 +48,13 @@ module Merb
       # ==== Common directories & files
       #
 
-      empty_directory :gems, 'gems'
+      empty_directory :gems, 'vendor'
+
+      template :gemfile do |template|
+        template.source = File.join(self.class.source_root, "Gemfile")
+        template.destination = "Gemfile"
+      end
+
       template :rakefile do |template|
         template.source = File.join(common_templates_dir, "Rakefile")
         template.destination = "Rakefile"
@@ -74,11 +80,6 @@ module Merb
         file.destination = 'public/javascripts/jquery.js'
       end
 
-      directory :thor_file do |directory|
-        directory.source = File.join(common_templates_dir, "merb_thor")
-        directory.destination = File.join("tasks", "merb.thor")
-      end
-
       directory :test_dir do |directory|
         dir = testing_framework == :rspec ? "spec" : "test"
 
@@ -89,10 +90,6 @@ module Merb
       #
       # ==== Layout specific things
       #
-
-      def merb_gems_version
-        Merb::VERSION
-      end
 
       def dm_gems_version
         Merb::DM_VERSION

@@ -1,6 +1,10 @@
 module Merb
   module Generators
     class MerbVeryFlatGenerator < AppGenerator
+      #
+      # ==== Paths
+      #
+
       def self.source_root
         File.join(super, 'application', 'merb_very_flat')
       end
@@ -15,9 +19,12 @@ module Merb
       end
 
       def common_templates_dir
-        File.expand_path(File.join(File.dirname(__FILE__), '..',
-                                   'templates', 'application', 'common'))
+        self.class.common_templates_dir
       end
+
+      #
+      # ==== Generator options
+      #
 
       option :testing_framework, :default => :rspec,
       :desc => 'Testing framework to use (one of: rspec, test_unit).'
@@ -32,6 +39,22 @@ module Merb
     DESC
 
       first_argument :name, :required => true, :desc => "Application name"
+
+      #
+      # ==== Common directories & files
+      #
+
+      empty_directory :vendor, 'vendor'
+
+      template :gemfile do |template|
+        template.source = File.join(common_templates_dir, "Gemfile")
+        template.destination = "Gemfile"
+      end
+
+      template :rakefile do |template|
+        template.source = File.join(common_templates_dir, "Rakefile")
+        template.destination = "Rakefile"
+      end
 
       template :application do |template|
         template.source = 'application.rbt'
@@ -49,15 +72,9 @@ module Merb
         directory.destination = dir
       end
 
-      directory :thor_file do |directory|
-        directory.source = File.join(common_templates_dir, "merb_thor")
-        directory.destination = File.join("tasks", "merb.thor")
-      end
-
-      template :rakefile do |template|
-        template.source = File.join(common_templates_dir, "Rakefile")
-        template.destination = "Rakefile"
-      end
+      #
+      # ==== Layout specific things
+      #
 
       def class_name
         self.name.gsub("-", "_").camel_case

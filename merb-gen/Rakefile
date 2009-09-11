@@ -35,7 +35,7 @@ spec = Gem::Specification.new do |s|
   s.executables = %w( merb-gen )
 
   s.add_dependency "merb-core", ">= #{Merb::VERSION}"
-  s.add_dependency "templater", ">= 0.3.3"
+  s.add_dependency "templater", ">= 1.0.0"
 
   s.require_path = 'lib'
   s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,bin,spec,merb}/**/*")

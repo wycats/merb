@@ -7,6 +7,12 @@ describe Merb::Generators::MerbVeryFlatGenerator do
     before do
       @generator = Merb::Generators::MerbVeryFlatGenerator.new('/tmp', {}, 'testing')
     end
+
+    it_should_behave_like "named generator"
+
+    it "should create an Gemfile" do
+      @generator.should create('/tmp/testing/Gemfile')
+    end
     
     it "should create a number of views"
     
