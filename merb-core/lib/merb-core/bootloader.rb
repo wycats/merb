@@ -431,8 +431,6 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
     require "json/ext"
   rescue LoadError
     require "json/pure"
-    # FIXME: PK: Remove this and add the json 1.1.7 dependency instead
-    require "merb-core/core_ext/json_pure_fix"
   end
 
   # Resets the logger and sets the log_stream to Merb::Config[:log_file]
