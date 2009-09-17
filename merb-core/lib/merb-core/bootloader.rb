@@ -358,14 +358,6 @@ end
 
 class Merb::BootLoader::Dependencies < Merb::BootLoader
 
-  # ==== Returns
-  # Array[Gem::Dependency]:: The dependencies registered in init.rb.
-  #
-  # :api: plugin
-  # FIXME: PK: This should go, there is no need for this anymore?
-  cattr_accessor :dependencies
-  self.dependencies = []
-
   # Load the init_file specified in Merb::Config or if not specified, the
   # init.rb file from the Merb configuration directory, and any environment
   # files, which register the list of necessary dependencies and any
