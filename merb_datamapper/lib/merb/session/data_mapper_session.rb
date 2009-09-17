@@ -1,13 +1,16 @@
 require 'merb-core/dispatch/session'
-require "dm-core"
+
 module Merb
   class DataMapperSessionStore
     include ::DataMapper::Resource
 
-    table_name = Merb::Plugins.config[:merb_datamapper][:session_storage_name] || 'sessions'
-    storage_names[default_repository_name] = table_name
+    def self.default_repository_name
+      Merb::Plugins.config[:merb_datamapper][:session_repository_name]
+    end
 
-    property :session_id, String, :size => 32, :nullable => false, :key => true
+    storage_names[default_repository_name] = Merb::Plugins.config[:merb_datamapper][:session_storage_name]
+
+    property :session_id, String, :length => 32, :nullable => false, :key => true
     property :data, Object, :default => {}, :lazy => false
     property :created_at, DateTime, :default => Proc.new { |r, p| DateTime.now }
 
@@ -31,7 +34,7 @@ module Merb
     # @param data<Object> The data to be stored in the session. Probably a hash
     def self.store_session(session_id, data)
       if session = get(session_id)
-        session.update_attributes(:data => data)
+        session.update(:data => data)
       else
         create(:session_id => session_id, :data => data)
       end
@@ -43,10 +46,6 @@ module Merb
     # @param session_id<String> The session to destroy
     def self.delete_session(session_id)
       all(:session_id => session_id).destroy!
-    end
-
-    def self.default_repository_name
-      Merb::Plugins.config[:merb_datamapper][:session_repository_name] || :default
     end
   end
 

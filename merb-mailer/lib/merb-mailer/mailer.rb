@@ -103,7 +103,9 @@ module Merb
       	  @mail.add_attachment_as *v
       	end
       else
-        raise ArgumentError, "You did not pass in a file. Instead, you sent a #{file_or_files.class}" if !file_or_files.is_a?(File)
+        if !file_or_files.is_a?(File) && !file_or_files.is_a?(StringIO)
+          raise ArgumentError, "You did not pass in a file. Instead, you sent a #{file_or_files.class}" 
+        end
         @mail.add_attachment_as(file_or_files, filename, type, headers)
       end
     end

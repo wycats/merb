@@ -37,6 +37,7 @@ module Merb
     # :expires<Time>:: Cookie expiry date.
     # :domain<String>:: The domain for which this cookie applies.
     # :secure<Boolean>:: Security flag.
+    # :http_only<Boolean>:: HttpOnly cookies
     #
     # ==== Notes
     # By using this method, a cookie key is marked for being
@@ -77,10 +78,12 @@ module Merb
           options["expires"] = expiry.gmtime.strftime(Merb::Const::COOKIE_EXPIRATION_FORMAT)
         end
         secure  = options.delete("secure")
+        http_only = options.delete("http_only")
         kookie  = "#{name}=#{Merb::Parse.escape(value)}; "
         # WebKit in particular doens't like empty cookie options - skip them.
         options.each { |k, v| kookie << "#{k}=#{v}; " unless v.blank? }
-        kookie  << 'secure' if secure
+        kookie  << 'secure; ' if secure
+        kookie  << 'HttpOnly; ' if http_only
         cookies << kookie.rstrip
       end
       cookies.empty? ? {} : { 'Set-Cookie' => cookies }

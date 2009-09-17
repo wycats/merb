@@ -16,11 +16,11 @@ namespace :db do
   end
   desc "Perform automigration"
   task :automigrate => :merb_env do
-    ::DataMapper::AutoMigrator.auto_migrate
+    ::DataMapper.auto_migrate!
   end
   desc "Perform non destructive automigration"
   task :autoupgrade => :merb_env do
-    ::DataMapper::AutoMigrator.auto_upgrade
+    ::DataMapper.auto_upgrade!
   end
 
   namespace :migrate do
@@ -66,7 +66,7 @@ namespace :db do
   desc "Drop the database (postgres only)"
   task :drop do
     config = Merb::Orms::DataMapper.config
-    puts "Droping database '#{config[:database]}'"
+    puts "Dropping database '#{config[:database]}'"
     case config[:adapter]
     when 'postgres'
       `dropdb -U #{config[:username]} #{config[:database]}`

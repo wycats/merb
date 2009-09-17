@@ -150,6 +150,11 @@ end
 
 describe Merb::Request, " misc" do
   
+  it "should contain the request start" do
+    request = fake_request
+    request.start.should be_instance_of(Time)
+  end
+  
   it "should know if a request is an XHR" do
     request = fake_request({:http_x_requested_with => "XMLHttpRequest"})
     request.should be_xhr
