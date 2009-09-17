@@ -43,6 +43,8 @@ module Merb
     
     @@mutex = Mutex.new
     
+    attr_reader :start
+    
     # Handles request routing and action dispatch.
     # 
     # ==== Returns
@@ -50,7 +52,7 @@ module Merb
     # 
     # :api: private
     def handle
-      start = env["merb.request_start"] = Time.now
+      @start = env["merb.request_start"] = Time.now
       Merb.logger.info { "Started request handling: #{start.to_s}" }
       
       find_route!

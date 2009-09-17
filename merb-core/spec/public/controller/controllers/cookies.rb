@@ -11,6 +11,7 @@ module Merb::Test::Fixtures::Controllers
       cookies[:foo] = 'bar'
       cookies.set_cookie(:oldcookie, 'this is really old', :expires => Time.utc(2020))
       cookies.set_cookie(:safecook,  'no-hackers-here', :secure => true)
+      cookies.set_cookie(:xsscook,  'only-through-http', :http_only => true)
     end
     
     def destroy_cookies

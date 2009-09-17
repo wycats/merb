@@ -1,9 +1,8 @@
 if defined?(Merb::Plugins)
-  dependency 'dm-core'
+  require 'dm-core'
   require 'merb-actionorm'
 
   require File.dirname(__FILE__) / "merb" / "orms" / "data_mapper" / "connection"
-  require File.dirname(__FILE__) / "merb" / "session" / "data_mapper_session"
   Merb::Plugins.add_rakefiles "merb_datamapper" / "merbtasks"
   ActionORM.use :driver => :compliant, :for => DataMapper::Resource
 
@@ -21,6 +20,14 @@ if defined?(Merb::Plugins)
     Merb::Plugins.config[:merb_datamapper][:session_repository_name] = :default
   end
 
+  module DataMapper
+    module Resource
+
+      # actionorm compliance
+      alias new_record? new?
+
+    end
+  end
 
   class Merb::Orms::DataMapper::Connect < Merb::BootLoader
     after BeforeAppLoads
@@ -39,7 +46,7 @@ if defined?(Merb::Plugins)
 
       # if we use a datamapper session store, require it.
       Merb.logger.verbose! "Checking if we need to use DataMapper sessions"
-      if Merb::Config.session_stores.include?(:datamapper)
+      if Merb::Config.session_store == 'datamapper'
         Merb.logger.verbose! "Using DataMapper sessions"
         require File.dirname(__FILE__) / "merb" / "session" / "data_mapper_session"
       end
@@ -55,18 +62,15 @@ if defined?(Merb::Plugins)
     after LoadClasses
 
     def self.run
-      Merb.logger.verbose! 'Merb::Orms::DataMapper::Associations block'
 
-      # make sure all relationships are initialized after loading
-      descendants = DataMapper::Resource.descendants.dup
-      descendants.dup.each do |model|
-        descendants.merge(model.descendants) if model.respond_to?(:descendants)
-      end
-      descendants.each do |model|
+      Merb.logger.verbose! 'Merb::Orms::DataMapper::Associations - defining lazy relationship properties'
+
+      DataMapper::Model.descendants.each do |model|
         model.relationships.each_value { |r| r.child_key }
       end
 
-      Merb.logger.verbose! 'Merb::Orms::DataMapper::Associations complete'
+      Merb.logger.verbose! 'Merb::Orms::DataMapper::Associations - complete'
+
     end
   end
 
@@ -88,21 +92,4 @@ if defined?(Merb::Plugins)
   Merb.add_generators generators / 'data_mapper_resource_controller'
   Merb.add_generators generators / 'data_mapper_migration'
   
-  # Override bug in DM::Timestamps
-  Merb::BootLoader.after_app_loads do
-    module DataMapper
-      module Timestamp
-        private
-        
-        def set_timestamps
-          return unless dirty? || ActionORM.for(self).new_record?
-          TIMESTAMP_PROPERTIES.each do |name,(_type,proc)|
-            if model.properties.has_property?(name)
-              model.properties[name].set(self, proc.call(self, model.properties[name])) unless attribute_dirty?(name)
-            end
-          end
-        end
-      end
-    end
-  end
 end

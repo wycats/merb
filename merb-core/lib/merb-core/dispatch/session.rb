@@ -119,11 +119,14 @@ module Merb
         base.cattr_accessor :registered_session_types
         base.registered_session_types = Dictionary.new
         base.class_inheritable_accessor :_session_id_key, :_session_secret_key,
-                                        :_session_expiry
+                                        :_session_expiry, :_session_secure,
+                                        :_session_http_only
         
         base._session_id_key        = Merb::Config[:session_id_key] || '_session_id'
         base._session_expiry        = Merb::Config[:session_expiry] || 0
         base._session_secret_key    = Merb::Config[:session_secret_key]
+        base._session_secure        = Merb::Config[:session_secure] || false
+        base._session_http_only     = Merb::Config[:session_http_only] || false
       end
       
       module ClassMethods
@@ -246,7 +249,9 @@ module Merb
       # :api: private
       def set_session_cookie_value(value, options = {})
         defaults = {}
-        defaults[:expires] = Time.now + _session_expiry if _session_expiry > 0
+        defaults[:expires]   = Time.now + _session_expiry if _session_expiry > 0
+        defaults[:secure]    = _session_secure
+        defaults[:http_only] = _session_http_only
         cookies.set_cookie(_session_id_key, value, defaults.merge(options))
       end
       alias :set_session_id_cookie :set_session_cookie_value

@@ -89,6 +89,18 @@ describe "a merb mailer" do
     attachments.last["headers"].should include("Content-ID: <license.txt>")
   end
 
+  it "should be able to accept objects that respond to :read as attachments" do
+    setup_test_mailer
+    @m.attach StringIO.new('This is some dummy text'), 'readme', 'text/plain', 'Content-ID: <readme.txt>'
+    @m.deliver!
+    delivery = TestMailer.deliveries.last
+    attachments = delivery.instance_variable_get("@attachments")
+    attachments.size.should == 1
+    attachments.first["mimetype"].should eql("text/plain")
+    attachments.first["filename"].should eql("readme")
+    attachments.first["headers"].should include("Content-ID: <readme.txt>")
+  end
+
   it "should be able to send mails via SMTP" do
     setup_test_mailer TestSMTPMailer
     Net::SMTP.stub!(:start).and_return(true)

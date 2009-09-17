@@ -27,7 +27,7 @@ describe Merb::Controller, "#cookies creating" do
   
   it "should set all the cookies for a request" do
     controller = dispatch_to(Merb::Test::Fixtures::Controllers::CookiesController, :store_cookies)
-    controller.headers['Set-Cookie'].length.should == 4
+    controller.headers['Set-Cookie'].length.should == 5
   end
   
   it "should set a simple cookie" do
@@ -54,7 +54,13 @@ describe Merb::Controller, "#cookies creating" do
   it "should append secure to the end of the cookie header when marked as such" do
     controller = dispatch_to(Merb::Test::Fixtures::Controllers::CookiesController, :store_cookies)
     cookie = controller.headers['Set-Cookie'].sort[3]
-    cookie.should match(/secure$/)
+    cookie.should match(/secure;$/)
+  end
+  
+  it "should append HttpOnly to the end of the cookie header when marked as such" do
+    controller = dispatch_to(Merb::Test::Fixtures::Controllers::CookiesController, :store_cookies)
+    cookie = controller.headers['Set-Cookie'].sort[4]
+    cookie.should match(/HttpOnly;$/)
   end
   
   it "sets the Set-Cookie response header - and ignores blank options" do
