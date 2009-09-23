@@ -41,7 +41,6 @@ require File.dirname(__FILE__) + '/spec_helper'
 Merb::Plugins.config[:helpers] = {
   :default_builder => Merb::Helpers::Form::Builder::FormWithErrors
 }
-class MyClass; end
 
 describe "error_messages_for" do
 
@@ -305,7 +304,7 @@ describe "bound_text_field" do
   it "should errorify a field for a model with errors" do
     model = mock("model")
     model.stub!(:new_record?).and_return(true)
-    model.stub!(:class).and_return(MyClass)
+    model.stub!(:class).and_return("MyClass")
     model.stub!(:foo).and_return("FOO")
     errors = mock("errors")
     errors.should_receive(:on).with(:foo).and_return(true)
@@ -353,7 +352,7 @@ describe "bound_radio_button" do
   it "should errorify a field for a model with errors" do
     model = mock("model")
     model.stub!(:new_record?).and_return(true)
-    model.stub!(:class).and_return(MyClass)
+    model.stub!(:class).and_return("MyClass")
     model.stub!(:foo).and_return("FOO")
     errors = mock("errors")
     errors.should_receive(:on).with(:foo).and_return(true)
@@ -424,7 +423,7 @@ describe "bound_password_field" do
   it "should errorify a field for a model with errors" do
     model = mock("model")
     model.stub!(:new_record?).and_return(true)
-    model.stub!(:class).and_return(MyClass)
+    model.stub!(:class).and_return("MyClass")
     model.stub!(:foo).and_return("FOO")
     errors = mock("errors")
     errors.should_receive(:on).with(:foo).and_return(true)
@@ -587,7 +586,7 @@ describe "bound_check_box" do
   it "should errorify a field for a model with errors" do
     model = mock("model")
     model.stub!(:new_record?).and_return(true)
-    model.stub!(:class).and_return(MyClass)
+    model.stub!(:class).and_return("MyClass")
     model.stub!(:baz).and_return("BAZ")
     model.stub!(:bat).and_return("BAT")
     errors = mock("errors")
@@ -675,7 +674,7 @@ describe "bound_hidden_field" do
   it "should not errorify a field for a model with errors" do
     model = mock("model")
     model.stub!(:new_record?).and_return(true)
-    model.stub!(:class).and_return(MyClass)
+    model.stub!(:class).and_return("MyClass")
     model.stub!(:foo).and_return("FOO")
     errors = mock("errors")
     errors.should_receive(:on).with(:foo).and_return(true)

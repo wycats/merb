@@ -11,7 +11,6 @@ merb_more_gem_paths = %w[
   merb-action-args 
   merb-assets 
   merb-slices
-  merb-actionorm
   merb-auth
   merb-cache 
   merb-exceptions

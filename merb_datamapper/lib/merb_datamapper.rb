@@ -1,10 +1,9 @@
 if defined?(Merb::Plugins)
+
   require 'dm-core'
-  require 'merb-actionorm'
 
   require File.dirname(__FILE__) / "merb" / "orms" / "data_mapper" / "connection"
   Merb::Plugins.add_rakefiles "merb_datamapper" / "merbtasks"
-  ActionORM.use :driver => :compliant, :for => DataMapper::Resource
 
   # conditionally assign things, so as not to override previously set options.
   # This is most relevent for :use_repository_block, which is used later in this file.
