@@ -75,16 +75,24 @@ if defined?(Merb::Plugins)
   end
 
   if Merb::Plugins.config[:merb_datamapper][:use_repository_block]
-    # wrap action in repository block to enable identity map
-    class Application < Merb::Controller
-      override! :_call_action
-      def _call_action(*)
-        DataMapper.repository do |r|
-          Merb.logger.debug "In repository block #{r.name}"
-          super
+
+    class Merb::Orms::DataMapper::IdentityMapSupport < Merb::BootLoader
+
+      after RackUpApplication
+
+      def self.run
+
+        app = Merb::Config[:app]
+        def app.call(env)
+          DataMapper.repository do |r|
+            Merb.logger.debug "In repository block #{r.name}"
+            super
+          end
         end
+
       end
     end
+
   end
 
   generators = File.join(File.dirname(__FILE__), 'generators')
