@@ -360,9 +360,14 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
 
   # Load the init_file specified in Merb::Config or if not specified, the
   # init.rb file from the Merb configuration directory, and any environment
-  # files, which register the list of necessary dependencies and any
-  # after_app_loads hooks.
+  # files and any after_app_loads hooks.
   #
+  # Dependencies are loaded via Bunlder and managed in the Gemfile manifest.
+  # By default manifest for Bundler is in the root directory of the app and 
+  # is called Gemfile. All dependencies MUST be definied there because all
+  # dependency hangling was removed from Merb.
+  #
+  # ==== Deprecated (1.0.x)
   # Dependencies can hook into the bootloader process itself by using
   # before or after insertion methods. Since these are loaded from this
   # bootloader (Dependencies), they can only adapt the bootloaders that
@@ -413,7 +418,7 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
     nil
   end
 
-  # Loads json or json_pure and requires it.
+  # Requires json or json_pure.
   #
   # ==== Returns
   # nil
