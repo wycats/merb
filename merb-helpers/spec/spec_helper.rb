@@ -44,6 +44,8 @@ class FakeErrors
     name.to_s.include?("bad")
   end
   
+  alias :[] :on
+
 end
 
 class FakeColumn

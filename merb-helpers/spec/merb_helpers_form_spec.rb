@@ -307,7 +307,7 @@ describe "bound_text_field" do
     model.stub!(:class).and_return("MyClass")
     model.stub!(:foo).and_return("FOO")
     errors = mock("errors")
-    errors.should_receive(:on).with(:foo).and_return(true)
+    errors.should_receive(:[]).with(:foo).and_return(true)
 
     model.stub!(:errors).and_return(errors)
     @c.instance_variable_set(:@obj, model)
@@ -355,7 +355,7 @@ describe "bound_radio_button" do
     model.stub!(:class).and_return("MyClass")
     model.stub!(:foo).and_return("FOO")
     errors = mock("errors")
-    errors.should_receive(:on).with(:foo).and_return(true)
+    errors.should_receive(:[]).with(:foo).and_return(true)
 
     model.stub!(:errors).and_return(errors)
     @c.instance_variable_set(:@obj, model)
@@ -426,7 +426,7 @@ describe "bound_password_field" do
     model.stub!(:class).and_return("MyClass")
     model.stub!(:foo).and_return("FOO")
     errors = mock("errors")
-    errors.should_receive(:on).with(:foo).and_return(true)
+    errors.should_receive(:[]).with(:foo).and_return(true)
 
     model.stub!(:errors).and_return(errors)
 
@@ -590,8 +590,8 @@ describe "bound_check_box" do
     model.stub!(:baz).and_return("BAZ")
     model.stub!(:bat).and_return("BAT")
     errors = mock("errors")
-    errors.should_receive(:on).with(:baz).and_return(true)
-    errors.should_receive(:on).with(:bat).and_return(true)
+    errors.should_receive(:[]).with(:baz).and_return(true)
+    errors.should_receive(:[]).with(:bat).and_return(true)
 
     model.stub!(:errors).and_return(errors)
 
@@ -677,7 +677,7 @@ describe "bound_hidden_field" do
     model.stub!(:class).and_return("MyClass")
     model.stub!(:foo).and_return("FOO")
     errors = mock("errors")
-    errors.should_receive(:on).with(:foo).and_return(true)
+    errors.should_receive(:[]).with(:foo).and_return(true)
 
     model.stub!(:errors).and_return(errors)
 
