@@ -1,40 +1,28 @@
 module Kernel
-  # Loads the given string as a gem. Execution is deferred until
-  # after the logger has been instantiated and the framework directory
-  # structure is defined.
+  
+  # Dependency handling on the Framework level have been deprecated and 
+  # all the related API will be removed in the 1.1.1 release.
   #
-  # ==== Parameters
-  # name<String> The name of the gem to load.
-  # *ver<Gem::Requirement, Gem::Version, Array, #to_str>
-  #   Version requirements to be passed to Gem::Dependency.new.
-  #   If the last argument is a Hash, extract the :immediate option,
-  #   forcing a dependency to load immediately.
-  #
-  # ==== Options
-  #
-  # :immediate   when true, gem is loaded immediately even if framework is not yet ready.
-  # :require_as  file name to require for this gem.
-  #
-  # ==== Returns
-  # Gem::Dependency:: The dependency information.
+  # Please use Bundler to manage your dependencies. Use tools provided
+  # in RubyGems to define your dependencies in the Rakefiles or gemspecs
+  # for your gems, plugins or slices.
   #
   # :api: public
+  # @deprecated
   def dependency(name, *opts, &blk)
     warn("DEPRECATED: Use bundler to setup and load dependency #{name}.")
     return
   end
 
-  # Loads both gem and library dependencies that are passed in as arguments.
-  # Execution is deferred to the Merb::BootLoader::Dependencies.run during bootup.
+  # Dependency handling on the Framework level have been deprecated and 
+  # all the related API will be removed in the 1.1.1 release.
   #
-  # ==== Parameters
-  # *args<String, Hash, Array> The dependencies to load.
-  #
-  # ==== Returns
-  # Array[(Gem::Dependency, Array[Gem::Dependency])]:: Gem::Dependencies for the
-  #   dependencies specified in args.
+  # Please use Bundler to manage your dependencies. Use tools provided
+  # in RubyGems to define your dependencies in the Rakefiles or gemspecs
+  # for your gems, plugins or slices.
   #
   # :api: public
+  # @deprecated
   def dependencies(*args)
     warn("DEPRECATED: Use bundler to setup and load dependencies #{args.join(', ')}.")
     return
@@ -46,6 +34,7 @@ module Kernel
   #
   # ==== Parameters
   # orm<Symbol>:: The ORM to use.
+  # blk<Block>:: Deprecated, will be removed in 1.1.1
   #
   # ==== Returns
   # nil
@@ -71,6 +60,7 @@ module Kernel
   # ==== Parameters
   # test_framework<Symbol>::
   #   The test framework to use. Currently only supports :rspec and :test_unit.
+  # test_dependencies<Array>:: Deprecated, will be removed in 1.1.1
   #
   # ==== Returns
   # nil
@@ -96,6 +86,7 @@ module Kernel
   # ==== Parameters
   # template_engine<Symbol>
   #   The template engine to use.
+  # blk<Block>:: Deprecated, will be removed in 1.1.1
   #
   # ==== Returns
   # nil
