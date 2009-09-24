@@ -59,7 +59,7 @@ module Merb
       return rack_response if handled?
       
       klass = controller
-      Merb.logger.debug { "Routed to: #{params.inspect}" }
+      Merb.logger.debug { "Routed to: #{klass::_filter_params(params).inspect}" }
       
       unless klass < Controller
         raise NotFound, 
