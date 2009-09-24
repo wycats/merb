@@ -1,7 +1,6 @@
 ### AUTOMATICALLY GENERATED. DO NOT EDIT!
-require 'merb_datamapper'
 require 'merb-core'
-require 'merb-more'
+require 'merb_datamapper'
 require 'dm-core'
 require 'do_sqlite3'
 require 'dm-timestamps'

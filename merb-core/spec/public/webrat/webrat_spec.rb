@@ -1,7 +1,8 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "spec_helper"))
 
-Merb.start(
+startup_merb(
   :merb_root => File.dirname(__FILE__) / "test_app",
+  :gemfile   => File.dirname(__FILE__) / "test_app" / "Gemfile",
   :fork_for_class_load => false
 )
 Merb::Config[:log_stream] = File.open("/dev/null", "w")

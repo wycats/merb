@@ -1,4 +1,3 @@
-require 'rubygems'
 require 'rake/rdoctask'
 
 require 'merb-core'

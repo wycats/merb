@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 
-require 'rubygems'
 require 'merb-core'
 
 ARGV.push '-H' if ARGV[0] && ARGV[0] =~ /^[^-]/

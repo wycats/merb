@@ -29,7 +29,8 @@ module Merb
           :disabled_components    => Merb.on_windows? ? [:signals] : [],
           :deferred_actions       => [],
           :verbose                => false,
-          :name                   => "merb"
+          :name                   => "merb",
+          :gemfile                => nil
         }
       end
 

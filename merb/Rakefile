@@ -23,9 +23,8 @@ DM_VERSION  = Merb::DM_VERSION
 RELEASE_NAME    = "REL #{GEM_VERSION}"
 
 gems = [
-  ["merb_datamapper", "= #{GEM_VERSION}"],
   ["merb-core", "= #{GEM_VERSION}"],
-  ["merb-more", "= #{GEM_VERSION}"],
+  ["merb_datamapper", "= #{GEM_VERSION}"],
   ["dm-core", "~> #{DM_VERSION}"],
   ["do_sqlite3", "~> #{DM_VERSION}"],
   ["dm-timestamps", "~> #{DM_VERSION}"],

@@ -1,0 +1,8 @@
+# dependencies are generated using a strict version, don't forget to edit the dependency versions when upgrading.
+merb_gems_version = "<%= merb_gems_version %>"
+
+gem "merb-core", merb_gems_version
+
+<%= gems_for_orm(orm) %>
+<%= gems_for_template_engine(template_engine) %>
+<%= gems_for_testing_framework(testing_framework) %>

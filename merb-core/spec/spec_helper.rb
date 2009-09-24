@@ -1,9 +1,12 @@
-require "rubygems"
 require "spec"
 require File.join(File.dirname(__FILE__), "..", "lib", "merb-core")
 
 def startup_merb(opts = {})
-  default_options = {:environment => 'test', :adapter => 'runner'}
+  default_options = {
+    :environment => 'test',
+    :adapter => 'runner',
+    :gemfile => File.join(File.dirname(__FILE__), "Gemfile")
+  }
   options = default_options.merge(opts)
   Merb.start_environment(options)
 end

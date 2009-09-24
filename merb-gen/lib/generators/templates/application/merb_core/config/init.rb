@@ -1,7 +1,6 @@
 # Go to http://wiki.merbivore.com/pages/init-rb
  
-# Specify a specific version of a dependency
-# dependency "RedCloth", "> 3.0"
+# Specify your dependencies in the Gemfile
 
 <%= "# " unless orm != :none %> use_orm :<%= orm %>
 use_test :<%= testing_framework %>

@@ -358,13 +358,6 @@ end
 
 class Merb::BootLoader::Dependencies < Merb::BootLoader
 
-  # ==== Returns
-  # Array[Gem::Dependency]:: The dependencies registered in init.rb.
-  #
-  # :api: plugin
-  cattr_accessor :dependencies
-  self.dependencies = []
-
   # Load the init_file specified in Merb::Config or if not specified, the
   # init.rb file from the Merb configuration directory, and any environment
   # files, which register the list of necessary dependencies and any
@@ -389,8 +382,8 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
       load_env_config
     end
     expand_ruby_path
-    enable_json_gem unless Merb::disabled?(:json)
     load_dependencies
+    enable_json_gem unless Merb::disabled?(:json)
     update_logger
     nil
   end
@@ -402,7 +395,21 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
   #
   # :api: private
   def self.load_dependencies
-    dependencies.each { |dependency| Kernel.load_dependency(dependency, nil) }
+    begin
+      if (ENV['DEBUG'] || $DEBUG || Merb::Config[:verbose]) && Merb.logger
+        if Merb::Config[:gemfile]
+          Merb.logger.debug!("Loading Gemfile from #{Merb::Config[:gemfile]}")
+        else
+          Merb.logger.debug!("Loading default Gemfile from Merb.root/Gemfile")
+        end
+      end
+      
+      Bundler::Environment.load(Merb::Config[:gemfile]).require_env(Merb.environment)
+    rescue Bundler::DefaultManifestNotFound => e
+      Merb.logger.error! "You didn't create Bundler Gemfile manifest or you " \
+                         "are not in a Merb application. If you are trying to " \
+                         "create a new merb application, use merb-gen app."
+    end
     nil
   end
 
@@ -413,12 +420,9 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
   #
   # :api: private
   def self.enable_json_gem
-    gem "json"
     require "json/ext"
   rescue LoadError
-    gem "json_pure"
     require "json/pure"
-    require "merb-core/core_ext/json_pure_fix"
   end
 
   # Resets the logger and sets the log_stream to Merb::Config[:log_file]
