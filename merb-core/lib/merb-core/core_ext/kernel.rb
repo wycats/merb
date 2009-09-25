@@ -1,6 +1,5 @@
 module Kernel
-  
-  # Dependency handling on the Framework level have been deprecated and 
+  # Dependency handling on the Framework level have been deprecated and
   # all the related API will be removed in the 1.1.1 release.
   #
   # Please use Bundler to manage your dependencies. Use tools provided
@@ -14,7 +13,7 @@ module Kernel
     return
   end
 
-  # Dependency handling on the Framework level have been deprecated and 
+  # Dependency handling on the Framework level have been deprecated and
   # all the related API will be removed in the 1.1.1 release.
   #
   # Please use Bundler to manage your dependencies. Use tools provided

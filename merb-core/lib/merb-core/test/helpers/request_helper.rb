@@ -6,7 +6,7 @@ module Merb
 
       def request(uri, env = {})
         uri = url(uri) if uri.is_a?(Symbol)
-        uri = URI(uri)
+        uri = URI(trim_prefix(uri))
         uri.scheme ||= "http"
         uri.host   ||= "example.org"
 
@@ -53,8 +53,19 @@ module Merb
 
         rack
       end
+
+      protected
+
+      def trim_prefix(uri)
+        if prefix = Merb::Config.path_prefix
+          new_uri = uri.sub(/^#{Regexp.escape(prefix)}/, '')
+          new_uri.empty? ? '/' : new_uri
+        else
+          uri
+        end
+      end
     end
-    
+
     module RequestHelper
       include MakeRequest
 

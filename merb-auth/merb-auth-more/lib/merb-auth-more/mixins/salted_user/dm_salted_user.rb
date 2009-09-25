@@ -4,9 +4,12 @@ class Merb::Authentication
       module DMClassMethods
         def self.extended(base)
           base.class_eval do
-            
-            property :crypted_password,           String
-            property :salt,                       String
+
+            property :crypted_password, String, :size => 60
+
+            if Merb::Authentication::Mixins::SaltedUser > base
+              property :salt, String
+            end
             
             validates_present        :password, :if => proc{|m| m.password_required?}
             validates_is_confirmed   :password, :if => proc{|m| m.password_required?}

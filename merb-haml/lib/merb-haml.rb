@@ -8,7 +8,19 @@ if defined?(Merb)
 
   Merb::BootLoader.after_app_loads do
     
-    if File.directory?(Merb::Plugins.config[:sass][:template_location] || Merb.dir_for(:stylesheet) / "sass")
+    template_locations = []
+    template_locations << Merb.dir_for(:stylesheet) / "sass"
+    
+    # extract template locations list from sass config
+    config_location = Merb::Plugins.config[:sass][:template_location]
+    if config_location.is_a? Hash
+      template_locations += config_location.keys
+    elsif config_location
+      template_locations << config_location.to_s
+    end
+    
+    # setup sass if any template paths match
+    if template_locations.any?{|location| File.directory?(location) }
       require "sass/plugin" 
       if Merb::Config[:sass]
         Merb.logger.info("Please define your sass settings in Merb::Plugins.config[:sass] not Merb::Config")

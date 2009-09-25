@@ -66,9 +66,9 @@ module Merb::Test::MultipartRequestHelper
           @multipart_params << FileParam.new(param_key, value.path, value.read)
         else
           if value.is_a?(Hash) || value.is_a?(Mash)
-            value.keys.each do |k|
-              push_params(value, param_key)
-            end
+            push_params(value, param_key)
+          elsif value.is_a?(Array)
+            value.each { |v| push_params(v, "#{param_key}[]") }
           else
             @multipart_params << Param.new(param_key, value)
           end

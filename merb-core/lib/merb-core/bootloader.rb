@@ -363,7 +363,7 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
   # files and any after_app_loads hooks.
   #
   # Dependencies are loaded via Bunlder and managed in the Gemfile manifest.
-  # By default manifest for Bundler is in the root directory of the app and 
+  # By default manifest for Bundler is in the root directory of the app and
   # is called Gemfile. All dependencies MUST be definied there because all
   # dependency hangling was removed from Merb.
   #

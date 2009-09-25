@@ -131,10 +131,7 @@ module Merb::Helpers::Form::Builder
       attrs[:method] = :post unless attrs[:method] == :get
       # Use a fake PUT if the object is not new, otherwise use the method
       # passed in. Defaults to :post if no method is set.
-      standardized_object = ActionORM.for(@obj)
-
-      method ||= :post if standardized_object.nil?
-      method ||=  standardized_object.new_record? || (@obj.respond_to?(:new?) && @obj.new?) ? :post : :put
+      method ||= (@obj.respond_to?(:new_record?) && !@obj.new_record?) ? :put : :post
 
       attrs[:enctype] = "multipart/form-data" if attrs.delete(:multipart) || @multipart
 
@@ -377,8 +374,10 @@ module Merb::Helpers::Form::Builder
     end
 
     def update_unbound_controls(attrs, type)
-      attrs.merge!(:id => attrs[:name]) if attrs[:name] && !attrs[:id]
-
+      if attrs[:name] && !attrs[:id]
+        # '[' and ']' are illegal in HTML id attributes
+        attrs.merge!(:id => attrs[:name].to_s.gsub(/(\[|\])/, '_'))
+      end
       case type
       when "text", "radio", "password", "hidden", "checkbox", "file"
         add_css_class(attrs, type)
@@ -401,21 +400,20 @@ module Merb::Helpers::Form::Builder
       obj ||= @obj
       return "" unless obj.respond_to?(:errors)
 
-      sequel = !obj.errors.respond_to?(:each)
-      errors = sequel ? obj.errors.full_messages : obj.errors
+      errors = obj.errors
 
       return "" if errors.empty?
 
       header_message = header % [errors.size, errors.size == 1 ? "" : "s"]
       markup = %Q{<div class='#{error_class}'>#{header_message}<ul>}
-      errors.each {|err| markup << (build_li % (sequel ? err : err.join(" ")))}
+      errors.each {|err| markup << (build_li % err.join(" "))}
       markup << %Q{</ul></div>}
     end
 
     private
 
     def update_bound_controls(method, attrs, type)
-      if @obj && !@obj.errors.on(method.to_sym).blank?
+      if @obj && !@obj.errors[method.to_sym].blank?
         add_css_class(attrs, "error")
       end
       super

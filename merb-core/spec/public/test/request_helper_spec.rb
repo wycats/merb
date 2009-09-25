@@ -4,16 +4,33 @@ startup_merb(:log_level => :fatal)
 
 require File.dirname(__FILE__) / "controllers/request_controller"
 
+module WithPathPrefixHelper
+  def with_path_prefix(prefix)
+    old_prefix = Merb::Config.path_prefix
+    Merb::Config.path_prefix = prefix
+    yield
+  ensure
+    Merb::Config.path_prefix = old_prefix
+  end
+end
+
 describe Merb::Test::RequestHelper do
-  
+  include WithPathPrefixHelper
+
   before(:each) do
     Merb::Controller._default_cookie_domain = "example.org"
-    
+
     Merb::Router.prepare do
       with(:controller => "merb/test/request_controller") do
         match("/set/short/long/read").to(:action => "get")
         match("/:action(/:junk)", :junk => ".*").register
       end
+    end
+  end
+
+  it "should remove the path_prefix configuration option" do
+    with_path_prefix '/foo' do
+      request("/foo/path").should have_body('1')
     end
   end
   

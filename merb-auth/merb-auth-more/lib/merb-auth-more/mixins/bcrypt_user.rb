@@ -1,4 +1,4 @@
-require "digest/sha1"
+require 'bcrypt'
 require File.expand_path(File.dirname(__FILE__) / "..") / "strategies" / "abstract_password"
 
 class Merb::Authentication
@@ -7,7 +7,6 @@ class Merb::Authentication
     # 
     # Added properties:
     #  :crypted_password, String
-    #  :salt,             String
     #
     # To use it simply require it and include it into your user class.
     #
@@ -16,14 +15,15 @@ class Merb::Authentication
     #
     # end
     #
-    module SaltedUser
+    module BCryptUser
       
       def self.included(base)
         base.class_eval do 
           attr_accessor :password, :password_confirmation
+
           
-          include Merb::Authentication::Mixins::SaltedUser::InstanceMethods
-          extend  Merb::Authentication::Mixins::SaltedUser::ClassMethods
+          include Merb::Authentication::Mixins::BCryptUser::InstanceMethods
+
           
           path = File.expand_path(File.dirname(__FILE__)) / "salted_user"
           if defined?(DataMapper) && DataMapper::Resource > self
@@ -44,20 +44,14 @@ class Merb::Authentication
       end # self.included
       
       
-      module ClassMethods
-        # Encrypts some data with the salt.
-        def encrypt(password, salt)
-          Digest::SHA1.hexdigest("--#{salt}--#{password}--")
-        end
-      end    
-      
       module InstanceMethods
+        
         def authenticated?(password)
-          crypted_password == encrypt(password)
+          bcrypt_password == password
         end
         
-        def encrypt(password)
-          self.class.encrypt(password, salt)
+        def bcrypt_password
+          @bcrypt_password ||=  BCrypt::Password.new(crypted_password)
         end
         
         def password_required?
@@ -66,8 +60,8 @@ class Merb::Authentication
         
         def encrypt_password
           return if password.blank?
-          self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{Merb::Authentication::Strategies::Basic::Base.login_param}--") if new_record?
-          self.crypted_password = encrypt(password)
+          cost =  Merb::Plugins.config[:"merb-auth"][:bcrypt_cost] || BCrypt::Engine::DEFAULT_COST
+          self.crypted_password =  BCrypt::Password.create(password, :cost => cost)
         end
         
       end # InstanceMethods
