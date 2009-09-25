@@ -10,10 +10,16 @@ describe Merb::Cache::GzipStore do
   end
 
   describe "#writable?" do
-    it "should always be true" do
+    it "should be true whatever the key" do
       @store.writable?(:foo).should be_true
       @store.writable?('foo').should be_true
       @store.writable?(123).should be_true
+    end
+
+    it "should be false if none of the context caches are writable" do
+      @store.stores.each {|s| s.should_receive(:writable?).and_return false}
+
+      @store.writable?(:foo).should be_false
     end
   end
 

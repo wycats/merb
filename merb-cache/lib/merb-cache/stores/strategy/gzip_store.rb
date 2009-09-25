@@ -8,7 +8,7 @@ module Merb::Cache
   # large pages.
   class GzipStore < AbstractStrategyStore
     def writable?(key, parameters = {}, conditions = {})
-      true
+      @stores.any? {|c| c.writable?(key, parameters, conditions)}
     end
 
     def read(key, parameters = {})
