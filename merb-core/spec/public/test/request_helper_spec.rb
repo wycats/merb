@@ -6,11 +6,11 @@ require File.dirname(__FILE__) / "controllers/request_controller"
 
 module WithPathPrefixHelper
   def with_path_prefix(prefix)
-    old_prefix = Merb::Config.path_prefix
-    Merb::Config.path_prefix = prefix
+    old_prefix = Merb::Config[:path_prefix]
+    Merb::Config[:path_prefix] = prefix
     yield
   ensure
-    Merb::Config.path_prefix = old_prefix
+    Merb::Config[:path_prefix] = old_prefix
   end
 end
 
