@@ -14,7 +14,32 @@ describe Merb::Request do
     request.params[:file][:tempfile].class.should == Tempfile
     request.params[:file][:content_type].should == 'text/plain'
   end
-  
+
+  it "should correctly format multipart posts which contain multiple parameters" do
+    file = Struct.new(:read, :filename, :path).
+      new("This is a text file with some small content in it.", "sample.txt", "sample.txt")
+    params = {:model => {:description1 => 'foo', :description2 => 'bar', :file => file}}
+
+    m = Merb::Test::MultipartRequestHelper::Post.new params
+    body, head = m.to_multipart
+    body.split('----------0xKhTmLbOuNdArY').size.should eql(5)
+  end
+
+  it "should correctly format multipart posts which contain an array as parameter" do
+    struct = Struct.new(:read, :filename, :path)
+    file = struct.new("This is a text file with some small content in it.", "sample.txt", "sample.txt")
+    file2 = struct.new("This is another text file", "sample2.txt", "sample2.txt")
+    params = {:model => {:description1 => 'foo', :description2 => 'bar', :child_attributes => [
+      { :file => file },
+      { :file => file2 }
+    ]}}
+
+    m = Merb::Test::MultipartRequestHelper::Post.new params
+    body, head = m.to_multipart
+    body.should match(/model\[child_attributes\]\[\]\[file\]/)
+    body.split('----------0xKhTmLbOuNdArY').size.should eql(6)
+  end
+
   it "should accept env['rack.input'] as IO object (instead of StringIO)" do
     file = Struct.new(:read, :filename, :path).
       new("This is a text file with some small content in it.", "sample.txt", "sample.txt")
