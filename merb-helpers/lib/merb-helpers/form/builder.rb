@@ -374,8 +374,10 @@ module Merb::Helpers::Form::Builder
     end
 
     def update_unbound_controls(attrs, type)
-      attrs.merge!(:id => attrs[:name]) if attrs[:name] && !attrs[:id]
-
+      if attrs[:name] && !attrs[:id]
+        # '[' and ']' are illegal in HTML id attributes
+        attrs.merge!(:id => attrs[:name].to_s.gsub(/(\[|\])/, '_'))
+      end
       case type
       when "text", "radio", "password", "hidden", "checkbox", "file"
         add_css_class(attrs, type)
