@@ -42,7 +42,6 @@ merb_release = {
       "merb-helpers",
       "merb-mailer",
       "merb-param-protection",
-      "merb-actionorm",
       "merb_datamapper",
       "merb",
       "merb-more"
