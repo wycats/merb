@@ -51,7 +51,7 @@ module Merb
       empty_directory :gems, 'vendor'
 
       template :gemfile do |template|
-        template.source = File.join(self.class.source_root, "Gemfile")
+        template.source = File.join(source_root, "Gemfile")
         template.destination = "Gemfile"
       end
 
