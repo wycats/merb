@@ -116,7 +116,6 @@ task :install do
   merb_gems.each do |gem|
     Merb::RakeHelper.install(gem, :version => Merb::VERSION)
   end
-  puts %x{sudo gem install pkg/merb-more-#{Merb::VERSION}.gem}
 end
 
 desc "Uninstall all gems"
