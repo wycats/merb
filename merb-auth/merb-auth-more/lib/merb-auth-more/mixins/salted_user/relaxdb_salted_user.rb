@@ -7,8 +7,11 @@ class Merb::Authentication
           base.class_eval do
  
             property :crypted_password
-            property :salt
- 
+
+            if Merb::Authentication::Mixins::SaltedUser > base
+              property :salt
+            end
+
             before_save :password_checks
             
             def password_checks

@@ -2,16 +2,16 @@ require File.join(File.dirname(__FILE__), "..", 'spec_helper.rb')
 require 'dm-core'
 require 'dm-validations'
 require File.join(File.expand_path(File.dirname(__FILE__)), "..", ".." ,"lib", "merb-auth-more", "strategies", "abstract_password")
-require File.join(File.expand_path(File.dirname(__FILE__)), "..", ".." ,"lib", "merb-auth-more", "mixins", "salted_user")
+require File.join(File.expand_path(File.dirname(__FILE__)), "..", ".." ,"lib", "merb-auth-more", "mixins", "bcrypt_user")
 
-describe "A Salted User" do
+describe "A Bcrypt User" do
   
   before(:all) do
     DataMapper.setup(:default, "sqlite3::memory:")
     
     class Utilisateur
       include DataMapper::Resource
-      include Merb::Authentication::Mixins::SaltedUser
+      include Merb::Authentication::Mixins::BCryptUser
       
       property :id, Serial
       property :email, String
@@ -58,7 +58,8 @@ describe "A Salted User" do
     it{@user.should respond_to(:password)}
     it{@user.should respond_to(:password_confirmation)}
     it{@user.should respond_to(:crypted_password)}
-    it{@user.should respond_to(:salt)}
+    it{@user.should_not respond_to(:salt)}
+    
     
     it "should require password if password is required" do
       user = Utilisateur.new(:login => "fred", :email => "fred@example.com")
@@ -68,14 +69,15 @@ describe "A Salted User" do
       user.errors.on(:password).should_not be_empty
     end
     
-    it "should set the salt" do
-      @user.salt.should be_nil
+    it "should create a valid Bcrypt password" do
+      lambda { @user.bcrypt_password }.should raise_error(BCrypt::Errors::InvalidHash)
       @user.send(:encrypt_password)
-      @user.salt.should_not be_nil    
+      lambda { @user.bcrypt_password }.should_not raise_error(BCrypt::Errors::InvalidHash)
     end
     
     it "should require the password on create" do
       user = Utilisateur.new(:login => "fred", :email => "fred@example.com")
+      user.password_required?.should be_true
       user.save
       user.errors.on(:password).should_not be_nil
       user.errors.on(:password).should_not be_empty
@@ -102,5 +104,10 @@ describe "A Salted User" do
       (@user.save).should be_true
     end
     
+    it "should use the cost set in Merb::Plugins.config[:'merb-auth'][:bcrypt_cost]" do
+      Merb::Plugins.config[:'merb-auth'][:bcrypt_cost] = 6
+      @user.send(:encrypt_password)
+      @user.bcrypt_password.cost.should == 6
+    end
   end  
 end
