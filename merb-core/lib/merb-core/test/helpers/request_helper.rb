@@ -57,7 +57,7 @@ module Merb
       protected
 
       def trim_prefix(uri)
-        if prefix = Merb::Config.path_prefix
+        if prefix = Merb::Config[:path_prefix]
           new_uri = uri.sub(/^#{Regexp.escape(prefix)}/, '')
           new_uri.empty? ? '/' : new_uri
         else
