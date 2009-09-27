@@ -24,29 +24,72 @@ module Merb
     #     namespace/controller/action.(css|js)
     #
     def auto_link
-      html    = ""
-      prefix  = ""
-      (controller_name / action_name).split("/").each do |path|
-        path = prefix + path
-
-        css_path  = path + ".css"
-        if File.exists? Merb.root / "public" / "stylesheets" / css_path
-          html << %{<link rel="stylesheet" type="text/css" href="/stylesheets/#{css_path}" /> }
-        end
-
-        js_path   = path + ".js"
-        if File.exists? Merb.root / "public" / "javascripts" / js_path
-          html << %{<script type="text/javascript" language="javascript" src="/javascripts/#{js_path}"></script>}
-        end
-
-        #Update the prefix for the next iteration
-        prefix += path / ""
-      end
-
-      #Return the generated HTML
-      html
+      [auto_link_css, auto_link_js].join("\n")
     end
 
+    # ==== Parameters
+    # none
+    #
+    # ==== Returns
+    # html<String>
+    #
+    # ==== Examples
+    # We want all possible matches in the file system upto the action name
+    # for CSS. The reason for separating auto_link for CSS and JS is
+    # performance concerns with page loading. See Yahoo performance rules
+    # (http://developer.yahoo.com/performance/rules.html)
+    def auto_link_css
+      auto_link_paths.map do |path|
+        asset_exists?(:stylesheet, path) ? css_include_tag(path) : nil
+      end.compact.join("\n")
+    end
+
+    # ==== Parameters
+    # none
+    #
+    # ==== Returns
+    # html<String>
+    #
+    # ==== Examples
+    # We want all possible matches in the file system upto the action name
+    # for JS. The reason for separating auto_link for CSS and JS is
+    # performance concerns with page loading. See Yahoo performance rules
+    # (http://developer.yahoo.com/performance/rules.html)
+    def auto_link_js
+      auto_link_paths.map do |path|
+        asset_exists?(:javascript, path) ? js_include_tag(path) : nil
+      end.compact.join("\n")
+    end
+
+    # ==== Parameters
+    # asset_type<Symbol>: A symbol representing the type of the asset.
+    # asset_path<String>: The path to the asset
+    #
+    # ==== Returns
+    # exists?<Boolean>
+    #
+    # ==== Examples
+    # This tests whether a give asset exists in the file system.
+    def asset_exists?(asset_type, asset_path)
+      File.exists?(Merb.root / asset_path(asset_type, asset_path, true))
+    end
+
+    # ==== Parameters
+    # none
+    #
+    # ==== Returns
+    # paths<Array>
+    #
+    # ==== Examples
+    # This is an auxiliary method which returns an array of all possible asset
+    # paths for the current controller/action.
+    def auto_link_paths
+      paths = (controller_name / action_name).split('/')
+      first = paths.shift
+      paths.inject( [first] ) do |memo, val|
+        memo.push [memo.last, val].join('/')
+      end
+    end
 
     # ==== Parameters
     # name<~to_s>:: The text of the link.
