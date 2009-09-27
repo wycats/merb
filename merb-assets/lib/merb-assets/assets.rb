@@ -76,7 +76,8 @@ module Merb
           config = Merb::Plugins.config[:asset_helpers]
           #%{#{(USE_SSL ? 'https' : 'http')}://#{sprintf(config[:asset_domain],self.calculate_host_id(file))}.#{config[:domain]}/#{filename}}
           path = config[:use_ssl] ? 'https://' : 'http://'
-          path << sprintf(config[:asset_domain],self.calculate_host_id(filename)) << ".#{config[:domain]}"
+          path << sprintf(config[:asset_domain],self.calculate_host_id(filename)) << "." if config[:asset_domain]
+          path << config[:domain]
           path << "/" if filename.index('/') != 0
           path << filename
         end

@@ -310,3 +310,35 @@ describe "External JavaScript and Stylesheets" do
     result.should match(%r{/stylesheets/layout.0.1.3.css})
   end
 end
+
+describe "using assets unique assets helper in localhost environment" do
+  before(:all) do
+    Merb::Plugins.config[:asset_helpers][:asset_domain] = nil
+    Merb::Plugins.config[:asset_helpers][:domain] = "localhost:4000"
+  end
+
+  after(:all) do
+    Merb::Plugins.config[:asset_helpers][:asset_domain] = "assets%d"
+    Merb::Plugins.config[:asset_helpers][:domain] = "my-awesome-domain.com"
+  end
+
+  it "should return a js path for a single js file" do
+    uniq_js_path("my").should ==
+      "http://localhost:4000/javascripts/my.js"
+  end
+
+  it "should return a js path for multiple js files" do
+    uniq_js_path(["admin/secrets","home/signup"]).should ==
+      ["http://localhost:4000/javascripts/admin/secrets.js", "http://localhost:4000/javascripts/home/signup.js"]
+  end
+
+  it "should return a css path for a single css file" do
+    uniq_css_path("my").should ==
+      "http://localhost:4000/stylesheets/my.css"
+  end
+
+  it "should return a css path for multiple css files" do
+    uniq_css_path(["admin/secrets","home/signup"]).should ==
+      ["http://localhost:4000/stylesheets/admin/secrets.css", "http://localhost:4000/stylesheets/home/signup.css"]
+  end
+end
