@@ -28,6 +28,7 @@ module Merb
     
     # Load only specific helpers instead of loading all the helpers
     def self.load_helpers(helpers = @@helpers_files)
+      helpers = helpers.is_a?(Array) ? helpers : [helpers]
       helpers.each {|helper| Kernel.load(File.join(@@helpers_dir, "#{helper}.rb") )} # using load here allows specs to work
     end
     
