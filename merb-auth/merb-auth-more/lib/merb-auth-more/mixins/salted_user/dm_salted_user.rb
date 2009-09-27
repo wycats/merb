@@ -5,7 +5,7 @@ class Merb::Authentication
         def self.extended(base)
           base.class_eval do
 
-            property :crypted_password, String, :size => 60
+            property :crypted_password, String, :length => 60
 
             if Merb::Authentication::Mixins::SaltedUser > base
               property :salt, String
