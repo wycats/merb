@@ -63,7 +63,6 @@ spec = Gem::Specification.new do |s|
   s.add_dependency "extlib", ">= 0.9.8"
   s.add_dependency "erubis", ">= 2.6.2"
   s.add_dependency "rake"
-  s.add_dependency "json_pure", ">= 1.1.7"
   s.add_dependency "rspec"
   s.add_dependency "rack"
   # require mimetypes 1.16 or greater to make sure we support Ruby 1.9.x
