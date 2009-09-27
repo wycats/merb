@@ -44,6 +44,8 @@ module Merb
       # ==== Common directories & files
       #
 
+      empty_directory :lib_tasks, 'lib/tasks'
+
       empty_directory :vendor, 'vendor'
 
       template :gemfile do |template|
