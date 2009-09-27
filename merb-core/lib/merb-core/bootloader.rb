@@ -497,7 +497,8 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
     # :api: private
     def self.load_env_config
       if env_config?
-        STDOUT.puts "Loading #{env_config}" unless Merb.testing?
+        env_config_path = relative_to_merb_path(env_config)
+        STDOUT.puts "Loading #{env_config_path}" unless Merb.testing?
         load(env_config)
       end
       nil
@@ -527,7 +528,8 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
     def self.load_initfile
       return nil if Merb.const_defined?("INIT_RB_LOADED")
       if File.exists?(initfile)
-        STDOUT.puts "Loading init file from #{initfile}" unless Merb.testing?
+        initfile_path = relative_to_merb_path(initfile)
+        STDOUT.puts "Loading init file from #{initfile_path}" unless Merb.testing?
         load(initfile)
         Merb.const_set("INIT_RB_LOADED", true)
       elsif !Merb.testing?
@@ -558,6 +560,25 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
       @ran = true
       nil
     end
+
+    # Converts an absolute path to an path relative to Merbs root, if
+    # the path is in the Merb root dir. Otherwise it will return the
+    # absolute path.
+    #
+    # ==== Returns
+    # String:: Relative path or absolute
+    #
+    # :api: private
+    def self.relative_to_merb_path(path)
+      absolute_path = File.expand_path(path)
+      merb_root = File.expand_path(Merb.root)
+      if absolute_path.slice(0, merb_root.length) == merb_root
+        '.' + absolute_path.slice(merb_root.length..-1)
+      else
+        absolute_path
+      end
+    end
+
 end
 
 class Merb::BootLoader::MixinSession < Merb::BootLoader
