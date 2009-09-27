@@ -40,6 +40,11 @@ describe Merb::Generators::MerbCoreGenerator do
     it "should render templates successfully" do
       lambda { @generator.render! }.should_not raise_error
     end
+
+    it "should have an empty lib/tasks directory" do
+      @generator.should create('/tmp/testing/lib/tasks')
+    end
+
     
   end
   

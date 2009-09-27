@@ -45,6 +45,10 @@ describe Merb::Generators::MerbStackGenerator do
       lambda { @generator.render! }.should_not raise_error
     end
 
+    it "should create an empty lib/tasks directory" do
+      @generator.should create('/tmp/testing/lib/tasks')
+    end
+
   end
 
 end

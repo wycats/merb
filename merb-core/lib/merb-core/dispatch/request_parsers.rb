@@ -55,6 +55,7 @@ module Merb
       boundary_size = boundary.size + EOL.size
       bufsize       = 16384
       content_length -= boundary_size
+      key_memo = []
       # status is boundary delimiter line
       status = input.read(boundary_size)
       return {} if status == nil || status.empty?
@@ -126,7 +127,8 @@ module Merb
         else
           data = body
         end
-        paramhsh = normalize_params(paramhsh,name,data)
+        paramhsh = normalize_params(paramhsh,name,data) unless key_memo.include?(name)
+        key_memo << name
         break  if buf.empty? || content_length == -1
       }
       paramhsh
