@@ -795,7 +795,6 @@ describe "bound_radio_group" do
     r = @c.render :basic
     r.should match_tag(:input, :type => "radio", :id => "fake_model_foo_foowee", :name => "fake_model[foo]", :value => "foowee", :checked => "checked")
     r.should match_tag(:input, :type => "radio", :id => "fake_model_foo_baree", :name => "fake_model[foo]", :value => "baree")
-    r.should_not match_tag(:checked => "checked")
   end
 
   it "should provide an additional label tag for each option in array-based options" do
