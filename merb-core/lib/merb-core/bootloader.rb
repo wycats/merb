@@ -325,6 +325,7 @@ class Merb::BootLoader::BuildFramework < Merb::BootLoader
     # :api: plugin
     def run
       $:.push Merb.root unless Merb.root == File.expand_path(Dir.pwd)
+      STDOUT.puts "Merb root at: #{Merb.root}" unless Merb.testing?
       build_framework
       nil
     end
