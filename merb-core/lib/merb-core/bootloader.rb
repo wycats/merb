@@ -325,6 +325,7 @@ class Merb::BootLoader::BuildFramework < Merb::BootLoader
     # :api: plugin
     def run
       $:.push Merb.root unless Merb.root == File.expand_path(Dir.pwd)
+      STDOUT.puts "Merb root at: #{Merb.root}" unless Merb.testing?
       build_framework
       nil
     end
@@ -425,9 +426,12 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
   #
   # :api: private
   def self.enable_json_gem
-    require "json/ext"
-  rescue LoadError
-    require "json/pure"
+    require "json"
+    rescue LoadError
+        Merb.logger.error! "You have enabled JSON but don't have json " \
+                           "installed or don't have dependency in the Gemfile. " \
+                           "Add \"gem 'json', '>= 1.1.7'\" or " \
+                           "\"gem 'json_pure', '>= 1.1.7'\" to your Gemfile."
   end
 
   # Resets the logger and sets the log_stream to Merb::Config[:log_file]
