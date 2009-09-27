@@ -13,6 +13,7 @@ describe Merb::Request do
     request.params[:file].should_not be_nil
     request.params[:file][:tempfile].class.should == Tempfile
     request.params[:file][:content_type].should == 'text/plain'
+    request.params[:file][:size].should == file.read.length
   end
 
   it "should correctly format multipart posts which contain multiple parameters" do
@@ -58,6 +59,7 @@ describe Merb::Request do
     request.params[:file].should_not be_nil
     request.params[:file][:tempfile].class.should == Tempfile
     request.params[:file][:content_type].should == 'text/plain'
+    request.params[:file][:size].should == file.read.length
   end    
     
   it "should handle GET with a content_type but an empty body (happens in some browsers such as safari after redirect)" do
