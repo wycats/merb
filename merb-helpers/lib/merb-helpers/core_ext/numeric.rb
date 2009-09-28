@@ -37,7 +37,7 @@ class Numeric
         :separator => '.'
         },
         :currency => { 
-          :unit => '$;',
+          :unit => '$',
           :format => '%u%n',
           :precision => 2 
         }
