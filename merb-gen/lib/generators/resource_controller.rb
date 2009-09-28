@@ -30,8 +30,7 @@ module Merb::Generators
     template :controller_none, :orm => :none do |template|
       template.source = "app/controllers/%file_name%.rb"
       template.destination = "app/controllers" / base_path / "#{file_name}.rb"
-      
-      self.add_resource_route(self.plural_model)
+      self.add_resource_route(self.plural_model) unless options[:pretend]
     end
   
     [:index, :show, :edit, :new].each do |view|
