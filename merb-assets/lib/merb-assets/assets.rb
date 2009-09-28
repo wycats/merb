@@ -56,7 +56,7 @@ module Merb
     end
     
     # Helper for creating unique paths to a file name
-    # Can increase speend for browsers that are limited to a certain number of connections per host 
+    # Can increase speed for browsers that are limited to a certain number of connections per host
     # for downloading static files (css, js, images...)
     class UniqueAssetPath
       class << self
