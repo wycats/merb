@@ -12,10 +12,11 @@ module MerbExceptions
           request = self.request
 
           details = {}
-          details['exceptions']      = request.exceptions
-          details['params']          = params
-          details['environment']     = request.env.merge( 'process' => $$ )
-          details['url']             = "#{request.protocol}#{request.env["HTTP_HOST"]}#{request.uri}"
+          details['exceptions']  = request.exceptions
+          details['params']      = params
+          details['params']      = self.class._filter_params(params)
+          details['environment'] = request.env.merge( 'process' => $$ )
+          details['url']         = "#{request.protocol}#{request.env["HTTP_HOST"]}#{request.uri}"
           MerbExceptions::Notification.new(details).deliver!
         rescue Exception => e
           exceptions = request.exceptions << e
