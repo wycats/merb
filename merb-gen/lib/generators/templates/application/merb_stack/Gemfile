@@ -7,9 +7,8 @@ dm_gems_version   = "<%= dm_gems_version %>"
 do_gems_version   = "<%= do_gems_version %>"
 
 # If you did disable json for Merb, comment out this line.
-# If you want use json gem just change it.
-# Don't use json gem version lower than 1.1.7! Older versions has security bug!
-gem "json_pure", ">= 1.1.7"
+# Don't use json gem version lower than 1.1.7! Older version have a security bug
+gem "json_pure", ">= 1.1.7", :require_as => "json"
 
 # For more information about each component, please read http://wiki.merbivore.com/faqs/merb_components
 gem "merb-core", merb_gems_version
