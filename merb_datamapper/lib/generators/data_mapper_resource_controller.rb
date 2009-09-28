@@ -14,7 +14,7 @@ end
 Merb::Generators::ResourceControllerGenerator.template :controller_datamapper, :orm => :datamapper do |t|
   t.source = File.join(File.dirname(__FILE__), "templates/resource_controller.rb")
   t.destination = File.join("app/controllers", base_path, "#{file_name}.rb")
-  self.add_resource_route(self.plural_model) unless options[:pretend]
+  self.add_resource_route(self.plural_model) unless skip_route_definition?
 end
 
 [:index, :show, :edit, :new].each do |view|
