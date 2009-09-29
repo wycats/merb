@@ -7,7 +7,7 @@ merb_gems_version = "<%= merb_gems_version %>"
 # If you did disable json for Merb, comment out this line.
 # If you want use json gem just change it.
 # Don't use json gem version lower than 1.1.7! Older versions has security bug!
-gem "json_pure", ">= 1.1.7"
+gem "json_pure", ">= 1.1.7", :require_as => "json"
 gem "merb-core", merb_gems_version
 
 <%= gems_for_orm(orm) %>
