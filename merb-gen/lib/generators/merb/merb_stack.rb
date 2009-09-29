@@ -50,7 +50,7 @@ module Merb
 
       empty_directory :lib_tasks, 'lib/tasks'
 
-      empty_directory :gems, 'vendor'
+      empty_directory :gems, 'gems'
 
       template :gemfile do |template|
         template.source = File.join(source_root, "Gemfile")
