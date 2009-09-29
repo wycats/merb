@@ -107,6 +107,41 @@ describe Merb::Router do
     end
   end
   
+  describe "#route_for" do
+    it "should return the right routes with a user defined collection route" do
+      Merb::Router.prepare do
+        resources :robots do
+          collection :stop_them
+        end
+      end
+
+      # => index
+      route_for('/robots').first.to_s.should == '/robots(/index)(.:format)'
+
+      # => create
+      route_for('/robots', :method => :post).first.to_s.should == '/robots(.:format)'
+
+      # => new
+      route_for('/robots/new').first.to_s.should == '/robots/new(.:format)'
+
+      # => user defined collection routes (stop_them)
+      route_for('/robots/stop_them').first.to_s.should == '/robots/stop_them(.:format)'
+
+      # => show
+      route_for('/robots/1').first.to_s.should == '/robots/:id(.:format)'
+
+      # => user defined member routes (edit, delete)
+      route_for('/robots/1/edit').first.to_s.should == '/robots/:id/edit(.:format)'
+      route_for('/robots/1/delete').first.to_s.should == '/robots/:id/delete(.:format)'
+
+      # => update
+      route_for('/robots/1', :method => :put).first.to_s.should == '/robots/:id(.:format)'
+
+      # => destroy
+      route_for('/robots/1', :method => :delete).first.to_s.should == '/robots/:id(.:format)'
+    end
+  end
+
   describe "#around_match" do
     
     it "should set a class method of Router to be called around request matching" do
