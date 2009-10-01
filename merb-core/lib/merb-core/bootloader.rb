@@ -740,6 +740,7 @@ class Merb::BootLoader::LoadClasses < Merb::BootLoader
       Merb.logger.warn! "Parent pid: #{Process.pid}"
       reader, writer = nil, nil
 
+      # Enable REE garbage collection
       if GC.respond_to?(:copy_on_write_friendly=)
         GC.copy_on_write_friendly = true
       end
@@ -791,14 +792,15 @@ class Merb::BootLoader::LoadClasses < Merb::BootLoader
             # We do not care about specific pid here.
             exit_status[1] && exit_status[1].exitstatus == 128 ? break : exit
           end
-          # wait for data to become available, timeout in 0.25 of a second
-          if select(reader_ary, nil, nil, 0.25)
+          # wait for data to become available, timeout in 0.5 of a second
+          if select(reader_ary, nil, nil, 0.5)
             begin
               # no open writers
               next if reader.eof?
               msg = reader.readline
-              if msg =~ /128/
-                Process.detach(pid)
+              reader.close
+              if msg.to_i == 128
+                Process.waitpid(pid, Process::WNOHANG)
                 break
               else
                 exit_gracefully
@@ -859,7 +861,10 @@ class Merb::BootLoader::LoadClasses < Merb::BootLoader
       Merb.exiting = true unless status == 128
 
       begin
-        @writer.puts(status.to_s) if @writer
+        if @writer
+          @writer.puts(status.to_s)
+          @writer.close
+        end
       rescue SystemCallError
       end
 
