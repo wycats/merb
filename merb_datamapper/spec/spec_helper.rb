@@ -1,6 +1,5 @@
 $:.push File.join(File.dirname(__FILE__), '..', 'lib')
 require 'rubygems'
-gem('merb-core')
 require 'merb-core'
 require 'merb-core/test'
 require 'merb-core/test/helpers'
