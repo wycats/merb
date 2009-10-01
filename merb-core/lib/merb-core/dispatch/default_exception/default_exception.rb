@@ -82,7 +82,7 @@ Merb::BootLoader.after_app_loads do
           str   =  "  <td class='code' colspan='2'><div>"
         
           __caller_lines__(filename, line, 5) do |lline, lcode|
-            str << "<a href='txmt://open?url=file://#{filename}&amp;line=#{lline}'>#{lline}</a>"
+            str << textmate_url(filename, lline)
             str << "<em>" if line == lline
             str << Erubis::XmlHelper.escape_xml(lcode)
             str << "</em>" if line == lline
