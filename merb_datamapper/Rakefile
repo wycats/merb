@@ -17,11 +17,9 @@ GEM_VERSION  = Merb::VERSION + PKG_BUILD
 
 RELEASE_NAME = "REL #{GEM_VERSION}"
 
-DM_VERSION   = '0.10'
-
 GEM_DEPENDENCIES = [
-  ["dm-core",       "~> #{DM_VERSION}"],
-  ["dm-migrations", "~> #{DM_VERSION}"],
+  ["dm-core",       "~> #{Merb::DM_VERSION}"],
+  ["dm-migrations", "~> #{Merb::DM_VERSION}"],
   ["merb-core",     "~> #{GEM_VERSION}"]
 ]
 
