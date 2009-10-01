@@ -36,7 +36,7 @@ describe Merb::Test::MultipartRequestHelper do
         file_params = controller.params[:my_file]
         file_params[:content_type].should == "text/plain"
         file_params[:size].should == File.size(file_name)
-        file_params[:tempfile].should be_a_kind_of(File)
+        file_params[:tempfile].should be_a_kind_of(Tempfile)
         file_params[:filename].should == "multipart_upload_text_file.txt"
       end
     end
