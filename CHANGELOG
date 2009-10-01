@@ -1,3 +1,64 @@
+== 1.0.13 "The weekend has landed" 2009-10-30
+
+* [merb_datamapper] Support for dm-0.10.x (identity map wrapping is now perforemd at the rack level)
+* [merb-core] Fix run_later to work on servers other than just 'merb' (Thin or Phusion Passenger for example)
+* [merb-gen] Don't add resource route to config/routes.rb when using -p or -d with merb-gen resource
+* [merb-gen] Explain how to load dependencies in (very) flat apps
+* [merb] Fixed failing rake install due to missing merb-more
+* [merb] rake uninstall now uninstalls everything that got rake install'ed
+* [merb-core] Allow testing without webrat
+* [merb-haml] Fixed compilation of sass files
+* [merb-helpers] Select the correct field in bound select tags
+
+* [merb-core] -i and --irb-console take precedence over config in init.rb.
+
+  This change allows you to have default adapter set
+  in the init.rb and still if you want to run Merb in
+  IRB you can do it. Currently you can't because setting
+  adapter in init.rb override the config value from ARGV
+  parsing.
+
+* [merb-helpers] Generate valid html id attributes
+
+  This patch changes any occurrence of '[' or ']' in id attributes to '_'.
+  The brackets are not valid characters in an HTML id attribute value.
+
+* [merb-core] Fix potential timing attack on cookie sessions
+
+  This patch fixes a potential timing attack on the HMAC authentication
+  used to verify cookie session contents by ensuring a constant time
+  algorithm is used to compare the hashes.  For more information see:
+
+  http://codahale.com/a-lesson-in-timing-attacks/
+
+* [merb-auth-slice-password] Use proper config value
+
+  Without this change, the default password strategy
+  is always activated because the wrong config key is
+  used.
+
+* [merb-gen] Fixing generated thor task to work with RubyGems 1.3.5.
+
+  Setting thor dependency to "~> 0.9.9", as newer versions will break
+  the default merb-gen app bundling tasks
+
+* [merb-core] Fixed multipart specs (including spec10)
+
+  The previous version of the spec was wrong in expecting that
+
+    file_params[:tempfile].should be_a_kind_of(File)
+
+  This spec only passed because of a now resolved bug in older versions of rspec.
+  The correct spec for the tempfile param now reads:
+
+    file_params[:tempfile].should be_a_kind_of(Tempfile)
+
+* To run merb's specsuite (rake spec or rake specs:oneoh) you will either need webrat-0.3.1 or webrat-0.4.0
+  installed. webrat-0.4 is recommended for use in your app's specs, using newer versions of webrat may be
+  possible but is not explicitly supported.
+
+* Minor docfixes
+
 == 1.0.1
 * generate unique session_id_key with new apps
 
