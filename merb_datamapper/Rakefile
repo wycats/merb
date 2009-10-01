@@ -8,16 +8,22 @@ PROJECT_URL         = "http://merbivore.com"
 PROJECT_SUMMARY     = "DataMapper plugin providing DataMapper support for Merb"
 PROJECT_DESCRIPTION = PROJECT_SUMMARY
 
-GEM_AUTHOR = "Jason Toy"
-GEM_EMAIL  = "jtoy@rubynow.com"
+GEM_AUTHOR  = "Jason Toy"
+GEM_EMAIL   = "jtoy@rubynow.com"
 
-GEM_NAME    = "merb_datamapper"
-PKG_BUILD   = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
-GEM_VERSION = Merb::VERSION + PKG_BUILD
+GEM_NAME     = "merb_datamapper"
+PKG_BUILD    = ENV['PKG_BUILD'] ? '.' + ENV['PKG_BUILD'] : ''
+GEM_VERSION  = Merb::VERSION + PKG_BUILD
 
-RELEASE_NAME    = "REL #{GEM_VERSION}"
+RELEASE_NAME = "REL #{GEM_VERSION}"
 
-GEM_DEPENDENCIES = [["dm-core", ">=0.10.0"], ["dm-migrations", ">=0.10.0"], ["merb-core", "~> #{GEM_VERSION}"]]
+DM_VERSION   = '0.10'
+
+GEM_DEPENDENCIES = [
+  ["dm-core",       "~> #{DM_VERSION}"],
+  ["dm-migrations", "~> #{DM_VERSION}"],
+  ["merb-core",     "~> #{GEM_VERSION}"]
+]
 
 require "extlib/tasks/release"
 
