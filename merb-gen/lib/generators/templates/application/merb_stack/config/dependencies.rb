@@ -1,7 +1,7 @@
 # dependencies are generated using a strict version, don't forget to edit the dependency versions when upgrading.
 merb_gems_version = "<%= merb_gems_version %>"
-dm_gems_version   = "<%= dm_gems_version %>"
-do_gems_version   = "<%= do_gems_version %>"
+dm_gems_version   = "~> <%= dm_gems_version %>"
+do_gems_version   = "~> <%= do_gems_version %>"
 
 # For more information about each component, please read http://wiki.merbivore.com/faqs/merb_components
 dependency "merb-core", merb_gems_version 
