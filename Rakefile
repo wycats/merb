@@ -47,7 +47,7 @@ merb_release = {
     ]
 }
 
-merb_gem_paths = %w[merb merb-core merb_datamapper] + merb_more_gem_paths
+merb_gem_paths = %w[merb-core merb_datamapper] + merb_more_gem_paths + %w[merb]
 
 merb_gems = merb_gem_paths.map { |p| File.basename(p) }
 merb_more_gems = merb_more_gem_paths.map { |p| File.basename(p) }
