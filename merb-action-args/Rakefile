@@ -31,7 +31,7 @@ spec = Gem::Specification.new do |s|
   s.author = AUTHOR
   s.email = EMAIL
   s.homepage = PROJECT_URL
-  s.add_dependency('merb-core', ">= #{Merb::VERSION}")
+  s.add_dependency('merb-core', "~> #{Merb::VERSION}")
   s.add_dependency('ruby2ruby', '>= 1.1.9')
   s.add_dependency('ParseTree', '>= 2.1.1')
   s.require_path = 'lib'

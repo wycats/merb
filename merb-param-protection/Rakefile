@@ -31,7 +31,7 @@ spec = Gem::Specification.new do |s|
   s.author = GEM_AUTHOR
   s.email = GEM_EMAIL
   s.homepage = PROJECT_URL
-  s.add_dependency('merb-core', ">= #{Merb::VERSION}")
+  s.add_dependency('merb-core', "~> #{Merb::VERSION}")
   s.require_path = 'lib'
   s.files = %w(LICENSE README Rakefile) + Dir.glob("{lib,specs}/**/*")
 end
