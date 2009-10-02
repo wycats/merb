@@ -117,7 +117,14 @@ task :install do
 end
 
 desc "Uninstall all gems"
-task :uninstall => ['uninstall:core', 'uninstall:more']
+task :uninstall do
+  merb_gems.each do |gem|
+    Merb::RakeHelper.uninstall(gem, :version => Merb::VERSION)
+  end
+  Merb::RakeHelper.uninstall('merb-auth-slice-password', :version => Merb::VERSION)
+  Merb::RakeHelper.uninstall('merb-auth-more', :version => Merb::VERSION)
+  Merb::RakeHelper.uninstall('merb-auth-core', :version => Merb::VERSION)
+end
 
 desc "Build the merb-more gems"
 task :build_gems do
