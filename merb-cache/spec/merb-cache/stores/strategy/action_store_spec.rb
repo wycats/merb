@@ -158,7 +158,7 @@ describe Merb::Cache::ActionStore do
     end
 
     it "should cache the stats action by team, start_date & end_date parameters" do
-      start_date, end_date = Time.today.to_s, Time.now.to_s
+      start_date, end_date = (Time.now - 60).to_s, Time.now.to_s
       dispatch_to(MLBScores, :stats, :start_date => start_date, :end_date => end_date)
 
       @dummy.data("MLBScores#stats", :team => :all, :start_date => start_date, :end_date => end_date).should == "MLBScores stats(all, #{start_date}, #{end_date})"
