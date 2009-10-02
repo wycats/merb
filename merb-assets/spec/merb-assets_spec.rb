@@ -80,9 +80,8 @@ describe "JavaScript related functions" do
   end
 
   it "should convert objects that respond to to_json to json" do
-    h = {'user' => 'Lewis', 'page' => 'home'}
-    js(h).should include(%{"user":"Lewis"})
-    js(h).should include(%{"page":"home"})
+    expected = {'user' => 'Lewis', 'page' => 'home'}
+    JSON.parse(js(expected)).should == expected
   end
 
   it "should convert objects using inspect that don't respond to_json to json" do
