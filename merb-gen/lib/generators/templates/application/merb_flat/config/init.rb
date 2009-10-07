@@ -25,16 +25,25 @@ end
 Merb::Config.use { |c|
   c[:environment]         = 'production',
   c[:framework]           = {},
-  c[:log_level]           = :debug,
-  c[:log_stream]          = STDOUT,
-  # or use file for logging:
-  # c[:log_file]          = Merb.root / "log" / "merb.log",
-  c[:use_mutex]           = false,
-  c[:session_store]       = 'cookie',
-  c[:session_id_key]      = '_<%= base_name  %>_session_id',
-  c[:session_secret_key]  = '<%= Digest::SHA1.hexdigest(rand(100000000000).to_s).to_s %>',
-  c[:exception_details]   = true,
-  c[:reload_classes]      = true,
-  c[:reload_templates]    = true,
-  c[:reload_time]         = 0.5
+  c[:use_mutex]           = false
+  c[:session_store]       = 'cookie'
+  c[:session_id_key]      = '_<%= base_name  %>_session_id'
+  c[:session_secret_key]  = '<%= Digest::SHA1.hexdigest(rand(100000000000).to_s).to_s %>'
+
+  if Merb.env?(:production)
+    # edit production settings
+    c[:log_level]         = :error
+    c[:log_file]          = Merb.root / "log" / "production.log"
+    c[:exception_details] = false
+    c[:reload_classes]    = false
+    c[:reload_templates]  = false
+  else
+    # edit development/test settings
+    c[:log_level]         = :debug
+    c[:log_stream]        = STDOUT
+    c[:exception_details] = true
+    c[:reload_classes]    = true
+    c[:reload_templates]  = true
+    c[:reload_time]       = 0.5
+  end
 }
