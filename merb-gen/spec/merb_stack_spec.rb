@@ -15,6 +15,10 @@ describe Merb::Generators::MerbStackGenerator do
       @generator.should create('/tmp/testing/Gemfile')
     end
 
+    it "should create a passenger config file" do
+      @generator.should create('/tmp/testing/config.ru')
+    end
+
     it "should create config/init.rb" do
       @generator.should create('/tmp/testing/config/init.rb')
     end
@@ -42,7 +46,9 @@ describe Merb::Generators::MerbStackGenerator do
     it "should create a number of views"
 
     it "should render templates successfully" do
-      lambda { @generator.render! }.should_not raise_error
+      lambda do 
+        @generator.render! 
+      end.should_not raise_error
     end
 
     it "should create an empty lib/tasks directory" do

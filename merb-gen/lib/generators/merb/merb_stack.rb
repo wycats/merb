@@ -52,11 +52,6 @@ module Merb
 
       empty_directory :gems, 'gems'
 
-      template :gemfile do |template|
-        template.source = File.join(source_root, "Gemfile")
-        template.destination = "Gemfile"
-      end
-
       template :rakefile do |template|
         template.source = File.join(common_templates_dir, "Rakefile")
         template.destination = "Rakefile"
@@ -92,6 +87,8 @@ module Merb
       #
       # ==== Layout specific things
       #
+      template :gemfile, "Gemfile", "Gemfile"
+      file :passenger_config, "config.ru"
 
       def dm_gems_version
         Merb::DM_VERSION
