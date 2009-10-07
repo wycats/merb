@@ -19,7 +19,7 @@ def check_dir(dir)
       check_dir(dir / file_name)
     end
 
-    if file_name =~ /.*\.rb$/
+    if file_name =~ /.*\.(rb|feature)$/
       File.open(dir / file_name).each_line do |line|
         @stats[:lines]    += 1
         @stats[:loc]      += 1 unless line =~ /^\s*$/ || line =~ /^\s*#/
@@ -38,7 +38,9 @@ task :stats do
     :helpers      => 'app/helpers',
     :models       => 'app/models',
     :lib          => 'lib',
-    :spec         => 'spec'
+    :spec         => 'spec',
+    :test         => 'test',
+    :features     => 'features'
   }.reject {|name, dir| !File.exist?(dir) }
   EMPTY_STATS = { :lines => 0, :loc => 0, :classes => 0, :modules => 0, :methods => 0 }
  
@@ -64,7 +66,11 @@ task :stats do
   show_line('Total', total, cr)
  
   code_loc = [:controllers, :helpers, :models].inject(0) { |sum, e| sum += @all[e][:loc] }
-  test_loc = @all[:spec][:loc]
+  
+  test_loc = 0
+  test_loc += @all[:spec][:loc] if @all[:spec]
+  test_loc += @all[:test][:loc] if @all[:test]
+  test_loc += @all[:features][:loc] if @all[:features]
  
   puts "   Code LOC: #{cb}#{code_loc}#{ce}     Test LOC: #{cb}#{test_loc}#{ce}     Code to test radio:  #{cb}1:%0.2f#{ce}" % (test_loc.to_f / code_loc.to_f)
   puts
