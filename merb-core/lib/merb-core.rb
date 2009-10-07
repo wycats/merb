@@ -791,6 +791,7 @@ end
 require "merb-core/autoload"
 require "merb-core/server"
 require "merb-core/gem_ext/erubis"
+require "merb-core/gem_ext/gem_dependency"
 require "merb-core/logger"
 require "merb-core/version"
 require "merb-core/controller/mime"

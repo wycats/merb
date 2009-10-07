@@ -30,6 +30,7 @@ module Merb
           :deferred_actions       => [],
           :verbose                => false,
           :name                   => "merb",
+          :kernel_dependencies    => true,
           :gemfile                => nil
         }
       end

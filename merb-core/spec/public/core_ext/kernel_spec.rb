@@ -15,8 +15,8 @@ describe Kernel, "#use_orm" do
     Merb.orm.should == :activerecord
   end
   
-  it "should not add dependency" do
-    Kernel.should_not_receive(:dependency)
+  it "should add the the orm plugin as a dependency" do
+    Kernel.should_receive(:dependency).with('merb_activerecord')
     Kernel.use_orm(:activerecord)
   end
 
@@ -34,9 +34,24 @@ describe Kernel, "#use_template_engine" do
     Merb.template_engine.should == :haml
   end
   
-  it "should add no dependency" do
-    Kernel.should_not_receive(:dependency)
+  it "should add merb-haml as a dependency for :haml" do
+    Kernel.should_receive(:dependency).with('merb-haml')
     Kernel.use_template_engine(:haml)
+  end
+  
+  it "should add merb-builder as a dependency for :builder" do
+    Kernel.should_receive(:dependency).with('merb-builder')
+    Kernel.use_template_engine(:builder)
+  end
+  
+  it "should add no dependency for :erb" do
+    Kernel.should_not_receive(:dependency)
+    Kernel.use_template_engine(:erb)
+  end
+  
+  it "should add other plugins as a dependency" do
+    Kernel.should_receive(:dependency).with('merb_liquid')
+    Kernel.use_template_engine(:liquid)
   end
 end
 
@@ -58,10 +73,9 @@ describe Kernel, "#use_test" do
     Merb.use_test(:test_unit, 'hpricot', 'webrat')
   end
   
-  it "should nor require test dependencies when in 'test' env" do
+  it "should require test dependencies when in 'test' env" do
     Merb.stub!(:env).and_return("test")
-    Kernel.should_not_receive(:dependencies)
+    Kernel.should_receive(:dependencies).with(["hpricot", "webrat"])
     Merb.use_test(:test_unit, 'hpricot', 'webrat')
-  end
-  
+  end  
 end

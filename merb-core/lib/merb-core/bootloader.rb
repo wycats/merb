@@ -221,23 +221,7 @@ class Merb::BootLoader::Logger < Merb::BootLoader
 
     Merb::Config[:log_stream] = 
       Merb::Config[:original_log_stream] || Merb.log_stream
-
-    print_warnings
-
     nil
-  end
-
-  # Print a warning if the installed version of rubygems is not supported
-  #
-  # ==== Returns
-  # nil
-  #
-  # :api: private
-  def self.print_warnings
-    if Gem::Version.new(Gem::RubyGemsVersion) < Gem::Version.new("1.1")
-      Merb.fatal! "Merb requires Rubygems 1.1 and later. " \
-        "Please upgrade RubyGems with gem update --system."
-    end
   end
 end
 
@@ -358,6 +342,18 @@ class Merb::BootLoader::BuildFramework < Merb::BootLoader
 end
 
 class Merb::BootLoader::Dependencies < Merb::BootLoader
+  # ==== Returns
+  # Array[Gem::Dependency]:: The dependencies registered in init.rb.
+  #
+  # As of Merb.1.1 these dependencies only get loaded when
+  # Merb::Config[:kernel_dependencies] is set to true. 
+  # 
+  # This will be removed as of Merb 2.0
+  # 
+  # :api: plugin
+  # @deprecated
+  cattr_accessor :dependencies
+  self.dependencies = []
 
   # Load the init_file specified in Merb::Config or if not specified, the
   # init.rb file from the Merb configuration directory, and any environment
@@ -388,34 +384,47 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
       load_env_config
     end
     expand_ruby_path
-    load_dependencies
+    load_bundler_dependencies
+    load_kernel_dependencies if Merb::Config[:kernel_dependencies]
     enable_json_gem unless Merb::disabled?(:json)
     update_logger
     nil
   end
-
-  # Load each dependency that has been declared so far.
+  
+  # Load each the dependencies defined in the Merb::Config[:gemfile] 
+  # using the bundler gem's Bundler::Environment.load
   #
   # ==== Returns
   # nil
   #
   # :api: private
-  def self.load_dependencies
-    begin
-      if (ENV['DEBUG'] || $DEBUG || Merb::Config[:verbose]) && Merb.logger
-        if Merb::Config[:gemfile]
-          Merb.logger.debug!("Loading Gemfile from #{Merb::Config[:gemfile]}")
-        else
-          Merb.logger.debug!("Loading default Gemfile from Merb.root/Gemfile")
-        end
+  def self.load_bundler_dependencies
+    if (ENV['DEBUG'] || $DEBUG || Merb::Config[:verbose]) && Merb.logger
+      if Merb::Config[:gemfile]
+        Merb.logger.debug!("Loading Gemfile from #{Merb::Config[:gemfile]}")
+      else
+        Merb.logger.debug!("Loading default Gemfile from Merb.root/Gemfile")
       end
-      
-      Bundler::Environment.load(Merb::Config[:gemfile]).require_env(Merb.environment)
-    rescue Bundler::DefaultManifestNotFound => e
-      Merb.logger.error! "You didn't create Bundler Gemfile manifest or you " \
-                         "are not in a Merb application. If you are trying to " \
-                         "create a new merb application, use merb-gen app."
     end
+
+    Bundler::Environment.load(Merb::Config[:gemfile]).require_env(Merb.environment)
+    nil
+  rescue Bundler::DefaultManifestNotFound => e
+    Merb.logger.warn! "You didn't create Bundler Gemfile manifest or you " \
+                       "are not in a Merb application. If you are trying to " \
+                       "create a new merb application, use merb-gen app."
+    nil
+  end
+
+  # Load each dependency that has been declared so far within the Kernel.
+  #
+  # ==== Returns
+  # nil
+  #
+  # :api: private
+  # @deprecated
+  def self.load_kernel_dependencies
+    dependencies.each { |dependency| Kernel.load_dependency(dependency, nil) }
     nil
   end
 

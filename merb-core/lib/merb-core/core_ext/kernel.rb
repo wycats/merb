@@ -1,39 +1,10 @@
 module Kernel
-  # Dependency handling on the Framework level have been deprecated and
-  # all the related API will be removed in the 1.1.1 release.
-  #
-  # Please use Bundler to manage your dependencies. Use tools provided
-  # in RubyGems to define your dependencies in the Rakefiles or gemspecs
-  # for your gems, plugins or slices.
-  #
-  # :api: public
-  # @deprecated
-  def dependency(name, *opts, &blk)
-    warn("DEPRECATED: Use bundler to setup and load dependency #{name}.")
-    return
-  end
-
-  # Dependency handling on the Framework level have been deprecated and
-  # all the related API will be removed in the 1.1.1 release.
-  #
-  # Please use Bundler to manage your dependencies. Use tools provided
-  # in RubyGems to define your dependencies in the Rakefiles or gemspecs
-  # for your gems, plugins or slices.
-  #
-  # :api: public
-  # @deprecated
-  def dependencies(*args)
-    warn("DEPRECATED: Use bundler to setup and load dependencies #{args.join(', ')}.")
-    return
-  end
-  
   # Used in Merb.root/config/init.rb to tell Merb which ORM (Object Relational
   # Mapper) you wish to use. Currently Merb has plugins to support
   # ActiveRecord, DataMapper, and Sequel.
   #
   # ==== Parameters
   # orm<Symbol>:: The ORM to use.
-  # blk<Block>:: Deprecated, will be removed in 1.1.1
   #
   # ==== Returns
   # nil
@@ -51,6 +22,7 @@ module Kernel
   # :api: public
   def use_orm(orm, &blk)
     Merb.orm = orm
+    nil
   end
 
   # Used in Merb.root/config/init.rb to tell Merb which testing framework to
@@ -73,6 +45,7 @@ module Kernel
   # :api: public
   def use_testing_framework(test_framework, *test_dependencies)
     Merb.test_framework = test_framework
+    nil
   end
 
   def use_test(*args)
@@ -99,6 +72,7 @@ module Kernel
   # :api: public
   def use_template_engine(template_engine, &blk)
     Merb.template_engine = template_engine
+    nil
   end
 
 
