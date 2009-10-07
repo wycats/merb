@@ -23,6 +23,8 @@ require path / "generators" / "model"
 require path / "generators" / "resource_controller"
 require path / "generators" / "resource"
 require path / "generators" / "layout"
+require path / "generators" / "passenger"
+require path / "generators" / "fcgi"
 
 Templater::Discovery.discover!("merb-gen")
 

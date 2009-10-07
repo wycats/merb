@@ -62,11 +62,6 @@ module Merb
         file.destination = ".gitignore"
       end
 
-      file :htaccess do |file|
-        file.source = File.join(common_templates_dir, 'dothtaccess')
-        file.destination = 'public/.htaccess'
-      end
-      
       file :jquery do |file|
         file.source = File.join(common_templates_dir, 'jquery.js')
         file.destination = 'public/javascripts/jquery.js'

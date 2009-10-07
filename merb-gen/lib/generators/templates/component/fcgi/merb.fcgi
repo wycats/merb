@@ -1,11 +1,19 @@
 #!/usr/bin/env ruby
-                                                               
-require 'rubygems'
+begin
+  require File.join(File.dirname(__FILE__), "../gems/environment")
+rescue LoadError
+  begin 
+    require 'minigems'
+  rescue LoadError 
+    require 'rubygems'
+  end
+end
+
 require 'merb-core'
 
 # this is Merb.root, change this if you have some funky setup.
 merb_root = File.expand_path(File.dirname(__FILE__) / '../')
-        
+
 # If the fcgi process runs as apache, make sure
 # we have an inlinedir set for Rubyinline action-args to work
 unless ENV["INLINEDIR"] || ENV["HOME"]
@@ -19,4 +27,4 @@ end
 # start merb with the fcgi adapter, add options or change the log dir here
 Merb.start(:adapter => 'fcgi',
            :merb_root => merb_root,
-           :log_file => merb_root /'log'/'merb.log')
+           :log_file => merb_root / 'log' / 'merb.log')

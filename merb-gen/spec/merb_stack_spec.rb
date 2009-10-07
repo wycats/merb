@@ -39,10 +39,6 @@ describe Merb::Generators::MerbStackGenerator do
       @generator.should create('/tmp/testing/.gitignore')
     end
 
-    it "should have an htaccess file" do
-      @generator.should create('/tmp/testing/public/.htaccess')
-    end
-
     it "should create a number of views"
 
     it "should render templates successfully" do

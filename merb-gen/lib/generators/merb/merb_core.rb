@@ -63,11 +63,6 @@ module Merb
         file.destination = ".gitignore"
       end
 
-      file :htaccess do |file|
-        file.source = File.join(common_templates_dir, 'dothtaccess')
-        file.destination = 'public/.htaccess'
-      end
-
       directory :test_dir do |directory|
         dir    = testing_framework == :rspec ? "spec" : "test"
 
