@@ -14,7 +14,12 @@ describe Merb::Dispatcher do
   end
   
   def body(response)
-    response.body.to_s
+    # emulate what most rack server adapters will do
+    response_body = ""
+    response.body.each do |b|
+      response_body << b
+    end
+    response_body
   end
   
   def headers(response)
@@ -298,6 +303,32 @@ describe Merb::Dispatcher do
     end
     
     
+  end
+  
+  describe "when the action returns nil" do
+    before(:each) do
+      Object.class_eval <<-RUBY
+        class SomeController < Merb::Controller
+          def zilch
+          end
+        end
+      RUBY
+    end
+    
+    after(:each) do
+      Object.send(:remove_const, :SomeController)
+    end
+    
+    before(:each) do
+      Merb::Router.prepare do
+        match("/zilch").to(:controller => "SomeController", :action => "zilch")
+      end
+      @controller = dispatch("/zilch")
+    end
+    
+    it "renders nothing" do
+      body(@controller).should == ""
+    end
   end
   
   describe "when the action raises an Error that is not a ControllerError" do
