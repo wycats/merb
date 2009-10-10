@@ -297,7 +297,7 @@ module Merb
     #
     # :api: private
     def _perform_content_negotiation
-      if fmt = params[:format]
+      if fmt = params[:format] and !fmt.blank?
         accepts = [fmt.to_sym]
       else
         accepts = _accept_types
