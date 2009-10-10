@@ -9,18 +9,17 @@ Merb::Config[:log_stream] = File.open("/dev/null", "w")
 Merb.reset_logger!
 
 describe "an app tested using the webrat proxies" do
-  describe("#visits") do
-    it "supports visits" do
-      visits("/testing")
+  describe("#visit") do
+    it "supports visit" do
+      visit("/testing")
     end
   
-    it "can use the Merb expectations with visits" do
-      visits("/testing").should be_successful
+    it "can use the Merb expectations with visit" do
+      visit("/testing").should be_successful
     end
   
-    it "supports visits intermixed with request" do
-      request("/testing")
-      resp = visits("/testing/next")
+    it "supports visit intermixed with request" do
+      resp = visit("/testing/next")
       resp.should have_xpath("//p")
     end
   end
@@ -33,12 +32,6 @@ describe "an app tested using the webrat proxies" do
     
     it "can use the Merb expectations with click_link" do
       visit "/testing"
-      resp = click_link "Next"
-      resp.should have_xpath("//p[contains(., 'Got to next')]")
-    end
-    
-    it "supports click_link after a request" do
-      request("/testing")
       resp = click_link "Next"
       resp.should have_xpath("//p[contains(., 'Got to next')]")
     end
