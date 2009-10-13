@@ -21,7 +21,7 @@ if defined?(Merb)
     
     # setup sass if any template paths match
     if template_locations.any?{|location| File.directory?(location) }
-      require "sass/plugin" 
+      require "sass"
       if Merb::Config[:sass]
         Merb.logger.info("Please define your sass settings in Merb::Plugins.config[:sass] not Merb::Config")
         Sass::Plugin.options = Merb::Config[:sass]
