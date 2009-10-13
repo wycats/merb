@@ -14,6 +14,8 @@ module Merb
           @body.call(self)
         elsif @body.is_a?(String)
           @body.each_line(&callback)
+        elsif @body.nil?
+          @body.to_s.each_line(&callback)
         else
           @body.each(&callback)
         end

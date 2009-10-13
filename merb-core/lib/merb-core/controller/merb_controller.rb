@@ -442,7 +442,7 @@ class Merb::Controller < Merb::AbstractController
   #
   # :api: private
   def rack_response
-    [status, headers, body ? Merb::Rack::StreamWrapper.new(body) : ""]
+    [status, headers, Merb::Rack::StreamWrapper.new(body)]
   end
 
   # Sets a controller to be "abstract" 
