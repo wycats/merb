@@ -5,13 +5,14 @@ A plugin for the Merb Web framework that provides different view helpers.
 
 To use this plugin in merb in your app
 
-config/dependencies.rb
+edit:
+./Gemfile
 
-#...
+add the li:
+gem "merb-helpers"
 
-dependency "merb-helpers"
-
-#...
+run:
+gem bundle
 
 # TODO: describe date_time_helpers, form_helpers, tag_helpers
 
