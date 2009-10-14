@@ -20,3 +20,16 @@ describe "Kernel#extract_options_from_args!" do
     args.should == ["foo", "bar"]
   end
 end
+
+describe "Kernel#dependencies" do
+  it "should warn that dependency() is deprecated" do
+    warning = 'DEPRECATED: Use bundler to setup and load dependency hpricot.'
+    Kernel.should_receive(:warn).with(warning)
+    Kernel.dependency("hpricot")
+  end
+
+  it "should warn that dependency() is deprecated" do
+    Kernel.should_receive(:warn).twice
+    Kernel.dependencies("hpricot", "rspec")
+  end
+end

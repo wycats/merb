@@ -120,6 +120,7 @@ module Kernel
   # :api: public
   # @deprecated
   def dependency(name, *opts, &blk)
+    warn("DEPRECATED: Use bundler to setup and load dependency #{name}.")
     immediate = opts.last.delete(:immediate) if opts.last.is_a?(Hash)
     if immediate || Merb::BootLoader.finished?(Merb::BootLoader::Dependencies)
       load_dependency(name, caller, *opts, &blk)
