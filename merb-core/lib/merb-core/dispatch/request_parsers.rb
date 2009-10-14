@@ -61,7 +61,7 @@ module Merb
       return {} if status == nil || status.empty?
       raise ControllerExceptions::MultiPartParseError, "bad content body:\n'#{status}' should == '#{boundary + EOL}'"  unless status == boundary + EOL
 
-      rx = /(?:#{EOL})?#{Regexp.quote(boundary)}(#{EOL}|--)/
+      rx = /(?:#{EOL})?#{Regexp.quote(boundary)}(#{EOL}|--)/n
       loop {
         head      = nil
         body      = ''
