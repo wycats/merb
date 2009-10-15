@@ -116,7 +116,7 @@ module Merb::Helpers::Form::Builder
 
     def submit(value, attrs)
       attrs[:type]  ||= "submit"
-      attrs[:name]  ||= "submit"
+      attrs[:name]  ||= "form_submit"
       attrs[:value] ||= value
       update_unbound_controls(attrs, "submit")
       self_closing_tag(:input, attrs)

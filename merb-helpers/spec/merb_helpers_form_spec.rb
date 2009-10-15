@@ -1221,7 +1221,7 @@ describe "submit" do
 
   it "should provide an additional label tag if the :label option is passed in" do
     r = @c.render :submit_with_label
-    r.should have_selector("input[type=submit][name=submit][value=Done]")
+    r.should have_selector("input[type=submit][name=form_submit][value=Done]")
     r.should have_selector("label:contains('LABEL')")
   end
 
