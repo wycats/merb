@@ -1,5 +1,7 @@
 require File.join(File.dirname(__FILE__), "spec_helper")
-startup_merb(:session_store => "cookie", :session_secret_key => "session-secret-key-here")
+startup_merb(:session_store => "cookie",
+             :session_secret_key => "session-secret-key-here",
+             :default_cookie_domain => '.localhost.com')
 require File.join(File.dirname(__FILE__), "controllers", "sessions")
 
 describe Merb::CookieSession do
@@ -66,6 +68,13 @@ describe Merb::CookieSession, "mixed into Merb::Controller" do
       controller = dispatch_to(@controller_klass, :retrieve)
       lambda { controller.request.session }.should raise_error(Merb::CookieSession::TamperedWithCookie)
     end
+  end
+
+  it "should set cookie domain to default_cookie_domain if set" do
+    controller = dispatch_to(@controller_klass, :index, :foo => "cookie")
+    cookie = controller.headers['Set-Cookie'].sort[0]
+    cookie.should match(/_session_id=/)
+    cookie.should match(/domain=.localhost.com/)
   end
   
 end

@@ -120,13 +120,14 @@ module Merb
         base.registered_session_types = Dictionary.new
         base.class_inheritable_accessor :_session_id_key, :_session_secret_key,
                                         :_session_expiry, :_session_secure,
-                                        :_session_http_only
+                                        :_session_http_only, :_default_cookie_domain
         
         base._session_id_key        = Merb::Config[:session_id_key] || '_session_id'
         base._session_expiry        = Merb::Config[:session_expiry] || 0
         base._session_secret_key    = Merb::Config[:session_secret_key]
         base._session_secure        = Merb::Config[:session_secure] || false
         base._session_http_only     = Merb::Config[:session_http_only] || false
+        base._default_cookie_domain = Merb::Config[:default_cookie_domain]
       end
       
       module ClassMethods
@@ -250,6 +251,7 @@ module Merb
       def set_session_cookie_value(value, options = {})
         defaults = {}
         defaults[:expires]   = Time.now + _session_expiry if _session_expiry > 0
+        defaults[:domain]    = _default_cookie_domain if _default_cookie_domain
         defaults[:secure]    = _session_secure
         defaults[:http_only] = _session_http_only
         cookies.set_cookie(_session_id_key, value, defaults.merge(options))
