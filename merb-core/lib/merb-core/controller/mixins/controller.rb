@@ -118,6 +118,10 @@ module Merb
     #   Messages to pass in url query string as value for "_message"
     # :permanent<Boolean>::
     #   When true, return status 301 Moved Permanently
+    # :notice<String>::
+    #   Shorthand for common usage :message => {:notice => "..."}
+    # :error<String>::
+    #   Shorthand for common usage :message => {:error => "..."}
     # 
     # ==== Returns
     # String:: Explanation of redirect.
@@ -132,6 +136,17 @@ module Merb
     def redirect(url, opts = {})
       default_redirect_options = { :message => nil, :permanent => false }
       opts = default_redirect_options.merge(opts)
+
+      if message_notice = opts.delete(:notice)
+        opts[:message] ||= {}
+        opts[:message][:notice] = message_notice
+      end
+
+      if message_error = opts.delete(:error)
+        opts[:message] ||= {}
+        opts[:message][:error] = message_error
+      end
+
       if opts[:message]
         notice = Merb::Parse.escape([Marshal.dump(opts[:message])].pack("m"))
         url = url =~ /\?/ ? "#{url}&_message=#{notice}" : "#{url}?_message=#{notice}"

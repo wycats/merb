@@ -27,6 +27,18 @@ module Merb::Test::Fixtures::Controllers
     end
   end
   
+  class RedirectWithNotice < Testing
+    def index
+      redirect("/", :notice => "what?")
+    end
+  end
+
+  class RedirectWithError < Testing
+    def index
+      redirect("/", :error => "errored!")
+    end
+  end
+
   class ConsumesMessage < Testing
     def index
       message[:notice].inspect

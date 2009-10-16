@@ -26,6 +26,20 @@ describe Merb::Controller, " redirects" do
     @controller.headers["Location"].should == "/?_message=#{expected_url}"
   end
   
+  it "redirects with short style using :notice" do
+    @controller = dispatch_to(Merb::Test::Fixtures::Controllers::RedirectWithNotice, :index)
+    @controller.status.should == 302
+    expected_url = Merb::Parse.escape([Marshal.dump(:notice => "what?")].pack("m"))
+    @controller.headers["Location"].should == "/?_message=#{expected_url}"
+  end
+
+  it "redirects with short style using :error" do
+    @controller = dispatch_to(Merb::Test::Fixtures::Controllers::RedirectWithError, :index)
+    @controller.status.should == 302
+    expected_url = Merb::Parse.escape([Marshal.dump(:error => "errored!")].pack("m"))
+    @controller.headers["Location"].should == "/?_message=#{expected_url}"
+  end
+
   it "consumes redirects with messages" do
     message = Merb::Parse.escape([Marshal.dump(:notice => "what?")].pack("m"))
     @controller = dispatch_to(Merb::Test::Fixtures::Controllers::ConsumesMessage, :index, {:_message => message})
