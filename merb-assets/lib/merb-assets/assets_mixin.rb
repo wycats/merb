@@ -8,6 +8,25 @@ module Merb
     # assets.
 
 
+    # This tests whether a random query string shall be appended to a url.
+    # Basically, you tell it your intention and if it's ok to use default
+    # config values, and it will either use your intention or the value
+    # set in Merb::Config[:reload_templates]
+    #
+    # ==== Parameters
+    # intention<Boolean>: true if a random string shall be appended
+    # allow_default<Boolean>: true if it's ok to use Merb::Config[:reload_templates]
+    #
+    # ==== Returns
+    # <Boolean> true if a random query string shall be appended
+    #
+    # ==== Examples
+    #   Merb::AssetsMixin.append_random_query_string?(options[:reload])
+    #   Merb::AssetsMixin.append_random_query_string?(options[:reload], !absolute)
+    def self.append_random_query_string?(intention, allow_default = true)
+      intention.nil? && allow_default ? Merb::Config[:reload_templates] : intention
+    end
+
     # ==== Parameters
     # none
     #
@@ -120,6 +139,9 @@ module Merb
     #   Sets the path prefix for the image. Defaults to "/images/" or whatever
     #   is specified in Merb::Config. This is ignored if img is an absolute
     #   path or full URL.
+    # :reload<Boolean>::
+    #   Override the Merb::Config[:reload_templates] value. If true, a random query param will be appended
+    #   to the image url
     #
     # All other options set HTML attributes on the tag.
     #
@@ -147,6 +169,7 @@ module Merb
       else
         opts[:path] ||=
           if img =~ %r{^https?://}
+            absolute = true
             ''
           else
             if Merb::Config[:path_prefix]
@@ -157,8 +180,11 @@ module Merb
           end
         opts[:src] ||= opts.delete(:path) + img
       end
-      random = opts.delete(:reload) || Merb::Config[:reload_templates]
-      opts[:src] += opts[:src].include?('?') ? "&#{random_query_string}" : "?#{random_query_string}" if random
+
+      if AssetsMixin.append_random_query_string?(opts.delete(:reload), !absolute)
+        opts[:src] += opts[:src].include?('?') ? "&#{random_query_string}" : "?#{random_query_string}"
+      end
+
       %{<img #{ opts.to_xml_attributes } />}
     end
 
@@ -455,6 +481,9 @@ module Merb
     #   prefix to add to include tag, overrides any set in Merb::Plugins.config[:asset_helpers][:js_prefix]
     # :suffix<~to_s>::
     #   suffix to add to include tag, overrides any set in Merb::Plugins.config[:asset_helpers][:js_suffix]
+    # :reload<Boolean>::
+    #   Override the Merb::Config[:reload_templates] value. If true, a random query param will be appended
+    #   to the js url
     #
     # ==== Returns
     # String:: The JavaScript include tag(s).
@@ -484,8 +513,7 @@ module Merb
     def js_include_tag(*scripts)
       options = scripts.last.is_a?(Hash) ? scripts.pop : {}
       return nil if scripts.empty?
-      
-      reload = options[:reload] || Merb::Config[:reload_templates]
+
       js_prefix = options[:prefix] || Merb::Plugins.config[:asset_helpers][:js_prefix]
       js_suffix = options[:suffix] || Merb::Plugins.config[:asset_helpers][:js_suffix]
       
@@ -504,8 +532,11 @@ module Merb
           ext_length = ASSET_FILE_EXTENSIONS[:javascript].length + 1
           src.insert(-ext_length,js_suffix)
         end
-        
-        src += src.include?('?') ? "&#{random_query_string}" : "?#{random_query_string}" if reload
+
+        if AssetsMixin.append_random_query_string?(options[:reload])
+          src += src.include?('?') ? "&#{random_query_string}" : "?#{random_query_string}"
+        end
+
         attrs = {
           :src => src,
           :type => "text/javascript"
@@ -531,6 +562,9 @@ module Merb
     #   prefix to add to include tag, overrides any set in Merb::Plugins.config[:asset_helpers][:css_prefix]
     # :suffix<~to_s>::
     #   suffix to add to include tag, overrides any set in Merb::Plugins.config[:asset_helpers][:css_suffix]
+    # :reload<Boolean>::
+    #   Override the Merb::Config[:reload_templates] value. If true, a random query param will be appended
+    #   to the css url
     #
     # ==== Returns
     # String:: The CSS include tag(s).
@@ -565,7 +599,6 @@ module Merb
       options = stylesheets.last.is_a?(Hash) ? stylesheets.pop : {}
       return nil if stylesheets.empty?
 
-      reload = options[:reload] || Merb::Config[:reload_templates]
       css_prefix = options[:prefix] || Merb::Plugins.config[:asset_helpers][:css_prefix]
       css_suffix = options[:suffix] || Merb::Plugins.config[:asset_helpers][:css_suffix]
 
@@ -585,7 +618,10 @@ module Merb
           href.insert(-ext_length,css_suffix)
         end
         
-        href += href.include?('?') ? "&#{random_query_string}" : "?#{random_query_string}" if reload
+        if AssetsMixin.append_random_query_string?(options[:reload])
+          href += href.include?('?') ? "&#{random_query_string}" : "?#{random_query_string}"
+        end
+
         attrs = {
           :href => href,
           :type => "text/css",
@@ -725,6 +761,5 @@ module Merb
     def random_query_string
       Time.now.strftime("%m%d%H%M%S#{rand(99)}")
     end
-    
   end
 end

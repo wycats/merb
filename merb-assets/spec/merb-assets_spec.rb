@@ -68,6 +68,29 @@ describe "Accessing Assets" do
   end
 end
 
+describe "With Merb::Config[:reload_templates] set" do
+  before(:all) do
+    Merb::Config[:reload_templates] = true
+  end
+  after(:all) do
+    Merb::Config[:reload_templates] = false
+  end
+
+  it "should create image tag with absolute url" do
+    image_tag('http://example.com/foo.gif').should ==
+      "<img src=\"http://example.com/foo.gif\" />"
+  end
+
+  it "should create image tag with absolute url and random string if :reload option is set" do
+    image_tag('http://example.com/foo.gif', :reload => true).should =~
+      %r{<img src="http://example.com/foo.gif\?\d+" />}
+  end
+
+  it "should create image tag with relative url" do
+    image_tag('foo.gif').should =~ %r{<img src="/images/foo.gif\?\d+" />}
+  end
+end
+
 describe "JavaScript related functions" do
   it "should escape js having quotes" do
     escape_js("'Lorem ipsum!' -- Some guy").should ==
