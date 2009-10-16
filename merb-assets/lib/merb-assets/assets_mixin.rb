@@ -165,18 +165,14 @@ module Merb
     def image_tag(img, opts={})
       return "" if img.blank?
       if img[0].chr == '/'
-        opts[:src] = img
+        opts[:src] = "#{Merb::Config[:path_prefix]}#{img}"
       else
         opts[:path] ||=
           if img =~ %r{^https?://}
             absolute = true
             ''
           else
-            if Merb::Config[:path_prefix]
-              Merb::Config[:path_prefix] + '/images/'
-            else
-              '/images/'
-            end
+            "#{Merb::Config[:path_prefix]}/images/"
           end
         opts[:src] ||= opts.delete(:path) + img
       end

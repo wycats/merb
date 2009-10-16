@@ -68,7 +68,88 @@ describe "Accessing Assets" do
   end
 end
 
-describe "With Merb::Config[:reload_templates] set" do
+describe "With Merb::Config[:path_prefix] set," do
+  before(:all) do
+    Merb::Config[:path_prefix] = "/myapp"
+  end
+  after(:all) do
+    Merb::Config[:path_prefix] = nil
+  end
+
+  describe "create an image tag" do
+    it "with a relative url" do
+      image_tag('foo.gif').should ==
+        "<img src=\"/myapp/images/foo.gif\" />"
+    end
+
+    it "with an absolute url" do
+      image_tag('/foo.gif').should ==
+        "<img src=\"/myapp/foo.gif\" />"
+    end
+
+    it "with an external url" do
+      image_tag('http://example.com/foo.gif').should ==
+        "<img src=\"http://example.com/foo.gif\" />"
+    end
+  end
+
+  describe "create a stylesheet include tag" do
+    it "with a relative url" do
+      result = css_include_tag('bar.css')
+      result.should match(%r{^<link})
+      result.should match(%r{media="all"})
+      result.should match(%r{type="text/css"})
+      result.should match(%r{href="/myapp/stylesheets/bar.css"})
+      result.should match(%r{charset="utf-8"})
+      result.should match(%r{rel="Stylesheet"})
+    end
+
+    it "with an absolute url" do
+      result = css_include_tag('/bar.css')
+      result.should match(%r{^<link})
+      result.should match(%r{media="all"})
+      result.should match(%r{type="text/css"})
+      result.should match(%r{href="/myapp/bar.css"})
+      result.should match(%r{charset="utf-8"})
+      result.should match(%r{rel="Stylesheet"})
+    end
+
+    it "with an external url" do
+      result = css_include_tag('http://example.com/bar.css')
+      result.should match(%r{^<link})
+      result.should match(%r{media="all"})
+      result.should match(%r{type="text/css"})
+      result.should match(%r{href="http://example.com/bar.css"})
+      result.should match(%r{charset="utf-8"})
+      result.should match(%r{rel="Stylesheet"})
+    end
+  end
+
+  describe "create a javascript include tag" do
+    it "with a relative url" do
+      result = js_include_tag("bar.js")
+      result.should match(%r{^<script}); result.should match(%r{</script>$})
+      result.should match(%r{type="text/javascript"})
+      result.should match(%r{src="/myapp/javascripts/bar.js"})
+    end
+
+    it "with an absolute url" do
+      result = js_include_tag("/bar.js")
+      result.should match(%r{^<script}); result.should match(%r{</script>$})
+      result.should match(%r{type="text/javascript"})
+      result.should match(%r{src="/myapp/bar.js"})
+    end
+
+    it "with an external url" do
+      result = js_include_tag("http://example.com/bar.js")
+      result.should match(%r{^<script}); result.should match(%r{</script>$})
+      result.should match(%r{type="text/javascript"})
+      result.should match(%r{src="http://example.com/bar.js"})
+    end
+  end
+end
+
+describe "With Merb::Config[:reload_templates] set," do
   before(:all) do
     Merb::Config[:reload_templates] = true
   end
