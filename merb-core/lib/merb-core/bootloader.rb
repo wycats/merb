@@ -455,9 +455,15 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
 
     # If log file is given, use it and not log stream we have.
     if Merb::Config[:log_file]
-      raise "log file should be a string, got: #{Merb::Config[:log_file].inspect}" unless Merb::Config[:log_file].is_a?(String)
-      STDOUT.puts "Logging to file at #{Merb::Config[:log_file]}" unless Merb.testing?
-      Merb::Config[:log_stream] = File.open(Merb::Config[:log_file], "a")
+      log_file = Merb::Config[:log_file]
+      raise "log file should be a string, got: #{log_file.inspect}" unless log_file.is_a?(String)
+      STDOUT.puts "Logging to file at #{log_file}" unless Merb.testing?
+      
+      # try to create log directory (if it doesnt exist)
+      log_directory = File.dirname(log_file)
+      FileUtils.mkdir_p(log_directory) unless File.exists?(log_directory)
+
+      Merb::Config[:log_stream] = File.open(log_file, "a")
     # but if it's not given, fallback to log stream or stdout
     else
       Merb::Config[:log_stream] ||= STDOUT
