@@ -74,6 +74,13 @@ describe "A Salted User" do
       @user.salt.should_not be_nil    
     end
     
+    it "should set the salt even when user is not new record but salt is blank" do
+      @user.save!
+      @user.salt = nil
+      @user.send(:encrypt_password)
+      @user.salt.should_not be_nil
+    end
+
     it "should require the password on create" do
       user = Utilisateur.new(:login => "fred", :email => "fred@example.com")
       user.save

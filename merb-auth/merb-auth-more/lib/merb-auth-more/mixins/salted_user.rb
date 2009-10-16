@@ -66,7 +66,7 @@ class Merb::Authentication
         
         def encrypt_password
           return if password.blank?
-          self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{Merb::Authentication::Strategies::Basic::Base.login_param}--") if new_record?
+          self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{Merb::Authentication::Strategies::Basic::Base.login_param}--") if salt.blank?
           self.crypted_password = encrypt(password)
         end
         
