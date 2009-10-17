@@ -5,7 +5,8 @@ def startup_merb(opts = {})
   default_options = {
     :environment => 'test',
     :adapter => 'runner',
-    :gemfile => File.join(File.dirname(__FILE__), "Gemfile")
+    :gemfile => File.join(File.dirname(__FILE__), "Gemfile"),
+    :log_level => :error
   }
   options = default_options.merge(opts)
   Merb.start_environment(options)
