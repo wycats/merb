@@ -122,6 +122,8 @@ module Merb
     #   Shorthand for common usage :message => {:notice => "..."}
     # :error<String>::
     #   Shorthand for common usage :message => {:error => "..."}
+    # :success<String>::
+    #   Shorthand for common usage :message => {:success => "..."}
     # 
     # ==== Returns
     # String:: Explanation of redirect.
@@ -131,28 +133,14 @@ module Merb
     #   redirect("/posts/34", :message => { :notice => 'Post updated successfully!' })
     #   redirect("http://www.merbivore.com/")
     #   redirect("http://www.merbivore.com/", :permanent => true)
+    #   redirect("/posts/34", :notice => 'Post updated successfully!')
     # 
     # :api: public
     def redirect(url, opts = {})
       default_redirect_options = { :message => nil, :permanent => false }
       opts = default_redirect_options.merge(opts)
 
-      if message_notice = opts.delete(:notice)
-        opts[:message] ||= {}
-        opts[:message][:notice] = message_notice
-      end
-
-      if message_error = opts.delete(:error)
-        opts[:message] ||= {}
-        opts[:message][:error] = message_error
-      end
-
-      if opts[:message]
-        notice = Merb::Parse.escape([Marshal.dump(opts[:message])].pack("m"))
-        u = ::URI.parse(url)
-        u.query = u.query ? "#{u.query}&_message=#{notice}" : "_message=#{notice}"
-        url = u.to_s
-      end
+      url = handle_redirect_messages(url,opts)
       self.status = opts[:permanent] ? 301 : 302
       Merb.logger.info("Redirecting to: #{url} (#{self.status})")
       headers['Location'] = url
@@ -360,6 +348,47 @@ module Merb
       unless Merb::Config[:log_stream] == 'mongrel'
         raise(Merb::ControllerExceptions::NotImplemented, "Current Rack adapter is not mongrel. cannot support this feature")
       end
+    end
+
+    # Process a redirect url with options, appending messages onto the url as query params
+    # 
+    # ==== Parameter
+    # url<String>:: the url being redirected to
+    # 
+    # ==== Options (opts)
+    # :message<Hash>::
+    #   A hash of key/value strings to be passed along within the redirect query params.
+    # :notice<String>::
+    #   A shortcut to passing :message => {:notice => "..."}
+    # :error<String>::
+    #   A shortcut to passing :message => {:error => "..."}
+    # :success<String>::
+    #   A shortcut to passing :message => {:success => "..."}
+    # 
+    # ==== Returns
+    # String:: the new url with messages attached
+    #     
+    # :api: private
+    def handle_redirect_messages(url, opts={})
+      opts = opts.dup
+
+      # check opts for message shortcut keys (and assign them to message)
+      [:notice, :error, :success].each do |message_key|
+        if opts[message_key]
+          opts[:message] ||= {}
+          opts[:message][message_key] = opts[message_key]
+        end
+      end
+      
+      # append message query param if message is passed
+      if opts[:message]
+        notice = Merb::Parse.escape([Marshal.dump(opts[:message])].pack("m"))
+        u = ::URI.parse(url)
+        u.query = u.query ? "#{u.query}&_message=#{notice}" : "_message=#{notice}"
+        url = u.to_s
+      end
+      
+      url
     end
   end
 end
