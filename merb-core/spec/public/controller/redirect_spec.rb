@@ -26,6 +26,13 @@ describe Merb::Controller, " redirects" do
     @controller.headers["Location"].should == "/?_message=#{expected_url}"
   end
   
+  it "redirects with message and fragment" do
+    @controller = dispatch_to(Merb::Test::Fixtures::Controllers::RedirectWithMessageAndFragment, :index)
+    @controller.status.should == 302
+    expected_url = Merb::Parse.escape([Marshal.dump(:notice => "what?")].pack("m"))
+    @controller.headers["Location"].should == "/?_message=#{expected_url}#someanchor"
+  end
+  
   it "redirects with short style using :notice" do
     @controller = dispatch_to(Merb::Test::Fixtures::Controllers::RedirectWithNotice, :index)
     @controller.status.should == 302

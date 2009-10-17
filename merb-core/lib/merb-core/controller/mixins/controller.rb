@@ -149,7 +149,9 @@ module Merb
 
       if opts[:message]
         notice = Merb::Parse.escape([Marshal.dump(opts[:message])].pack("m"))
-        url = url =~ /\?/ ? "#{url}&_message=#{notice}" : "#{url}?_message=#{notice}"
+        u = ::URI.parse(url)
+        u.query = u.query ? "#{u.query}&_message=#{notice}" : "_message=#{notice}"
+        url = u.to_s
       end
       self.status = opts[:permanent] ? 301 : 302
       Merb.logger.info("Redirecting to: #{url} (#{self.status})")

@@ -38,6 +38,12 @@ module Merb::Test::Fixtures::Controllers
       redirect("/", :error => "errored!")
     end
   end
+  
+  class RedirectWithMessageAndFragment < Testing
+    def index
+      redirect("/#someanchor", :message => { :notice => "what?" }, :fragment => "someanchor")
+    end
+  end
 
   class ConsumesMessage < Testing
     def index
