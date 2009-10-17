@@ -49,8 +49,7 @@ describe "error_messages_for" do
     @dm_obj = Object.new
     @sq_obj = Object.new
     @dm_errors = [["foo", "bar"],["baz","bat"]]
-    @sq_errors = Object.new
-    @sq_errors.stub!(:full_messages).and_return(["foo", "baz"])
+    @sq_errors = {:foo => ["bar"],:baz => ["bat"]}
     @dm_obj.stub!(:errors).and_return(@dm_errors)
     @dm_obj.stub!(:new_record?).and_return(false)
     @sq_obj.stub!(:errors).and_return(@sq_errors)
@@ -67,8 +66,8 @@ describe "error_messages_for" do
   it "should build default error messages for Sequel-like models" do
     errs = @c.error_messages_for(@sq_obj)
     errs.should include("<h2>Form submission failed because of 2 problems</h2>")
-    errs.should include("<li>foo</li>")
-    errs.should include("<li>baz</li>")
+    errs.should include("<li>foo bar</li>")
+    errs.should include("<li>baz bat</li>")
   end
 
   # it "should build default error messages for symbol" do
