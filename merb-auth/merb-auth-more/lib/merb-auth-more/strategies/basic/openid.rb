@@ -17,6 +17,7 @@
 #   :identity_url - A string for holding the identity_url associated with this user (overwritable)
 #
 # install the ruby-openid gem
+
 require 'openid'
 require 'openid/store/filesystem'
 require 'openid/extensions/sreg'

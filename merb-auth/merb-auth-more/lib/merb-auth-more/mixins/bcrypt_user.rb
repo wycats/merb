@@ -1,5 +1,5 @@
 require 'bcrypt'
-require File.expand_path(File.dirname(__FILE__) / "..") / "strategies" / "abstract_password"
+require 'merb-auth-more/strategies/abstract_password'
 
 class Merb::Authentication
   module Mixins

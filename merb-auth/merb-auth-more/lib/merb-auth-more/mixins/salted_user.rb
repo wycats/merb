@@ -1,5 +1,5 @@
-require "digest/sha1"
-require File.expand_path(File.dirname(__FILE__) / "..") / "strategies" / "abstract_password"
+require 'digest/sha1'
+require 'merb-auth-more/strategies/abstract_password'
 
 class Merb::Authentication
   module Mixins
@@ -25,18 +25,18 @@ class Merb::Authentication
           include Merb::Authentication::Mixins::SaltedUser::InstanceMethods
           extend  Merb::Authentication::Mixins::SaltedUser::ClassMethods
           
-          path = File.expand_path(File.dirname(__FILE__)) / "salted_user"
+          path = "merb-auth-more/mixins/salted_user"
           if defined?(DataMapper) && DataMapper::Resource > self
-            require path / "dm_salted_user"
+            require "#{path}/dm_salted_user"
             extend(Merb::Authentication::Mixins::SaltedUser::DMClassMethods)
           elsif defined?(ActiveRecord) && ancestors.include?(ActiveRecord::Base)
-            require path / "ar_salted_user"
+            require "#{path}/ar_salted_user"
             extend(Merb::Authentication::Mixins::SaltedUser::ARClassMethods)
           elsif defined?(Sequel) && ancestors.include?(Sequel::Model)
-            require path / "sq_salted_user"
+            require "#{path}/sq_salted_user"
             extend(Merb::Authentication::Mixins::SaltedUser::SQClassMethods)
           elsif defined?(RelaxDB) && ancestors.include?(RelaxDB::Document)
-            require path / "relaxdb_salted_user"
+            require "#{path}/relaxdb_salted_user"
             extend(Merb::Authentication::Mixins::SaltedUser::RDBClassMethods)
           end
           

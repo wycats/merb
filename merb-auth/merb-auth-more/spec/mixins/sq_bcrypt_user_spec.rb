@@ -1,11 +1,11 @@
 require 'spec_helper'
 require 'sequel'
 require 'merb_sequel'
-require 'merb-auth-more/mixins/salted_user'
+require 'merb-auth-more/mixins/bcrypt_user'
 
 DB = Sequel.sqlite unless Object.const_defined?('DB')
 
-describe "A Sequel Salted User" do
+describe "A Sequel Bcrypt User" do
   
   include UserHelper
   
@@ -17,28 +17,27 @@ describe "A Sequel Salted User" do
       column      :email,            :string
       column      :login,            :string
       column      :crypted_password, :string
-      column      :salt,             :string
     end
 
-    class SequelSaltedUser < Sequel::Model
+    class SequelBcryptUser < Sequel::Model
       set_dataset :users
       plugin(:validation_helpers) if Merb::Orms::Sequel.new_sequel?
-      include Merb::Authentication::Mixins::SaltedUser
+      include Merb::Authentication::Mixins::BCryptUser
     end
 
   end
 
   before(:each) do
-    @user_class = SequelSaltedUser
+    @user_class = SequelBcryptUser
     @user_class.create(valid_user_params)
     @new_user = @user_class.new(valid_user_params)
   end
 
   after(:each) do
-    SequelSaltedUser.delete
+    SequelBcryptUser.delete
   end
 
   it_should_behave_like 'every encrypted user'
-  it_should_behave_like 'every salted user'
+  it_should_behave_like 'every bcrypt user'
 
 end

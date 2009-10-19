@@ -1,4 +1,5 @@
 require 'merb-auth-more/strategies/abstract_password'
+
 # This strategy uses a login  and password parameter.
 #
 # Overwrite the :password_param, and :login_param
