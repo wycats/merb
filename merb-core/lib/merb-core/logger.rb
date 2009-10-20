@@ -16,7 +16,9 @@ end
 # ==== Public Merb Logger API
 #
 # To replace an existing logger with a new one:
-#  Merb::Logger.set_log(log{String, IO},level{Symbol, String})
+#  Merb.logger.set_log(log{String, IO},level{Symbol, String})
+#  for example:
+#  Merb.logger.set_log($stdout, Merb::Logger::Levels[:fatal])
 #
 # Available logging levels are
 #   Merb::Logger::{ Fatal, Error, Warn, Info, Debug }
