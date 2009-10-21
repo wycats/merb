@@ -303,7 +303,7 @@ module Merb
       # r<Behavior>:: +optional+ - The to behavior object.
       # 
       # ==== Returns
-      # Route:: It registers a new route and returns it.
+      # Behavior:: The route definition behavior defining the created route
       # 
       # ==== Examples
       #   match('/:controller/:id).to(:action => 'show')
