@@ -35,29 +35,29 @@ module Merb::Cache
   class AbstractStrategyStore < AbstractStore
     # START: interface for creating strategy stores.  This should/might change.
     def self.contextualize(*stores)
-        Class.new(self) do
-          cattr_accessor :contextualized_stores
+      Class.new(self) do
+        cattr_accessor :contextualized_stores
 
-          self.contextualized_stores = stores
+        self.contextualized_stores = stores
+      end
+    end
+
+    class << self
+      alias_method :[], :contextualize
+    end
+
+    attr_accessor :stores
+
+    def initialize(config = {})
+      @stores = contextualized_stores.map do |cs|
+        case cs
+        when Symbol
+          Merb::Cache[cs]
+        when Class
+          cs.new(config)
         end
       end
-
-      class << self
-        alias_method :[], :contextualize
-      end
-
-      attr_accessor :stores
-
-      def initialize(config = {})
-        @stores = contextualized_stores.map do |cs|
-          case cs
-          when Symbol
-            Merb::Cache[cs]
-          when Class
-            cs.new(config)
-          end
-        end
-      end
+    end
 
     # END: interface for creating strategy stores.
 

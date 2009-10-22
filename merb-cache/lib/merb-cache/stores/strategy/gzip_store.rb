@@ -29,7 +29,7 @@ module Merb::Cache
 
     def fetch(key, parameters = {}, conditions = {}, &blk)
       wrapper_blk = lambda { compress(blk.call) }
-      decompress(read(key, parameters) || @stores.capture_first {|s| s.fetch(key, parameters, conditions, &wrapper_blk)})
+      read(key, parameters) || decompress(@stores.capture_first {|s| s.fetch(key, parameters, conditions, &wrapper_blk)})
     end
 
     def exists?(key, parameters = {})
