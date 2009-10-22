@@ -9,7 +9,7 @@ if defined?(Merb)
   Merb::BootLoader.after_app_loads do
     
     if File.directory?(Merb::Plugins.config[:sass][:template_location] || Merb.dir_for(:stylesheet) / "sass")
-      require "sass/plugin" 
+      require "sass"
       if Merb::Config[:sass]
         Merb.logger.info("Please define your sass settings in Merb::Plugins.config[:sass] not Merb::Config")
         Sass::Plugin.options = Merb::Config[:sass]
