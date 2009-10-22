@@ -148,6 +148,36 @@ module Merb
     def generate_digest(data)
       OpenSSL::HMAC.hexdigest(DIGEST, @secret, data)
     end
+
+    # Securely compare two digests using a constant time algorithm.
+    # This avoids leaking information about the calculated HMAC
+    #
+    # Based on code by Michael Koziarski <michael@koziarski.com>
+    # http://github.com/rails/rails/commit/674f780d59a5a7ec0301755d43a7b277a3ad2978
+    #
+    # ==== Parameters
+    # a, b<~to_s>:: digests to compare.
+    #
+    # ==== Returns
+    # Boolean:: Do the digests validate?
+    def secure_compare(a, b)
+      if a.length == b.length
+
+        # unpack to forty characters.
+        # needed for 1.8 and 1.9 compat
+        a_bytes = a.unpack('C*')
+        b_bytes = b.unpack('C*')
+
+        result = 0
+        for i in 0..(a_bytes.length - 1)
+          result |= a_bytes[i] ^ b_bytes[i]
+        end
+        result == 0
+      else
+        false
+      end
+    end
+
     
     # Unmarshal cookie data to a hash and verify its integrity.
     # 
@@ -167,7 +197,7 @@ module Merb
       else
         data, digest = Merb::Parse.unescape(cookie).split('--')
         return {} if data.blank? || digest.blank?
-        unless digest == generate_digest(data)
+        unless secure_compare(generate_digest(data), digest)
           clear
           unless Merb::Config[:ignore_tampered_cookies]
             raise TamperedWithCookie, "Maybe the site's session_secret_key has changed?"
