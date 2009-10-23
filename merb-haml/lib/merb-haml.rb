@@ -32,13 +32,6 @@ if defined?(Merb)
     
   end
   
-  # Hack because Haml uses symbolize_keys
-  class Hash
-    def symbolize_keys!
-      self
-    end
-  end
-  
   generators = File.join(File.dirname(__FILE__), 'generators')
   Merb.add_generators generators / "resource_controller"
   Merb.add_generators generators / "controller"
