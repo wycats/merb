@@ -78,7 +78,7 @@ end
 
 class ::Gem::SpecFetcher
   alias old_fetch fetch
-  def fetch(dependency, all = false, matching_platform = true)
+  def fetch(dependency, all = false, matching_platform = true, prerelease = false)
     idx = Gem::SourceIndex.from_installed_gems
     
     reqs = dependency.version_requirements.requirements
