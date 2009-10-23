@@ -33,6 +33,13 @@
 <%= "# " unless template_engine == :erb %>use_template_engine :erb
 <%= "# " unless template_engine == :haml %>use_template_engine :haml
 
+# If you need to use dependency immediately in this file you must add :immediate => true 
+# to dependency definition:
+# dependency "merb-slices", :immediate => true
+#
+# Specify a specific version of a dependency
+# dependency "RedCloth", "> 3.0"
+
 Merb::Config.use { |c|
   c[:framework]           = { :public => [Merb.root / "public", nil] }
   c[:session_store]       = 'none'

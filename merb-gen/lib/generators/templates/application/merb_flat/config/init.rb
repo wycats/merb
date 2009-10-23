@@ -4,6 +4,10 @@
 use_test :<%= testing_framework %>
 use_template_engine :<%= template_engine %>
 
+# If you need to use dependency immediately in this file you must add :immediate => true 
+# to dependency definition:
+# dependency "merb-slices", :immediate => true
+#
 # Specify a specific version of a dependency
 # dependency "RedCloth", "> 3.0"
 
