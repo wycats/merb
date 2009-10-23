@@ -1323,6 +1323,8 @@ class Merb::BootLoader::ChooseAdapter < Merb::BootLoader
   #
   # :api: plugin
   def self.run
+    # Check if we running in IRB if so run IRB adapter
+    Merb::Config[:adapter] = 'irb' if Merb.running_irb?
     Merb.adapter = Merb::Rack::Adapter.get(Merb::Config[:adapter])
   end
 end
