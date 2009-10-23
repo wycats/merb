@@ -154,6 +154,9 @@ module Merb
         Merb::Config.parse_args(argv)
       end
 
+      # Keep information that we run inside IRB to guard it against overriding in init.rb
+      @running_irb = Merb::Config[:adapter] == 'irb'
+
       Merb::Config[:log_stream] = STDOUT
       
       Merb.environment = Merb::Config[:environment]
@@ -785,6 +788,11 @@ module Merb
 
     def run_later(&blk)
       Merb::Dispatcher.work_queue << blk
+    end
+
+    # :api: private
+    def running_irb?
+      @running_irb
     end
   end
 end
