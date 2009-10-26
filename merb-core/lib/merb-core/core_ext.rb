@@ -1,7 +1,7 @@
 begin
   require "extlib"
 rescue LoadError => e
-  puts "Merb-core 0.9.4 and later uses extlib for Ruby core class extensions. Install it from github.com/sam/extlib."
+  puts "Merb-core 0.9.4 and later uses extlib for Ruby core class extensions. Install it from github.com/datamapper/extlib."
   exit
 end
 
