@@ -984,6 +984,19 @@ describe "bound_select" do
     form.should have_selector("label[for=fake_model_foo]:contains('LABEL')")
   end
 
+  it "should render a select tag with correct field selected" do
+    a = FakeModel3.new; a.bar = "A"; a.foo = 4
+    b = FakeModel3.new; b.bar = "B"; b.foo = 2
+    c = FakeModel3.new; c.bar = "C"; c.foo = 7
+
+    @c.instance_variable_set(:@collection, [a,b,c])
+
+    r = @c.render :selected
+    r.should_not have_selector("select[id=fake_model_bar] option[selected]:contains('A')")
+    r.should_not have_selector("select[id=fake_model_bar] option[selected]:contains('B')")
+    r.should have_selector("select[id=fake_model_bar] option[selected]:contains('C')")
+  end
+
   # Not sure how this makes any sense
   # ---------------------------------
   #

@@ -164,7 +164,7 @@ module Merb::Helpers::Form::Builder
     def update_bound_select(method, attrs)
       attrs[:value_method] ||= method
       attrs[:text_method] ||= attrs[:value_method] || :to_s
-      attrs[:selected] ||= control_value(attrs[:value_method])
+      attrs[:selected] ||= control_value(method)
     end
 
     def update_unbound_controls(attrs, type)
