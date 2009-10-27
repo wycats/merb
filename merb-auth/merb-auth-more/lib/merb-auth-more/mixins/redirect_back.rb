@@ -51,7 +51,7 @@ module Merb::Authentication::Mixins
     def _set_return_to
       unless request.exceptions.blank?
         session[:return_to] ||= []
-        session[:return_to] << request.uri
+        session[:return_to] << "#{Merb::Config[:path_prefix]}#{request.uri}"
         session[:return_to]
       end
     end
