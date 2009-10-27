@@ -1,8 +1,7 @@
 # Go to http://wiki.merbivore.com/pages/init-rb
  
 # Specify your dependencies in the Gemfile
-
-<%= "# " unless orm != :none %> use_orm :<%= orm %>
+<%= "use_orm :#{orm}" unless orm == :none %>
 use_test :<%= testing_framework %>
 use_template_engine :<%= template_engine %>
  
