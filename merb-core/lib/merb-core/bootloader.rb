@@ -93,13 +93,9 @@ module Merb
         until subclasses.empty?
           time = Time.now.to_i
           bootloader = subclasses.shift
-          if (ENV['DEBUG'] || $DEBUG || Merb::Config[:verbose]) && Merb.logger
-            Merb.logger.debug!("Loading: #{bootloader}")
-          end
+          Merb.logger.debug!("Loading: #{bootloader}") if Merb.verbose_logging?
           Object.full_const_get(bootloader).run
-          if (ENV['DEBUG'] || $DEBUG || Merb::Config[:verbose]) && Merb.logger
-            Merb.logger.debug!("It took: #{Time.now.to_i - time}")
-          end
+          Merb.logger.debug!("It took: #{Time.now.to_i - time}") if Merb.verbose_logging?
           self.finished << bootloader
         end
         self.subclasses = subklasses
@@ -399,7 +395,7 @@ class Merb::BootLoader::Dependencies < Merb::BootLoader
   #
   # :api: private
   def self.load_bundler_dependencies
-    if (ENV['DEBUG'] || $DEBUG || Merb::Config[:verbose]) && Merb.logger
+    if Merb.verbose_logging?
       if Merb::Config[:gemfile]
         Merb.logger.debug!("Loading Gemfile from #{Merb::Config[:gemfile]}")
       else

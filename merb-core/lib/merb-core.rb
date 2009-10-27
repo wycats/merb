@@ -534,6 +534,14 @@ module Merb
       $BUNDLE || ENV.key?("BUNDLE")
     end
 
+    # ==== Returns
+    # Boolean:: True if Merb is running in debug or verbose mode
+    #
+    # :api: public
+    def verbose_logging?
+      (ENV['DEBUG'] || $DEBUG || Merb::Config[:verbose]) && Merb.logger
+    end
+
     # Load configuration and assign the logger.
     #
     # ==== Parameters
