@@ -88,7 +88,7 @@ module Merb
     # Replaces an existing logger with a new one.
     #
     # ==== Parameters
-    # log<IO, String>:: Either an IO object or a name of a logfile.
+    # stream<IO, String>:: Either an IO object or a name of a logfile.
     # log_level<~to_sym>::
     #   The log level from, e.g. :fatal or :info. Defaults to :error in the
     #   production environment and :debug otherwise.
