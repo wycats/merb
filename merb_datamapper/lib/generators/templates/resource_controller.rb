@@ -40,8 +40,9 @@ class <%= class_name %> < Application
     @<%= singular_model %> = <%= model_class_name %>.get(id)
     raise NotFound unless @<%= singular_model %>
     if @<%= singular_model %>.update(<%= singular_model %>)
-       redirect resource(@<%= singular_model %>)
+       redirect resource(@<%= singular_model %>), :message => {:notice => "<%= model_class_name %> was successfully updated"}
     else
+      message[:error] = "<%= model_class_name %> failed to be updated"
       display @<%= singular_model %>, :edit
     end
   end
@@ -50,7 +51,7 @@ class <%= class_name %> < Application
     @<%= singular_model %> = <%= model_class_name %>.get(id)
     raise NotFound unless @<%= singular_model %>
     if @<%= singular_model %>.destroy
-      redirect resource(:<%= plural_model %>)
+      redirect resource(:<%= plural_model %>), :message => {:notice => "<%= model_class_name %> was successfully deleted"}
     else
       raise InternalServerError
     end
