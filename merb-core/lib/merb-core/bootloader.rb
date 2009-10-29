@@ -949,6 +949,8 @@ class Merb::BootLoader::LoadClasses < Merb::BootLoader
           begin
             load_file file
           rescue NameError => ne
+            Merb.logger.verbose! "Stashed file with missing requirements for later reloading: #{file}"
+            ne.backtrace.each_with_index { |line, idx| Merb.logger.verbose! "[#{idx}]: #{line}" }
             orphaned_classes.unshift(file)
           end
         end
