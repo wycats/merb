@@ -49,7 +49,7 @@ module Haml
 
       setup = "@_engine = 'haml'"
 
-      object.send(method, "def #{name}(_haml_locals = {}); #{setup}; #{precompiled_with_ambles(local_names)}; end",
+      object.send(method, "def #{name}(_haml_locals = {}); #{setup}; #{compiler.precompiled_with_ambles(local_names)}; end",
                   @options[:filename], 0)
     end
  
